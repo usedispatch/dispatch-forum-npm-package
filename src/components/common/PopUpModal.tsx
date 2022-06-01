@@ -1,5 +1,5 @@
 import { ReactNode, useRef } from "react";
-import Image from "next/image";
+import Image from "utils/image";
 
 import { close, success, warning, errorIcon, infoIcon } from "assets";
 
@@ -17,16 +17,16 @@ function getMessageTypeIcon(type?: MessageType): ReactNode {
 
   switch (type) {
     case MessageType.success:
-      result = <Image src={success} width={32} height={32} alt="success" />;
+      //result = <Image src={success} width={32} height={32} alt="success" />;
       break;
     case MessageType.warning:
-      result = <Image src={warning} width={32} height={32} alt="warning" />;
+      //result = <Image src={warning} width={32} height={32} alt="warning" />;
       break;
     case MessageType.error:
-      result = <Image src={errorIcon} width={32} height={32} alt="error" />;
+      //result = <Image src={errorIcon} width={32} height={32} alt="error" />;
       break;
     case MessageType.info:
-      result = <Image src={infoIcon} width={32} height={32} alt="info" />;
+      //result = <Image src={infoIcon} width={32} height={32} alt="info" />;
       break;
     default:
       break;

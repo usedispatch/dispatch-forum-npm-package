@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import Image from "next/image";
+import Image from "utils/image";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";

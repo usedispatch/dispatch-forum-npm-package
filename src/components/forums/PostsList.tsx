@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useState } from "react";
-import Image from "next/image";
+import Image from "utils/image";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";

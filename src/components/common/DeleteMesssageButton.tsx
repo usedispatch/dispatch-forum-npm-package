@@ -1,5 +1,5 @@
 import { ReactNode, useState } from "react";
-import Image from "next/image";
+import Image from "utils/image";
 import { MessageAccount } from "@usedispatch/client";
 
 import trash from "assets/trash_icon.svg";

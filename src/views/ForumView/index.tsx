@@ -6,7 +6,6 @@ import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
 import { plus } from "assets";
-import { PageHeader } from "components";
 import { MessageType, PopUpModal, Spinner } from "components/common";
 import { ForumContent } from "components/forums";
 
@@ -324,13 +323,9 @@ export const ForumView = (props: ForumViewProps) => {
       />
       <div className="min-h-full">
         {!_.isNil(forum) && (
-          <PageHeader
-            title={
-              <div className="font-raleway text-4xl pt-16">
-                Welcome to the forum {forum.title}
-              </div>
-            }
-          />
+            <div className="font-raleway text-4xl pt-16">
+              Welcome to the forum {forum.title}
+            </div>
         )}
         <main>
           <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">

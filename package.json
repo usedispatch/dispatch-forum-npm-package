@@ -20,9 +20,12 @@
   },
   "homepage": "https://github.com/usedispatch/dispatch-forum#readme",
   "devDependencies": {
-    "@types/react": "^18.0.10",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "typescript": "^4.7.2"
+    "@types/react": "^17.0.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "typescript": "^4.4.4"
+  },
+  "dependencies": {
+    "react-jdenticon": "^1.0.0"
   }
 }

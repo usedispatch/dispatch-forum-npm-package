@@ -1,1 +1,1 @@
-export {}
+export {ForumContent} from './forums/ForumContent'; 

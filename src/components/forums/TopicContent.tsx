@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { msgSquare, trash } from "assets";
+import { msgSquare, trash } from "../../assets";
 import { MessageType, PopUpModal, Spinner } from "../common";
 import { CreatePost, PostList } from "./";
 

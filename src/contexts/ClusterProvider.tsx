@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import * as web3 from "@solana/web3.js";
 
-import {useLocalStorage} from "utils/useLocalStorage"
+import {useLocalStorage} from "../utils/useLocalStorage"
  
 const defaultCluster: web3.Cluster = "devnet";
 

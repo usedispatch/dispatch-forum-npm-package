@@ -1,11 +1,12 @@
 {
-  "name": "dispatch-forum",
+  "name": "@usedispatch/forum",
   "version": "0.0.2",
   "description": "Dispatch forum",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc && cp package.json README.md ./dist",
+    "build": "npm run clean && tsc && cp README.md ./dist && cp src/assets/*.svg dist/assets/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

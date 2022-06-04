@@ -4,13 +4,13 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import * as web3 from "@solana/web3.js";
 import { ForumInfo, ForumPost } from "@usedispatch/client";
 
-import { plus } from "assets";
-import { MessageType, PopUpModal } from "components/common";
-import { TopicList } from "components/forums";
+import { plus } from "../../assets";
+import { MessageType, PopUpModal } from "../common";
+import { TopicList } from "./";
 
-import { useConnection } from "contexts/ConnectionProvider";
-import { MainForum } from "utils/postbox/postboxWrapper";
-import { UserRoleType } from "utils/postbox/userRole";
+import { useConnection } from "../../contexts/ConnectionProvider";
+import { MainForum } from "../../utils/postbox/postboxWrapper";
+import { UserRoleType } from "../../utils/postbox/userRole";
 
 interface ForumContentProps {
   forum: ForumInfo;

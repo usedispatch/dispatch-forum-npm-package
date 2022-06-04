@@ -1,17 +1,17 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import Image from "utils/image";
+import Image from "../../utils/image";
 import { useRouter } from "next/router";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
 import { msgSquare, trash } from "assets";
-import { MessageType, PopUpModal, Spinner } from "components/common";
-import { CreatePost, PostList } from "components/forums";
+import { MessageType, PopUpModal, Spinner } from "../common";
+import { CreatePost, PostList } from "./";
 
-import { DispatchForum } from "utils/postbox/postboxWrapper";
-import { UserRoleType } from "utils/postbox/userRole";
+import { DispatchForum } from "../../utils/postbox/postboxWrapper";
+import { UserRoleType } from "../../utils/postbox/userRole";
 
 interface TopicContentProps {
   forum: DispatchForum;

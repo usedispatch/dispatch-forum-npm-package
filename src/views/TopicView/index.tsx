@@ -4,12 +4,12 @@ import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
 
-import { PopUpModal, MessageType, Spinner } from "components/common";
-import { TopicContent } from "components/forums";
+import { PopUpModal, MessageType, Spinner } from "../../components/common";
+import { TopicContent } from "../../components/forums";
 
-import { useConnection } from "contexts/ConnectionProvider";
-import { MainForum } from "utils/postbox/postboxWrapper";
-import { userRole, UserRoleType } from "utils/postbox/userRole";
+import { useConnection } from "../../contexts/ConnectionProvider";
+import { MainForum } from "../../utils/postbox/postboxWrapper";
+import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 
 interface Props {
   topicId: number;

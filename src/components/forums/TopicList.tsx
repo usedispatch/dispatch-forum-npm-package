@@ -5,10 +5,10 @@ import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
 
-import { Spinner } from "components/common";
+import { Spinner } from "../../components/common";
 
-import { useConnection } from "contexts/ConnectionProvider";
-import { MainForum } from "utils/postbox/postboxWrapper";
+import { useConnection } from "../../contexts/ConnectionProvider";
+import { MainForum } from "../../utils/postbox/postboxWrapper";
 
 interface TopicListProps {
   loading: boolean;

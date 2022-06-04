@@ -1,10 +1,10 @@
 import { ReactNode, useState } from "react";
-import Image from "utils/image";
+import Image from "../../utils/image";
 import { MessageAccount } from "@usedispatch/client";
 
-import trash from "assets/trash_icon.svg";
-import { MessageType, PopUpModal } from "components/common/PopUpModal";
-import { useMailbox } from "contexts/MailboxProvider";
+import trash from "../../assets/trash_icon.svg";
+import { MessageType, PopUpModal } from "./PopUpModal";
+import { useMailbox } from "../../contexts/MailboxProvider";
 
 interface DeleteMesssageButtonProps {
   message: MessageAccount;

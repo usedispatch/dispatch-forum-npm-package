@@ -2,13 +2,10 @@ import type { WalletProviderProps } from "@solana/wallet-adapter-react";
 import { WalletProvider } from "@solana/wallet-adapter-react";
 
 import {
-  // getLedgerWallet,
-  // getMathWallet,
-  getPhantomWallet,
-  getSlopeWallet,
-  getSolflareWallet,
-  getSolletWallet,
-  // getSolongWallet,
+  PhantomWalletAdapter,
+  SlopeWalletAdapter,
+  SolflareWalletAdapter,
+  SolletWalletAdapter,
 } from '@solana/wallet-adapter-wallets'
 import { useMemo } from "react";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
@@ -20,20 +17,10 @@ export function ClientWalletProvider(
 ): JSX.Element {
   const wallets = useMemo(
     () => [
-      getPhantomWallet(),
-      getSolflareWallet(),
-      // getTorusWallet({
-      //   options: {
-      //     // TODO: Get your own tor.us wallet client Id
-      //     clientId:
-      //       "BOM5Cl7PXgE9Ylq1Z1tqzhpydY0RVr8k90QQ85N7AKI5QGSrr9iDC-3rvmy0K_hF0JfpLMiXoDhta68JwcxS1LQ",
-      //   },
-      // }),
-      // getLedgerWallet(),
-      // getSolongWallet(),
-      // getMathWallet(),
-      getSlopeWallet(),
-      getSolletWallet(),
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new SlopeWalletAdapter(),
+      new SolletWalletAdapter(),
     ],
     []
   );

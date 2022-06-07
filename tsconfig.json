@@ -16,8 +16,8 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": false
-
+    "noImplicitAny": false,
+    "sourceMap": true,
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/custom.d.ts"],
   "exclude": ["node_modules"]

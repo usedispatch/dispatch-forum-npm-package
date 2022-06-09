@@ -88,7 +88,7 @@ export interface IForum {
 }
 
 export class DispatchForum implements IForum {
-  private wallet: WalletInterface;
+  public wallet: WalletInterface;
   private connection: web3.Connection;
   public isNotEmpty: boolean;
 

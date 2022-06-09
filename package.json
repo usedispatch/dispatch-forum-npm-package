@@ -65,7 +65,8 @@
     "next-compose-plugins": "^2.2.1",
     "next-images": "^1.8.4",
     "next-transpile-modules": "^9.0.0",
-    "prisma": "^3.13.0"
+    "prisma": "^3.13.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

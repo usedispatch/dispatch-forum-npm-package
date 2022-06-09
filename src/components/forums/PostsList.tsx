@@ -12,6 +12,7 @@ import { PostReplies } from "./";
 
 import { UserRoleType } from "../../utils/postbox/userRole";
 import { DispatchForum } from "../../utils/postbox/postboxWrapper";
+import { useForum } from "./../../contexts/DispatchProvider";
 
 interface PostListProps {
   forum: DispatchForum;
@@ -24,7 +25,7 @@ interface PostListProps {
 
 export function PostList(props: PostListProps) {
   const { collectionId, forum, loading, posts, userRole, onDeletePost } = props;
-  const { publicKey } = useWallet();
+  const { publicKey } = useForum().wallet;
 
   const emptyList = (
     <div className="flex flex-col items-center">

@@ -1,14 +1,12 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import Jdenticon from "react-jdenticon";
-import Link from "next/link";
+import {Link} from "react-router-dom";
 import * as web3 from "@solana/web3.js";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../components/common";
 
-import { useConnection } from "../../contexts/ConnectionProvider";
-import { MainForum } from "../../utils/postbox/postboxWrapper";
+import { ForumContext } from "./../../contexts/DispatchProvider";
 
 interface TopicListProps {
   loading: boolean;
@@ -75,9 +73,7 @@ interface RowContentProps {
 
 function RowContent(props: RowContentProps) {
   const { collectionId, topic } = props;
-  const wallet = useWallet();
-  const { connection } = useConnection();
-  const Forum = new MainForum(wallet, connection);
+  const Forum = useContext(ForumContext);
 
   const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -149,12 +145,8 @@ function RowContent(props: RowContentProps) {
   );
 
   return (
-    <Link
-      href={{
-        pathname: `/forum/${collectionId.toBase58()}/topic/${topic.postId}`,
-      }}
-      key={`topic_${topic.postId}`}
-      passHref
+    <a href={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
+      // key={`topic_${topic.postId}`}
     >
       <tr className="hover hover:bg-blue-100 cursor-pointer">
         <>
@@ -180,6 +172,6 @@ function RowContent(props: RowContentProps) {
           </td>
         </>
       </tr>
-    </Link>
+    </a>
   );
 }

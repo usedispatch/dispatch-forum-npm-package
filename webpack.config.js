@@ -13,8 +13,10 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        loader: 'svg-inline-loader'
-      }
+        // issuer: /\.[jt]sx?$/,
+        use: ['@svgr/webpack'],
+        type:'asset/inline',
+      },
     ],
   },
   resolve: {
@@ -30,7 +32,8 @@ module.exports = {
     library:{
         name: "@usedispatch/forum",
         type:'umd',
-    }
+    },
+    assetModuleFilename: 'assets/[name].svg',
   },
   plugins: [
     new webpack.ProvidePlugin({

@@ -90,10 +90,16 @@ export interface IForum {
 export class DispatchForum implements IForum {
   private wallet: WalletInterface;
   private connection: web3.Connection;
+  public isNotEmpty: boolean;
 
   constructor(wallet: WalletInterface, conn: web3.Connection) {
     this.connection = conn;
     this.wallet = wallet;
+    if (wallet.publicKey && conn) {
+      this.isNotEmpty = true;
+    } else {
+      this.isNotEmpty = false;
+    }
   }
 
   createForum = async (forumInfo: ForumInfo) => {

@@ -1,29 +1,27 @@
-import { useState, useEffect, ReactNode } from "react";
-import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
-import * as web3 from "@solana/web3.js";
-import { ForumInfo, ForumPost } from "@usedispatch/client";
+import { useState, useEffect, ReactNode, useContext } from "react";
+// import Image from "next/image";
+import Image from "../../utils/image";
+import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
 import { plus } from "../../assets";
 import { MessageType, PopUpModal } from "../common";
 import { TopicList } from "./";
 
-import { useConnection } from "../../contexts/ConnectionProvider";
-import { MainForum } from "../../utils/postbox/postboxWrapper";
+import { DispatchForum} from "../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../utils/postbox/userRole";
+import { ForumContext } from "./../../contexts/DispatchProvider";
+// import { DispatchForum } from "../../utils/postbox/postboxWrapper";
 
 interface ForumContentProps {
   forum: ForumInfo;
+  forumObject?: DispatchForum;
   role?: UserRoleType;
 }
 
 export function ForumContent(props: ForumContentProps) {
   const { forum, role } = props;
-  const wallet = useWallet();
-  const { connected } = wallet;
-  const { connection } = useConnection();
-  const Forum = new MainForum(wallet, connection);
-
+  const Forum = useContext(ForumContext);
+  const connected = Forum.isNotEmpty;
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [title, setTitle] = useState("");

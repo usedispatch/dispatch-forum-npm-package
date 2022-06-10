@@ -13,14 +13,13 @@ import { ForumContext } from "./../../contexts/DispatchProvider";
 // import { DispatchForum } from "../../utils/postbox/postboxWrapper";
 
 interface ForumContentProps {
-  topicPath?: string;
   forum: ForumInfo;
   forumObject?: DispatchForum;
   role?: UserRoleType;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { topicPath, forum } = props;
+  const { forum } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
@@ -241,7 +240,6 @@ export function ForumContent(props: ForumContentProps) {
           loading={loadingTopics}
           topics={topics}
           collectionId={forum.collectionId}
-          topicPath={topicPath ?? ""}
         /> :
         <div> loading... </div>
       }

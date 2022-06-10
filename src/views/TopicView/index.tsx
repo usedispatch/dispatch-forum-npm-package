@@ -26,9 +26,12 @@ export const TopicView = (props: Props) => {
   const { connecting } = wallet;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-  const params = new URLSearchParams(document.location.search);
-  const collectionId = params.get("collectionId") ?? "";
-  const topicString = params.get("topicId") ?? "";
+
+  const urlPath = window.location.toString();
+  const urlPathArray = urlPath.split('/')
+  const topicString = urlPathArray.pop() ?? "";
+  urlPathArray.pop()
+  const collectionId = urlPathArray.pop() ?? "";
   const topicId = parseInt(topicString);
 
 

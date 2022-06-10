@@ -16,7 +16,6 @@ import { ForumContext } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
   collectionId?: string;
-  topicPath: string;
 }
 
 /**
@@ -51,7 +50,6 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  const { topicPath } = props;
   const Forum = useContext(ForumContext);
   const wallet = Forum.wallet;
   const { publicKey } = Forum.wallet;
@@ -69,9 +67,11 @@ export const ForumView = (props: ForumViewProps) => {
     body?: string;
   } | null>(null);
   // TODO(Ana): future task [moderators, setModerators] = useState<string[]>([]);
-  const params = new URLSearchParams(document.location.search);
-  const collectionId = params.get("collectionId") ?? "";
+  
+  const urlPath = window.location.toString();
+  // const params = new URLSearchParams(this.props.match.params.id);
 
+  const collectionId = urlPath.split("/").pop() ?? "";
   const collectionPublicKey = useMemo(
     () => new web3.PublicKey(collectionId),
     [collectionId]
@@ -340,7 +340,7 @@ export const ForumView = (props: ForumViewProps) => {
                 </div>
               ) : connected ? (
                 !_.isNil(forum) ? (
-                  <ForumContent forum={forum} role={role ?? undefined} topicPath={topicPath}/>
+                  <ForumContent forum={forum} role={role ?? undefined}/>
                 ) : (
                   emptyView
                 )

@@ -9,26 +9,40 @@ export interface DispatchAppProps {
     wallet: WalletInterface;
     connection: web3.Connection;
     children: ReactNode | ReactNode[];
+    baseURL: string;
+    forumURL: string;
+    topicURL: string;
+}
+
+export interface PathObject {
+    baseURL: string;
+    forumURL: string;
+    topicURL: string;
 }
 
 export const ForumContext = createContext<DispatchForum>({} as DispatchForum);
+export const PathContext = createContext<PathObject>({} as PathObject);
 
 export const DispatchProvider: FC<DispatchAppProps> = ({ 
     wallet, 
     connection, 
-    children 
+    children,
+    baseURL,
+    forumURL,
+    topicURL
 }) => {
-    // const Forum = new MainForum(wallet, connection);
-    const forum = useMemo(() => new MainForum(wallet, connection), [wallet, connection]) //createContext(Forum);
+    const forum = useMemo(() => new MainForum(wallet, connection), [wallet, connection])
+    const paths = {
+        baseURL: baseURL,
+        forumURL: forumURL,
+        topicURL: topicURL
+    }
+    
     return (
             <ForumContext.Provider value={forum}>
-                {/* <Router> */}
+                <PathContext.Provider value={paths}>
                     {children}
-                    {/* <Routes>
-                        <Route path="/" element={<ForumComponent/>} />
-                        <Route path="/forum/:collectionID/topic/:topicID" element={<TopicView/>} />
-                    </Routes>
-                </Router> */}
+                </PathContext.Provider>
             </ForumContext.Provider>
 
     )
@@ -36,4 +50,8 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
 
 export function useForum(): DispatchForum {
     return useContext(ForumContext);
+}
+
+export function usePath(): PathObject {
+    return useContext(PathContext);
 }

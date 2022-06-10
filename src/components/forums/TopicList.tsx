@@ -147,10 +147,11 @@ function RowContent(props: RowContentProps) {
     ),
     []
   );
+  console.log(`${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`)
 
   return (
     // <a href={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
-    <a href={`${baseURL}${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`}  
+    <a href={`${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`}  
       // key={`topic_${topic.postId}`}
     >
       <tr className="hover hover:bg-blue-100 cursor-pointer">
@@ -162,6 +163,7 @@ function RowContent(props: RowContentProps) {
           </th>
           <td>
             <div className="max-w-xs w-80">
+
               {loading || !messages ? spinner : icons(messages)}
             </div>
           </td>

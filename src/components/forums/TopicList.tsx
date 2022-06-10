@@ -147,7 +147,6 @@ function RowContent(props: RowContentProps) {
     ),
     []
   );
-  console.log(`${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`)
 
   return (
     // <a href={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}

@@ -12,10 +12,11 @@ interface TopicListProps {
   loading: boolean;
   topics: ForumPost[];
   collectionId: web3.PublicKey;
+  topicPath: string;
 }
 
 export function TopicList(props: TopicListProps) {
-  const { topics, collectionId, loading } = props;
+  const { topics, collectionId, loading, topicPath } = props;
 
   return (
     <div className="h-auto mx-6 my-4 font-raleway">
@@ -46,6 +47,7 @@ export function TopicList(props: TopicListProps) {
                   key={index}
                   topic={topic}
                   collectionId={collectionId}
+                  topicPath={topicPath}
                 />
               ))}
           </tbody>
@@ -69,14 +71,18 @@ export function TopicList(props: TopicListProps) {
 interface RowContentProps {
   topic: ForumPost;
   collectionId: web3.PublicKey;
+  topicPath: string;
 }
 
 function RowContent(props: RowContentProps) {
-  const { collectionId, topic } = props;
+  const { collectionId, topic, topicPath } = props;
   const Forum = useContext(ForumContext);
 
   const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const searchParams = new URLSearchParams();
+  searchParams.append("collectionId", collectionId.toBase58());
+  searchParams.append("topicId", topic.postId.toString());
 
   const getMessages = async () => {
     try {
@@ -145,7 +151,8 @@ function RowContent(props: RowContentProps) {
   );
 
   return (
-    <a href={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
+    // <a href={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
+    <a href={`${topicPath}?${searchParams.toString()}`}  
       // key={`topic_${topic.postId}`}
     >
       <tr className="hover hover:bg-blue-100 cursor-pointer">

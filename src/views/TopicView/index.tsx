@@ -1,8 +1,9 @@
+import './../../style.css'
 import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useMemo, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ForumPost } from "@usedispatch/client";
+import { ForumInfo, ForumPost } from "@usedispatch/client";
 
 import { PopUpModal, MessageType, Spinner } from "../../components/common";
 import { TopicContent } from "../../components/forums";
@@ -14,20 +15,22 @@ import { ForumContext } from "./../../contexts/DispatchProvider";
 import { useParams } from "react-router-dom";
 
 
-// interface Props {
-//   topicId: number;
-//   collectionId: string;
-// }
+interface Props {
+  // topicId?: number;
+  // collectionId?: string;
+  // forum: ForumInfo;
+}
 
-export const TopicView = () => {
-  const {topicParam} = useParams();
+export const TopicView = (props: Props) => {
   const wallet = useWallet();
   const { connecting } = wallet;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-  const collectionId = '5n6jccZ96FqFTxREsosRUnQ7MsQCy1CwcWHwUgWArij6'//collectionParam ?? "";
-  const topicId = parseInt(topicParam ?? "0");
-  // const { topicId, collectionId } = props;
+  const params = new URLSearchParams(document.location.search);
+  const collectionId = params.get("collectionId") ?? "";
+  const topicString = params.get("topicId") ?? "";
+  const topicId = parseInt(topicString);
+
 
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();

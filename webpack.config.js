@@ -17,6 +17,10 @@ module.exports = {
         use: ['@svgr/webpack'],
         type:'asset/inline',
       },
+      {        
+        test: /\.css$/i,        
+        include: path.resolve(__dirname, 'src'),        
+        use: ['style-loader', 'css-loader', 'postcss-loader'],      },
     ],
   },
   resolve: {

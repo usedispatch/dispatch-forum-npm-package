@@ -1,7 +1,7 @@
+import './../../style.css'
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
-import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useState, useEffect, ReactNode, useCallback, useMemo, useContext } from "react";
+import Image from "../../utils/image";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -12,9 +12,11 @@ import { ForumContent } from "../../components/forums";
 import { useConnection } from "../../contexts/ConnectionProvider";
 import { MainForum } from "../../utils/postbox/postboxWrapper";
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import { ForumContext } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
-  collectionId: string;
+  collectionId?: string;
+  topicPath: string;
 }
 
 /**
@@ -49,11 +51,11 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  const { collectionId } = props;
-  const wallet = useWallet();
-  const { connected, publicKey } = wallet;
-  const { connection } = useConnection();
-  const Forum = new MainForum(wallet, connection);
+  const { topicPath } = props;
+  const Forum = useContext(ForumContext);
+  const wallet = Forum.wallet;
+  const { publicKey } = Forum.wallet;
+  const connected = Forum.isNotEmpty;
 
   const [forum, setForum] = useState<ForumInfo>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
@@ -67,6 +69,8 @@ export const ForumView = (props: ForumViewProps) => {
     body?: string;
   } | null>(null);
   // TODO(Ana): future task [moderators, setModerators] = useState<string[]>([]);
+  const params = new URLSearchParams(document.location.search);
+  const collectionId = params.get("collectionId") ?? "";
 
   const collectionPublicKey = useMemo(
     () => new web3.PublicKey(collectionId),
@@ -336,7 +340,7 @@ export const ForumView = (props: ForumViewProps) => {
                 </div>
               ) : connected ? (
                 !_.isNil(forum) ? (
-                  <ForumContent forum={forum} role={role ?? undefined} />
+                  <ForumContent forum={forum} role={role ?? undefined} topicPath={topicPath}/>
                 ) : (
                   emptyView
                 )

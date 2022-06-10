@@ -1,20 +1,21 @@
+import './../../style.css'
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
-import Image from "next/image";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useState, useEffect, ReactNode, useCallback, useMemo, useContext } from "react";
+import Image from "../../utils/image";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
-import { plus } from "assets";
-import { MessageType, PopUpModal, Spinner } from "components/common";
-import { ForumContent } from "components/forums";
+import { plus } from "../../assets";
+import { MessageType, PopUpModal, Spinner } from "../../components/common";
+import { ForumContent } from "../../components/forums";
 
-import { useConnection } from "contexts/ConnectionProvider";
-import { MainForum } from "utils/postbox/postboxWrapper";
-import { userRole, UserRoleType } from "utils/postbox/userRole";
+import { useConnection } from "../../contexts/ConnectionProvider";
+import { MainForum } from "../../utils/postbox/postboxWrapper";
+import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import { ForumContext } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
-  collectionId: string;
+  collectionId?: string;
 }
 
 /**
@@ -49,11 +50,10 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  const { collectionId } = props;
-  const wallet = useWallet();
-  const { connected, publicKey } = wallet;
-  const { connection } = useConnection();
-  const Forum = new MainForum(wallet, connection);
+  const Forum = useContext(ForumContext);
+  const wallet = Forum.wallet;
+  const { publicKey } = Forum.wallet;
+  const connected = Forum.isNotEmpty;
 
   const [forum, setForum] = useState<ForumInfo>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
@@ -67,7 +67,11 @@ export const ForumView = (props: ForumViewProps) => {
     body?: string;
   } | null>(null);
   // TODO(Ana): future task [moderators, setModerators] = useState<string[]>([]);
+  
+  const urlPath = window.location.toString();
+  // const params = new URLSearchParams(this.props.match.params.id);
 
+  const collectionId = urlPath.split("/").pop() ?? "";
   const collectionPublicKey = useMemo(
     () => new web3.PublicKey(collectionId),
     [collectionId]
@@ -336,7 +340,7 @@ export const ForumView = (props: ForumViewProps) => {
                 </div>
               ) : connected ? (
                 !_.isNil(forum) ? (
-                  <ForumContent forum={forum} role={role ?? undefined} />
+                  <ForumContent forum={forum} role={role ?? undefined}/>
                 ) : (
                   emptyView
                 )

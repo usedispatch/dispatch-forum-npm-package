@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { Mailbox } from '@usedispatch/client';
-import { useConnection } from "contexts/ConnectionProvider";
-import { useClusterAndSetter } from "contexts/ClusterProvider";
+import { useConnection } from "./ConnectionProvider";
+import { useClusterAndSetter } from "./ClusterProvider";
 
 const MailboxContext = createContext<Mailbox | undefined>(undefined);
 

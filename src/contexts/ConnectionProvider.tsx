@@ -1,6 +1,6 @@
 import React, { FC, ReactNode, useMemo, createContext, useContext } from 'react';
 import { Cluster, Connection, ConnectionConfig } from '@solana/web3.js';
-import { useClusterAndSetter } from 'contexts/ClusterProvider';
+import { useClusterAndSetter } from './ClusterProvider';
 
 // Consider https://ssc-dao.genesysgo.net
 export const getEndpoint = (cluster: Cluster): string => {

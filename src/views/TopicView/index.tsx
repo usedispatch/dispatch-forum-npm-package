@@ -1,28 +1,39 @@
+import './../../style.css'
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useMemo, useCallback } from "react";
+import { useState, useEffect, ReactNode, useMemo, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ForumPost } from "@usedispatch/client";
+import { ForumInfo, ForumPost } from "@usedispatch/client";
 
-import { PopUpModal, MessageType, Spinner } from "components/common";
-import { TopicContent } from "components/forums";
+import { PopUpModal, MessageType, Spinner } from "../../components/common";
+import { TopicContent } from "../../components/forums";
 
-import { useConnection } from "contexts/ConnectionProvider";
-import { MainForum } from "utils/postbox/postboxWrapper";
-import { userRole, UserRoleType } from "utils/postbox/userRole";
+import { useConnection } from "../../contexts/ConnectionProvider";
+import { MainForum } from "../../utils/postbox/postboxWrapper";
+import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import { ForumContext } from "./../../contexts/DispatchProvider";
+import { useParams } from "react-router-dom";
+
 
 interface Props {
-  topicId: number;
-  collectionId: string;
+  // topicId?: number;
+  // collectionId?: string;
+  // forum: ForumInfo;
 }
 
 export const TopicView = (props: Props) => {
   const wallet = useWallet();
-  const { connected, connecting } = wallet;
-  const { connection } = useConnection();
-  const Forum = new MainForum(wallet, connection);
+  const { connecting } = wallet;
+  const Forum = useContext(ForumContext);
+  const connected = Forum.isNotEmpty;
 
-  const { topicId, collectionId } = props;
+  const urlPath = window.location.toString();
+  const urlPathArray = urlPath.split('/')
+  const topicString = urlPathArray.pop() ?? "";
+  urlPathArray.pop()
+  const collectionId = urlPathArray.pop() ?? "";
+  const topicId = parseInt(topicString);
+
 
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();

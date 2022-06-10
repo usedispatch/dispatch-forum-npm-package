@@ -1,11 +1,12 @@
 {
-  "name": "dispatch-forum",
-  "version": "0.0.2",
+  "name": "@usedispatch/forum",
+  "version": "0.0.10",
   "description": "Dispatch forum",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && tsc && cp package.json README.md ./dist",
+    "build": "npm run clean && npx webpack && cp README.md ./dist && cp src/assets/*.svg dist/assets/",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -13,40 +14,46 @@
     "url": "git+https://github.com/usedispatch/dispatch-forum.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "Dispatch Protocol",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/usedispatch/dispatch-forum/issues"
   },
   "homepage": "https://github.com/usedispatch/dispatch-forum#readme",
   "devDependencies": {
+    "@svgr/webpack": "^6.2.1",
     "@types/node-fetch": "^2.6.1",
-    "@types/react": "^17.0.45",
+    "@types/react": "^18.0.12",
     "@types/react-alert": "^5.2.1",
     "autoprefixer": "^10.4.0",
+    "css-loader": "^6.7.1",
     "eslint": "7",
     "eslint-config-next": "12.0.3",
     "postcss": "^8.3.11",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "postcss-loader": "^7.0.0",
     "react-jdenticon": "^1.0.0",
+    "style-loader": "^3.3.1",
+    "svg-inline-loader": "^0.8.2",
+    "svg-url-loader": "^7.1.1",
     "tailwindcss": "^2.2.19",
-    "typescript": "^4.4.4"
+    "ts-loader": "^9.3.0",
+    "typescript": "^4.7.3",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.9.2"
   },
   "dependencies": {
     "@headlessui/react": "^1.5.0",
     "@heroicons/react": "^1.0.6",
-    "@nfteyez/sol-rayz-react": "^0.8.2",
     "@prisma/client": "3.13.0",
-    "@project-serum/anchor": "^0.19.1-beta.1",
+    "@project-serum/anchor": "^0.24.2",
     "@solana/spl-token": "^0.2.0",
-    "@solana/wallet-adapter-base": "^0.7.0",
-    "@solana/wallet-adapter-phantom": "^0.7.0",
-    "@solana/wallet-adapter-react": "^0.13.1",
-    "@solana/wallet-adapter-react-ui": "^0.6.0",
-    "@solana/wallet-adapter-solflare": "^0.4.0",
-    "@solana/wallet-adapter-sollet": "^0.8.0",
-    "@solana/wallet-adapter-wallets": "^0.11.3",
+    "@solana/wallet-adapter-base": "^0.9.5",
+    "@solana/wallet-adapter-phantom": "^0.9.3",
+    "@solana/wallet-adapter-react": "^0.15.5",
+    "@solana/wallet-adapter-react-ui": "^0.9.7",
+    "@solana/wallet-adapter-solflare": "^0.6.6",
+    "@solana/wallet-adapter-sollet": "^0.11.1",
+    "@solana/wallet-adapter-wallets": "^0.16.1",
     "@tailwindcss/typography": "^0.4.1",
     "@types/lodash.orderby": "^4.6.6",
     "@types/react-dom": "^18.0.5",
@@ -62,10 +69,10 @@
     "next-images": "^1.8.4",
     "next-transpile-modules": "^9.0.0",
     "prisma": "^3.13.0",
-    "react": "17.0.2",
-    "react-alert": "^7.0.3",
-    "react-alert-template-basic": "^1.0.2",
-    "react-countdown": "^2.3.2",
-    "react-dom": "17.0.2"
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0"
   }
 }

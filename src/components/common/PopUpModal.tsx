@@ -1,9 +1,9 @@
 import { ReactNode, useRef } from "react";
-import Image from "utils/image";
+import Image from "../../utils/image";
 
-import { close, success, warning, errorIcon, infoIcon } from "assets";
+import { close, success, warning, errorIcon, infoIcon } from "../../assets";
 
-import { Spinner } from "components/common/Spinner";
+import { Spinner } from "./Spinner";
 
 export enum MessageType {
   success,

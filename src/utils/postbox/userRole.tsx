@@ -1,6 +1,6 @@
 import { web3 } from "@project-serum/anchor";
 
-import { DispatchForum } from "utils/postbox/postboxWrapper";
+import { DispatchForum } from "./postboxWrapper";
 
 export enum UserRoleType {
   Owner = "owner",

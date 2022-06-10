@@ -1,6 +1,6 @@
 {
   "name": "@usedispatch/forum",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Dispatch forum",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

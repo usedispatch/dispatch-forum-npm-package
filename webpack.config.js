@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   entry: './src/index.ts',
   devtool: 'inline-source-map',
-  mode:'development',
+  mode:'production',
   module: {
     rules: [
       {
@@ -20,7 +20,8 @@ module.exports = {
       {        
         test: /\.css$/i,        
         include: path.resolve(__dirname, 'src'),        
-        use: ['style-loader', 'css-loader', 'postcss-loader'],      },
+        use: ['style-loader', 'css-loader', 'postcss-loader'],      
+      },
     ],
   },
   resolve: {

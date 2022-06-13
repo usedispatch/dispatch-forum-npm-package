@@ -3,16 +3,13 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useMemo, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { ForumInfo, ForumPost } from "@usedispatch/client";
+import { ForumPost } from "@usedispatch/client";
 
 import { PopUpModal, MessageType, Spinner } from "../../components/common";
 import { TopicContent } from "../../components/forums";
 
-import { useConnection } from "../../contexts/ConnectionProvider";
-import { MainForum } from "../../utils/postbox/postboxWrapper";
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
-import { useParams } from "react-router-dom";
 
 
 interface Props {

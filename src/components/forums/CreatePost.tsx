@@ -93,7 +93,7 @@ export function CreatePost(props: CreatePostProps) {
                   className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white px-10"
                   type="submit"
                 >
-                  Comment
+                  Post
                 </button>
               </div>
             </form>

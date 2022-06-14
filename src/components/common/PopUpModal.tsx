@@ -1,7 +1,7 @@
+import _ from "lodash";
 import { ReactNode, useRef } from "react";
-import Image from "../../utils/image";
 
-import { close, success, warning, errorIcon, infoIcon } from "../../assets";
+import { Close, Success, Warning, Error, Info } from "../../assets";
 
 import { Spinner } from "./Spinner";
 
@@ -13,26 +13,28 @@ export enum MessageType {
 }
 
 function getMessageTypeIcon(type?: MessageType): ReactNode {
-  let result = null;
+  let result : ReactNode;
 
   switch (type) {
     case MessageType.success:
-      //result = <Image src={success} width={32} height={32} alt="success" />;
+      result = 
+          <Success alt="success"/>
       break;
     case MessageType.warning:
-      //result = <Image src={warning} width={32} height={32} alt="warning" />;
+      result = <Warning alt="warning"/>
       break;
     case MessageType.error:
-      //result = <Image src={errorIcon} width={32} height={32} alt="error" />;
+      result = 
+        <Error alt="error"/>
       break;
     case MessageType.info:
-      //result = <Image src={infoIcon} width={32} height={32} alt="info" />;
+      result = <Info alt="info"/>
       break;
     default:
       break;
   }
 
-  return <div className="flex mr-2">{result}</div>;
+  return <div className="flex mr-2 h-8 w-8">{result}</div>;
 }
 
 interface PopUpModalProps {
@@ -65,17 +67,19 @@ export const PopUpModal = (props: PopUpModalProps) => {
       ></input>
       <div className="modal bg-gray-600 bg-opacity-50">
         <div className="modal-box bg-white">
-          <h3 className="font-bold text-lg flex items-center">
-            {icon}
+          <div className="font-bold text-lg flex items-center">
+            {!_.isNil(props.messageType) && icon}
             {props.title}
-          </h3>
+          </div>
           {props.onClose && (
             <label
               htmlFor={props.id}
               className="btn btn-sm absolute right-2 top-2 border-none"
               onClick={props.onClose}
             >
-              <Image src={close} width={16} height={16} alt="close" />
+              <div className=" h-4 w-4">
+                <Close />
+              </div>
             </label>
           )}
           <div className="py-4 flex">{props.body}</div>

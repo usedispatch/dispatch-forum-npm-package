@@ -1,12 +1,11 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import Image from "../../utils/image";
 import { useRouter } from "next/router";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { msgSquare, trash } from "../../assets";
+import { MessageSquare, Trash } from "../../assets";
 import { MessageType, PopUpModal, Spinner } from "../common";
 import { CreatePost, PostList } from "./";
 
@@ -101,7 +100,8 @@ export function TopicContent(props: TopicContentProps) {
       <div className="flex justify-start font-raleway font-light text-xs text-gray-800">
         <div className="flex items-center mr-8 cursor-default">
           <div className="h-3 mr-1">
-            <Image src={msgSquare} height={12} width={12} alt="delete" />
+            {/* <Image src={msgSquare} height={12} width={12} alt="delete" /> */}
+            <MessageSquare />
           </div>
           {`${posts.length} comments`}
         </div>
@@ -112,7 +112,8 @@ export function TopicContent(props: TopicContentProps) {
             onClick={() => setShowDeleteConfirmation(true)}
           >
             <div className="mr-1">
-              <Image src={trash} height={16} width={16} alt="delete" />
+              {/* <Image src={trash} height={16} width={16} alt="delete" /> */}
+              <Trash />
             </div>
             delete topic
           </div>
@@ -221,8 +222,8 @@ function TopicHeader(props: TopicHeaderProps) {
     : "-";
 
   return (
-    <div className="font-raleway h-auto mt-4 mb-10">
-      <div className="flex items-start justify-between pb-10">
+    <div className="font-raleway h-auto mt-4 mb-12">
+      <div className="flex items-start justify-between pb-6">
         <div className="flex flex-col">
           <div className="font-semibold text-xl pb-5">
             {topic?.data.subj ?? "subject"}

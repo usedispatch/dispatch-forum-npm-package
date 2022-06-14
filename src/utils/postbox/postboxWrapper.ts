@@ -36,7 +36,10 @@ export interface IForum {
   } | undefined>;
 
   addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
-
+  
+  // Get a list of moderators
+  getModerators(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
+  
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
   getTopicsForForum(
@@ -181,20 +184,37 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      if (owner.publicKey) {
-        const forumAsOwner = new Forum(
-          new DispatchConnection(conn, owner),
-          collectionId
-        );
+      const forumAsOwner = new Forum(
+        new DispatchConnection(conn, owner),
+        collectionId
+      );
 
-        if (!(await forumAsOwner.exists())) {
-          const tx = await forumAsOwner.addModerator(newMod);
-          return tx;
-        }
-
+      if (await forumAsOwner.exists()) {
+        const tx = await forumAsOwner.addModerator(newMod);
+        return tx;
       }
     } catch (error) {
-      throw "The forum could not be created";
+      console.log(error);
+      throw "The moderator could not be added";
+    }
+  }
+
+  getModerators = async (collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined> => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forumAsOwner = new Forum(
+        new DispatchConnection(conn, wallet),
+        collectionId
+      );
+
+      if (await forumAsOwner.exists()) {
+        const tx = await forumAsOwner.getModerators();
+        return tx;
+      }
+    } catch (error) {
+      throw "The moderators could not be retrieved";
     }
   }
 

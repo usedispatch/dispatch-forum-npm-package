@@ -1,33 +1,37 @@
+import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useContext } from "react";
-// import Image from "next/image";
-import Image from "../../utils/image";
+import Jdenticon from "react-jdenticon";
+import * as web3 from "@solana/web3.js";
+
 import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
-import { plus } from "../../assets";
-import { MessageType, PopUpModal } from "../common";
+import { Plus } from "../../assets";
+import { MessageType, PopUpModal, Spinner } from "../common";
 import { TopicList } from "./";
 
 import { DispatchForum} from "../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
-// import { DispatchForum } from "../../utils/postbox/postboxWrapper";
 
 interface ForumContentProps {
   forum: ForumInfo;
+  onAddModerators: () => void;
   forumObject?: DispatchForum;
   role?: UserRoleType;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum } = props;
+  const { forum, role, onAddModerators } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
+  const [showAddModerators, setShowAddModerators] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  // TODO(Ana): frture task -> const [moderators, setModerators] = useState<string>("");
-  const [modalInfo, setModalInfo] = useState<{
+  const [moderators, setModerators] = useState<string>("");
+  const [addingNewModerators, setAddingNewModerators] = useState(false);
+    const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
     body?: string;
@@ -35,32 +39,37 @@ export function ForumContent(props: ForumContentProps) {
 
   const [topics, setTopics] = useState<ForumPost[]>([]);
 
-  // TODO(Ana): future task
-  // const addModerators = async () => {
-  //   try {
-  //     const moderatorsIds = moderators
-  //       .split(",")
-  //       .map((m) => new web3.PublicKey(m));
+  const addModerators = async () => {
+    setAddingNewModerators(true);
+    try {
+      const moderatorsIds = moderators
+        .split(",")
+        .map((m) => new web3.PublicKey(m));
 
-  //     await Promise.all(
-  //       moderatorsIds.map(async (t) => {
-  //         return await Forum.addModerator(t, forum.collectionId);
-  //       })
-  //     );
-  //     setModerators("");
-  //     setModalInfo({
-  //       title: "Success!",
-  //       type: MessageType.success,
-  //       body: `The moderators were added`,
-  //     });
-  //   } catch (error) {
-  //     setModalInfo({
-  //       title: "Something went wrong!",
-  //       type: MessageType.error,
-  //       body: `The moderators could not be added`,
-  //     });
-  //   }
-  // };
+      const p = moderatorsIds.map(async (t) => {
+        return Forum.addModerator(t, forum.collectionId);
+      });
+      const mods = await Promise.all(p);
+      onAddModerators();
+      setModerators("");
+      setShowAddModerators(false);
+      setAddingNewModerators(false);
+      setModalInfo({
+        title: "Success!",
+        type: MessageType.success,
+        body: `The moderators were added`,
+      });
+    } catch (error) {
+      setModerators("");
+      setAddingNewModerators(false);
+      setShowAddModerators(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The moderators could not be added`,
+      });
+    }
+  };
 
   const getTopicsForForum = async () => {
     try {
@@ -86,7 +95,7 @@ export function ForumContent(props: ForumContentProps) {
 
     try {
       const tx = await Forum.createTopic(p, forum.collectionId);
-      if (tx) {
+      if (!_.isNil(tx)) {
         getTopicsForForum();
         setModalInfo({
           body: "The new topic was created",
@@ -94,6 +103,7 @@ export function ForumContent(props: ForumContentProps) {
           title: "Success!",
         });
       } else {
+        setLoadingTopics(false);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
@@ -101,6 +111,7 @@ export function ForumContent(props: ForumContentProps) {
         });
       }
     } catch (error) {
+      setLoadingTopics(false);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -125,8 +136,9 @@ export function ForumContent(props: ForumContentProps) {
         }
       }}
     >
-      <div className="mr-2">
-        <Image src={plus} height={14} width={14} alt="plus" />
+      <div className="mr-2 w-4 h-4">
+        <Plus />
+        {/* <Image src={plus} height={14} width={14} alt="plus" /> */}
       </div>
       Create Topic
     </button>
@@ -218,31 +230,87 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         }
       />
+      <PopUpModal
+        id="add-moderators"
+        visible={_.isNil(modalInfo) && showAddModerators}
+        title={"Manage moderators"}
+        body={
+          <div className="flex items-start flex-col justify-end mb-3 mr-6 w-full font-raleway">
+            {addingNewModerators ? (
+              <Spinner />
+            ) : (
+              <>
+                <label className="mb-2">Add new</label>
+                <input
+                  placeholder="Add moderators' wallet ID here, separated by commas"
+                  className="input input-bordered input-sm w-full mr-1 border-gray-300 placeholder-gray-400"
+                  maxLength={800}
+                  value={moderators}
+                  onChange={(e) => setModerators(e.target.value)}
+                />
+                <label className="mt-6 mb-2">Current moderators</label>
+                <ul>
+                  {forum?.moderators.map((m) => {
+                    const key = m.toBase58();
+                    return (
+                      <li
+                        key={key}
+                        className="flex items-center my-2 text-sm font-normal"
+                      >
+                        <div className="h-7 w-7 mr-2">
+                          <Jdenticon
+                            className="h-7 w-7"
+                            value={key}
+                            alt="moderatorId"
+                          />
+                        </div>
+                        {key}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </>
+            )}
+          </div>
+        }
+        okButton={
+          !addingNewModerators && (
+            <button
+              className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
+              onClick={() => addModerators()}
+            >
+              Save
+            </button>
+          )
+        }
+        cancelButton={
+          !addingNewModerators && (
+            <button
+              className="btn btn-secondary border-2 hover:opacity-75 hover:bg-gray-200"
+              onClick={() => {
+                setShowAddModerators(false);
+                setModerators("");
+              }}
+            >
+              Cancel
+            </button>
+          )
+        }
+      />
       {forumHeader}
-      {/* TODO(Ana): future task */}
-      {/* <div className="flex items-center justify-end mb-3 mr-6 min-w-[300px]">
-        <input
-          placeholder="Moderators id separated by a comma"
-          className="input input-bordered input-sm w-72 mr-1 border-gray-300 placeholder-gray-400"
-          maxLength={800}
-          value={moderators}
-          onChange={(e) => setModerators(e.target.value)}
-        ></input>
+      {role === UserRoleType.Owner && (
         <button
-          className="h-8 font-normal text-sm lowercase rounded-md p-3 flex items-center bg-gray-800 text-white hover:bg-gray-700 hover:text-white"
-          onClick={() => addModerators()}
+          className="btn btn-secondary normal-case border ml-6 hover:opacity-75 hover:bg-gray-200"
+          onClick={() => setShowAddModerators(true)}
         >
-          add moderators
+          Manage moderators
         </button>
-      </div> */}
-      {topics.length > 0 ? 
-        <TopicList
-          loading={loadingTopics}
-          topics={topics}
-          collectionId={forum.collectionId}
-        /> :
-        <div> loading... </div>
-      }
+      )}
+      <TopicList
+        loading={loadingTopics}
+        topics={topics}
+        collectionId={forum.collectionId}
+      />
     </div>
   );
 }

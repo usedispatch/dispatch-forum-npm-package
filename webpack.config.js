@@ -11,12 +11,6 @@ module.exports = {
         use: 'ts-loader',
         exclude: /node_modules/,
       },
-      {
-        test: /\.svg$/,
-        // issuer: /\.[jt]sx?$/,
-        use: ['@svgr/webpack'],
-        type:'asset/inline',
-      },
       {        
         test: /\.css$/i,        
         include: path.resolve(__dirname, 'src'),        
@@ -38,7 +32,7 @@ module.exports = {
         name: "@usedispatch/forum",
         type:'umd',
     },
-    assetModuleFilename: 'assets/[name].svg',
+    // assetModuleFilename: 'assets/[name].svg',
   },
   plugins: [
     new webpack.ProvidePlugin({

@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useContext } from "react";
 import Jdenticon from "react-jdenticon";
-import {Link} from "react-router-dom";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
@@ -78,9 +77,6 @@ function RowContent(props: RowContentProps) {
 
   const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
-  const searchParams = new URLSearchParams();
-  searchParams.append("collectionId", collectionId.toBase58());
-  searchParams.append("topicId", topic.postId.toString());
 
   const getMessages = async () => {
     try {
@@ -149,11 +145,9 @@ function RowContent(props: RowContentProps) {
   );
 
   return (
-    // <a href={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
-    <a href={`${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`}  
-      // key={`topic_${topic.postId}`}
-    >
-      <tr className="hover hover:bg-blue-100 cursor-pointer">
+    // <Link={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
+    // key={`topic_${topic.postId}`}
+      <tr className="hover hover:bg-blue-100 cursor-pointer" onClick={() => window.open(`${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`,"_self")}>
         <>
           <th>
             <div className="max-w-xl w-[576px] overflow-ellipsis whitespace-nowrap overflow-hidden">
@@ -162,7 +156,6 @@ function RowContent(props: RowContentProps) {
           </th>
           <td>
             <div className="max-w-xs w-80">
-
               {loading || !messages ? spinner : icons(messages)}
             </div>
           </td>
@@ -178,6 +171,5 @@ function RowContent(props: RowContentProps) {
           </td>
         </>
       </tr>
-    </a>
   );
 }

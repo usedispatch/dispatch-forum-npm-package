@@ -5,12 +5,10 @@ import Image from "../../utils/image";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
-import { plus } from "../../assets";
+import { Plus } from "../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../components/common";
 import { ForumContent } from "../../components/forums";
 
-import { useConnection } from "../../contexts/ConnectionProvider";
-import { MainForum } from "../../utils/postbox/postboxWrapper";
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
 
@@ -61,12 +59,12 @@ export const ForumView = (props: ForumViewProps) => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [newModerators, setNewModerators] = useState<string[]>([]);
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
     body?: string;
   } | null>(null);
-  // TODO(Ana): future task [moderators, setModerators] = useState<string[]>([]);
   
   const urlPath = window.location.toString();
   // const params = new URLSearchParams(this.props.match.params.id);
@@ -84,17 +82,18 @@ export const ForumView = (props: ForumViewProps) => {
 
   const getForumForCollection = async () => {
     try {
-      const [res, desc] = await Promise.all([
+      const [res, desc, mods] = await Promise.all([
         Forum.getForumForCollection(collectionPublicKey),
         Forum.getDescription(collectionPublicKey),
+        Forum.getModerators(collectionPublicKey),
       ]);
 
       setLoading(false);
-      if (!_.isNil(res) && !_.isNil(desc)) {
+      if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods)) {
         setForum({
           collectionId: collectionPublicKey,
           owners: [publicKey!],
-          moderators: [publicKey!],
+          moderators: mods,
           title: desc.title,
           description: desc.desc,
         });
@@ -118,6 +117,21 @@ export const ForumView = (props: ForumViewProps) => {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Your user role could not be determined, you will only have permission to create topics and comment",
+      });
+    }
+  }, [Forum, collectionPublicKey]);
+
+  const getModerators = useCallback(async () => {
+    try {
+      const mods = await Forum.getModerators(collectionPublicKey);
+      if (!_.isNil(mods)) {
+        setForum({ ...forum, moderators: mods ?? [] } as ForumInfo);
+      }
+    } catch (error) {
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The moderators could not be determined",
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -148,8 +162,9 @@ export const ForumView = (props: ForumViewProps) => {
 
       const forum = {
         owners: [publicKey],
-        // TODO(Ana): future task moderators.map((m) => new web3.PublicKey(m)),
-        moderators: [publicKey],
+        moderators: [publicKey].concat(
+          newModerators.map((m) => new web3.PublicKey(m))
+        ),
         title: title,
         description: description,
         collectionId: new web3.PublicKey(collectionId),
@@ -216,8 +231,8 @@ export const ForumView = (props: ForumViewProps) => {
           }
         }}
       >
-        <div className="mr-2">
-          <Image src={plus} height={14} width={14} alt="plus" />
+        <div className="mr-2 h-4 w-4">
+          <Plus />
         </div>
         Create a new Forum
       </button>
@@ -291,17 +306,16 @@ export const ForumView = (props: ForumViewProps) => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </>
-            {/* TODO(Ana): future task */}
-            {/* <>
-              <span className="px-1 text-sm font-medium">Forum Moderators</span>
+            <>
+              <span className="px-1 text-sm font-medium">Moderators</span>
               <textarea
-                placeholder="Moderators id separated by a comma"
+                placeholder="Add moderators' wallet ID here, separated by commas"
                 className="input input-bordered h-36 w-full mt-1 border-gray-300 placeholder-gray-400"
                 maxLength={800}
-                value={moderators}
-                onChange={(e) => setModerators(e.target.value.split(","))}
+                value={newModerators}
+                onChange={(e) => setNewModerators(e.target.value.split(","))}
               />
-            </> */}
+            </>
           </div>
         }
         okButton={
@@ -340,7 +354,11 @@ export const ForumView = (props: ForumViewProps) => {
                 </div>
               ) : connected ? (
                 !_.isNil(forum) ? (
-                  <ForumContent forum={forum} role={role ?? undefined}/>
+                  <ForumContent
+                    forum={forum}
+                    role={role ?? undefined}
+                    onAddModerators={getModerators}
+                  />
                 ) : (
                   emptyView
                 )

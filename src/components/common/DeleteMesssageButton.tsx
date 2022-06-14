@@ -1,8 +1,7 @@
 import { ReactNode, useState } from "react";
-import Image from "../../utils/image";
 import { MessageAccount } from "@usedispatch/client";
 
-import trash from "../../assets/trash_icon.svg";
+import { Trash } from "../../assets";
 import { MessageType, PopUpModal } from "./PopUpModal";
 import { useMailbox } from "../../contexts/MailboxProvider";
 
@@ -94,13 +93,14 @@ export const DeleteMesssageButton = (props: DeleteMesssageButtonProps) => {
         }
       />
       <div className="flex items-center justify-start cursor-pointer">
-        <Image
+        {/* <Image
           src={trash}
           height={props.height ?? 20}
           width={props.width ?? 20}
           alt="delete"
           onClick={() => setShowConfirm(true)}
-        />
+        /> */}
+      <Trash/>
       </div>
     </>
   );

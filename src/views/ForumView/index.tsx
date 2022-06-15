@@ -340,13 +340,14 @@ export const ForumView = (props: ForumViewProps) => {
         }
       />
       <div className="min-h-full">
-        {!_.isNil(forum) && (
-            <div className="font-raleway text-4xl pt-16">
-              Welcome to the forum {forum.title}
-            </div>
-        )}
+
         <main>
           <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+            {!_.isNil(forum) && (
+              <div className="font-raleway text-4xl pt-16 ml-6">
+                {forum.title} Forum
+              </div>
+            )}
             <div className="px-4 pb-6 sm:px-0">
               {loading ? (
                 <div className="pt-48">

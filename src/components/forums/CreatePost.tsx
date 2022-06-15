@@ -64,35 +64,29 @@ export function CreatePost(props: CreatePostProps) {
         messageType={modalInfo?.type}
         body={modalInfo?.body}
         okButton={
-          <a
-            className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-            onClick={() => setModalInfo(null)}
-          >
+          <a className="okButton" onClick={() => setModalInfo(null)}>
             OK
           </a>
         }
       />
-      <div className="h-auto my-4 w-full">
-        <div className="grid grid-flow-col gap-3">
+      <div className="createPostContainer">
+        <div className="createPostContent">
           {loading ? (
-            <div className="pb-8">
+            <div className="spinnerContainer">
               <Spinner />
             </div>
           ) : (
             <form onSubmit={createNewPost}>
-              <div className="form-control ">
+              <div className="formContainer">
                 <textarea
-                  className="textarea textarea-bordered h-32 w-full border-gray-800 rounded-2xl"
+                  className="postContent"
                   required
                   maxLength={800}
                   name="post"
                 />
               </div>
-              <div className="flex justify-end pt-4 pb-8">
-                <button
-                  className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white px-10"
-                  type="submit"
-                >
+              <div className="buttonContainer">
+                <button className="createPostButton" type="submit">
                   Post
                 </button>
               </div>

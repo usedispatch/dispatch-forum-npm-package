@@ -1,0 +1,87 @@
+@layer components {
+  .createPostContainer {
+    heigh: auto;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    width: 100%;
+  }
+
+  .createPostContent {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 12px;
+  }
+
+  .spinnerContainer {
+    padding-bottom: 32px;
+  }
+
+  .formContainer {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .postContent {
+    font-size: 14px;
+    background: transparent;
+
+    height: 128px;
+    width: 100%;
+    padding: 8px 16px;
+
+    border-color: #1f2937;
+    border-width: 1px;
+    border-radius: 16px;
+  }
+
+  .postContent:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 16px;
+    padding-bottom: 32px;
+  }
+
+  .createPostButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 10px;
+
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .okButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+}

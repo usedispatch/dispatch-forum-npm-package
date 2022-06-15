@@ -1,3 +1,10 @@
 @import "tailwindcss/base";
+
 @import "tailwindcss/components";
+
+/* @import "./../components/forums/CreatePost.css"; */
+@import "./components/forums/ForumContent.css";
+/* @import "./../components/forums/PostContent.css";
+@import "./../components/forums/PostReplies.css"; */
+
 @import "tailwindcss/utilities";

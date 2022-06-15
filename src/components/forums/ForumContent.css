@@ -1,0 +1,229 @@
+@layer components {
+  .header {
+    height: auto;
+    margin: 0 24px;
+    margin-bottom: 48px;
+  }
+
+  .header .box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header .description {
+    font-family: Raleway, sans-serif;
+    margin-right: 40px;
+  }
+
+  .createTopicButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+
+    padding: 16px;
+    border-radius: 6px;
+
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .buttonImageContainer {
+      margin-right: 8px;
+      height: 14px;
+      width: 14px;
+    }
+  }
+
+  .createTopicBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    width: 100%;
+  }
+
+  .createTopicLabel {
+    padding-left: 4px;
+    padding-right: 4px;
+
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .createTopicTitleInput {
+    width: 100%;
+    height: 32px;
+    font-size: 14px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-top: 4px;
+    margin-bottom: 16px;
+
+    border-color: #d1d5db;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .createTopicTitleInput:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .createTopicTextArea {
+    padding-top: 4px;
+    height: 144px;
+  }
+
+  .manageModerators {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    margin-left: 24px;
+    padding: 0 16px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgba(31, 41, 55, 1);
+
+    background: white;
+    color: rgba(31, 41, 55, 1);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: none;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+
+  .addModeratorsButtons {
+    height: 48px !important;
+  }
+
+  .addModeratorsBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: justify-end;
+    margin-bottom: 12px;
+    width: 100%;
+    font-family: Raleway, sans-serif;
+    /* @apply flex items-start flex-col justify-end mb-3 mr-6 w-full font-raleway */
+  }
+
+  .addModeratorsLabel {
+    margin-bottom: 8px;
+  }
+
+  .addModeratorsInput {
+    /*@apply input input-bordered input-sm w-full mr-1 border-gray-300 placeholder-gray-400 */
+    width: 100%;
+    height: 32px;
+    font-size: 14px;
+    padding-left: 16px;
+    padding-right: 16px;
+    margin-top: 4px;
+    margin-bottom: 24px;
+
+    border-color: #d1d5db;
+    border-width: 1px;
+    border-radius: 6px;
+  }
+
+  .addModeratorsInput:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  .currentModerators {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .iconContainer {
+    heigh: 28px;
+    width: 28px;
+    margin-right: 8px;
+  }
+
+  .forumContent {
+    .okButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+
+      heigh: 48px;
+      padding: 0 16px;
+      border-radius: 6px;
+
+      background: rgba(31, 41, 55, 1);
+      color: white;
+      font-size: 14px;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: 600;
+
+      &:hover {
+        opacity: 0.85;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+
+    .cancelButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      heigh: 48px;
+      padding: 0 16px;
+      border-radius: 6px;
+      border-width: 2px;
+      border-color: rgba(31, 41, 55, 1);
+
+      background: white;
+      color: rgba(31, 41, 55, 1);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      text-transform: uppercase;
+
+      &:hover {
+        opacity: 0.85;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+  }
+}

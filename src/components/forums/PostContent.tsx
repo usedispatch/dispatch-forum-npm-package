@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import * as web3 from "@solana/web3.js";  
+import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../assets";
@@ -116,15 +116,15 @@ export function PostContent(props: PostContentProps) {
 
   return (
     <>
-      <div className="border-t border-gray-400" />
-      <div className="font-raleway h-auto my-6 mx-2">
+      <div className="divider" />
+      <div className="postContentContainer">
         <PopUpModal
           id="post-delete-confirmation"
           visible={_.isNull(modalInfo) && showDeleteConfirmation}
           title="Are you sure you want to delete this post?"
           body={
             deleting ? (
-              <div className="flex items-center justify-center pt-6 m-auto">
+              <div className="deleteSpinner">
                 <Spinner />
               </div>
             ) : (
@@ -134,9 +134,8 @@ export function PostContent(props: PostContentProps) {
           okButton={
             !deleting && (
               <a
-                className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-                onClick={() => onDelete(post)}
-              >
+                className="acceptDeletePostButton"
+                onClick={() => onDelete(post)}>
                 Accept
               </a>
             )
@@ -144,9 +143,8 @@ export function PostContent(props: PostContentProps) {
           cancelButton={
             !deleting && (
               <div
-                className="btn btn-secondary border-2 hover:opacity-75 hover:bg-gray-200"
-                onClick={() => setShowDeleteConfirmation(false)}
-              >
+                className="cancelDeletePostButton"
+                onClick={() => setShowDeleteConfirmation(false)}>
                 Cancel
               </div>
             )
@@ -159,10 +157,7 @@ export function PostContent(props: PostContentProps) {
           messageType={modalInfo?.type}
           body={modalInfo?.body}
           okButton={
-            <a
-              className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-              onClick={() => setModalInfo(null)}
-            >
+            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
               OK
             </a>
           }
@@ -171,45 +166,34 @@ export function PostContent(props: PostContentProps) {
           <Spinner />
         ) : (
           <>
-            <div className="flex items-start justify-between pb-4">
-              <div className="flex flex-col">
-                <div className="flex items-center">
-                  <div className="h-7 w-7 mr-1">
-                    <Jdenticon
-                      className="h-7 w-7"
-                      value={post?.poster.toBase58()}
-                      alt="posterID"
-                    />
-                  </div>
-                  <div className="text-sm font-normal">
-                    {post.poster.toBase58()}
-                  </div>
+            <div className="postHeader">
+              <div className="posterId">
+                <div className="icon">
+                  <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
                 </div>
+                <div className="walletId">{post.poster.toBase58()}</div>
               </div>
-              <div className="text-xs font-light">Posted at: {postedAt}</div>
+              <div className="postedAt">Posted at: {postedAt}</div>
             </div>
-            <div className="text-sm mb-3">{post?.data.body}</div>
-            <div className="flex items-center">
+            <div className="postBody">{post?.data.body}</div>
+            <div className="actionsContainer">
               {deletePermission && (
                 <button
-                  className="mr-1"
-                  onClick={() => setShowDeleteConfirmation(true)}
-                >
-                  <Trash/>
+                  className="deleteButton"
+                  onClick={() => setShowDeleteConfirmation(true)}>
+                  <Trash />
                 </button>
               )}
               <button
-                className="normal-case border border-gray-800 rounded-full text-xs flex items-center h-6 max-h-6 p-2 mr-2"
-                onClick={() => setShowReplyBox(true)}
-              >
+                className="replyButton"
+                onClick={() => setShowReplyBox(true)}>
                 Reply
               </button>
             </div>
             <div
-              className="mt-4 ml-6 pt-[2px] pl-2 border-l border-gray-400"
-              hidden={replies.length === 0 && !showReplyBox}
-            >
-              <div className="pl-4">
+              className="repliesSection"
+              hidden={replies.length === 0 && !showReplyBox}>
+              <div className="repliesBox">
                 <PostReplies
                   replies={replies}
                   userRole={userRole}
@@ -221,29 +205,22 @@ export function PostContent(props: PostContentProps) {
                 (sendingReply ? (
                   <Spinner />
                 ) : (
-                  <form
-                    onSubmit={onReplyToPost}
-                    className="flex flex-col items-end mt-6 mb-14 pl-4"
-                  >
+                  <form onSubmit={onReplyToPost} className="replyForm">
                     <textarea
                       placeholder="Type your reply here"
-                      className="input input-bordered h-36 w-full mt-1 border-gray-400 placeholder-gray-400 rounded-2xl"
+                      className="replyTextArea"
                       maxLength={800}
                       value={reply}
                       required
                       onChange={(e) => setReply(e.target.value)}
                     />
-                    <div className="mt-6">
+                    <div className="buttonsContainer">
                       <button
-                        className="btn btn-secondary bg-white text-gray-800 hover:bg-white-200 px-10 mr-3"
-                        onClick={() => setShowReplyBox(false)}
-                      >
+                        className="cancelReplyButton"
+                        onClick={() => setShowReplyBox(false)}>
                         Cancel
                       </button>
-                      <button
-                        className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white px-10"
-                        type="submit"
-                      >
+                      <button className="postReplyButton" type="submit">
                         Reply
                       </button>
                     </div>

@@ -6,6 +6,7 @@
 @import "./components/forums/ForumContent.css";
 @import "./components/forums/PostContent.css";
 @import "./components/forums/PostReplies.css";
-@import "./components/forums/PostList.css";
+@import "./components/forums/PostsList.css";
+@import "./components/forums/TopicContent.css";
 
 @import "tailwindcss/utilities";

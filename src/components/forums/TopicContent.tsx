@@ -97,9 +97,9 @@ export function TopicContent(props: TopicContentProps) {
 
   const data = (
     <>
-      <div className="flex justify-start font-raleway font-light text-xs text-gray-800">
-        <div className="flex items-center mr-8 cursor-default">
-          <div className="h-3 mr-1">
+      <div className="data">
+        <div className="commentsContainer">
+          <div className="image">
             {/* <Image src={msgSquare} height={12} width={12} alt="delete" /> */}
             <MessageSquare />
           </div>
@@ -108,10 +108,9 @@ export function TopicContent(props: TopicContentProps) {
         {(userRole === UserRoleType.Moderator ||
           userRole === UserRoleType.Owner) && (
           <div
-            className="flex items-center cursor-pointer"
-            onClick={() => setShowDeleteConfirmation(true)}
-          >
-            <div className="mr-1">
+            className="delete"
+            onClick={() => setShowDeleteConfirmation(true)}>
+            <div className="icon">
               {/* <Image src={trash} height={16} width={16} alt="delete" /> */}
               <Trash />
             </div>
@@ -134,7 +133,7 @@ export function TopicContent(props: TopicContentProps) {
           body={modalInfo.body}
           okButton={
             <a
-              className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
+              className="okInfoButton"
               onClick={() => {
                 if (modalInfo.type === MessageType.success) {
                   router.push(`/forum/${collectionId.toBase58()}`);
@@ -142,8 +141,7 @@ export function TopicContent(props: TopicContentProps) {
                 } else {
                   setModalInfo(null);
                 }
-              }}
-            >
+              }}>
               OK
             </a>
           }
@@ -155,7 +153,7 @@ export function TopicContent(props: TopicContentProps) {
         title="Are you sure you want to delete this topic?"
         body={
           deletingTopic ? (
-            <div className="flex items-center justify-center pt-6 m-auto">
+            <div className="deleteSpinner">
               <Spinner />
             </div>
           ) : (
@@ -164,10 +162,7 @@ export function TopicContent(props: TopicContentProps) {
         }
         okButton={
           !deletingTopic && (
-            <a
-              className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-              onClick={onDeleteTopic}
-            >
+            <a className="acceptDeleteTopicButton" onClick={onDeleteTopic}>
               Accept
             </a>
           )
@@ -175,9 +170,8 @@ export function TopicContent(props: TopicContentProps) {
         cancelButton={
           !deletingTopic && (
             <div
-              className="btn btn-secondary border-2 hover:opacity-75 hover:bg-gray-200"
-              onClick={() => setShowDeleteConfirmation(false)}
-            >
+              className="cancelDeleteTopicButton"
+              onClick={() => setShowDeleteConfirmation(false)}>
               Cancel
             </div>
           )
@@ -222,30 +216,20 @@ function TopicHeader(props: TopicHeaderProps) {
     : "-";
 
   return (
-    <div className="font-raleway h-auto mt-4 mb-12">
-      <div className="flex items-start justify-between pb-6">
-        <div className="flex flex-col">
-          <div className="font-semibold text-xl pb-5">
-            {topic?.data.subj ?? "subject"}
-          </div>
-          <div className="flex items-center">
-            <div className="h-7 w-7 mr-1">
-              <Jdenticon
-                className="h-7 w-7"
-                value={topic?.poster.toBase58()}
-                alt="posterID"
-              />
+    <div className="topicHeader">
+      <div className="topicTitle">
+        <div className="left">
+          <div className="subj">{topic?.data.subj ?? "subject"}</div>
+          <div className="poster">
+            <div className="icon">
+              <Jdenticon value={topic?.poster.toBase58()} alt="posterID" />
             </div>
-            <div className="text-sm font-normal">
-              {topic?.poster.toBase58()}
-            </div>
+            <div className="posterId">{topic?.poster.toBase58()}</div>
           </div>
         </div>
-        <div className="text-xs font-light">Posted at: {postedAt}</div>
+        <div className="postedAt">Posted at: {postedAt}</div>
       </div>
-      <div className="text-sm min-h-[120px]">
-        {topic?.data.body ?? "body of the topic"}
-      </div>
+      <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
     </div>
   );
 }

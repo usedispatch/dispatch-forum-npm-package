@@ -1,0 +1,166 @@
+@layer components {
+  .data {
+    display: flex;
+    justify-content: flex-start;
+
+    font-family: Raleway, sans-serif;
+    font-weight: 300;
+    font-size: 12px;
+    color: #1f2937;
+
+    .commentsContainer {
+      display: flex;
+      align-items: center;
+      margin-right: 8px;
+      cursor: default;
+
+      .image {
+        height: 12px;
+        margin-right: 4px;
+      }
+    }
+
+    .delete {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+
+      .icon {
+        margin-right: 4px;
+      }
+    }
+  }
+
+  .topicContentContainer {
+    font-family: Raleway, sans-serif;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .deleteSpinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: 24px;
+    margin: auto;
+  }
+
+  .acceptDeleteTopicButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .cancelDeleteTopicButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+    height: 48px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgba(31, 41, 55, 1);
+
+    background: white;
+    color: rgba(31, 41, 55, 1);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .okInfoButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .topicHeader {
+    font-family: Raleway, sans-serif;
+    margin-top: 16px;
+    margin-bottom: 48px;
+
+    .topicTitle {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 24px;
+    }
+
+    .left {
+      display: flex;
+      flex-direction: column;
+
+      .subj {
+        font-weight: 600;
+        font-size: 20px;
+        padding-bottom: 20px;
+      }
+
+      .poster {
+        display: flex;
+        align-items: center;
+      }
+
+      .icon {
+        height: 28px;
+        width: 28px;
+        margin-right: 4px;
+      }
+
+      .posterId {
+        font-size: 14px;
+        font-weight: 400;
+      }
+    }
+
+    .postedAt {
+      font-size: 12px;
+      font-weight: 300;
+    }
+
+    .topicBody {
+      font-size: 14px;
+    }
+  }
+}

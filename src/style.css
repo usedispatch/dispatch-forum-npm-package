@@ -8,5 +8,6 @@
 @import "./components/forums/PostReplies.css";
 @import "./components/forums/PostsList.css";
 @import "./components/forums/TopicContent.css";
+@import "./components/forums/TopicList.css";
 
 @import "tailwindcss/utilities";

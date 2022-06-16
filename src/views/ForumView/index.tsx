@@ -222,10 +222,10 @@ export const ForumView = (props: ForumViewProps) => {
   }, [connected, publicKey, forum]);
 
   const createForumButton = (
-    <div className="flex pt-3 text-2xs text-gray-500">
+    <div className="createForumButtonContainer">
       <button
         type="button"
-        className="btn btn-primary bg-gray-800 text-white   hover:bg-gray-700 hover:text-white "
+        className="okInfoButton"
         onClick={() => {
           if (connected) {
             setShowNewForumModal(true);
@@ -237,7 +237,7 @@ export const ForumView = (props: ForumViewProps) => {
             });
           }
         }}>
-        <div className="mr-2 h-4 w-4">
+        <div className="createForumIconContainer">
           <Plus />
         </div>
         Create a new Forum

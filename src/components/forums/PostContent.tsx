@@ -118,50 +118,54 @@ export function PostContent(props: PostContentProps) {
     <>
       <div className="divider" />
       <div className="postContentContainer">
-        <PopUpModal
-          id="post-delete-confirmation"
-          visible={_.isNull(modalInfo) && showDeleteConfirmation}
-          title="Are you sure you want to delete this post?"
-          body={
-            deleting ? (
-              <div className="deleteSpinner">
-                <Spinner />
-              </div>
-            ) : (
-              "This is permanent and you won’t be able to retrieve this comment again. Upvotes and downvotes will go too."
-            )
-          }
-          okButton={
-            !deleting && (
-              <a
-                className="acceptDeletePostButton"
-                onClick={() => onDelete(post)}>
-                Accept
+        {_.isNull(modalInfo) && showDeleteConfirmation && (
+          <PopUpModal
+            id="post-delete-confirmation"
+            visible
+            title="Are you sure you want to delete this post?"
+            body={
+              deleting ? (
+                <div className="deleteSpinner">
+                  <Spinner />
+                </div>
+              ) : (
+                "This is permanent and you won’t be able to retrieve this comment again. Upvotes and downvotes will go too."
+              )
+            }
+            okButton={
+              !deleting && (
+                <a
+                  className="acceptDeletePostButton"
+                  onClick={() => onDelete(post)}>
+                  Accept
+                </a>
+              )
+            }
+            cancelButton={
+              !deleting && (
+                <div
+                  className="cancelDeletePostButton"
+                  onClick={() => setShowDeleteConfirmation(false)}>
+                  Cancel
+                </div>
+              )
+            }
+          />
+        )}
+        {!_.isNull(modalInfo) && (
+          <PopUpModal
+            id="post-info"
+            visible
+            title={modalInfo?.title}
+            messageType={modalInfo?.type}
+            body={modalInfo?.body}
+            okButton={
+              <a className="okInfoButton" onClick={() => setModalInfo(null)}>
+                OK
               </a>
-            )
-          }
-          cancelButton={
-            !deleting && (
-              <div
-                className="cancelDeletePostButton"
-                onClick={() => setShowDeleteConfirmation(false)}>
-                Cancel
-              </div>
-            )
-          }
-        />
-        <PopUpModal
-          id="post-info"
-          visible={!_.isNull(modalInfo)}
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
-          okButton={
-            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-              OK
-            </a>
-          }
-        />
+            }
+          />
+        )}
         {loading ? (
           <Spinner />
         ) : (

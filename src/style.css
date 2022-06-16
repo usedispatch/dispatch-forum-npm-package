@@ -2,6 +2,10 @@
 
 @import "tailwindcss/components";
 
+@import "./components/common/DeleteMesageButton.css";
+@import "./components/common/PopUpModal.css";
+@import "./components/common/Spinner.css";
+
 @import "./components/forums/CreatePost.css";
 @import "./components/forums/ForumContent.css";
 @import "./components/forums/PostContent.css";
@@ -9,5 +13,8 @@
 @import "./components/forums/PostsList.css";
 @import "./components/forums/TopicContent.css";
 @import "./components/forums/TopicList.css";
+
+@import "./views/ForumView/ForumView.css";
+@import "./views/TopicView/TopicView.css";
 
 @import "tailwindcss/utilities";

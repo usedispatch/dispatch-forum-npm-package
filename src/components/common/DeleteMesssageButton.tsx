@@ -1,3 +1,4 @@
+import * as _ from "lodash";
 import { ReactNode, useState } from "react";
 import { MessageAccount } from "@usedispatch/client";
 
@@ -45,54 +46,51 @@ export const DeleteMesssageButton = (props: DeleteMesssageButtonProps) => {
   };
 
   return (
-    <>
-      <PopUpModal
-        id="delete-error"
-        visible={modalInfo != null}
-        title={modalInfo?.title}
-        messageType={modalInfo?.type}
-        body={<div className="text-base">{modalInfo?.body}</div>}
-        okButton={
-          <div
-            className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-            onClick={() => setModalInfo(null)}
-          >
-            OK
-          </div>
-        }
-      />
-      <PopUpModal
-        id="delete-confirmation"
-        visible={showConfirm && modalInfo == null}
-        title="Are you sure you want to delete this message?"
-        messageType={modalInfo?.type}
-        loading={loadingDelete}
-        body={
-          <div className="text-base">
-            This will be permanent and you won’t be able to access it again.
-          </div>
-        }
-        okButton={
-          <div
-            className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-            onClick={deleteMessage}
-          >
-            Accept
-          </div>
-        }
-        cancelButton={
-          <div
-            className="btn btn-secondary border-2 hover:opacity-75 hover:bg-gray-200"
-            onClick={() => {
-              setModalInfo(null);
-              setShowConfirm(false);
-            }}
-          >
-            Cancel
-          </div>
-        }
-      />
-      <div className="flex items-center justify-start cursor-pointer">
+    <div className="deleteMessageButton">
+      {!_.isNil(modalInfo) && (
+        <PopUpModal
+          id="delete-error"
+          visible
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={<div className="text-base">{modalInfo.body}</div>}
+          okButton={
+            <div className="okButton" onClick={() => setModalInfo(null)}>
+              OK
+            </div>
+          }
+        />
+      )}
+      {showConfirm && !_.isNil(modalInfo) && (
+        <PopUpModal
+          id="delete-confirmation"
+          visible
+          title="Are you sure you want to delete this message?"
+          messageType={modalInfo?.type}
+          loading={loadingDelete}
+          body={
+            <div className="text-base">
+              This will be permanent and you won’t be able to access it again.
+            </div>
+          }
+          okButton={
+            <div className="okButton" onClick={deleteMessage}>
+              Accept
+            </div>
+          }
+          cancelButton={
+            <div
+              className="cancelButton"
+              onClick={() => {
+                setModalInfo(null);
+                setShowConfirm(false);
+              }}>
+              Cancel
+            </div>
+          }
+        />
+      )}
+      <div className="trashIconContainer">
         {/* <Image
           src={trash}
           height={props.height ?? 20}
@@ -100,8 +98,8 @@ export const DeleteMesssageButton = (props: DeleteMesssageButtonProps) => {
           alt="delete"
           onClick={() => setShowConfirm(true)}
         /> */}
-      <Trash/>
+        <Trash />
       </div>
-    </>
+    </div>
   );
 };

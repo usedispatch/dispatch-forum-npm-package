@@ -158,124 +158,132 @@ export function ForumContent(props: ForumContentProps) {
 
   return (
     <div className="forumContent">
-      <PopUpModal
-        id="create-topic-info"
-        visible={modalInfo !== null && !showNewTopicModal}
-        title={modalInfo?.title}
-        messageType={modalInfo?.type}
-        body={modalInfo?.body}
-        okButton={
-          <a className="okButton" onClick={() => setModalInfo(null)}>
-            OK
-          </a>
-        }
-      />
-      <PopUpModal
-        id="create-topic"
-        visible={showNewTopicModal && modalInfo === null}
-        title={"Create new Topic"}
-        body={
-          <div className="createTopicBody">
-            <>
-              <span className="createTopicLabel">Topic Title</span>
-              <input
-                type="text"
-                placeholder="Title"
-                className="createTopicTitleInput"
-                name="name"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </>
-            <>
-              <span className="createTopicLabel">Topic Description</span>
-              <textarea
-                placeholder="Description"
-                className="createTopicTitleInput createTopicTextArea"
-                maxLength={800}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </>
-          </div>
-        }
-        okButton={
-          <button
-            type="submit"
-            className="okButton"
-            onClick={() => {
-              setShowNewTopicModal(false);
-              setLoadingTopics(true);
-              createTopic();
-            }}>
-            Create
-          </button>
-        }
-        cancelButton={
-          <div
-            className="cancelButton"
-            onClick={() => setShowNewTopicModal(false)}>
-            Cancel
-          </div>
-        }
-      />
-      <PopUpModal
-        id="add-moderators"
-        visible={_.isNil(modalInfo) && showAddModerators}
-        title={"Manage moderators"}
-        body={
-          <div className="addModeratorsBody">
-            {addingNewModerators ? (
-              <Spinner />
-            ) : (
+      {modalInfo !== null && !showNewTopicModal && (
+        <PopUpModal
+          id="create-topic-info"
+          visible
+          title={modalInfo?.title}
+          messageType={modalInfo?.type}
+          body={modalInfo?.body}
+          okButton={
+            <a className="okButton" onClick={() => setModalInfo(null)}>
+              OK
+            </a>
+          }
+        />
+      )}
+      {showNewTopicModal && modalInfo === null && (
+        <PopUpModal
+          id="create-topic"
+          visible
+          title={"Create new Topic"}
+          body={
+            <div className="createTopicBody">
               <>
-                <label className="addModeratorsLabel">Add new</label>
+                <span className="createTopicLabel">Topic Title</span>
                 <input
-                  placeholder="Add moderators' wallet ID here, separated by commas"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={moderators}
-                  onChange={(e) => setModerators(e.target.value)}
+                  type="text"
+                  placeholder="Title"
+                  className="createTopicTitleInput"
+                  name="name"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                 />
-                <label className="addModeratorsLabel">Current moderators</label>
-                <ul>
-                  {forum?.moderators.map((m) => {
-                    const key = m.toBase58();
-                    return (
-                      <li key={key} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={key} alt="moderatorId" />
-                        </div>
-                        {key}
-                      </li>
-                    );
-                  })}
-                </ul>
               </>
-            )}
-          </div>
-        }
-        okButton={
-          !addingNewModerators && (
-            <button className="okButton" onClick={() => addModerators()}>
-              Save
-            </button>
-          )
-        }
-        cancelButton={
-          !addingNewModerators && (
+              <>
+                <span className="createTopicLabel">Topic Description</span>
+                <textarea
+                  placeholder="Description"
+                  className="createTopicTitleInput createTopicTextArea"
+                  maxLength={800}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </>
+            </div>
+          }
+          okButton={
             <button
-              className="cancelButton"
+              type="submit"
+              className="okButton"
               onClick={() => {
-                setShowAddModerators(false);
-                setModerators("");
+                setShowNewTopicModal(false);
+                setLoadingTopics(true);
+                createTopic();
               }}>
-              Cancel
+              Create
             </button>
-          )
-        }
-      />
+          }
+          cancelButton={
+            <div
+              className="cancelButton"
+              onClick={() => setShowNewTopicModal(false)}>
+              Cancel
+            </div>
+          }
+        />
+      )}
+      {_.isNil(modalInfo) && showAddModerators && (
+        <PopUpModal
+          id="add-moderators"
+          visible
+          title={"Manage moderators"}
+          body={
+            <div className="addModeratorsBody">
+              {addingNewModerators ? (
+                <Spinner />
+              ) : (
+                <>
+                  <label className="addModeratorsLabel">Add new</label>
+                  <input
+                    placeholder="Add moderators' wallet ID here, separated by commas"
+                    className="addModeratorsInput"
+                    maxLength={800}
+                    value={moderators}
+                    onChange={(e) => setModerators(e.target.value)}
+                  />
+                  <label className="addModeratorsLabel">
+                    Current moderators
+                  </label>
+                  <ul>
+                    {forum?.moderators.map((m) => {
+                      const key = m.toBase58();
+                      return (
+                        <li key={key} className="currentModerators">
+                          <div className="iconContainer">
+                            <Jdenticon value={key} alt="moderatorId" />
+                          </div>
+                          {key}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </>
+              )}
+            </div>
+          }
+          okButton={
+            !addingNewModerators && (
+              <button className="okButton" onClick={() => addModerators()}>
+                Save
+              </button>
+            )
+          }
+          cancelButton={
+            !addingNewModerators && (
+              <button
+                className="cancelButton"
+                onClick={() => {
+                  setShowAddModerators(false);
+                  setModerators("");
+                }}>
+                Cancel
+              </button>
+            )
+          }
+        />
+      )}
       {forumHeader}
       {role === UserRoleType.Owner && (
         <button

@@ -1,0 +1,111 @@
+@layer components {
+  .popUpModal {
+    .iconTypeContainer {
+      display: flex;
+      margin-right: 8px;
+      height: 32px;
+      width: 32px;
+    }
+
+    .modalContainer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 1;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 999;
+      transition-property: background-color, border-color, color, fill, stroke,
+        opacity, box-shadow, transform;
+      transition-duration: 0.2s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-y: hidden;
+      overscroll-behavior: contain;
+      background-color: #4b556385;
+
+      .modalBox {
+        position: absolute;
+        max-height: calc(100vh - 5em);
+        background-color: white;
+        padding: 1.5rem;
+
+        transition-property: background-color, border-color, color, fill, stroke,
+          opacity, box-shadow, transform;
+        transition-duration: 0.15s;
+        transition-duration: 0.2s;
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+
+        overflow-y: auto;
+        border-radius: 16px;
+        -ms-scroll-chaining: none;
+        overscroll-behavior: contain;
+        top: 25%;
+        width: 450px;
+      }
+    }
+
+    .modalActionsContainer {
+      display: flex;
+      justify-content: flex-end;
+
+      .cancelAction {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 24px;
+        margin-right: 8px;
+        cursor: pointer;
+      }
+
+      .acceptAction {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 24px;
+        cursor: pointer;
+      }
+    }
+
+    .modalTitle {
+      font-weight: 700;
+      font-size: 18px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .titleTextIcon {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .modalClose {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 32px;
+      height: 32px;
+      min-height: 32px;
+      padding-left: 12px;
+      padding-right: 12px;
+      cursor: pointer;
+
+      .closeIcon {
+        height: 16px;
+        width: 16px;
+      }
+    }
+
+    .modalBody {
+      display: flex;
+      padding: 16px 0;
+    }
+
+    .modalLoading {
+      padding: 24px;
+    }
+  }
+}

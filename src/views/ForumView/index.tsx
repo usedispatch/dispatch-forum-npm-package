@@ -1,6 +1,13 @@
-import './../../style.css'
+import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useMemo, useContext } from "react";
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+  useMemo,
+  useContext,
+} from "react";
 import Image from "../../utils/image";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
@@ -65,7 +72,7 @@ export const ForumView = (props: ForumViewProps) => {
     type: MessageType;
     body?: string;
   } | null>(null);
-  
+
   const urlPath = window.location.toString();
   // const params = new URLSearchParams(this.props.match.params.id);
 
@@ -229,8 +236,7 @@ export const ForumView = (props: ForumViewProps) => {
               body: "Connect to your wallet in order to create a forum",
             });
           }
-        }}
-      >
+        }}>
         <div className="mr-2 h-4 w-4">
           <Plus />
         </div>
@@ -240,116 +246,107 @@ export const ForumView = (props: ForumViewProps) => {
   );
 
   const emptyView = (
-    <div className="flex flex-col items-center">
-      <div className="text-[40px] pb-14 text-center font-raleway">
-        The Forum does not exist yet
-      </div>
-      <div className="text-center text-base font-light w-[650px] pb-24 font-raleway">
-        Create one to post, share, and more
-      </div>
+    <div className="emptyForumView">
+      <div className="emptyTitle">The Forum does not exist yet</div>
+      <div className="emptySubTitle">Create one to post, share, and more</div>
       {createForumButton}
     </div>
   );
 
   const disconnectedView = (
-    <div className="flex flex-col items-center">
-      <div className="text-center text-2xl font-medium w-[650px] pt-24 font-raleway">
-        Connect to your wallet in order to see or create a forum
-      </div>
+    <div className="disconnectedView">
+      Connect to your wallet in order to see or create a forum
     </div>
   );
 
   return (
-    <div className="min-h-full">
-      <PopUpModal
-        id="create-forum-info"
-        visible={!_.isNil(modalInfo)}
-        title={modalInfo?.title}
-        messageType={modalInfo?.type}
-        body={modalInfo?.body}
-        okButton={
-          <a
-            className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-            onClick={() => setModalInfo(null)}
-          >
-            OK
-          </a>
-        }
-      />
-      <PopUpModal
-        id="create-forum"
-        visible={showNewForumModal}
-        title={"Create new Forum"}
-        body={
-          <div className="flex flex-col justify-start w-full">
-            <>
-              <span className="px-1 text-sm font-medium">Forum Title</span>
-              <input
-                type="text"
-                placeholder="Title"
-                className="input input-bordered input-sm w-full mt-1 mb-4 border-gray-300 placeholder-gray-400"
-                name="name"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </>
-            <>
-              <span className="px-1 text-sm font-medium">
-                Forum Description
-              </span>
-              <textarea
-                placeholder="Description"
-                className="input input-bordered h-36 w-full mt-1 mb-4 border-gray-300 placeholder-gray-400"
-                maxLength={800}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </>
-            <>
-              <span className="px-1 text-sm font-medium">Moderators</span>
-              <textarea
-                placeholder="Add moderators' wallet ID here, separated by commas"
-                className="input input-bordered h-36 w-full mt-1 border-gray-300 placeholder-gray-400"
-                maxLength={800}
-                value={newModerators}
-                onChange={(e) => setNewModerators(e.target.value.split(","))}
-              />
-            </>
-          </div>
-        }
-        okButton={
-          <button
-            type="submit"
-            className="form-control btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white"
-            onClick={() => {
-              setShowNewForumModal(false);
-              onCreateForumClick();
-            }}
-          >
-            Create
-          </button>
-        }
-        cancelButton={
-          <div
-            className="btn btn-secondary border-2 hover:opacity-75 hover:bg-gray-200"
-            onClick={() => setShowNewForumModal(false)}
-          >
-            Cancel
-          </div>
-        }
-      />
-      <div className="min-h-full">
-        {!_.isNil(forum) && (
-            <div className="font-raleway text-4xl pt-16">
-              Welcome to the forum {forum.title}
+    <div className="forumViewContainer">
+      {!_.isNil(modalInfo) && (
+        <PopUpModal
+          id="create-forum-info"
+          visible
+          title={modalInfo?.title}
+          messageType={modalInfo?.type}
+          body={modalInfo?.body}
+          okButton={
+            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
+              OK
+            </a>
+          }
+        />
+      )}
+      {showNewForumModal && (
+        <PopUpModal
+          id="create-forum"
+          visible
+          title={"Create new Forum"}
+          body={
+            <div className="createForumBody">
+              <>
+                <span className="createForumLabel">Forum Title</span>
+                <input
+                  type="text"
+                  placeholder="Title"
+                  className="createForumTitle"
+                  name="name"
+                  required
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </>
+              <>
+                <span className="createForumLabel">Forum Description</span>
+                <textarea
+                  placeholder="Description"
+                  className="createForumTitle createForumDescription"
+                  maxLength={800}
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </>
+              <>
+                <span className="createForumLabel">Moderators</span>
+                <input
+                  placeholder="Add moderators' wallet ID here, separated by commas"
+                  className="createForumTitle createForumTextArea"
+                  maxLength={800}
+                  value={newModerators}
+                  onChange={(e) => setNewModerators(e.target.value.split(","))}
+                />
+              </>
             </div>
+          }
+          okButton={
+            <button
+              type="submit"
+              className="acceptCreateForumButton"
+              onClick={() => {
+                setShowNewForumModal(false);
+                onCreateForumClick();
+              }}>
+              Create
+            </button>
+          }
+          cancelButton={
+            <div
+              className="cancelCreateForumButton"
+              onClick={() => setShowNewForumModal(false)}>
+              Cancel
+            </div>
+          }
+        />
+      )}
+      <div className="forumViewContent">
+        {!_.isNil(forum) && (
+          <div className="forumViewTitle">
+            Welcome to the forum {forum.title}
+          </div>
         )}
         <main>
-          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-4 pb-6 sm:px-0">
+          <div className="forumViewContent">
+            <div>
               {loading ? (
-                <div className="pt-48">
+                <div className="forumLoading">
                   <Spinner />
                 </div>
               ) : connected ? (

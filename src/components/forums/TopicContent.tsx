@@ -124,10 +124,10 @@ export function TopicContent(props: TopicContentProps) {
 
   return (
     <>
-      {!_.isNull(modalInfo) && (
+      {!_.isNil(modalInfo) && (
         <PopUpModal
           id="topic-info"
-          visible={!_.isNull(modalInfo)}
+          visible
           title={modalInfo.title}
           messageType={modalInfo.type}
           body={modalInfo.body}
@@ -147,36 +147,38 @@ export function TopicContent(props: TopicContentProps) {
           }
         />
       )}
-      <PopUpModal
-        id="topic-delete-confirmation"
-        visible={showDeleteConfirmation}
-        title="Are you sure you want to delete this topic?"
-        body={
-          deletingTopic ? (
-            <div className="deleteSpinner">
-              <Spinner />
-            </div>
-          ) : (
-            "This is permanent and you won't be able to access this topic again. All the posts here will be deleted too."
-          )
-        }
-        okButton={
-          !deletingTopic && (
-            <a className="acceptDeleteTopicButton" onClick={onDeleteTopic}>
-              Accept
-            </a>
-          )
-        }
-        cancelButton={
-          !deletingTopic && (
-            <div
-              className="cancelDeleteTopicButton"
-              onClick={() => setShowDeleteConfirmation(false)}>
-              Cancel
-            </div>
-          )
-        }
-      />
+      {showDeleteConfirmation && (
+        <PopUpModal
+          id="topic-delete-confirmation"
+          visible
+          title="Are you sure you want to delete this topic?"
+          body={
+            deletingTopic ? (
+              <div className="deleteSpinner">
+                <Spinner />
+              </div>
+            ) : (
+              "This is permanent and you won't be able to access this topic again. All the posts here will be deleted too."
+            )
+          }
+          okButton={
+            !deletingTopic && (
+              <a className="acceptDeleteTopicButton" onClick={onDeleteTopic}>
+                Accept
+              </a>
+            )
+          }
+          cancelButton={
+            !deletingTopic && (
+              <div
+                className="cancelDeleteTopicButton"
+                onClick={() => setShowDeleteConfirmation(false)}>
+                Cancel
+              </div>
+            )
+          }
+        />
+      )}
       <TopicHeader topic={topic} />
       {data}
       <CreatePost

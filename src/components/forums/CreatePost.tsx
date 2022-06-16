@@ -57,18 +57,20 @@ export function CreatePost(props: CreatePostProps) {
 
   return (
     <>
-      <PopUpModal
-        id="create-topic-info"
-        visible={modalInfo !== null}
-        title={modalInfo?.title}
-        messageType={modalInfo?.type}
-        body={modalInfo?.body}
-        okButton={
-          <a className="okButton" onClick={() => setModalInfo(null)}>
-            OK
-          </a>
-        }
-      />
+      {modalInfo !== null && (
+        <PopUpModal
+          id="create-topic-info"
+          visible
+          title={modalInfo?.title}
+          messageType={modalInfo?.type}
+          body={modalInfo?.body}
+          okButton={
+            <a className="okButton" onClick={() => setModalInfo(null)}>
+              OK
+            </a>
+          }
+        />
+      )}
       <div className="createPostContainer">
         <div className="createPostContent">
           {loading ? (

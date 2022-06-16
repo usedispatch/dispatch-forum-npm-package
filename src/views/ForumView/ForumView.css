@@ -1,0 +1,174 @@
+@layer components {
+  .emptyForumView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-family: Raleway, sans-serif;
+
+    .emptyTitle {
+      font-size: 40px;
+      padding-bottom: 56px;
+      text-align: center;
+    }
+
+    .emptySubTitle {
+      text-align: center;
+      font-size: 16px;
+      font-weight: 300;
+      width: 650px;
+      padding-bottom: 96px;
+    }
+  }
+
+  .disconnectedView {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    font-family: Raleway, sans-serif;
+    font-size: 24px;
+    font-weight: 500;
+    width: 100%;
+    padding-top: 96px;
+  }
+
+  .acceptCreateForumButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .cancelCreateForumButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+    height: 48px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgba(31, 41, 55, 1);
+
+    background: white;
+    color: rgba(31, 41, 55, 1);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .okInfoButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .createForumBody {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+
+    .createForumLabel {
+      padding: 0 4px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .createForumTitle {
+      width: 100%;
+      height: 32px;
+      font-size: 14px;
+      padding-left: 12px;
+      padding-right: 12px;
+      margin-top: 4px;
+      margin-bottom: 16px;
+
+      border-color: #d1d5db;
+      border-width: 1px;
+      border-radius: 6px;
+
+      &:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+    }
+
+    .createForumDescription {
+      padding-top: 4px;
+      height: 144px;
+    }
+
+    .createForumTextArea {
+      margin-bottom: 0;
+    }
+  }
+
+  .forumViewContainer {
+    font-family: Raleway, sans-serif;
+    min-height: 100%;
+    width: 100%;
+
+    .forumViewContent {
+      min-height: 100%;
+      width: 100%;
+
+      .forumViewTitle {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 64px 32px 0;
+
+        font-size: 36px;
+      }
+
+      .forumViewContent {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding: 24px 32px;
+
+        .forumLoading {
+          padding-top: 192px;
+        }
+      }
+    }
+  }
+}

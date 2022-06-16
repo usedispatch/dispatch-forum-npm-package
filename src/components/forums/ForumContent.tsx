@@ -144,7 +144,7 @@ export function ForumContent(props: ForumContentProps) {
   );
 
   const forumHeader = (
-    <div className="header">
+    <div className="forumContentHeader">
       <div className="box">
         <div className="description">{forum.description}</div>
         {createTopicButton}

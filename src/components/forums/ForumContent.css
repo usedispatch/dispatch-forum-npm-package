@@ -1,17 +1,17 @@
 @layer components {
-  .header {
+  .forumContentHeader {
     height: auto;
     margin: 0;
     margin-bottom: 48px;
   }
 
-  .header .box {
+  .forumContentHeader .box {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
 
-  .header .description {
+  .forumContentHeader .description {
     font-family: Raleway, sans-serif;
     margin-right: 40px;
   }

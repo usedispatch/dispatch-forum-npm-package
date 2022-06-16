@@ -51,8 +51,8 @@ export function PostReplies(props: PostRepliesProps) {
                       value={reply?.poster.toBase58()}
                       alt="posterID"
                     />
-                    <div className="walletId">{reply.poster.toBase58()}</div>
                   </div>
+                  <div className="walletId">{reply.poster.toBase58()}</div>
                 </div>
                 <div className="postedAt">Posted at: {postedAt(reply)}</div>
               </div>

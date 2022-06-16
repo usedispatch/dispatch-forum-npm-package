@@ -33,9 +33,10 @@
       }
 
       .tableHeaderText {
-        text-transform: none;
         font-weight: 400;
-        font-size: 20px;
+        font-size: 22px;
+        text-align: left;
+        text-transform: none;
       }
 
       .tableHeaderTextCenter {
@@ -155,17 +156,19 @@
 
   .row {
     cursor: pointer;
-    border-bottom: 1px solid black;
+    border-bottom: 1px solid #c4c4c4;
 
     &:hover {
       background: #dbeafe;
     }
 
     .rowSubj {
-      padding: 12px 0;
-      text-align: left;
       max-width: 576px;
       width: 576px;
+      padding: 16px 0;
+      font-weight: 600;
+
+      text-align: left;
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;

@@ -8,7 +8,6 @@ import {
   useMemo,
   useContext,
 } from "react";
-import Image from "../../utils/image";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 

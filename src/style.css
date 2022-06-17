@@ -2,19 +2,19 @@
 
 @import "tailwindcss/components";
 
-@import "./components/common/DeleteMesageButton.css";
-@import "./components/common/PopUpModal.css";
-@import "./components/common/Spinner.css";
+@import "./styles/DeleteMesageButton.css";
+@import "./styles/PopUpModal.css";
+@import "./styles/Spinner.css";
 
-@import "./components/forums/CreatePost.css";
-@import "./components/forums/ForumContent.css";
-@import "./components/forums/PostContent.css";
-@import "./components/forums/PostReplies.css";
-@import "./components/forums/PostsList.css";
-@import "./components/forums/TopicContent.css";
-@import "./components/forums/TopicList.css";
+@import "./styles/CreatePost.css";
+@import "./styles/ForumContent.css";
+@import "./styles/PostContent.css";
+@import "./styles/PostReplies.css";
+@import "./styles/PostsList.css";
+@import "./styles/TopicContent.css";
+@import "./styles/TopicList.css";
 
-@import "./views/ForumView/ForumView.css";
-@import "./views/TopicView/TopicView.css";
+@import "./styles/ForumView.css";
+@import "./styles/TopicView.css";
 
 @import "tailwindcss/utilities";

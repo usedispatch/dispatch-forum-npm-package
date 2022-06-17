@@ -1,0 +1,247 @@
+@layer components {
+  .divider {
+    border-top-width: 1px;
+    border-color: #9ca3af;
+  }
+
+  .postContentContainer {
+    font-family: Raleway, sans-serif;
+    margin-top: 24px;
+    margin-bottom: 24px;
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+  .deleteSpinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: 24px;
+    margin: auto;
+  }
+
+  .acceptDeletePostButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .cancelDeletePostButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+    height: 48px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgba(31, 41, 55, 1);
+
+    background: white;
+    color: rgba(31, 41, 55, 1);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .okInfoButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .postHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+
+    .posterId {
+      display: flex;
+      align-items: center;
+    }
+
+    .icon {
+      height: 28px;
+      width: 28px;
+      margin-right: 4px;
+    }
+
+    .walletId {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .postedAt {
+      font-size: 12px;
+      font-weight: 300;
+    }
+  }
+
+  .postBody {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .actionsContainer {
+    display: flex;
+    align-items: center;
+
+    .deleteButton {
+      border-width: 1px;
+      border-color: #1f2937;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      width: 32px;
+      height: 24px;
+      max-height: 24px;
+      padding: 8px;
+      margin-right: 8px;
+    }
+
+    .replyButton {
+      border-width: 1px;
+      border-color: #1f2937;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      height: 24px;
+      max-height: 24px;
+      padding: 8px;
+      margin-right: 8px;
+
+      font-size: 12px;
+    }
+  }
+
+  .repliesSection {
+    margin-top: 16px;
+    margin-left: 24px;
+    padding-top: 2px;
+    border-left-width: 1px;
+    border-color: #9ca3af;
+
+    .repliesBox {
+      padding-left: 16px;
+    }
+
+    .replyForm {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      margin-top: 24px;
+      margin-bottom: 56px;
+      padding-left: 16px;
+    }
+
+    .replyTextArea {
+      height: 144px;
+      width: 100%;
+      padding: 8px 16px;
+      margin-top: 4px;
+
+      border-color: #1f2937;
+      border-width: 1px;
+      border-radius: 16px;
+
+      font-size: 14px;
+      background: transparent;
+
+      &:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+    }
+
+    .buttonsContainer {
+      display: flex;
+      align-items: center;
+      margin-top: 24px;
+    }
+
+    .postReplyButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 48px;
+      padding: 0 30px;
+      border-radius: 10px;
+
+      cursor: pointer;
+      background: rgba(31, 41, 55, 1);
+      color: white;
+      font-size: 14px;
+      text-align: center;
+      text-transform: uppercase;
+      font-weight: 600;
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+
+    .cancelReplyButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 0 16px;
+      margin-right: 12px;
+      height: 48px;
+      border-radius: 10px;
+      border-width: 2px;
+      border-color: rgba(31, 41, 55, 1);
+
+      background: white;
+      color: rgba(31, 41, 55, 1);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      text-transform: uppercase;
+
+      &:hover {
+        opacity: 0.85;
+      }
+    }
+  }
+}

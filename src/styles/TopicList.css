@@ -1,0 +1,190 @@
+@layer components {
+  .topicListContainer {
+    font-family: Raleway, sans-serif;
+
+    margin: 16px 0;
+
+    .tableContainer {
+      width: 100%;
+
+      .table {
+        position: relative;
+        text-align: left;
+      }
+      .table th:first-child {
+        position: sticky;
+        position: -webkit-sticky;
+        left: 0;
+        z-index: 10;
+      }
+      .table :where(th, td) {
+        padding: 16px;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+    }
+
+    .tableHeader {
+      border-bottom-width: 1px;
+      border-color: black;
+
+      .tableHeaderTitle {
+        padding-bottom: 8px;
+      }
+
+      .tableHeaderText {
+        font-weight: 400;
+        font-size: 22px;
+        text-align: left;
+        text-transform: none;
+      }
+
+      .tableHeaderTextCenter {
+        text-align: center;
+        text-transform: none;
+        font-weight: 400;
+        font-size: 20px;
+      }
+    }
+  }
+
+  .topicListSpinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: 24px;
+    margin: auto;
+  }
+
+  .emptyTopicList {
+    width: 100%;
+    min-width: 100%;
+    padding-top: 64px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .acceptDeleteTopicButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .cancelDeleteTopicButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+    height: 48px;
+    border-radius: 10px;
+    border-width: 2px;
+    border-color: rgba(31, 41, 55, 1);
+
+    background: white;
+    color: rgba(31, 41, 55, 1);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .okInfoButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: rgba(31, 41, 55, 1);
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .rowContentIcons {
+    display: flex;
+    align-items: center;
+
+    .icon {
+      height: 28px;
+      width: 28px;
+      margin-right: 4px;
+    }
+  }
+
+  .rowSpinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 28px;
+    width: 28px;
+    margin: auto;
+  }
+
+  .row {
+    cursor: pointer;
+    border-bottom: 1px solid #c4c4c4;
+
+    &:hover {
+      background: #dbeafe;
+    }
+
+    .rowSubj {
+      max-width: 576px;
+      width: 576px;
+      padding: 16px 0;
+      font-weight: 600;
+
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .rowIconReplies {
+      max-width: 320px;
+      width: 320px;
+    }
+
+    .rowAmountReplies {
+      text-align: center;
+    }
+
+    .rowDate {
+      text-align: center;
+    }
+  }
+}

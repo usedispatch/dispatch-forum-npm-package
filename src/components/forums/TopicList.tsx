@@ -5,7 +5,11 @@ import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../components/common";
 
-import { ForumContext, useForum, usePath } from "./../../contexts/DispatchProvider";
+import {
+  ForumContext,
+  useForum,
+  usePath,
+} from "./../../contexts/DispatchProvider";
 
 interface TopicListProps {
   loading: boolean;
@@ -17,24 +21,20 @@ export function TopicList(props: TopicListProps) {
   const { topics, collectionId, loading } = props;
 
   return (
-    <div className="h-auto mx-6 my-4 font-raleway">
+    <div className="topicListContainer">
       <div>
-        <table className="table w-full">
+        <table className="tableContainer">
           <thead>
-            <tr className="border-b border-black">
-              <th className="pb-2">
-                <div className="normal-case font-normal text-xl">Topic</div>
+            <tr className="tableHeader">
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderText">Topic</div>
               </th>
-              <th className="pb-2"></th>
-              <th className="pb-2">
-                <div className="normal-case font-normal text-xl text-center">
-                  Replies
-                </div>
+              <th className="tableHeaderTitle"></th>
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderTextCenter">Replies</div>
               </th>
-              <th className="pb-2">
-                <div className="normal-case font-normal text-xl text-center">
-                  Activity
-                </div>
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderTextCenter">Activity</div>
               </th>
             </tr>
           </thead>
@@ -50,14 +50,12 @@ export function TopicList(props: TopicListProps) {
           </tbody>
         </table>
         {loading ? (
-          <div className="w-full min-w-full pt-16 text-center">
+          <div className="topicListSpinner">
             <Spinner />
           </div>
         ) : (
           topics.length === 0 && (
-            <div className="w-full min-w-full pt-16 text-xl font-semibold text-center">
-              No topics yet
-            </div>
+            <div className="emptyTopicList">No topics yet</div>
           )
         )}
       </div>
@@ -73,7 +71,7 @@ interface RowContentProps {
 function RowContent(props: RowContentProps) {
   const { collectionId, topic } = props;
   const Forum = useForum();
-  const {baseURL, forumURL, topicURL} = usePath();
+  const { baseURL, forumURL, topicURL } = usePath();
 
   const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -121,10 +119,10 @@ function RowContent(props: RowContentProps) {
       const ids = posts.slice(0, 8).map((p) => p.poster.toBase58());
 
       return (
-        <div className="flex items-center">
+        <div className="rowContentIcons">
           {ids.map((id, index) => (
-            <div key={index} className="h-7 w-7 mr-1">
-              <Jdenticon className="h-7 w-7" value={id} alt="posterID" />
+            <div key={index} className="icon">
+              <Jdenticon value={id} alt="posterID" />
             </div>
           ))}
           {posts.length > 8 ? "..." : null}
@@ -137,7 +135,7 @@ function RowContent(props: RowContentProps) {
 
   const spinner = useMemo(
     () => (
-      <div className="flex h-7 w-7">
+      <div className="rowSpinner">
         <Spinner />
       </div>
     ),
@@ -147,29 +145,34 @@ function RowContent(props: RowContentProps) {
   return (
     // <Link={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
     // key={`topic_${topic.postId}`}
-      <tr className="hover hover:bg-blue-100 cursor-pointer" onClick={() => window.open(`${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`,"_self")}>
-        <>
-          <th>
-            <div className="max-w-xl w-[576px] overflow-ellipsis whitespace-nowrap overflow-hidden">
-              {topic.data.subj}
-            </div>
-          </th>
-          <td>
-            <div className="max-w-xs w-80">
-              {loading || !messages ? spinner : icons(messages)}
-            </div>
-          </td>
-          <td>
-            <div className="text-center">
-              {loading || !messages ? spinner : messages.length}
-            </div>
-          </td>
-          <td>
-            <div className="text-center">
-              {loading || !messages ? spinner : activtyDate(messages)}
-            </div>
-          </td>
-        </>
-      </tr>
+    <tr
+      className="row "
+      onClick={() =>
+        window.open(
+          `${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`,
+          "_self"
+        )
+      }>
+      <>
+        <th>
+          <div className="rowSubj">{topic.data.subj}</div>
+        </th>
+        <td>
+          <div className="rowIconReplies">
+            {loading || !messages ? spinner : icons(messages)}
+          </div>
+        </td>
+        <td>
+          <div className="rowAmountReplies">
+            {loading || !messages ? spinner : messages.length}
+          </div>
+        </td>
+        <td>
+          <div className="rowDate">
+            {loading || !messages ? spinner : activtyDate(messages)}
+          </div>
+        </td>
+      </>
+    </tr>
   );
 }

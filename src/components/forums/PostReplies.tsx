@@ -15,7 +15,7 @@ interface PostRepliesProps {
 
 export function PostReplies(props: PostRepliesProps) {
   const { replies, userRole, onDeletePost, onReplyClick } = props;
-  const Forum = useForum()
+  const Forum = useForum();
   const { publicKey } = Forum.wallet;
 
   const postedAt = (reply: ForumPost) =>
@@ -33,7 +33,7 @@ export function PostReplies(props: PostRepliesProps) {
   }
 
   return (
-    <div className="font-raleway h-auto">
+    <div className="repliesContainer">
       {replies.map((reply, index) => {
         const deletePermission = publicKey
           ? publicKey.toBase58() === reply.poster.toBase58() ||
@@ -42,41 +42,30 @@ export function PostReplies(props: PostRepliesProps) {
 
         return (
           <div key={index}>
-            {index > 0 && <div className="border-t border-gray-400 " />}
-            <div className=" my-6">
-              <div className="flex items-start justify-between pb-4">
-                <div className="flex flex-col">
-                  <div className="flex items-center">
-                    <div className="h-7 w-7 mr-1">
-                      <Jdenticon
-                        className="h-7 w-7"
-                        value={reply?.poster.toBase58()}
-                        alt="posterID"
-                      />
-                    </div>
-                    <div className="text-sm font-normal">
-                      {reply.poster.toBase58()}
-                    </div>
+            {index > 0 && <div className="repliesDivider" />}
+            <div className="replyContent">
+              <div className="replyHeader">
+                <div className="posterId">
+                  <div className="icon">
+                    <Jdenticon
+                      value={reply?.poster.toBase58()}
+                      alt="posterID"
+                    />
                   </div>
+                  <div className="walletId">{reply.poster.toBase58()}</div>
                 </div>
-                <div className="text-xs font-light">
-                  Posted at: {postedAt(reply)}
-                </div>
+                <div className="postedAt">Posted at: {postedAt(reply)}</div>
               </div>
-              <div className="text-sm mb-3">{reply?.data.body}</div>
-              <div className="flex items-center">
+              <div className="replyBody">{reply?.data.body}</div>
+              <div className="replyActionsContainer">
                 {deletePermission && (
                   <button
-                    className="mr-1"
-                    onClick={() => onDeletePost(reply)}
-                  >
-                    <Trash/>
+                    className="deleteButton"
+                    onClick={() => onDeletePost(reply)}>
+                    <Trash />
                   </button>
                 )}
-                <button
-                  className="normal-case border border-gray-800 rounded-full text-xs flex items-center h-6 max-h-6 p-2 mr-2"
-                  onClick={onReplyClick}
-                >
+                <button className="replyButton" onClick={onReplyClick}>
                   Reply
                 </button>
               </div>

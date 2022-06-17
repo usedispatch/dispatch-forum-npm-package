@@ -13,28 +13,26 @@ export enum MessageType {
 }
 
 function getMessageTypeIcon(type?: MessageType): ReactNode {
-  let result : ReactNode;
+  let result: ReactNode;
 
   switch (type) {
     case MessageType.success:
-      result = 
-          <Success alt="success"/>
+      result = <Success alt="success" />;
       break;
     case MessageType.warning:
-      result = <Warning alt="warning"/>
+      result = <Warning alt="warning" />;
       break;
     case MessageType.error:
-      result = 
-        <Error alt="error"/>
+      result = <Error alt="error" />;
       break;
     case MessageType.info:
-      result = <Info alt="info"/>
+      result = <Info alt="info" />;
       break;
     default:
       break;
   }
 
-  return <div className="flex mr-2 h-8 w-8">{result}</div>;
+  return <div className="iconTypeContainer">{result}</div>;
 }
 
 interface PopUpModalProps {
@@ -58,43 +56,44 @@ export const PopUpModal = (props: PopUpModalProps) => {
   const icon = getMessageTypeIcon(props.messageType);
 
   return (
-    <>
+    <div className="popUpModal">
       <input
         type="checkbox"
         id={props.id}
         className="modal-toggle"
         ref={modalRef}
-      ></input>
-      <div className="modal bg-gray-600 bg-opacity-50">
-        <div className="modal-box bg-white">
-          <div className="font-bold text-lg flex items-center">
-            {!_.isNil(props.messageType) && icon}
-            {props.title}
+      />
+      <div className="modalContainer">
+        <div className="modalBox">
+          <div className="modalTitle">
+            <div className="titleTextIcon">
+              {!_.isNil(props.messageType) && icon}
+              {props.title}
+            </div>
+            {props.onClose && (
+              <label
+                htmlFor={props.id}
+                className="modalClose"
+                onClick={props.onClose}>
+                <div className="closeIcon">
+                  <Close />
+                </div>
+              </label>
+            )}
           </div>
-          {props.onClose && (
-            <label
-              htmlFor={props.id}
-              className="btn btn-sm absolute right-2 top-2 border-none"
-              onClick={props.onClose}
-            >
-              <div className=" h-4 w-4">
-                <Close />
-              </div>
-            </label>
-          )}
-          <div className="py-4 flex">{props.body}</div>
+          <div className="modalBody">{props.body}</div>
           {props.loading ? (
-            <div className="p-6">
+            <div className="modalLoading">
               <Spinner />
             </div>
           ) : (
-            <div className="flex justify-end">
-              <div className="modal-action mr-2">{props.cancelButton}</div>
-              <div className="modal-action">{props.okButton}</div>
+            <div className="modalActionsContainer">
+              <div className="cancelAction">{props.cancelButton}</div>
+              <div className="acceptAction">{props.okButton}</div>
             </div>
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

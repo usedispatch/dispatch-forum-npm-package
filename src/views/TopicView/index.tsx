@@ -1,6 +1,13 @@
-import './../../style.css'
+import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useMemo, useCallback, useContext } from "react";
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useMemo,
+  useCallback,
+  useContext,
+} from "react";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
@@ -10,7 +17,6 @@ import { TopicContent } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
-
 
 interface Props {
   // topicId?: number;
@@ -25,12 +31,11 @@ export const TopicView = (props: Props) => {
   const connected = Forum.isNotEmpty;
 
   const urlPath = window.location.toString();
-  const urlPathArray = urlPath.split('/')
+  const urlPathArray = urlPath.split("/");
   const topicString = urlPathArray.pop() ?? "";
-  urlPathArray.pop()
+  urlPathArray.pop();
   const collectionId = urlPathArray.pop() ?? "";
   const topicId = parseInt(topicString);
-
 
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
@@ -103,51 +108,46 @@ export const TopicView = (props: Props) => {
   }, [connected, collectionPublicKey, topic]);
 
   const disconnectedView = (
-    <div className="flex flex-col items-center">
-      <div className="text-center text-2xl font-medium w-[650px] pt-24 font-raleway">
-        {connected
-          ? `The topic with id ${topicId} does not exist`
-          : "Connect to your wallet in order to see the topic"}
-      </div>
+    <div className="disconnectedTopicView">
+      {connected
+        ? `The topic with id ${topicId} does not exist`
+        : "Connect to your wallet in order to see the topic"}
     </div>
   );
 
   return (
-    <div className="min-h-full" id="thread-view">
-      <PopUpModal
-        id="topic-info"
-        visible={!_.isNil(modalInfo)}
-        title={modalInfo?.title}
-        messageType={modalInfo?.type}
-        body={modalInfo?.body}
-        okButton={
-          <a
-            className="btn btn-primary bg-gray-800 text-white hover:bg-gray-700 hover:text-white border-2"
-            onClick={() => setModalInfo(null)}
-          >
-            OK
-          </a>
-        }
-      />
-      <div className="min-h-fit">
+    <div className="topicViewContainer">
+      {!_.isNil(modalInfo) && (
+        <PopUpModal
+          id="topic-info"
+          visible
+          title={modalInfo?.title}
+          messageType={modalInfo?.type}
+          body={modalInfo?.body}
+          okButton={
+            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
+              OK
+            </a>
+          }
+        />
+      )}
+      <div className="topicViewContent">
         <main>
-          <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div className="px-4 pb-6 sm:px-0">
-              {loading ? (
-                <div className="pt-48">
-                  <Spinner />
-                </div>
-              ) : topic ? (
-                <TopicContent
-                  topic={topic}
-                  forum={Forum}
-                  collectionId={collectionPublicKey}
-                  userRole={role!}
-                />
-              ) : (
-                disconnectedView
-              )}
-            </div>
+          <div className="topicViewBox">
+            {loading ? (
+              <div className="topicViewLoading">
+                <Spinner />
+              </div>
+            ) : topic ? (
+              <TopicContent
+                topic={topic}
+                forum={Forum}
+                collectionId={collectionPublicKey}
+                userRole={role!}
+              />
+            ) : (
+              disconnectedView
+            )}
           </div>
         </main>
       </div>

@@ -22,23 +22,21 @@ export function PostList(props: PostListProps) {
   const { publicKey } = Forum.wallet;
 
   const emptyList = (
-    <div className="flex flex-col items-center">
-      <div className="text-center text-xl font-medium w-[650px] pt-7 font-raleway">
-        The topic has no comments
-      </div>
+    <div className="emptyList">
+      <div className="text">The topic has no comments</div>
     </div>
   );
 
   return (
-    <>
+    <div className="postListContainer">
       {loading ? (
         <div>
-          <div className="border-t border-gray-400 mt-3 mb-8" />
+          <div className="spinnerDivider" />
           <Spinner />
         </div>
       ) : posts.length === 0 ? (
         <div>
-          <div className="border-t border-gray-400 mt-3" />
+          <div className="emptyListDivider" />
           {emptyList}
         </div>
       ) : (
@@ -62,6 +60,6 @@ export function PostList(props: PostListProps) {
           );
         })
       )}
-    </>
+    </div>
   );
 }

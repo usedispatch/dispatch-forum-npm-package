@@ -1,3 +1,20 @@
 @import "tailwindcss/base";
+
 @import "tailwindcss/components";
+
+@import "./styles/DeleteMesageButton.css";
+@import "./styles/PopUpModal.css";
+@import "./styles/Spinner.css";
+
+@import "./styles/CreatePost.css";
+@import "./styles/ForumContent.css";
+@import "./styles/PostContent.css";
+@import "./styles/PostReplies.css";
+@import "./styles/PostsList.css";
+@import "./styles/TopicContent.css";
+@import "./styles/TopicList.css";
+
+@import "./styles/ForumView.css";
+@import "./styles/TopicView.css";
+
 @import "tailwindcss/utilities";

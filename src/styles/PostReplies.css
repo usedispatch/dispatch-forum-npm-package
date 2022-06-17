@@ -1,0 +1,85 @@
+@layer components {
+  .repliesContainer {
+    font-family: Raleway, sans-serif;
+  }
+
+  .repliesDivider {
+    border-top-width: 1px;
+    border-color: #9ca3af;
+  }
+
+  .replyContent {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .replyHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding-bottom: 16px;
+
+    .posterId {
+      display: flex;
+      align-items: center;
+    }
+
+    .icon {
+      height: 28px;
+      width: 28px;
+      margin-right: 4px;
+    }
+
+    .walletId {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .postedAt {
+      font-size: 12px;
+      font-weight: 300;
+    }
+  }
+
+  .replyBody {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .replyActionsContainer {
+    display: flex;
+    align-items: center;
+
+    .deleteButton {
+      border-width: 1px;
+      border-color: #1f2937;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      width: 32px;
+      height: 24px;
+      max-height: 24px;
+      padding: 8px;
+      margin-right: 8px;
+
+      .icon {
+        height: 12px;
+        width: 12px;
+      }
+    }
+
+    .replyButton {
+      border-width: 1px;
+      border-color: #1f2937;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      height: 24px;
+      max-height: 24px;
+      padding: 8px;
+      margin-right: 8px;
+
+      font-size: 12px;
+    }
+  }
+}

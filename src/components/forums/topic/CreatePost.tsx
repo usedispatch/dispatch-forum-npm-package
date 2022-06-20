@@ -1,7 +1,7 @@
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 
-import { MessageType, PopUpModal, Spinner } from "../common";
+import { MessageType, PopUpModal, Spinner } from "../../common";
 
 interface CreatePostProps {
   topicId: number;

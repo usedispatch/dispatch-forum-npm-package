@@ -5,13 +5,13 @@ import * as web3 from "@solana/web3.js";
 
 import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
-import { Plus } from "../../assets";
-import { MessageType, PopUpModal, Spinner } from "../common";
-import { TopicList } from "./";
+import { Plus } from "../../../assets";
+import { MessageType, PopUpModal, Spinner } from "../../common";
+import { TopicList } from "..";
 
-import { DispatchForum } from "../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../utils/postbox/userRole";
-import { ForumContext } from "./../../contexts/DispatchProvider";
+import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
+import { UserRoleType } from "../../../utils/postbox/userRole";
+import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;

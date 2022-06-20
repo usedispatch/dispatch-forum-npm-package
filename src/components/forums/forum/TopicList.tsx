@@ -3,13 +3,13 @@ import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Spinner } from "../../components/common";
+import { Spinner } from "../../common";
 
 import {
   ForumContext,
   useForum,
   usePath,
-} from "./../../contexts/DispatchProvider";
+} from "./../../../contexts/DispatchProvider";
 
 interface TopicListProps {
   loading: boolean;

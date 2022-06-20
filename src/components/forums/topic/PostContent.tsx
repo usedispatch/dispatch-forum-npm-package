@@ -4,12 +4,12 @@ import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Trash } from "../../assets";
-import { MessageType, PopUpModal, Spinner } from "./../common";
-import { PostReplies } from "../forums";
+import { Trash } from "../../../assets";
+import { MessageType, PopUpModal, Spinner } from "./../../common";
+import { PostReplies } from "../topic/PostReplies";
 
-import { DispatchForum } from "../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../utils/postbox/userRole";
+import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
+import { UserRoleType } from "../../../utils/postbox/userRole";
 
 interface PostContentProps {
   forum: DispatchForum;

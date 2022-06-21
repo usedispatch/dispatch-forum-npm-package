@@ -342,7 +342,7 @@ export const ForumView = (props: ForumViewProps) => {
           </div>
         )}
         <main>
-          <div className="forumViewContent">
+          <div className="forumViewContentBox">
             <div>
               {loading ? (
                 <div className="forumLoading">

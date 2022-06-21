@@ -173,11 +173,11 @@
         font-size: 36px;
       }
 
-      .forumViewContent {
+      .forumViewContentBox {
         max-width: 1280px;
         margin-left: auto;
         margin-right: auto;
-        padding: 24px 32px;
+        padding: 24px 0;
 
         .forumLoading {
           padding-top: 192px;

@@ -11,12 +11,20 @@
     .commentsContainer {
       display: flex;
       align-items: center;
-      margin-right: 8px;
+      padding-right: 16px;
+      border-right: 1px solid #4f39a2;
       cursor: default;
+      color: #7b7b7b;
 
       .image {
         height: 12px;
         margin-right: 4px;
+
+        svg {
+          path {
+            fill: #7b7b7b;
+          }
+        }
       }
     }
 
@@ -24,11 +32,19 @@
       display: flex;
       align-items: center;
       cursor: pointer;
+      padding-left: 16px;
+      color: #4f39a2;
 
       .icon {
         margin-right: 4px;
         height: 12px;
         width: 12px;
+
+        svg {
+          path {
+            fill: #3f1d96;
+          }
+        }
       }
     }
   }
@@ -60,11 +76,11 @@
     border-radius: 10px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -81,14 +97,14 @@
     height: 48px;
     border-radius: 10px;
     border-width: 2px;
-    border-color: rgba(31, 41, 55, 1);
+    border-color: #3f1d96;
 
     background: white;
-    color: rgba(31, 41, 55, 1);
+    color: #3f1d96;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     &:hover {
       opacity: 0.85;
@@ -105,11 +121,11 @@
     border-radius: 6px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {

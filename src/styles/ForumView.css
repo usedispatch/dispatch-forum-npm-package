@@ -57,7 +57,7 @@
     border-radius: 10px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
@@ -78,10 +78,10 @@
     height: 48px;
     border-radius: 10px;
     border-width: 2px;
-    border-color: rgba(31, 41, 55, 1);
+    border-color: #3f1d96;
 
     background: white;
-    color: rgba(31, 41, 55, 1);
+    color: #3f1d96;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
@@ -102,7 +102,7 @@
     border-radius: 6px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
@@ -135,7 +135,7 @@
       margin-top: 4px;
       margin-bottom: 16px;
 
-      border-color: #d1d5db;
+      border-color: #3f1d96;
       border-width: 1px;
       border-radius: 6px;
 

@@ -336,11 +336,7 @@ export const ForumView = (props: ForumViewProps) => {
         />
       )}
       <div className="forumViewContent">
-        {!_.isNil(forum) && (
-          <div className="forumViewTitle">
-            Welcome to the forum {forum.title}
-          </div>
-        )}
+        {!_.isNil(forum) && <div className="forumViewTitle">{forum.title}</div>}
         <main>
           <div className="forumViewContentBox">
             <div>

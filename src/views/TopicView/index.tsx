@@ -133,7 +133,7 @@ export const TopicView = (props: Props) => {
       )}
       <div className="topicViewContent">
         <main>
-          <div className="topicViewBox">
+          <div>
             {loading ? (
               <div className="topicViewLoading">
                 <Spinner />

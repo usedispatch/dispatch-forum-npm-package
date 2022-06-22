@@ -13,7 +13,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
 
 import { PopUpModal, MessageType, Spinner } from "../../components/common";
-import { TopicContent } from "../../components/forums";
+import { PoweredByDispatch, TopicContent } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
@@ -151,6 +151,7 @@ export const TopicView = (props: Props) => {
           </div>
         </main>
       </div>
+      <PoweredByDispatch />
     </div>
   );
 };

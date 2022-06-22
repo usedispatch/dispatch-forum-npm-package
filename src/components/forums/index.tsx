@@ -1,3 +1,4 @@
+export * from "./PoweredByDispatch";
 export * from "./topic/CreatePost";
 export * from "./forum/ForumContent";
 export * from "./forum/TopicList";

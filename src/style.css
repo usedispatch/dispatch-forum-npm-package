@@ -17,4 +17,6 @@
 @import "./styles/ForumView.css";
 @import "./styles/TopicView.css";
 
+@import "./styles/PoweredByDispatch.css";
+
 @import "tailwindcss/utilities";

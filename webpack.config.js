@@ -1,5 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 module.exports = {
   entry: './src/index.ts',
   devtool: 'inline-source-map',
@@ -14,7 +16,7 @@ module.exports = {
       {        
         test: /\.css$/i,        
         include: path.resolve(__dirname, 'src'),        
-        use: ['style-loader', 'css-loader', 'postcss-loader'],      
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],  
       },
     ],
   },
@@ -26,18 +28,21 @@ module.exports = {
         symlinks: false
   },
   output: {
+    publicPath: 'auto',
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
     library:{
         name: "@usedispatch/forum",
         type:'umd',
     },
+    globalObject: 'this',
     // assetModuleFilename: 'assets/[name].svg',
   },
   plugins: [
     new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
     }),
+    new MiniCssExtractPlugin()
   ],
   externals: {
     react: 'react',

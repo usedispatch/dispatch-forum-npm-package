@@ -40,6 +40,8 @@
 
   .topicViewContainer {
     font-family: Manrope, sans-serif;
+    background: #f7f7fe;
+
     width: 100%;
     min-height: 90vh;
     height: 100%;

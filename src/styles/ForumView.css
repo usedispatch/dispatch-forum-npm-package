@@ -163,6 +163,7 @@
 
   .forumViewContainer {
     font-family: Manrope, sans-serif;
+    background: #f7f7fe;
 
     display: flex;
     flex-direction: column;

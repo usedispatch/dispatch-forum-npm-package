@@ -285,7 +285,7 @@ export function ForumContent(props: ForumContentProps) {
         />
       )}
       {forumHeader}
-      {role === UserRoleType.Owner && (
+      {(role === UserRoleType.Owner || role == UserRoleType.Moderator) && (
         <button
           className="manageModerators"
           onClick={() => setShowAddModerators(true)}>

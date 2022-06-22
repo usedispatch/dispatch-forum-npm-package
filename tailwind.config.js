@@ -19,7 +19,8 @@ module.exports = {
       //   '4xl': '2rem',
       // }
       fontFamily: {
-        'raleway': ['Raleway', 'sans-serif'] 
+        'raleway': ['Raleway', 'sans-serif'],
+        'manrope': ['Manrope', 'sans-serif']
       },
     },
   },

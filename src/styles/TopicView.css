@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
 
-    font-family: Raleway, sans-serif;
+    font-family: Manrope, sans-serif;
     font-size: 24px;
     font-weight: 500;
 
@@ -39,7 +39,7 @@
   }
 
   .topicViewContainer {
-    font-family: Raleway, sans-serif;
+    font-family: Manrope, sans-serif;
     width: 100%;
 
     .topicViewContent {

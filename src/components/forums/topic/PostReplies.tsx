@@ -2,9 +2,9 @@ import * as _ from "lodash";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Trash } from "../../assets";
-import { UserRoleType } from "../../utils/postbox/userRole";
-import { useForum } from "../../contexts/DispatchProvider";
+import { Trash } from "../../../assets";
+import { UserRoleType } from "../../../utils/postbox/userRole";
+import { useForum } from "../../../contexts/DispatchProvider";
 
 interface PostRepliesProps {
   userRole: UserRoleType;

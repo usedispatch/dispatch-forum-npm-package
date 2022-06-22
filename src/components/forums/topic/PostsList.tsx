@@ -1,11 +1,11 @@
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Spinner } from "../common";
-import { PostContent } from "../forums";
-import { UserRoleType } from "../../utils/postbox/userRole";
-import { DispatchForum } from "../../utils/postbox/postboxWrapper";
-import { useForum } from "../../contexts/DispatchProvider";
+import { Spinner } from "../../common";
+import { PostContent } from "../../forums";
+import { UserRoleType } from "../../../utils/postbox/userRole";
+import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
+import { useForum } from "../../../contexts/DispatchProvider";
 
 interface PostListProps {
   forum: DispatchForum;

@@ -1,122 +1,50 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import {
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-  useMemo,
-  useContext,
-} from "react";
-import { ForumInfo } from "@usedispatch/client";
-import * as web3 from "@solana/web3.js";
+import { useState } from "react";
 
-import { HomeLogo, Plus } from "../../assets";
-import { MessageType, PopUpModal, Spinner } from "../../components/common";
+import { HomeLogo } from "../../assets";
+import { PopUpModal } from "../../components/common";
 import { CardsContainer, PoweredByDispatch } from "../../components/forums";
-
-import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import { ForumContext } from "../../contexts/DispatchProvider";
+import { usePath } from "../../contexts/DispatchProvider";
 
 interface HomeViewProps {
   collectionId?: string;
 }
 
 export const HomeView = (props: HomeViewProps) => {
-  const Forum = useContext(ForumContext);
-  const wallet = Forum.wallet;
-  const { publicKey } = Forum.wallet;
-  const connected = Forum.isNotEmpty;
+  const { forumURL } = usePath();
 
-  const [forum, setForum] = useState<ForumInfo>();
-  const [showNewForumModal, setShowNewForumModal] = useState(false);
-  const [role, setRole] = useState<UserRoleType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [newModerators, setNewModerators] = useState<string[]>([]);
-  const [modalInfo, setModalInfo] = useState<{
-    title: string | ReactNode;
-    type: MessageType;
-    body?: string;
-  } | null>(null);
-
-  const urlPath = window.location.toString();
-  // const params = new URLSearchParams(this.props.match.params.id);
+  const [collectionId, setCollectionId] = useState("");
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <div className="homeViewContainer">
-      {!_.isNil(modalInfo) && (
+      {showModal && (
         <PopUpModal
-          id="create-forum-info"
+          id="create-your-own"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
-          okButton={
-            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-              OK
-            </a>
-          }
-        />
-      )}
-      {showNewForumModal && (
-        <PopUpModal
-          id="create-forum"
-          visible
-          title={"Create new Forum"}
+          title={"Please introduce your collection id"}
           body={
-            <div className="createForumBody">
-              <>
-                <span className="createForumLabel">Forum Title</span>
-                <input
-                  type="text"
-                  placeholder="Title"
-                  className="createForumTitle"
-                  name="name"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </>
-              <>
-                <span className="createForumLabel">Forum Description</span>
-                <textarea
-                  placeholder="Description"
-                  className="createForumTitle createForumDescription"
-                  maxLength={800}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </>
-              <>
-                <span className="createForumLabel">Moderators</span>
-                <input
-                  placeholder="Add moderators' wallet ID here, separated by commas"
-                  className="createForumTitle createForumTextArea"
-                  maxLength={800}
-                  value={newModerators}
-                  onChange={(e) => setNewModerators(e.target.value.split(","))}
-                />
-              </>
-            </div>
+            <input
+              type="text"
+              placeholder="Collection id"
+              className="createYourOwnModal"
+              value={collectionId}
+              onChange={(e) => setCollectionId(e.target.value)}
+            />
           }
+          onClose={() => setShowModal(false)}
           okButton={
             <button
               type="submit"
-              className="acceptCreateForumButton"
+              className="goToForumButton"
+              disabled={collectionId.length === 0}
               onClick={() => {
-                setShowNewForumModal(false);
+                window.open(`${forumURL}/${collectionId}`, "_self");
+                setShowModal(false);
               }}>
-              Create
+              Go
             </button>
-          }
-          cancelButton={
-            <div
-              className="cancelCreateForumButton"
-              onClick={() => setShowNewForumModal(false)}>
-              Cancel
-            </div>
           }
         />
       )}
@@ -130,7 +58,9 @@ export const HomeView = (props: HomeViewProps) => {
               elementum senectus purus
             </div>
             <div className="createContainer">
-              <button>Create your own</button>
+              <button onClick={() => setShowModal(true)}>
+                Create your own
+              </button>
             </div>
           </div>
           <div className="logo">

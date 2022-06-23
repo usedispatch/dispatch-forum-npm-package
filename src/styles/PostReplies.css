@@ -5,7 +5,7 @@
 
   .repliesDivider {
     border-top-width: 1px;
-    border-color: #bcbec2;
+    border-color: #b8b9dc;
   }
 
   .replyContent {
@@ -31,17 +31,21 @@
 
     .walletId {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
+      color: #4a279c;
     }
 
     .postedAt {
       font-size: 12px;
       font-weight: 300;
+      color: #86878e;
     }
   }
 
   .replyBody {
     font-size: 14px;
+    color: #414149;
+
     margin-bottom: 20px;
   }
 

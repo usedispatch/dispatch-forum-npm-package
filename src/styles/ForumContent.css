@@ -14,6 +14,8 @@
 
   .forumContentHeader .description {
     font-family: Manrope, sans-serif;
+    color: #414149;
+
     margin-right: 40px;
   }
 
@@ -101,7 +103,7 @@
     border-radius: 6px;
     border-color: #3f1d96;
 
-    background: white;
+    background: transparent;
     color: #3f1d96;
     font-size: 14px;
     font-weight: 600;

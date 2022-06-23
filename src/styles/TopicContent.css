@@ -101,6 +101,8 @@
         .subj {
           font-weight: 600;
           font-size: 20px;
+          color: #1e1e26;
+
           padding-bottom: 6px;
         }
 
@@ -116,6 +118,7 @@
         }
 
         .posterId {
+          color: #414149;
           font-size: 12px;
           font-weight: 400;
         }
@@ -124,10 +127,12 @@
       .postedAt {
         font-size: 12px;
         font-weight: 300;
+        color: #86878e;
       }
 
       .topicBody {
         font-size: 14px;
+        color: #414149;
       }
     }
 

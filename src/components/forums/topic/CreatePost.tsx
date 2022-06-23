@@ -82,6 +82,7 @@ export function CreatePost(props: CreatePostProps) {
               <div className="formContainer">
                 <textarea
                   className="postContent"
+                  placeholder="Type your comment here"
                   required
                   maxLength={800}
                   name="post"

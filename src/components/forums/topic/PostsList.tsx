@@ -30,15 +30,11 @@ export function PostList(props: PostListProps) {
   return (
     <div className="postListContainer">
       {loading ? (
-        <div>
-          <div className="spinnerDivider" />
+        <div className="postListSpinnerContainer">
           <Spinner />
         </div>
       ) : posts.length === 0 ? (
-        <div>
-          <div className="emptyListDivider" />
-          {emptyList}
-        </div>
+        emptyList
       ) : (
         posts.map((post) => {
           const deletePermission = publicKey

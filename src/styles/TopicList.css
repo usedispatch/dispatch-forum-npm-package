@@ -1,8 +1,13 @@
 @layer components {
   .topicListContainer {
-    font-family: Raleway, sans-serif;
+    font-family: Manrope, sans-serif;
 
-    margin: 16px 0;
+    margin: 50px 0 16px;
+    padding: 24px;
+
+    background: white;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+    border-radius: 12px;
 
     .tableContainer {
       width: 100%;
@@ -26,9 +31,11 @@
 
     .tableHeader {
       border-bottom-width: 1px;
-      border-color: black;
+      border-color: #2e008b;
 
       .tableHeaderTitle {
+        color: #2e008b;
+
         padding-bottom: 8px;
       }
 
@@ -76,11 +83,11 @@
     border-radius: 10px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -96,15 +103,14 @@
     padding: 0 16px;
     height: 48px;
     border-radius: 10px;
-    border-width: 2px;
-    border-color: rgba(31, 41, 55, 1);
+    border: solid 2px #3f1d96;
 
     background: white;
-    color: rgba(31, 41, 55, 1);
+    color: #3f1d96;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     &:hover {
       opacity: 0.85;
@@ -121,11 +127,11 @@
     border-radius: 6px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -156,7 +162,7 @@
 
   .row {
     cursor: pointer;
-    border-bottom: 1px solid #c4c4c4;
+    border-bottom: 1px solid #b8b9dc;
 
     &:hover {
       background: #dbeafe;
@@ -165,7 +171,7 @@
     .rowSubj {
       max-width: 576px;
       width: 576px;
-      padding: 16px 0;
+      padding: 20px 0;
       font-weight: 600;
 
       text-align: left;
@@ -181,10 +187,12 @@
 
     .rowAmountReplies {
       text-align: center;
+      color: #414149;
     }
 
     .rowDate {
       text-align: center;
+      color: #414149;
     }
   }
 }

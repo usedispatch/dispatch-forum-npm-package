@@ -1,16 +1,15 @@
 @layer components {
   .repliesContainer {
-    font-family: Raleway, sans-serif;
+    font-family: Manrope, sans-serif;
   }
 
   .repliesDivider {
     border-top-width: 1px;
-    border-color: #9ca3af;
+    border-color: #b8b9dc;
   }
 
   .replyContent {
-    margin-top: 24px;
-    margin-bottom: 24px;
+    margin: 18px 0;
   }
 
   .replyHeader {
@@ -32,27 +31,31 @@
 
     .walletId {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
+      color: #4a279c;
     }
 
     .postedAt {
       font-size: 12px;
       font-weight: 300;
+      color: #86878e;
     }
   }
 
   .replyBody {
     font-size: 14px;
-    margin-bottom: 12px;
+    color: #414149;
+
+    margin-bottom: 20px;
   }
 
   .replyActionsContainer {
     display: flex;
     align-items: center;
+    text-transform: capitalize;
 
     .deleteButton {
-      border-width: 1px;
-      border-color: #1f2937;
+      border: 1px solid #3f1d96;
       border-radius: 9999px;
       display: flex;
       align-items: center;
@@ -62,15 +65,15 @@
       padding: 8px;
       margin-right: 8px;
 
-      .icon {
-        height: 12px;
-        width: 12px;
+      svg {
+        path {
+          fill: #3f1d96;
+        }
       }
     }
 
     .replyButton {
-      border-width: 1px;
-      border-color: #1f2937;
+      border: 1px solid #3f1d96;
       border-radius: 9999px;
       display: flex;
       align-items: center;
@@ -79,6 +82,7 @@
       padding: 8px;
       margin-right: 8px;
 
+      color: #3f1d96;
       font-size: 12px;
     }
   }

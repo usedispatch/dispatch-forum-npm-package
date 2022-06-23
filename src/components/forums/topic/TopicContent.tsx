@@ -118,7 +118,6 @@ export function TopicContent(props: TopicContentProps) {
           </div>
         )}
       </div>
-      <div className="border-t border-gray-400 mt-3 pb-8" />
     </>
   );
 
@@ -179,14 +178,16 @@ export function TopicContent(props: TopicContentProps) {
           }
         />
       )}
-      <TopicHeader topic={topic} />
-      {data}
-      <CreatePost
-        topicId={topic.postId}
-        collectionId={collectionId}
-        createForumPost={forum.createForumPost}
-        onReload={() => getMessages()}
-      />
+      <div className="topicContentBox">
+        <TopicHeader topic={topic} />
+        {data}
+        <CreatePost
+          topicId={topic.postId}
+          collectionId={collectionId}
+          createForumPost={forum.createForumPost}
+          onReload={() => getMessages()}
+        />
+      </div>
       <PostList
         forum={forum}
         collectionId={collectionId}

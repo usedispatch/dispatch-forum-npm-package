@@ -1,15 +1,9 @@
 @layer components {
-  .divider {
-    border-top-width: 1px;
-    border-color: #9ca3af;
-  }
-
   .postContentContainer {
-    font-family: Raleway, sans-serif;
-    margin-top: 24px;
-    margin-bottom: 24px;
-    margin-left: 8px;
-    margin-right: 8px;
+    font-family: Manrope, sans-serif;
+    margin-top: 40px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid #b8b9dc;
   }
 
   .deleteSpinner {
@@ -31,11 +25,11 @@
     border-radius: 10px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -52,14 +46,14 @@
     height: 48px;
     border-radius: 10px;
     border-width: 2px;
-    border-color: rgba(31, 41, 55, 1);
+    border-color: #3f1d96;
 
     background: white;
-    color: rgba(31, 41, 55, 1);
+    color: #3f1d96;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     &:hover {
       opacity: 0.85;
@@ -76,11 +70,11 @@
     border-radius: 6px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -107,17 +101,21 @@
 
     .walletId {
       font-size: 14px;
-      font-weight: 500;
+      font-weight: 600;
+      color: #4a279c;
     }
 
     .postedAt {
       font-size: 12px;
       font-weight: 300;
+      color: #86878e;
     }
   }
 
   .postBody {
+    color: #414149;
     font-size: 14px;
+
     margin-bottom: 12px;
   }
 
@@ -126,8 +124,7 @@
     align-items: center;
 
     .deleteButton {
-      border-width: 1px;
-      border-color: #1f2937;
+      border: 1px solid #3f1d96;
       border-radius: 9999px;
       display: flex;
       align-items: center;
@@ -136,11 +133,16 @@
       max-height: 24px;
       padding: 8px;
       margin-right: 8px;
+
+      svg {
+        path {
+          fill: #3f1d96;
+        }
+      }
     }
 
     .replyButton {
-      border-width: 1px;
-      border-color: #1f2937;
+      border: 1px solid #3f1d96;
       border-radius: 9999px;
       display: flex;
       align-items: center;
@@ -149,19 +151,20 @@
       padding: 8px;
       margin-right: 8px;
 
+      color: #3f1d96;
       font-size: 12px;
     }
   }
 
   .repliesSection {
     margin-top: 16px;
-    margin-left: 24px;
+    margin-left: 12px;
     padding-top: 2px;
     border-left-width: 1px;
-    border-color: #9ca3af;
+    border-color: #b8b9dc;
 
     .repliesBox {
-      padding-left: 16px;
+      padding-left: 24px;
     }
 
     .replyForm {
@@ -169,8 +172,8 @@
       flex-direction: column;
       align-items: flex-end;
       margin-top: 24px;
-      margin-bottom: 56px;
-      padding-left: 16px;
+      margin-bottom: 10px;
+      padding-left: 24px;
     }
 
     .replyTextArea {
@@ -179,7 +182,7 @@
       padding: 8px 16px;
       margin-top: 4px;
 
-      border-color: #1f2937;
+      border-color: #4a279c;
       border-width: 1px;
       border-radius: 16px;
 
@@ -208,11 +211,11 @@
       border-radius: 10px;
 
       cursor: pointer;
-      background: rgba(31, 41, 55, 1);
+      background: #3f1d96;
       color: white;
       font-size: 14px;
       text-align: center;
-      text-transform: uppercase;
+      text-transform: capitalize;
       font-weight: 600;
 
       &:hover {
@@ -230,14 +233,14 @@
       height: 48px;
       border-radius: 10px;
       border-width: 2px;
-      border-color: rgba(31, 41, 55, 1);
+      border-color: #3f1d96;
 
       background: white;
-      color: rgba(31, 41, 55, 1);
+      color: #3f1d96;
       font-size: 14px;
       font-weight: 600;
       text-align: center;
-      text-transform: uppercase;
+      text-transform: capitalize;
 
       &:hover {
         opacity: 0.85;

@@ -1,46 +1,4 @@
 @layer components {
-  .data {
-    display: flex;
-    justify-content: flex-start;
-
-    font-family: Raleway, sans-serif;
-    font-weight: 300;
-    font-size: 12px;
-    color: #1f2937;
-
-    .commentsContainer {
-      display: flex;
-      align-items: center;
-      margin-right: 8px;
-      cursor: default;
-
-      .image {
-        height: 12px;
-        margin-right: 4px;
-      }
-    }
-
-    .delete {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-
-      .icon {
-        margin-right: 4px;
-        height: 12px;
-        width: 12px;
-      }
-    }
-  }
-
-  .topicContentContainer {
-    font-family: Raleway, sans-serif;
-    margin-top: 24px;
-    margin-bottom: 24px;
-    margin-left: 8px;
-    margin-right: 8px;
-  }
-
   .deleteSpinner {
     display: flex;
     align-items: center;
@@ -60,11 +18,11 @@
     border-radius: 10px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -81,14 +39,14 @@
     height: 48px;
     border-radius: 10px;
     border-width: 2px;
-    border-color: rgba(31, 41, 55, 1);
+    border-color: #3f1d96;
 
     background: white;
-    color: rgba(31, 41, 55, 1);
+    color: #3f1d96;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
 
     &:hover {
       opacity: 0.85;
@@ -105,11 +63,11 @@
     border-radius: 6px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -117,52 +75,120 @@
     }
   }
 
-  .topicHeader {
-    font-family: Raleway, sans-serif;
-    margin-top: 16px;
-    margin-bottom: 48px;
+  .topicContentBox {
+    background: white;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+    border-radius: 12px;
 
-    .topicTitle {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding-bottom: 40px;
-    }
+    padding: 24px 24px 0;
 
-    .left {
-      display: flex;
-      flex-direction: column;
+    .topicHeader {
+      font-family: Manrope, sans-serif;
+      margin-top: 16px;
+      margin-bottom: 48px;
 
-      .subj {
-        font-weight: 600;
-        font-size: 20px;
-        padding-bottom: 6px;
+      .topicTitle {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding-bottom: 40px;
       }
 
-      .poster {
+      .left {
+        display: flex;
+        flex-direction: column;
+
+        .subj {
+          font-weight: 600;
+          font-size: 20px;
+          color: #1e1e26;
+
+          padding-bottom: 6px;
+        }
+
+        .poster {
+          display: flex;
+          align-items: center;
+        }
+
+        .icon {
+          height: 22px;
+          width: 22px;
+          margin-right: 4px;
+        }
+
+        .posterId {
+          color: #414149;
+          font-size: 12px;
+          font-weight: 400;
+        }
+      }
+
+      .postedAt {
+        font-size: 12px;
+        font-weight: 300;
+        color: #86878e;
+      }
+
+      .topicBody {
+        font-size: 14px;
+        color: #414149;
+      }
+    }
+
+    .data {
+      display: flex;
+      justify-content: flex-start;
+
+      font-family: Manrope, sans-serif;
+      font-weight: 300;
+      font-size: 12px;
+      color: #1f2937;
+
+      border-bottom: 1px solid #b8b9dc;
+      padding-bottom: 12px;
+      margin-bottom: 32px;
+
+      .commentsContainer {
         display: flex;
         align-items: center;
+        padding-right: 16px;
+        cursor: default;
+        color: #7b7b7b;
+
+        .image {
+          height: 12px;
+          margin-right: 4px;
+
+          svg {
+            path {
+              fill: #7b7b7b;
+            }
+          }
+        }
       }
 
-      .icon {
-        height: 22px;
-        width: 22px;
-        margin-right: 4px;
+      .delete {
+        display: flex;
+        align-items: center;
+
+        cursor: pointer;
+        padding-left: 16px;
+        border-left: 1px solid #4f39a2;
+        color: #4f39a2;
+
+        .icon {
+          margin-right: 4px;
+          height: 12px;
+          width: 12px;
+
+          svg {
+            path {
+              fill: #3f1d96;
+            }
+          }
+        }
       }
-
-      .posterId {
-        font-size: 12px;
-        font-weight: 400;
-      }
-    }
-
-    .postedAt {
-      font-size: 12px;
-      font-weight: 300;
-    }
-
-    .topicBody {
-      font-size: 14px;
     }
   }
 }

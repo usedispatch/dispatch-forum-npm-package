@@ -29,7 +29,7 @@
     width: 100%;
     padding: 8px 16px;
 
-    border-color: #1f2937;
+    border-color: #4a279c;
     border-width: 1px;
     border-radius: 16px;
   }
@@ -55,11 +55,11 @@
     padding: 0 30px;
     border-radius: 10px;
 
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -81,7 +81,7 @@
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
   }
 }

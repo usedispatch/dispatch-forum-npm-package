@@ -116,7 +116,6 @@ export function PostContent(props: PostContentProps) {
 
   return (
     <>
-      <div className="divider" />
       <div className="postContentContainer">
         {_.isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal

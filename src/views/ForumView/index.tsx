@@ -13,7 +13,7 @@ import * as web3 from "@solana/web3.js";
 
 import { Plus } from "../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../components/common";
-import { ForumContent } from "../../components/forums";
+import { ForumContent, PoweredByDispatch } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
@@ -336,13 +336,9 @@ export const ForumView = (props: ForumViewProps) => {
         />
       )}
       <div className="forumViewContent">
-        {!_.isNil(forum) && (
-          <div className="forumViewTitle">
-            Welcome to the forum {forum.title}
-          </div>
-        )}
+        {!_.isNil(forum) && <div className="forumViewTitle">{forum.title}</div>}
         <main>
-          <div className="forumViewContent">
+          <div className="forumViewContentBox">
             <div>
               {loading ? (
                 <div className="forumLoading">
@@ -365,6 +361,7 @@ export const ForumView = (props: ForumViewProps) => {
           </div>
         </main>
       </div>
+      <PoweredByDispatch />
     </div>
   );
 };

@@ -3,6 +3,7 @@
     height: auto;
     margin: 0;
     margin-bottom: 48px;
+    padding: 0 24px;
   }
 
   .forumContentHeader .box {
@@ -12,7 +13,9 @@
   }
 
   .forumContentHeader .description {
-    font-family: Raleway, sans-serif;
+    font-family: Manrope, sans-serif;
+    color: #414149;
+
     margin-right: 40px;
   }
 
@@ -25,11 +28,11 @@
     padding: 16px;
     border-radius: 6px;
 
-    background: rgba(31, 41, 55, 1);
+    background: #3f1d96;
     color: white;
     font-size: 14px;
     text-align: center;
-    text-transform: uppercase;
+    text-transform: capitalize;
     font-weight: 600;
 
     &:hover {
@@ -42,9 +45,9 @@
     }
 
     .buttonImageContainer {
-      margin-right: 8px;
-      height: 14px;
-      width: 14px;
+      margin-right: 5px;
+      height: 12px;
+      width: 12px;
     }
   }
 
@@ -98,10 +101,10 @@
     padding: 0 16px;
     border-width: 1px;
     border-radius: 6px;
-    border-color: rgba(31, 41, 55, 1);
+    border-color: #3f1d96;
 
-    background: white;
-    color: rgba(31, 41, 55, 1);
+    background: transparent;
+    color: #3f1d96;
     font-size: 14px;
     font-weight: 600;
     text-align: center;
@@ -127,7 +130,7 @@
     justify-content: justify-end;
     margin-bottom: 12px;
     width: 100%;
-    font-family: Raleway, sans-serif;
+    font-family: Manrope, sans-serif;
   }
 
   .addModeratorsLabel {
@@ -179,11 +182,11 @@
       padding: 0 16px;
       border-radius: 6px;
 
-      background: rgba(31, 41, 55, 1);
+      background: #3f1d96;
       color: white;
       font-size: 14px;
       text-align: center;
-      text-transform: uppercase;
+      text-transform: capitalize;
       font-weight: 600;
 
       &:hover {
@@ -205,14 +208,14 @@
       padding: 0 16px;
       border-radius: 6px;
       border-width: 2px;
-      border-color: rgba(31, 41, 55, 1);
+      border-color: #3f1d96;
 
       background: white;
-      color: rgba(31, 41, 55, 1);
+      color: #3f1d96;
       font-size: 14px;
       font-weight: 600;
       text-align: center;
-      text-transform: uppercase;
+      text-transform: capitalize;
 
       &:hover {
         opacity: 0.85;

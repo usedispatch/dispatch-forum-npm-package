@@ -4,9 +4,9 @@ export function PoweredByDispatch(props: any) {
   return (
     <div className="poweredByDispatch">
       <a
-        onClick={() =>
-          window.open(`https://twitter.com/usedispatch`, "_blank")
-        }>
+        href="https://twitter.com/usedispatch"
+        rel="noopener noreferrer"
+        target="_blank">
         <div>powered by</div>
         <DispatchLogo />
       </a>

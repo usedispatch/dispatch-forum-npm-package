@@ -17,7 +17,9 @@ export const Card = (props: CardProps) => {
     <div className="cardContainer">
       <a
         className="cardContent"
-        onClick={() => window.open(`${forumURL}/${collectionId}`, "_self")}>
+        href={`${forumURL}/${collectionId}`}
+        rel="noopener noreferrer"
+        target="_self">
         <div className="cardImage">
           <img src={src} />
         </div>

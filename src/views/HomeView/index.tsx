@@ -7,9 +7,7 @@ import { PopUpModal } from "../../components/common";
 import { CardsContainer, PoweredByDispatch } from "../../components/forums";
 import { usePath } from "../../contexts/DispatchProvider";
 
-interface HomeViewProps {
-  collectionId?: string;
-}
+interface HomeViewProps {}
 
 export const HomeView = (props: HomeViewProps) => {
   const { forumURL } = usePath();
@@ -36,7 +34,7 @@ export const HomeView = (props: HomeViewProps) => {
           onClose={() => setShowModal(false)}
           okButton={
             <button
-              type="submit"
+              type="button"
               className="goToForumButton"
               disabled={collectionId.length === 0}
               onClick={() => {

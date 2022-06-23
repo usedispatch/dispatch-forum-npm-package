@@ -1,0 +1,33 @@
+@layer components {
+  .cardContainer {
+    .cardContent {
+      cursor: pointer;
+    }
+
+    .cardImage {
+      display: flex;
+      justify-content: center;
+
+      width: 315px;
+      height: 183px;
+
+      img {
+        border-radius: 12px;
+      }
+    }
+
+    .cardName {
+      font-weight: 600;
+      font-size: 20px;
+      color: #414149;
+
+      padding-top: 4px;
+    }
+
+    .collectionId {
+      color: #86878e;
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
+}

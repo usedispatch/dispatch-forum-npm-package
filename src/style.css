@@ -6,15 +6,24 @@
 @import "./styles/PopUpModal.css";
 @import "./styles/Spinner.css";
 
-@import "./styles/CreatePost.css";
+/* Forum */
 @import "./styles/ForumContent.css";
+@import "./styles/TopicList.css";
+
+/* Home */
+@import "./styles/CardsContainer.css";
+@import "./styles/Card.css";
+
+/* Topic */
+@import "./styles/CreatePost.css";
 @import "./styles/PostContent.css";
 @import "./styles/PostReplies.css";
 @import "./styles/PostsList.css";
 @import "./styles/TopicContent.css";
-@import "./styles/TopicList.css";
 
+/* Views */
 @import "./styles/ForumView.css";
+@import "./styles/HomeView.css";
 @import "./styles/TopicView.css";
 
 @import "./styles/PoweredByDispatch.css";

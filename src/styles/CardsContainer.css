@@ -1,0 +1,30 @@
+@layer components {
+  .cardsContainer {
+    padding-bottom: 48px;
+
+    .cardsContent {
+      margin-left: 60px;
+      margin-right: 60px;
+    }
+
+    .cardsContainerTitle {
+      font-weight: 600;
+      font-size: 32px;
+      line-height: 40px;
+      color: #2e008b;
+
+      padding-bottom: 24px;
+    }
+
+    .cardsGrid {
+      display: grid;
+      grid-auto-flow: row;
+      grid-gap: 30px 20px;
+      grid-template-columns: 25% 25% 25% 25%;
+      justify-items: center;
+      justify-content: start;
+      align-items: start;
+      align-content: center;
+    }
+  }
+}

@@ -2,7 +2,6 @@ export * from "./Close";
 export * from "./DispatchLogo";
 export * from "./Error";
 export * from "./ForumLogo";
-export * from "./HomeLogo";
 export * from "./InboxLogo";
 export * from "./Info";
 export * from "./LogoV2";

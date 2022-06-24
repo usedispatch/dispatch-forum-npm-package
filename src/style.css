@@ -10,10 +10,6 @@
 @import "./styles/ForumContent.css";
 @import "./styles/TopicList.css";
 
-/* Home */
-@import "./styles/CardsContainer.css";
-@import "./styles/Card.css";
-
 /* Topic */
 @import "./styles/CreatePost.css";
 @import "./styles/PostContent.css";
@@ -23,7 +19,6 @@
 
 /* Views */
 @import "./styles/ForumView.css";
-@import "./styles/HomeView.css";
 @import "./styles/TopicView.css";
 
 @import "./styles/PoweredByDispatch.css";

@@ -1,4 +1,6 @@
 export { Counter } from "./components/counter";
+export { PopUpModal, MessageType } from "./components/common/PopUpModal";
+export { PoweredByDispatch } from "./components/forums/PoweredByDispatch";
 export { ForumContent } from "./components/forums/forum/ForumContent";
 export { DispatchProvider, useForum } from "./contexts/DispatchProvider";
 export type { DispatchAppProps } from "./contexts/DispatchProvider";

@@ -4,7 +4,6 @@ import {
   useState,
   useEffect,
   ReactNode,
-  useMemo,
   useCallback,
   useContext,
 } from "react";
@@ -30,12 +29,7 @@ export const TopicView = (props: Props) => {
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
 
-  const urlPath = window.location.toString();
-  const urlPathArray = urlPath.split("/");
-  const topicString = urlPathArray.pop() ?? "";
-  urlPathArray.pop();
-  const collectionId = urlPathArray.pop() ?? "";
-  const topicId = parseInt(topicString);
+  const [topicId, setTopicId] = useState<number>(0);
 
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
@@ -46,13 +40,32 @@ export const TopicView = (props: Props) => {
   } | null>(null);
   const [role, setRole] = useState<UserRoleType | null>(null);
 
-  const collectionPublicKey = useMemo(
-    () => new web3.PublicKey(collectionId),
-    [collectionId]
-  );
+
+  const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
+  const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
+
+
+  useEffect(() => {
+    const urlPath = window.location.toString();
+    const urlPathArray = urlPath.split("/");
+    const topicString = urlPathArray.pop() ?? "";
+    urlPathArray.pop();
+    const collectionId = urlPathArray.pop() ?? "";
+    const topicId = parseInt(topicString);
+    setCollectionPublicKey(new web3.PublicKey(collectionId));
+    setTopicId(topicId)
+    const collectionID = `${collectionId.slice(
+      0,
+      4
+    )}...${collectionId.slice(-4)}`;
+
+    setCroppedCollectionId(collectionID)
+  }, [])
+
 
   const getUserRole = useCallback(async () => {
     try {
+      
       const role = await userRole(Forum, collectionPublicKey);
       setRole(role);
     } catch (error) {
@@ -67,6 +80,7 @@ export const TopicView = (props: Props) => {
   const getTopicData = async () => {
     setLoading(true);
     try {
+            
       const res = await Forum.getTopicData(topicId, collectionPublicKey);
       setTopic(res);
       setLoading(false);
@@ -142,6 +156,7 @@ export const TopicView = (props: Props) => {
               <TopicContent
                 topic={topic}
                 forum={Forum}
+                
                 collectionId={collectionPublicKey}
                 userRole={role!}
               />

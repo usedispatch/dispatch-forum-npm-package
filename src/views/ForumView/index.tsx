@@ -5,7 +5,6 @@ import {
   useEffect,
   ReactNode,
   useCallback,
-  useMemo,
   useContext,
 } from "react";
 import { ForumInfo } from "@usedispatch/client";
@@ -72,19 +71,22 @@ export const ForumView = (props: ForumViewProps) => {
     body?: string;
   } | null>(null);
 
-  const urlPath = window.location.toString();
-  // const params = new URLSearchParams(this.props.match.params.id);
+  const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
+  const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 
-  const collectionId = urlPath.split("/").pop() ?? "";
-  const collectionPublicKey = useMemo(
-    () => new web3.PublicKey(collectionId),
-    [collectionId]
-  );
 
-  const croppedCollectiondID = `${collectionId.slice(
-    0,
-    4
-  )}...${collectionId.slice(-4)}`;
+  useEffect(() => {
+    const urlPath = window.location.toString();
+    const collectionId = urlPath.split("/").pop() ?? "";
+    setCollectionPublicKey(new web3.PublicKey(collectionId));
+  
+    const collectionID = `${collectionId.slice(
+      0,
+      4
+    )}...${collectionId.slice(-4)}`;
+
+    setCroppedCollectionId(collectionID)
+  }, [])
 
   const getForumForCollection = async () => {
     try {
@@ -109,7 +111,8 @@ export const ForumView = (props: ForumViewProps) => {
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        body: `The forum for the collection ${croppedCollectiondID} could not be fetched.`,
+        
+        body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
       });
     }
   };
@@ -129,6 +132,7 @@ export const ForumView = (props: ForumViewProps) => {
 
   const getModerators = useCallback(async () => {
     try {
+      
       const mods = await Forum.getModerators(collectionPublicKey);
       if (!_.isNil(mods)) {
         setForum({ ...forum, moderators: mods ?? [] } as ForumInfo);
@@ -162,7 +166,7 @@ export const ForumView = (props: ForumViewProps) => {
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
-          body: `The forum '${title}' for the collection ${croppedCollectiondID} could not be created.`,
+          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
         });
       }
 
@@ -173,7 +177,7 @@ export const ForumView = (props: ForumViewProps) => {
         ),
         title: title,
         description: description,
-        collectionId: new web3.PublicKey(collectionId),
+        collectionId: collectionPublicKey,
       } as ForumInfo;
 
       const createdForum = await Forum.createForum(forum);
@@ -182,7 +186,7 @@ export const ForumView = (props: ForumViewProps) => {
         getForumForCollection();
         setModalInfo({
           title: `The forum  was created!`,
-          body: `The forum '${title}' for the collection ${croppedCollectiondID} was created`,
+          body: `The forum '${title}' for the collection ${croppedCollectionID} was created`,
           type: MessageType.success,
         });
       }
@@ -191,7 +195,7 @@ export const ForumView = (props: ForumViewProps) => {
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        body: `The forum '${title}' for the collection ${croppedCollectiondID} could not be created.`,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
       });
     }
   };

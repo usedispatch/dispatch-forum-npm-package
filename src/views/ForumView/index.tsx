@@ -18,7 +18,7 @@ import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { ForumContext } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
-  collectionId?: string;
+  collectionId: string;
 }
 
 /**
@@ -58,6 +58,8 @@ export const ForumView = (props: ForumViewProps) => {
   const { publicKey } = Forum.wallet;
   const connected = Forum.isNotEmpty;
 
+  const collectionId = props.collectionId;
+
   const [forum, setForum] = useState<ForumInfo>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [role, setRole] = useState<UserRoleType | null>(null);
@@ -76,16 +78,18 @@ export const ForumView = (props: ForumViewProps) => {
 
 
   useEffect(() => {
-    const urlPath = window.location.toString();
-    const collectionId = urlPath.split("/").pop() ?? "";
-    setCollectionPublicKey(new web3.PublicKey(collectionId));
-  
-    const collectionID = `${collectionId.slice(
-      0,
-      4
-    )}...${collectionId.slice(-4)}`;
+    try {
+      const collectionIdKey = new web3.PublicKey(collectionId);
+      setCollectionPublicKey(collectionIdKey);
+      setCroppedCollectionId(collectionId)
+    } catch {
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "Invalid Collection ID Public Key",
+      });
+    }
 
-    setCroppedCollectionId(collectionID)
   }, [])
 
   const getForumForCollection = async () => {

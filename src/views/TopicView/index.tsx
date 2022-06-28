@@ -15,7 +15,7 @@ import { PopUpModal, MessageType, Spinner } from "../../components/common";
 import { PoweredByDispatch, TopicContent } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import { ForumContext } from "./../../contexts/DispatchProvider";
+import { ForumContext, usePath } from "./../../contexts/DispatchProvider";
 
 interface Props {
   topicId: number;
@@ -39,7 +39,8 @@ export const TopicView = (props: Props) => {
     body?: string;
   } | null>(null);
   const [role, setRole] = useState<UserRoleType | null>(null);
-
+  const {buildForumPath} = usePath();
+  const forumPath = buildForumPath(collectionId);
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
@@ -150,13 +151,22 @@ export const TopicView = (props: Props) => {
                 <Spinner />
               </div>
             ) : topic ? (
-              <TopicContent
-                topic={topic}
-                forum={Forum}
-                
-                collectionId={collectionPublicKey}
-                userRole={role!}
-              />
+              <>
+                <a href={forumPath}>
+                  <button 
+                    className="backButton"
+                  >
+                    Back
+                  </button>
+                </a>
+                <TopicContent
+                  topic={topic}
+                  forum={Forum}
+                  
+                  collectionId={collectionPublicKey}
+                  userRole={role!}
+                />
+              </>
             ) : (
               disconnectedView
             )}

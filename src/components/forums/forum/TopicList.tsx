@@ -71,7 +71,8 @@ interface RowContentProps {
 function RowContent(props: RowContentProps) {
   const { collectionId, topic } = props;
   const Forum = useForum();
-  const { baseURL, forumURL, topicURL } = usePath();
+  const { buildTopicPath } = usePath();
+  const topicPath = buildTopicPath(collectionId.toBase58(), topic.postId);
 
   const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
@@ -143,19 +144,16 @@ function RowContent(props: RowContentProps) {
   );
 
   return (
-    // <Link={ `/forum/${collectionId.toBase58()}/topic/${topic.postId}`}
-    // key={`topic_${topic.postId}`}
     <tr
       className="row "
-      onClick={() =>
-        window.open(
-          `${forumURL}/${collectionId.toBase58()}${topicURL}/${topic.postId}`,
-          "_self"
-        )
-      }>
+      >
       <>
         <th>
-          <div className="rowSubj">{topic.data.subj}</div>
+          <div className="rowSubj">
+            <a href={topicPath}>
+            {topic.data.subj}
+            </a>
+          </div>
         </th>
         <td>
           <div className="rowIconReplies">

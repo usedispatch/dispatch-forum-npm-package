@@ -2,22 +2,22 @@ import { web3 } from '@project-serum/anchor';
 import { WalletInterface } from '@usedispatch/client';
 import { FC, ReactNode, createContext, useContext, useMemo } from 'react';
 import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
-// import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
-// import { TopicView } from './../views/TopicView';
 
 export interface DispatchAppProps {
     wallet: WalletInterface;
     connection: web3.Connection;
     children: ReactNode | ReactNode[];
-    baseURL: string;
-    forumURL: string;
-    topicURL: string;
+    buildForumPath: typeof ForumPathFunction;
+    buildTopicPath: typeof TopicPathFunction;
 }
 
+// define function types
+let ForumPathFunction: (collectionId: string) => string;
+let TopicPathFunction: (collectionId: string, topicId: number) => string;
+
 export interface PathObject {
-    baseURL: string;
-    forumURL: string;
-    topicURL: string;
+    buildForumPath: typeof ForumPathFunction;
+    buildTopicPath: typeof TopicPathFunction;
 }
 
 export const ForumContext = createContext<DispatchForum>({} as DispatchForum);
@@ -27,15 +27,13 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
     wallet, 
     connection, 
     children,
-    baseURL,
-    forumURL,
-    topicURL
+    buildForumPath,
+    buildTopicPath
 }) => {
     const forum = useMemo(() => new MainForum(wallet, connection), [wallet, connection])
     const paths = {
-        baseURL: baseURL,
-        forumURL: forumURL,
-        topicURL: topicURL
+        buildForumPath: buildForumPath,
+        buildTopicPath: buildTopicPath
     }
     
     return (

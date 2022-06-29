@@ -15,11 +15,11 @@ import { PopUpModal, MessageType, Spinner } from "../../components/common";
 import { PoweredByDispatch, TopicContent } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import { ForumContext } from "./../../contexts/DispatchProvider";
+import { ForumContext, usePath } from "./../../contexts/DispatchProvider";
 
 interface Props {
-  // topicId?: number;
-  // collectionId?: string;
+  topicId: number;
+  collectionId: string;
   // forum: ForumInfo;
 }
 
@@ -28,9 +28,9 @@ export const TopicView = (props: Props) => {
   const { connecting } = wallet;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-
-  const [topicId, setTopicId] = useState<number>(0);
-
+  const collectionId = props.collectionId;
+  // const [topicId, setTopicId] = useState<number>(0);
+  const topicId = props.topicId;
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
   const [modalInfo, setModalInfo] = useState<{
@@ -39,27 +39,25 @@ export const TopicView = (props: Props) => {
     body?: string;
   } | null>(null);
   const [role, setRole] = useState<UserRoleType | null>(null);
-
+  const {buildForumPath} = usePath();
+  const forumPath = buildForumPath(collectionId);
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 
 
   useEffect(() => {
-    const urlPath = window.location.toString();
-    const urlPathArray = urlPath.split("/");
-    const topicString = urlPathArray.pop() ?? "";
-    urlPathArray.pop();
-    const collectionId = urlPathArray.pop() ?? "";
-    const topicId = parseInt(topicString);
-    setCollectionPublicKey(new web3.PublicKey(collectionId));
-    setTopicId(topicId)
-    const collectionID = `${collectionId.slice(
-      0,
-      4
-    )}...${collectionId.slice(-4)}`;
-
-    setCroppedCollectionId(collectionID)
+    try {
+      const collectionIdKey = new web3.PublicKey(collectionId);
+      setCollectionPublicKey(collectionIdKey);
+      setCroppedCollectionId(collectionId);
+    } catch {
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "Invalid Public Key",
+      });
+    }
   }, [])
 
 
@@ -153,13 +151,22 @@ export const TopicView = (props: Props) => {
                 <Spinner />
               </div>
             ) : topic ? (
-              <TopicContent
-                topic={topic}
-                forum={Forum}
-                
-                collectionId={collectionPublicKey}
-                userRole={role!}
-              />
+              <>
+                <a href={forumPath}>
+                  <button 
+                    className="backButton"
+                  >
+                    Back
+                  </button>
+                </a>
+                <TopicContent
+                  topic={topic}
+                  forum={Forum}
+                  
+                  collectionId={collectionPublicKey}
+                  userRole={role!}
+                />
+              </>
             ) : (
               disconnectedView
             )}

@@ -3,7 +3,6 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
-import { useWallet } from "@solana/wallet-adapter-react";
 
 import { Plus } from "../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../components/common";
@@ -52,7 +51,6 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  const { connected } = useWallet();
   const Forum = useContext(ForumContext);
   const wallet = Forum.wallet;
   const { publicKey } = Forum.wallet;

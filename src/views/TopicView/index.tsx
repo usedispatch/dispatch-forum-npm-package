@@ -2,7 +2,6 @@ import "./../../style.css";
 import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
 
 import { PopUpModal, MessageType, Spinner } from "../../components/common";
@@ -19,16 +18,12 @@ import { ForumContext, usePath } from "./../../contexts/DispatchProvider";
 interface Props {
   topicId: number;
   collectionId: string;
-  // forum: ForumInfo;
 }
 
 export const TopicView = (props: Props) => {
-  const wallet = useWallet();
-  const { connecting, disconnecting } = wallet;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const collectionId = props.collectionId;
-  // const [topicId, setTopicId] = useState<number>(0);
   const topicId = props.topicId;
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
@@ -43,13 +38,11 @@ export const TopicView = (props: Props) => {
   const forumPath = buildForumPath(collectionId);
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
-  const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 
   useEffect(() => {
     try {
       const collectionIdKey = new web3.PublicKey(collectionId);
       setCollectionPublicKey(collectionIdKey);
-      setCroppedCollectionId(collectionId);
     } catch {
       setModalInfo({
         title: "Something went wrong!",
@@ -92,15 +85,8 @@ export const TopicView = (props: Props) => {
   useEffect(() => {
     if (connected && !_.isNil(topicId)) {
       getTopicData();
-    } else {
-      if (connecting) {
-        setLoading(true);
-      } else {
-        setLoading(false);
-        setTopic(undefined);
-      }
-    }
-  }, [connected, connecting, topicId]);
+    } 
+  }, [connected, topicId]);
 
   useEffect(() => {
     if (connected && !_.isNil(collectionPublicKey) && !_.isNil(topic)) {

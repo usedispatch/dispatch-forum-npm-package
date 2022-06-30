@@ -9,6 +9,7 @@ import { MessageType, PopUpModal, Spinner } from "./../../common";
 import { PostReplies } from "../topic/PostReplies";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
+import permission from "../../../utils/postbox/permission.json";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
 interface PostContentProps {
@@ -183,12 +184,14 @@ export function PostContent(props: PostContentProps) {
               {deletePermission && (
                 <button
                   className="deleteButton"
+                  disabled={!permission.readAndWrite}
                   onClick={() => setShowDeleteConfirmation(true)}>
                   <Trash />
                 </button>
               )}
               <button
                 className="replyButton"
+                disabled={!permission.readAndWrite}
                 onClick={() => setShowReplyBox(true)}>
                 Reply
               </button>

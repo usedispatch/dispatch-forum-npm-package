@@ -122,7 +122,19 @@
     font-weight: 600;
 
     &:hover {
-      opacity: 0.85;
+      opacity: 0.65;
+    }
+
+    &:disabled {
+      color: #7c7b7c;
+      background: #ffffff;
+      border: 1px solid #7c7b7c;
+
+      cursor: not-allowed;
+
+      svg path {
+        fill: #7c7b7c;
+      }
     }
   }
 
@@ -167,6 +179,11 @@
     }
   }
 
+  .forumView {
+    background: #f7f7fe;
+    padding-top: 24px;
+  }
+
   .forumViewContainer {
     font-family: Manrope, sans-serif;
     background: #f7f7fe;
@@ -192,6 +209,10 @@
 
         font-size: 36px;
         color: #2e008b;
+
+        &.alert {
+          padding-top: 24;
+        }
       }
 
       .forumViewContentBox {

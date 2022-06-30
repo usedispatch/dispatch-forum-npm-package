@@ -1,3 +1,4 @@
+export * from "./ConnectionAlert";
 export * from "./PoweredByDispatch";
 
 export * from "./forum/ForumContent";

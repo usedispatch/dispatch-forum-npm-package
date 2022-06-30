@@ -145,9 +145,7 @@
       font-size: 12px;
       color: #1f2937;
 
-      border-bottom: 1px solid #b8b9dc;
       padding-bottom: 12px;
-      margin-bottom: 32px;
 
       .commentsContainer {
         display: flex;
@@ -185,6 +183,17 @@
           svg {
             path {
               fill: #3f1d96;
+            }
+          }
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+          color: #7c7b7c;
+
+          svg {
+            path {
+              fill: #7c7b7c;
             }
           }
         }

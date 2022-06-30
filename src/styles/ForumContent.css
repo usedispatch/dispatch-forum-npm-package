@@ -40,8 +40,14 @@
     }
 
     &:disabled {
+      color: #7c7b7c;
+      background: #ffffff;
+      border: 1px solid #7c7b7c;
       cursor: not-allowed;
-      opacity: 0.6;
+
+      svg path {
+        fill: #7c7b7c;
+      }
     }
 
     .buttonImageContainer {
@@ -115,8 +121,13 @@
     }
 
     &:disabled {
+      color: #7c7b7c;
+      border: 1px solid #7c7b7c;
       cursor: not-allowed;
-      opacity: 0.6;
+
+      svg path {
+        fill: #7c7b7c;
+      }
     }
   }
 

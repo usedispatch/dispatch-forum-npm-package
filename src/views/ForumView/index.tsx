@@ -1,26 +1,24 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import {
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-  useContext,
-} from "react";
+import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
 import { Plus } from "../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../components/common";
-import { ForumContent, PoweredByDispatch } from "../../components/forums";
+import {
+  ConnectionAlert,
+  ForumContent,
+  PoweredByDispatch,
+} from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import permission from "../../utils/postbox/permission.json";
 import { ForumContext } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
   collectionId: string;
 }
-
 /**
  * 1- fetch collectionId from url
  * 2- make sure user has login
@@ -56,13 +54,13 @@ export const ForumView = (props: ForumViewProps) => {
   const Forum = useContext(ForumContext);
   const wallet = Forum.wallet;
   const { publicKey } = Forum.wallet;
-  const connected = Forum.isNotEmpty;
+  const isNotEmpty = Forum.isNotEmpty;
 
   const collectionId = props.collectionId;
 
   const [forum, setForum] = useState<ForumInfo>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
-  const [role, setRole] = useState<UserRoleType | null>(null);
+  const [role, setRole] = useState<UserRoleType | null>();
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -76,12 +74,11 @@ export const ForumView = (props: ForumViewProps) => {
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 
-
   useEffect(() => {
     try {
       const collectionIdKey = new web3.PublicKey(collectionId);
       setCollectionPublicKey(collectionIdKey);
-      setCroppedCollectionId(collectionId)
+      setCroppedCollectionId(collectionId);
     } catch {
       setModalInfo({
         title: "Something went wrong!",
@@ -89,8 +86,7 @@ export const ForumView = (props: ForumViewProps) => {
         body: "Invalid Collection ID Public Key",
       });
     }
-
-  }, [])
+  }, []);
 
   const getForumForCollection = async () => {
     try {
@@ -104,7 +100,7 @@ export const ForumView = (props: ForumViewProps) => {
       if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods)) {
         setForum({
           collectionId: collectionPublicKey,
-          owners: [publicKey!],
+          owners: publicKey ? [publicKey] : [],
           moderators: mods,
           title: desc.title,
           description: desc.desc,
@@ -115,7 +111,6 @@ export const ForumView = (props: ForumViewProps) => {
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        
         body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
       });
     }
@@ -136,7 +131,6 @@ export const ForumView = (props: ForumViewProps) => {
 
   const getModerators = useCallback(async () => {
     try {
-      
       const mods = await Forum.getModerators(collectionPublicKey);
       if (!_.isNil(mods)) {
         setForum({ ...forum, moderators: mods ?? [] } as ForumInfo);
@@ -151,7 +145,7 @@ export const ForumView = (props: ForumViewProps) => {
   }, [Forum, collectionPublicKey]);
 
   const onCreateForumClick = () => {
-    if (connected) {
+    if (isNotEmpty) {
       createForum();
     } else {
       setModalInfo({
@@ -205,18 +199,17 @@ export const ForumView = (props: ForumViewProps) => {
   };
 
   useEffect(() => {
-    if (connected && !_.isNil(publicKey)) {
+    if (isNotEmpty && !_.isNil(publicKey)) {
       setLoading(true);
       getForumForCollection();
     } else {
-      localStorage.removeItem("role");
       setLoading(false);
       setForum(undefined);
     }
-  }, [connected, publicKey]);
+  }, [isNotEmpty, publicKey]);
 
   useEffect(() => {
-    if (connected && !_.isNil(publicKey) && !_.isNil(forum)) {
+    if (isNotEmpty && !_.isNil(forum)) {
       const localStorageRole = localStorage.getItem("role");
       if (_.isNil(localStorageRole)) {
         getUserRole();
@@ -226,15 +219,16 @@ export const ForumView = (props: ForumViewProps) => {
     } else {
       localStorage.removeItem("role");
     }
-  }, [connected, publicKey, forum]);
+  }, [forum, isNotEmpty]);
 
   const createForumButton = (
     <div className="createForumButtonContainer">
       <button
         type="button"
         className="okInfoButton"
+        disabled={!permission.readAndWrite}
         onClick={() => {
-          if (connected) {
+          if (isNotEmpty) {
             setShowNewForumModal(true);
           } else {
             setModalInfo({
@@ -255,7 +249,11 @@ export const ForumView = (props: ForumViewProps) => {
   const emptyView = (
     <div className="emptyForumView">
       <div className="emptyTitle">The Forum does not exist yet</div>
-      <div className="emptySubTitle">Create one to post, share, and more</div>
+      <div className="emptySubTitle">
+        {permission.readAndWrite
+          ? "Create one to post, share, and more"
+          : "Contact the owner of this collection or a moderator to start the forum."}
+      </div>
       {createForumButton}
     </div>
   );
@@ -267,7 +265,7 @@ export const ForumView = (props: ForumViewProps) => {
   );
 
   return (
-    <div className="forumViewContainer">
+    <div className="forumView">
       {!_.isNil(modalInfo) && (
         <PopUpModal
           id="create-forum-info"
@@ -343,33 +341,43 @@ export const ForumView = (props: ForumViewProps) => {
           }
         />
       )}
-      <div className="forumViewContent">
-        {!_.isNil(forum) && <div className="forumViewTitle">{forum.title}</div>}
-        <main>
-          <div className="forumViewContentBox">
-            <div>
-              {loading ? (
-                <div className="forumLoading">
-                  <Spinner />
-                </div>
-              ) : connected ? (
-                !_.isNil(forum) ? (
-                  <ForumContent
-                    forum={forum}
-                    role={role ?? undefined}
-                    onAddModerators={getModerators}
-                  />
-                ) : (
-                  emptyView
-                )
-              ) : (
-                disconnectedView
-              )}
+      {!permission.readAndWrite && <ConnectionAlert />}
+      <div className="forumViewContainer">
+        <div className="forumViewContent">
+          {!_.isNil(forum) && (
+            <div
+              className={`forumViewTitle ${
+                !permission.readAndWrite ? "alert" : ""
+              }`}>
+              {forum.title}
             </div>
-          </div>
-        </main>
+          )}
+          <main>
+            <div className="forumViewContentBox">
+              <div>
+                {loading ? (
+                  <div className="forumLoading">
+                    <Spinner />
+                  </div>
+                ) : isNotEmpty ? (
+                  !_.isNil(forum) ? (
+                    <ForumContent
+                      forum={forum}
+                      role={role ?? UserRoleType.Poster}
+                      onAddModerators={getModerators}
+                    />
+                  ) : (
+                    emptyView
+                  )
+                ) : (
+                  disconnectedView
+                )}
+              </div>
+            </div>
+          </main>
+        </div>
+        <PoweredByDispatch />
       </div>
-      <PoweredByDispatch />
     </div>
   );
 };

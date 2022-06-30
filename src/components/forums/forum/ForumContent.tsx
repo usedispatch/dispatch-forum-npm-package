@@ -11,6 +11,7 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import permission from "../../../utils/postbox/permission.json";
 import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
@@ -24,6 +25,7 @@ export function ForumContent(props: ForumContentProps) {
   const { forum, role, onAddModerators } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
+
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -124,6 +126,7 @@ export function ForumContent(props: ForumContentProps) {
     <button
       className={"createTopicButton"}
       type="button"
+      disabled={!permission.readAndWrite}
       onClick={() => {
         if (connected) {
           setShowNewTopicModal(true);
@@ -137,7 +140,6 @@ export function ForumContent(props: ForumContentProps) {
       }}>
       <div className="buttonImageContainer">
         <Plus />
-        {/* <Image src={plus} height={14} width={14} alt="plus" /> */}
       </div>
       Create Topic
     </button>
@@ -288,6 +290,7 @@ export function ForumContent(props: ForumContentProps) {
       {(role === UserRoleType.Owner || role == UserRoleType.Moderator) && (
         <button
           className="manageModerators"
+          disabled={!permission.readAndWrite}
           onClick={() => setShowAddModerators(true)}>
           Manage moderators
         </button>

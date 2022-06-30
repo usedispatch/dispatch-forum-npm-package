@@ -70,6 +70,16 @@
           fill: #3f1d96;
         }
       }
+
+      &:disabled {
+        border-color: #7c7b7c;
+        color: #7c7b7c;
+        cursor: not-allowed;
+
+        svg path {
+          fill: #7c7b7c;
+        }
+      }
     }
 
     .replyButton {
@@ -84,6 +94,16 @@
 
       color: #3f1d96;
       font-size: 12px;
+
+      &:disabled {
+        border-color: #7c7b7c;
+        color: #7c7b7c;
+        cursor: not-allowed;
+
+        svg path {
+          fill: #7c7b7c;
+        }
+      }
     }
   }
 }

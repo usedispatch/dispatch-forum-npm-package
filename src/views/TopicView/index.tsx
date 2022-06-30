@@ -1,20 +1,19 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import {
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-  useContext,
-} from "react";
+import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { ForumPost } from "@usedispatch/client";
 
 import { PopUpModal, MessageType, Spinner } from "../../components/common";
-import { PoweredByDispatch, TopicContent } from "../../components/forums";
+import {
+  ConnectionAlert,
+  PoweredByDispatch,
+  TopicContent,
+} from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import permission from "../../utils/postbox/permission.json";
 import { ForumContext, usePath } from "./../../contexts/DispatchProvider";
 
 interface Props {
@@ -25,7 +24,7 @@ interface Props {
 
 export const TopicView = (props: Props) => {
   const wallet = useWallet();
-  const { connecting } = wallet;
+  const { connecting, disconnecting } = wallet;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const collectionId = props.collectionId;
@@ -38,13 +37,13 @@ export const TopicView = (props: Props) => {
     type: MessageType;
     body?: string;
   } | null>(null);
+
   const [role, setRole] = useState<UserRoleType | null>(null);
-  const {buildForumPath} = usePath();
+  const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
-
 
   useEffect(() => {
     try {
@@ -58,12 +57,10 @@ export const TopicView = (props: Props) => {
         body: "Invalid Public Key",
       });
     }
-  }, [])
-
+  }, []);
 
   const getUserRole = useCallback(async () => {
     try {
-      
       const role = await userRole(Forum, collectionPublicKey);
       setRole(role);
     } catch (error) {
@@ -78,7 +75,6 @@ export const TopicView = (props: Props) => {
   const getTopicData = async () => {
     setLoading(true);
     try {
-            
       const res = await Forum.getTopicData(topicId, collectionPublicKey);
       setTopic(res);
       setLoading(false);
@@ -88,6 +84,7 @@ export const TopicView = (props: Props) => {
         type: MessageType.error,
         body: "The topic could not be loaded",
       });
+
       setLoading(false);
     }
   };
@@ -99,7 +96,6 @@ export const TopicView = (props: Props) => {
       if (connecting) {
         setLoading(true);
       } else {
-        localStorage.removeItem("role");
         setLoading(false);
         setTopic(undefined);
       }
@@ -121,14 +117,12 @@ export const TopicView = (props: Props) => {
 
   const disconnectedView = (
     <div className="disconnectedTopicView">
-      {connected
-        ? `The topic with id ${topicId} does not exist`
-        : "Connect to your wallet in order to see the topic"}
+      {`The topic with id ${topicId} does not exist`}
     </div>
   );
 
   return (
-    <div className="topicViewContainer">
+    <div className="topicView">
       {!_.isNil(modalInfo) && (
         <PopUpModal
           id="topic-info"
@@ -143,37 +137,35 @@ export const TopicView = (props: Props) => {
           }
         />
       )}
-      <div className="topicViewContent">
-        <main>
-          <div>
-            {loading ? (
-              <div className="topicViewLoading">
-                <Spinner />
-              </div>
-            ) : topic ? (
-              <>
-                <a href={forumPath}>
-                  <button 
-                    className="backButton"
-                  >
-                    Back
-                  </button>
-                </a>
-                <TopicContent
-                  topic={topic}
-                  forum={Forum}
-                  
-                  collectionId={collectionPublicKey}
-                  userRole={role!}
-                />
-              </>
-            ) : (
-              disconnectedView
-            )}
-          </div>
-        </main>
+      {!permission.readAndWrite && <ConnectionAlert />}
+      <div className="topicViewContainer">
+        <div className="topicViewContent">
+          <main>
+            <div>
+              {loading ? (
+                <div className="topicViewLoading">
+                  <Spinner />
+                </div>
+              ) : topic ? (
+                <>
+                  <a href={forumPath}>
+                    <button className="backButton">Back</button>
+                  </a>
+                  <TopicContent
+                    topic={topic}
+                    forum={Forum}
+                    collectionId={collectionPublicKey}
+                    userRole={role ?? UserRoleType.Poster}
+                  />
+                </>
+              ) : (
+                disconnectedView
+              )}
+            </div>
+          </main>
+        </div>
+        <PoweredByDispatch />
       </div>
-      <PoweredByDispatch />
     </div>
   );
 };

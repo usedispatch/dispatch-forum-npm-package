@@ -2,6 +2,7 @@ import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 
 import { MessageType, PopUpModal, Spinner } from "../../common";
+import permission from "../../../utils/postbox/permission.json";
 
 interface CreatePostProps {
   topicId: number;
@@ -84,12 +85,16 @@ export function CreatePost(props: CreatePostProps) {
                   className="postContent"
                   placeholder="Type your comment here"
                   required
+                  disabled={!permission.readAndWrite}
                   maxLength={800}
                   name="post"
                 />
               </div>
               <div className="buttonContainer">
-                <button className="createPostButton" type="submit">
+                <button
+                  className="createPostButton"
+                  type="submit"
+                  disabled={!permission.readAndWrite}>
                   Post
                 </button>
               </div>

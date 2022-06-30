@@ -9,6 +9,7 @@ import { MessageSquare, Trash } from "../../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../common";
 import { CreatePost, PostList } from "../";
 
+import permission from "../../../utils/postbox/permission.json";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
@@ -88,11 +89,7 @@ export function TopicContent(props: TopicContentProps) {
   };
 
   useEffect(() => {
-    if (topic && collectionId) {
-      getMessages();
-    } else {
-      setLoadingMessages(false);
-    }
+    getMessages();
   }, [topic, collectionId]);
 
   const data = (
@@ -100,22 +97,21 @@ export function TopicContent(props: TopicContentProps) {
       <div className="data">
         <div className="commentsContainer">
           <div className="image">
-            {/* <Image src={msgSquare} height={12} width={12} alt="delete" /> */}
             <MessageSquare />
           </div>
           {`${posts.length} comments`}
         </div>
         {(userRole === UserRoleType.Moderator ||
           userRole === UserRoleType.Owner) && (
-          <div
+          <button
             className="delete"
+            disabled={!permission.readAndWrite}
             onClick={() => setShowDeleteConfirmation(true)}>
             <div className="icon">
-              {/* <Image src={trash} height={16} width={16} alt="delete" /> */}
               <Trash />
             </div>
             delete topic
-          </div>
+          </button>
         )}
       </div>
     </>

@@ -4,6 +4,7 @@ import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../../assets";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import permission from "../../../utils/postbox/permission.json";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 interface PostRepliesProps {
@@ -61,11 +62,15 @@ export function PostReplies(props: PostRepliesProps) {
                 {deletePermission && (
                   <button
                     className="deleteButton"
+                    disabled={!permission.readAndWrite}
                     onClick={() => onDeletePost(reply)}>
                     <Trash />
                   </button>
                 )}
-                <button className="replyButton" onClick={onReplyClick}>
+                <button
+                  className="replyButton"
+                  onClick={onReplyClick}
+                  disabled={!permission.readAndWrite}>
                   Reply
                 </button>
               </div>

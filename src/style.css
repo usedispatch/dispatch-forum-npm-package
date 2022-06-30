@@ -6,6 +6,9 @@
 @import "./styles/PopUpModal.css";
 @import "./styles/Spinner.css";
 
+@import "./styles/PoweredByDispatch.css";
+@import "./styles/ConnectionAlert.css";
+
 /* Forum */
 @import "./styles/ForumContent.css";
 @import "./styles/TopicList.css";
@@ -20,7 +23,5 @@
 /* Views */
 @import "./styles/ForumView.css";
 @import "./styles/TopicView.css";
-
-@import "./styles/PoweredByDispatch.css";
 
 @import "tailwindcss/utilities";

@@ -5,7 +5,12 @@ import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
 import { Plus } from "../../assets";
-import { MessageType, PopUpModal, Spinner } from "../../components/common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Spinner,
+} from "../../components/common";
 import {
   ConnectionAlert,
   ForumContent,
@@ -69,6 +74,7 @@ export const ForumView = (props: ForumViewProps) => {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
@@ -79,11 +85,12 @@ export const ForumView = (props: ForumViewProps) => {
       const collectionIdKey = new web3.PublicKey(collectionId);
       setCollectionPublicKey(collectionIdKey);
       setCroppedCollectionId(collectionId);
-    } catch {
+    } catch (error) {
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Invalid Collection ID Public Key",
+        collapsible: { header: "Error", content: error },
       });
     }
   }, []);
@@ -112,6 +119,7 @@ export const ForumView = (props: ForumViewProps) => {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -125,6 +133,7 @@ export const ForumView = (props: ForumViewProps) => {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Your user role could not be determined, you will only have permission to create topics and comment",
+        collapsible: { header: "Error", content: error },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -136,10 +145,12 @@ export const ForumView = (props: ForumViewProps) => {
         setForum({ ...forum, moderators: mods ?? [] } as ForumInfo);
       }
     } catch (error) {
+      const message = JSON.stringify(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The moderators could not be determined",
+        collapsible: { header: "Error", content: message },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -194,6 +205,7 @@ export const ForumView = (props: ForumViewProps) => {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -270,9 +282,10 @@ export const ForumView = (props: ForumViewProps) => {
         <PopUpModal
           id="create-forum-info"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a className="okInfoButton" onClick={() => setModalInfo(null)}>
               OK

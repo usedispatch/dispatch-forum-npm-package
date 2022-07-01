@@ -6,7 +6,12 @@ import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
 import { MessageSquare, Trash } from "../../../assets";
-import { MessageType, PopUpModal, Spinner } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Spinner,
+} from "../../common";
 import { CreatePost, PostList } from "..";
 import { Votes } from "./Votes";
 
@@ -34,6 +39,7 @@ export function TopicContent(props: TopicContentProps) {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const getMessages = async () => {
@@ -48,19 +54,24 @@ export function TopicContent(props: TopicContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The messages could not be loaded`,
+        collapsible: { header: "Error", content: error },
       });
       setLoadingMessages(false);
     }
   };
 
   const onDeletePost = async (post: ForumPost) => {
-    const tx = await forum.deleteForumPost(
-      post,
-      collectionId,
-      userRole === UserRoleType.Moderator
-    );
-    await getMessages();
-    return tx;
+    try {
+      const tx = await forum.deleteForumPost(
+        post,
+        collectionId,
+        userRole === UserRoleType.Moderator
+      );
+      await getMessages();
+      return tx;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const onDeleteTopic = async () => {
@@ -84,6 +95,7 @@ export function TopicContent(props: TopicContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be deleted`,
+        collapsible: { header: "Error", content: error },
       });
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
@@ -136,6 +148,7 @@ export function TopicContent(props: TopicContentProps) {
           title={modalInfo.title}
           messageType={modalInfo.type}
           body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a
               className="okButton"
@@ -158,29 +171,20 @@ export function TopicContent(props: TopicContentProps) {
           visible
           title="Are you sure you want to delete this topic?"
           body={
-            deletingTopic ? (
-              <div className="deleteSpinner">
-                <Spinner />
-              </div>
-            ) : (
-              "This is permanent and you won't be able to access this topic again. All the posts here will be deleted too."
-            )
+            "This is permanent and you won't be able to access this topic again. All the posts here will be deleted too."
           }
+          loading={deletingTopic}
           okButton={
-            !deletingTopic && (
-              <a className="acceptDeleteTopicButton" onClick={onDeleteTopic}>
-                Accept
-              </a>
-            )
+            <a className="acceptDeleteTopicButton" onClick={onDeleteTopic}>
+              Accept
+            </a>
           }
           cancelButton={
-            !deletingTopic && (
-              <div
-                className="cancelDeleteTopicButton"
-                onClick={() => setShowDeleteConfirmation(false)}>
-                Cancel
-              </div>
-            )
+            <div
+              className="cancelDeleteTopicButton"
+              onClick={() => setShowDeleteConfirmation(false)}>
+              Cancel
+            </div>
           }
         />
       )}

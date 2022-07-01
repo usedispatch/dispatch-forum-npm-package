@@ -1,6 +1,6 @@
 @layer components {
   .createPostContainer {
-    heigh: auto;
+    height: auto;
     width: 100%;
     margin-bottom: 16px;
     padding-top: 32px;
@@ -90,7 +90,7 @@
     border-radius: 6px;
 
     cursor: pointer;
-    background: rgba(31, 41, 55, 1);
+    background: #4a279c;
     color: white;
     font-size: 14px;
     text-align: center;

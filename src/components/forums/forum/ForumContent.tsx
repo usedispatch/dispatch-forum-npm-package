@@ -87,6 +87,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topics for the forum could not be loaded`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -120,6 +121,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -210,7 +212,6 @@ export function ForumContent(props: ForumContentProps) {
           }
           okButton={
             <button
-              type="submit"
               className="okButton"
               onClick={() => {
                 setShowNewTopicModal(false);

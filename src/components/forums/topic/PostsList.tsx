@@ -6,6 +6,7 @@ import { PostContent } from "../../forums";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { useForum } from "../../../contexts/DispatchProvider";
+import { useMemo } from "react";
 
 interface PostListProps {
   forum: DispatchForum;
@@ -17,7 +18,7 @@ interface PostListProps {
 }
 
 export function PostList(props: PostListProps) {
-  const { collectionId, forum, loading, posts, userRole, onDeletePost } = props;
+  const { collectionId, forum, loading, userRole, onDeletePost } = props;
   const Forum = useForum();
   const { publicKey } = Forum.wallet;
 
@@ -25,6 +26,11 @@ export function PostList(props: PostListProps) {
     <div className="emptyList">
       <div className="text">The topic has no comments</div>
     </div>
+  );
+
+  const posts = useMemo(
+    () => props.posts.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
+    [props.posts]
   );
 
   return (

@@ -35,7 +35,11 @@ export function PostReplies(props: PostRepliesProps) {
       minute: "numeric",
     })}`;
 
-  const replies = useMemo(() => props.replies, [props.replies]);
+  const replies = useMemo(
+    () =>
+      props.replies.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
+    [props.replies]
+  );
 
   const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost) => {
     const index = replies.findIndex((r) => r.postId === replyToUpdate.postId);

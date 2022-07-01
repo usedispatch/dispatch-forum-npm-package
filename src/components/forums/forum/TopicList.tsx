@@ -144,15 +144,11 @@ function RowContent(props: RowContentProps) {
   );
 
   return (
-    <tr
-      className="row "
-      >
+    <tr className="row ">
       <>
         <th>
           <div className="rowSubj">
-            <a href={topicPath}>
-            {topic.data.subj}
-            </a>
+            <a href={topicPath}>{topic.data.subj}</a>
           </div>
         </th>
         <td>

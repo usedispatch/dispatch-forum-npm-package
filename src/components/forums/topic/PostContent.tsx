@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
@@ -7,6 +7,7 @@ import { ForumPost } from "@usedispatch/client";
 import { Trash } from "../../../assets";
 import { MessageType, PopUpModal, Spinner } from "./../../common";
 import { PostReplies } from "../topic/PostReplies";
+import { Votes } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import permission from "../../../utils/postbox/permission.json";
@@ -22,14 +23,8 @@ interface PostContentProps {
 }
 
 export function PostContent(props: PostContentProps) {
-  const {
-    collectionId,
-    deletePermission,
-    forum,
-    post,
-    userRole,
-    onDeletePost,
-  } = props;
+  const { collectionId, deletePermission, forum, userRole, onDeletePost } =
+    props;
 
   const [loading, setLoading] = useState(true);
   const [replies, setReplies] = useState<ForumPost[]>([]);
@@ -43,6 +38,16 @@ export function PostContent(props: PostContentProps) {
     type: MessageType;
     body?: string;
   } | null>(null);
+
+  const post = useMemo(() => props.post, [props.post]);
+
+  const updateVotes = (upVoted: boolean) => {
+    if (upVoted) {
+      post.upVotes = post.upVotes + 1;
+    } else {
+      post.downVotes = post.downVotes + 1;
+    }
+  };
 
   const getReplies = async () => {
     setLoading(true);
@@ -195,6 +200,14 @@ export function PostContent(props: PostContentProps) {
                 onClick={() => setShowReplyBox(true)}>
                 Reply
               </button>
+              <Votes
+                post={post}
+                onDownVotePost={() =>
+                  forum.voteDownForumPost(post, collectionId)
+                }
+                onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
+                updateVotes={(upVoted) => updateVotes(upVoted)}
+              />
             </div>
             <div
               className="repliesSection"
@@ -204,6 +217,12 @@ export function PostContent(props: PostContentProps) {
                   replies={replies}
                   userRole={userRole}
                   onDeletePost={onDeletePost}
+                  onDownVotePost={(reply) =>
+                    forum.voteDownForumPost(reply, collectionId)
+                  }
+                  onUpVotePost={(reply) =>
+                    forum.voteUpForumPost(reply, collectionId)
+                  }
                   onReplyClick={() => setShowReplyBox(true)}
                 />
               </div>

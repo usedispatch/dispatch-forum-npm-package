@@ -82,10 +82,18 @@ export const TopicView = (props: Props) => {
     }
   };
 
+  const updateVotes = (upVoted: boolean) => {
+    if (upVoted) {
+      topic!.upVotes = topic!.upVotes + 1;
+    } else {
+      topic!.downVotes = topic!.downVotes + 1;
+    }
+  };
+
   useEffect(() => {
     if (connected && !_.isNil(topicId)) {
       getTopicData();
-    } 
+    }
   }, [connected, topicId]);
 
   useEffect(() => {
@@ -142,6 +150,7 @@ export const TopicView = (props: Props) => {
                     forum={Forum}
                     collectionId={collectionPublicKey}
                     userRole={role ?? UserRoleType.Poster}
+                    updateVotes={(upVoted) => updateVotes(upVoted)}
                   />
                 </>
               ) : (

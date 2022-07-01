@@ -7,7 +7,8 @@ import { ForumPost } from "@usedispatch/client";
 
 import { MessageSquare, Trash } from "../../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../common";
-import { CreatePost, PostList } from "../";
+import { CreatePost, PostList } from "..";
+import { Votes } from "./Votes";
 
 import permission from "../../../utils/postbox/permission.json";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -18,10 +19,11 @@ interface TopicContentProps {
   topic: ForumPost;
   collectionId: web3.PublicKey;
   userRole: UserRoleType;
+  updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { collectionId, forum, topic, userRole } = props;
+  const { collectionId, forum, topic, userRole, updateVotes } = props;
   const router = useRouter();
 
   const [loadingMessages, setLoadingMessages] = useState(true);
@@ -101,6 +103,14 @@ export function TopicContent(props: TopicContentProps) {
           </div>
           {`${posts.length} comments`}
         </div>
+        {permission.readAndWrite && (
+          <Votes
+            onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
+            onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
+            post={topic}
+            updateVotes={(upVoted) => updateVotes(upVoted)}
+          />
+        )}
         {(userRole === UserRoleType.Moderator ||
           userRole === UserRoleType.Owner) && (
           <button
@@ -128,7 +138,7 @@ export function TopicContent(props: TopicContentProps) {
           body={modalInfo.body}
           okButton={
             <a
-              className="okInfoButton"
+              className="okButton"
               onClick={() => {
                 if (modalInfo.type === MessageType.success) {
                   router.push(`/forum/${collectionId.toBase58()}`);

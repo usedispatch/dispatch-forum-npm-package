@@ -19,6 +19,7 @@
 @import "./styles/PostReplies.css";
 @import "./styles/PostsList.css";
 @import "./styles/TopicContent.css";
+@import "./styles/VotePost.css";
 
 /* Views */
 @import "./styles/ForumView.css";

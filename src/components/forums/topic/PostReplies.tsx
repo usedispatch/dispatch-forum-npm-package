@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import { useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -7,15 +8,20 @@ import { UserRoleType } from "../../../utils/postbox/userRole";
 import permission from "../../../utils/postbox/permission.json";
 import { useForum } from "../../../contexts/DispatchProvider";
 
+import { Votes } from "./Votes";
+
 interface PostRepliesProps {
   userRole: UserRoleType;
   replies: ForumPost[];
   onDeletePost: (post: ForumPost) => Promise<string>;
+  onUpVotePost: (post: ForumPost) => Promise<string>;
+  onDownVotePost: (post: ForumPost) => Promise<string>;
   onReplyClick: () => void;
 }
 
 export function PostReplies(props: PostRepliesProps) {
-  const { replies, userRole, onDeletePost, onReplyClick } = props;
+  const { userRole, onDeletePost, onReplyClick, onDownVotePost, onUpVotePost } =
+    props;
   const Forum = useForum();
   const { publicKey } = Forum.wallet;
 
@@ -28,6 +34,19 @@ export function PostReplies(props: PostRepliesProps) {
       hour: "numeric",
       minute: "numeric",
     })}`;
+
+  const replies = useMemo(() => props.replies, [props.replies]);
+
+  const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost) => {
+    const index = replies.findIndex((r) => r.postId === replyToUpdate.postId);
+    if (upVoted) {
+      replyToUpdate.upVotes = replyToUpdate.upVotes + 1;
+      replies[index] = replyToUpdate;
+    } else {
+      replyToUpdate.downVotes = replyToUpdate.downVotes + 1;
+      replies[index] = replyToUpdate;
+    }
+  };
 
   if (replies.length === 0) {
     return null;
@@ -73,6 +92,12 @@ export function PostReplies(props: PostRepliesProps) {
                   disabled={!permission.readAndWrite}>
                   Reply
                 </button>
+                <Votes
+                  updateVotes={(upVoted) => updateVotes(upVoted, reply)}
+                  onUpVotePost={() => onUpVotePost(reply)}
+                  onDownVotePost={() => onDownVotePost(reply)}
+                  post={reply}
+                />
               </div>
             </div>
           </div>

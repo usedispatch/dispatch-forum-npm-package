@@ -1,7 +1,13 @@
+import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 
-import { MessageType, PopUpModal, Spinner } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Spinner,
+} from "../../common";
 import permission from "../../../utils/postbox/permission.json";
 
 interface CreatePostProps {
@@ -26,6 +32,7 @@ export function CreatePost(props: CreatePostProps) {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const createNewPost = async (event: React.SyntheticEvent) => {
@@ -51,6 +58,7 @@ export function CreatePost(props: CreatePostProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The new post could not be created",
+        collapsible: { header: "Error", content: error },
       });
       setLoading(false);
     }
@@ -58,13 +66,14 @@ export function CreatePost(props: CreatePostProps) {
 
   return (
     <>
-      {modalInfo !== null && (
+      {!_.isNil(modalInfo) && (
         <PopUpModal
           id="create-topic-info"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a className="okButton" onClick={() => setModalInfo(null)}>
               OK

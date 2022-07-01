@@ -1,0 +1,32 @@
+@layer components {
+  .collapsibleContainer {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #b8b9dc;
+    background: #f7f7fe;
+  }
+
+  .collapsibleHeaderContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .collapsibleHeader {
+    font-size: 18px;
+    font-weight: 400;
+  }
+
+  .visibilityButton {
+    font-size: 14px;
+    font-weight: 300;
+    text-align: right;
+    border-radius: 8px;
+  }
+
+  .collapsibleContent {
+    padding: 12px 0 0;
+    font-size: 14px;
+  }
+}

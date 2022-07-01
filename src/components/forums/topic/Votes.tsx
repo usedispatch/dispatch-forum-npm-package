@@ -1,7 +1,13 @@
+import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import { ForumPost } from "@usedispatch/client";
 
-import { MessageType, PopUpModal, Spinner } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Spinner,
+} from "../../common";
 import { DownVote, UpVote } from "../../../assets";
 
 import permission from "../../../utils/postbox/permission.json";
@@ -21,6 +27,7 @@ export function Votes(props: VotesProps) {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const upVotePost = async () => {
@@ -41,6 +48,7 @@ export function Votes(props: VotesProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The post could not be up voted. Error: ${error}`,
+        collapsible: { header: "Error", content: error },
       });
       setLoading(false);
     }
@@ -64,7 +72,8 @@ export function Votes(props: VotesProps) {
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        body: "The post could not be down voted." + error,
+        body: "The post could not be down voted.",
+        collapsible: { header: "Error", content: error },
       });
       setLoading(false);
     }
@@ -72,13 +81,14 @@ export function Votes(props: VotesProps) {
 
   return (
     <>
-      {modalInfo !== null && (
+      {!_.isNil(modalInfo) && (
         <PopUpModal
           id="vote-info"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a className="okButton" onClick={() => setModalInfo(null)}>
               OK

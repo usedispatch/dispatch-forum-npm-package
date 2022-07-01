@@ -136,8 +136,8 @@ export class DispatchForum implements IForum {
 
         return forumAsOwner;
       }
-    } catch (error) {
-      throw "The forum could not be created";
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   };
 
@@ -180,8 +180,8 @@ export class DispatchForum implements IForum {
         }
 
       }
-    } catch (error) {
-      throw "The forum could not be created";
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   }
 
@@ -201,7 +201,7 @@ export class DispatchForum implements IForum {
       }
     } catch (error) {
       console.log(error);
-      throw "The moderator could not be added";
+      throw(JSON.stringify(error))
     }
   }
 
@@ -220,7 +220,7 @@ export class DispatchForum implements IForum {
         return tx;
       }
     } catch (error) {
-      throw "The moderators could not be retrieved";
+      throw(JSON.stringify(error))
     }
   }
 
@@ -270,7 +270,7 @@ export class DispatchForum implements IForum {
         return newTopic;
       }
     } catch (err) {
-      console.log("create a new topic error:", err);
+      throw(JSON.stringify(err))
     }
   };
 
@@ -331,8 +331,8 @@ export class DispatchForum implements IForum {
       const tx = await forum.deleteForumPost(post, asMod);
 
       return tx;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   };
 
@@ -347,8 +347,8 @@ export class DispatchForum implements IForum {
       const tx = await forum.voteUpForumPost(post);
 
       return tx;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   }
 
@@ -362,8 +362,8 @@ export class DispatchForum implements IForum {
       const tx = await forum.voteDownForumPost(post);
 
       return tx;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   }
   
@@ -383,8 +383,8 @@ export class DispatchForum implements IForum {
       const reply = await forum.replyToForumPost(replyToPost, post);
 
       return reply;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
     };
 
@@ -397,8 +397,8 @@ export class DispatchForum implements IForum {
       const replies = await forum.getReplies(topic);
 
       return replies;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   }
 }

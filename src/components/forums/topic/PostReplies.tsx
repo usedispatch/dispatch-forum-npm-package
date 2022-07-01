@@ -4,7 +4,7 @@ import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../../assets";
 import { UserRoleType } from "../../../utils/postbox/userRole";
-import permission from "../../../utils/postbox/permission.json";
+// import permission from "../../../utils/postbox/permission.json";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 interface PostRepliesProps {
@@ -17,6 +17,7 @@ interface PostRepliesProps {
 export function PostReplies(props: PostRepliesProps) {
   const { replies, userRole, onDeletePost, onReplyClick } = props;
   const Forum = useForum();
+  const permission = Forum.permission;
   const { publicKey } = Forum.wallet;
 
   const postedAt = (reply: ForumPost) =>

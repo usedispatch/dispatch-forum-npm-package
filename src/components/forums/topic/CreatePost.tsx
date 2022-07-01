@@ -1,8 +1,9 @@
-import { useState, ReactNode } from "react";
+import { useState, useContext, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 
 import { MessageType, PopUpModal, Spinner } from "../../common";
-import permission from "../../../utils/postbox/permission.json";
+// import permission from "../../../utils/postbox/permission.json";
+import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface CreatePostProps {
   topicId: number;
@@ -22,6 +23,8 @@ interface CreatePostProps {
 export function CreatePost(props: CreatePostProps) {
   const { createForumPost, collectionId, topicId, onReload } = props;
   const [loading, setLoading] = useState(false);
+  const Forum = useContext(ForumContext);
+  const permission = Forum.permission;
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;

@@ -4,7 +4,8 @@ import {
   Forum,
   ForumInfo,
   ForumPost,
-  WalletInterface
+  WalletInterface,
+  KeyPairWallet
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -12,6 +13,10 @@ enum UserCategory {
   moderator,
   owner,
   poster,
+}
+
+interface Permission {
+  readAndWrite: boolean;
 }
 
 export interface IForum {
@@ -94,14 +99,21 @@ export class DispatchForum implements IForum {
   public wallet: WalletInterface;
   private connection: web3.Connection;
   public isNotEmpty: boolean;
+  public permission: Permission;
 
   constructor(wallet: WalletInterface, conn: web3.Connection) {
     this.connection = conn;
     this.wallet = wallet;
+    this.isNotEmpty = true;
     if (wallet.publicKey && conn) {
-      this.isNotEmpty = true;
+      this.permission = { readAndWrite: true };
     } else {
-      this.isNotEmpty = false;
+      console.log('hello')
+      this.connection = new web3.Connection("https://solana-api.projectserum.com");
+      this.wallet = new KeyPairWallet(new web3.Keypair());
+      console.log(this.wallet)
+      console.log(this.wallet.publicKey)
+      this.permission = { readAndWrite: false };
     }
   }
 

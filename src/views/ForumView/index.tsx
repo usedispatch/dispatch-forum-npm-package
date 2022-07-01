@@ -14,7 +14,7 @@ import {
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import permission from "../../utils/postbox/permission.json";
-import { ForumContext } from "./../../contexts/DispatchProvider";
+import { ForumContext, useForum } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
   collectionId: string;
@@ -51,10 +51,11 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  const Forum = useContext(ForumContext);
+  const Forum = useForum();
   const wallet = Forum.wallet;
   const { publicKey } = Forum.wallet;
   const isNotEmpty = Forum.isNotEmpty;
+  const permission = Forum.permission;
 
   const collectionId = props.collectionId;
 
@@ -108,6 +109,8 @@ export const ForumView = (props: ForumViewProps) => {
       }
     } catch (error) {
       setLoading(false);
+      console.log(error)
+      console.log(croppedCollectionID)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,

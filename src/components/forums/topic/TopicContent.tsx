@@ -9,7 +9,7 @@ import { MessageSquare, Trash } from "../../../assets";
 import { MessageType, PopUpModal, Spinner } from "../../common";
 import { CreatePost, PostList } from "../";
 
-import permission from "../../../utils/postbox/permission.json";
+// import permission from "../../../utils/postbox/permission.json";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
@@ -23,7 +23,7 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { collectionId, forum, topic, userRole } = props;
   const router = useRouter();
-
+  const permission = forum.permission;
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);

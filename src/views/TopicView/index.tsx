@@ -13,7 +13,7 @@ import {
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import permission from "../../utils/postbox/permission.json";
-import { ForumContext, usePath } from "./../../contexts/DispatchProvider";
+import { ForumContext, useForum, usePath } from "./../../contexts/DispatchProvider";
 
 interface Props {
   topicId: number;
@@ -21,8 +21,9 @@ interface Props {
 }
 
 export const TopicView = (props: Props) => {
-  const Forum = useContext(ForumContext);
+  const Forum = useForum();
   const connected = Forum.isNotEmpty;
+  const permission = Forum.permission;
   const collectionId = props.collectionId;
   const topicId = props.topicId;
   const [loading, setLoading] = useState(true);

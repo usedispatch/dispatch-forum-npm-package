@@ -11,7 +11,7 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
-import permission from "../../../utils/postbox/permission.json";
+// import permission from "../../../utils/postbox/permission.json";
 import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
@@ -25,7 +25,7 @@ export function ForumContent(props: ForumContentProps) {
   const { forum, role, onAddModerators } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-
+  const permission = Forum.permission;
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);

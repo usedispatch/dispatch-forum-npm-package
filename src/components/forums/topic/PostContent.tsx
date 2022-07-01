@@ -9,7 +9,7 @@ import { MessageType, PopUpModal, Spinner } from "./../../common";
 import { PostReplies } from "../topic/PostReplies";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import permission from "../../../utils/postbox/permission.json";
+// import permission from "../../../utils/postbox/permission.json";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
 interface PostContentProps {
@@ -30,6 +30,8 @@ export function PostContent(props: PostContentProps) {
     userRole,
     onDeletePost,
   } = props;
+
+  const permission = forum.permission;
 
   const [loading, setLoading] = useState(true);
   const [replies, setReplies] = useState<ForumPost[]>([]);

@@ -23,8 +23,7 @@ interface Props {
 export const TopicView = (props: Props) => {
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-  const collectionId = props.collectionId;
-  const topicId = props.topicId;
+  const { collectionId, topicId } = props;
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
   const [modalInfo, setModalInfo] = useState<{
@@ -93,6 +92,8 @@ export const TopicView = (props: Props) => {
   useEffect(() => {
     if (connected && !_.isNil(topicId)) {
       getTopicData();
+    } else {
+      setLoading(false);
     }
   }, [connected, topicId]);
 

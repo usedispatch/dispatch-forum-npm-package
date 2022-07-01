@@ -137,7 +137,7 @@ export class DispatchForum implements IForum {
         return forumAsOwner;
       }
     } catch (error) {
-      throw "The forum could not be created";
+      throw(error)
     }
   };
 
@@ -181,7 +181,7 @@ export class DispatchForum implements IForum {
 
       }
     } catch (error) {
-      throw "The forum could not be created";
+      throw(error)
     }
   }
 
@@ -201,7 +201,7 @@ export class DispatchForum implements IForum {
       }
     } catch (error) {
       console.log(error);
-      throw "The moderator could not be added";
+      throw(error)
     }
   }
 
@@ -220,7 +220,7 @@ export class DispatchForum implements IForum {
         return tx;
       }
     } catch (error) {
-      throw "The moderators could not be retrieved";
+      throw(error)
     }
   }
 

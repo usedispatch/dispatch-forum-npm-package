@@ -1,5 +1,6 @@
 export * from "./Close";
 export * from "./DispatchLogo";
+export * from "./DownVote";
 export * from "./Error";
 export * from "./ForumLogo";
 export * from "./InboxLogo";
@@ -13,5 +14,6 @@ export * from "./Reply";
 export * from "./SolanaLogo";
 export * from "./Success";
 export * from "./Trash";
+export * from "./UpVote";
 export * from "./Warning";
 export * from "./Gear";

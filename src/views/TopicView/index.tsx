@@ -23,8 +23,7 @@ interface Props {
 export const TopicView = (props: Props) => {
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-  const collectionId = props.collectionId;
-  const topicId = props.topicId;
+  const { collectionId, topicId } = props;
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
   const [modalInfo, setModalInfo] = useState<{
@@ -82,10 +81,20 @@ export const TopicView = (props: Props) => {
     }
   };
 
+  const updateVotes = (upVoted: boolean) => {
+    if (upVoted) {
+      topic!.upVotes = topic!.upVotes + 1;
+    } else {
+      topic!.downVotes = topic!.downVotes + 1;
+    }
+  };
+
   useEffect(() => {
     if (connected && !_.isNil(topicId)) {
       getTopicData();
-    } 
+    } else {
+      setLoading(false);
+    }
   }, [connected, topicId]);
 
   useEffect(() => {
@@ -142,6 +151,7 @@ export const TopicView = (props: Props) => {
                     forum={Forum}
                     collectionId={collectionPublicKey}
                     userRole={role ?? UserRoleType.Poster}
+                    updateVotes={(upVoted) => updateVotes(upVoted)}
                   />
                 </>
               ) : (

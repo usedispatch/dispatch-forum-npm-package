@@ -6,7 +6,7 @@ import * as web3 from "@solana/web3.js";
 import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
 import { Plus } from "../../../assets";
-import { MessageType, PopUpModal, Spinner } from "../../common";
+import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
 import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -37,6 +37,7 @@ export function ForumContent(props: ForumContentProps) {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const [topics, setTopics] = useState<ForumPost[]>([]);
@@ -69,6 +70,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The moderators could not be added`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -160,13 +162,14 @@ export function ForumContent(props: ForumContentProps) {
 
   return (
     <div className="forumContent">
-      {modalInfo !== null && !showNewTopicModal && (
+      {!_.isNil(modalInfo) && !showNewTopicModal && (
         <PopUpModal
           id="create-topic-info"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a className="okButton" onClick={() => setModalInfo(null)}>
               OK
@@ -174,7 +177,7 @@ export function ForumContent(props: ForumContentProps) {
           }
         />
       )}
-      {showNewTopicModal && modalInfo === null && (
+      {showNewTopicModal && _.isNil(modalInfo) && (
         <PopUpModal
           id="create-topic"
           visible
@@ -233,38 +236,31 @@ export function ForumContent(props: ForumContentProps) {
           title={"Manage moderators"}
           body={
             <div className="addModeratorsBody">
-              {addingNewModerators ? (
-                <Spinner />
-              ) : (
-                <>
-                  <label className="addModeratorsLabel">Add new</label>
-                  <input
-                    placeholder="Add moderators' wallet ID here, separated by commas"
-                    className="addModeratorsInput"
-                    maxLength={800}
-                    value={moderators}
-                    onChange={(e) => setModerators(e.target.value)}
-                  />
-                  <label className="addModeratorsLabel">
-                    Current moderators
-                  </label>
-                  <ul>
-                    {forum?.moderators.map((m) => {
-                      const key = m.toBase58();
-                      return (
-                        <li key={key} className="currentModerators">
-                          <div className="iconContainer">
-                            <Jdenticon value={key} alt="moderatorId" />
-                          </div>
-                          {key}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </>
-              )}
+              <label className="addModeratorsLabel">Add new</label>
+              <input
+                placeholder="Add moderators' wallet ID here, separated by commas"
+                className="addModeratorsInput"
+                maxLength={800}
+                value={moderators}
+                onChange={(e) => setModerators(e.target.value)}
+              />
+              <label className="addModeratorsLabel">Current moderators</label>
+              <ul>
+                {forum?.moderators.map((m) => {
+                  const key = m.toBase58();
+                  return (
+                    <li key={key} className="currentModerators">
+                      <div className="iconContainer">
+                        <Jdenticon value={key} alt="moderatorId" />
+                      </div>
+                      {key}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           }
+          loading={addingNewModerators}
           okButton={
             !addingNewModerators && (
               <button className="okButton" onClick={() => addModerators()}>

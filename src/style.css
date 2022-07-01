@@ -2,10 +2,13 @@
 
 @import "tailwindcss/components";
 
+/* Common */
+@import "./styles/Collapsible.css";
 @import "./styles/DeleteMesageButton.css";
 @import "./styles/PopUpModal.css";
 @import "./styles/Spinner.css";
 
+/* Forums */
 @import "./styles/PoweredByDispatch.css";
 @import "./styles/ConnectionAlert.css";
 

@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useContext } from "react";
+import { useState, useEffect, ReactNode, useContext, useRef } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 
@@ -25,7 +25,7 @@ export function ForumContent(props: ForumContentProps) {
   const { forum, role, onAddModerators } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
-
+  const mount = useRef(false);
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -77,8 +77,10 @@ export function ForumContent(props: ForumContentProps) {
     try {
       setLoadingTopics(true);
       const topics = await Forum.getTopicsForForum(forum.collectionId);
-      setTopics(topics ?? []);
-      setLoadingTopics(false);
+      if (mount.current) {
+        setTopics(topics ?? []);
+        setLoadingTopics(false);
+      }
     } catch (error) {
       setLoadingTopics(false);
       setModalInfo({
@@ -155,7 +157,11 @@ export function ForumContent(props: ForumContentProps) {
   );
 
   useEffect(() => {
+    mount.current = true
     getTopicsForForum();
+    return () => {
+      mount.current = false;
+    }
   }, [forum]);
 
   return (

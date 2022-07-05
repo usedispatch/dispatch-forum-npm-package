@@ -79,6 +79,8 @@ export function Votes(props: VotesProps) {
     }
   };
 
+  const currentVotes = post.upVotes - post.downVotes;
+
   return (
     <>
       {!_.isNil(modalInfo) && (
@@ -109,7 +111,9 @@ export function Votes(props: VotesProps) {
               <Spinner />
             </div>
           ) : (
-            <div className="currentVotes">{post.upVotes - post.downVotes}</div>
+            <div className="currentVotes">
+              {currentVotes < 0 ? "-" : currentVotes}
+            </div>
           )}
           <button
             className="votePostButton"

@@ -15,7 +15,6 @@ import { PostReplies } from "../topic/PostReplies";
 import { Votes } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-// import permission from "../../../utils/postbox/permission.json";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
 interface PostContentProps {

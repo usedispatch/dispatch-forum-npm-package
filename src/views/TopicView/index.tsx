@@ -17,8 +17,7 @@ import {
 } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import permission from "../../utils/postbox/permission.json";
-import { ForumContext, useForum, usePath } from "./../../contexts/DispatchProvider";
+import { useForum, usePath } from "./../../contexts/DispatchProvider";
 
 interface Props {
   topicId: number;
@@ -99,12 +98,12 @@ export const TopicView = (props: Props) => {
   };
 
   useEffect(() => {
-    if (connected && !_.isNil(topicId)) {
+    if (connected && !_.isNil(topicId) && !_.isNil(collectionPublicKey)) {
       getTopicData();
     } else {
       setLoading(false);
     }
-  }, [connected, topicId]);
+  }, [connected, topicId, collectionPublicKey]);
 
   useEffect(() => {
     if (connected && !_.isNil(collectionPublicKey) && !_.isNil(topic)) {

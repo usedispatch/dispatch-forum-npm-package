@@ -6,7 +6,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "npm run clean && npx webpack && cp README.md ./dist",
+    "build": "export NODE_ENV=production && npm run clean && npx webpack && cp README.md ./dist",
     "build:prod": "export NODE_ENV=production && npm run clean && npx webpack && cp README.md ./dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

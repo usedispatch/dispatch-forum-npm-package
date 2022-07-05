@@ -18,8 +18,7 @@ import {
 } from "../../components/forums";
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import permission from "../../utils/postbox/permission.json";
-import { ForumContext, useForum } from "./../../contexts/DispatchProvider";
+import { useForum } from "./../../contexts/DispatchProvider";
 
 interface ForumViewProps {
   collectionId: string;

@@ -15,7 +15,6 @@ import {
 import { CreatePost, PostList } from "..";
 import { Votes } from "./Votes";
 
-// import permission from "../../../utils/postbox/permission.json";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
@@ -50,6 +49,7 @@ export function TopicContent(props: TopicContentProps) {
       setLoadingMessages(false);
     } catch (error) {
       setPosts([]);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,

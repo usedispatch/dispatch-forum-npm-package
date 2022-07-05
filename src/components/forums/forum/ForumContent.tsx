@@ -11,7 +11,6 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
-// import permission from "../../../utils/postbox/permission.json";
 import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {

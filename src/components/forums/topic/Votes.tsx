@@ -9,8 +9,8 @@ import {
   Spinner,
 } from "../../common";
 import { DownVote, UpVote } from "../../../assets";
+import { useForum } from "./../../../contexts/DispatchProvider";
 
-import permission from "../../../utils/postbox/permission.json";
 
 interface VotesProps {
   post: ForumPost;
@@ -20,9 +20,11 @@ interface VotesProps {
 }
 
 export function Votes(props: VotesProps) {
+  const Forum = useForum();
   const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
   const [loading, setLoading] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
+  const permission = Forum.permission;
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;

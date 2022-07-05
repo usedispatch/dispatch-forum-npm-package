@@ -108,11 +108,11 @@ export class DispatchForum implements IForum {
     if (wallet.publicKey && conn) {
       this.permission = { readAndWrite: true };
     } else {
-      console.log('hello')
-      this.connection = new web3.Connection("https://solana-api.projectserum.com");
-      this.wallet = new KeyPairWallet(new web3.Keypair());
-      console.log(this.wallet)
-      console.log(this.wallet.publicKey)
+      this.wallet = {
+        publicKey: new web3.PublicKey('11111111111111111111111111111111'),
+        signAllTransactions: () => {return Promise.resolve([])},
+        signTransaction: () => {return Promise.resolve(new web3.Transaction())}
+      };
       this.permission = { readAndWrite: false };
     }
   }

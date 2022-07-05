@@ -15,7 +15,6 @@ import {
 import { CreatePost, PostList } from "..";
 import { Votes } from "./Votes";
 
-import permission from "../../../utils/postbox/permission.json";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 
@@ -30,7 +29,7 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { collectionId, forum, topic, userRole, updateVotes } = props;
   const router = useRouter();
-
+  const permission = forum.permission;
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -50,6 +49,7 @@ export function TopicContent(props: TopicContentProps) {
       setLoadingMessages(false);
     } catch (error) {
       setPosts([]);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,

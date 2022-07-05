@@ -4,7 +4,12 @@ import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { PopUpModal, MessageType, Spinner } from "../../components/common";
+import {
+  PopUpModal,
+  MessageType,
+  Spinner,
+  CollapsibleProps,
+} from "../../components/common";
 import {
   ConnectionAlert,
   PoweredByDispatch,
@@ -24,14 +29,14 @@ export const TopicView = (props: Props) => {
   const Forum = useForum();
   const connected = Forum.isNotEmpty;
   const permission = Forum.permission;
-  const collectionId = props.collectionId;
-  const topicId = props.topicId;
+  const { collectionId, topicId } = props;
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const [role, setRole] = useState<UserRoleType | null>(null);
@@ -62,6 +67,7 @@ export const TopicView = (props: Props) => {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Your user role could not be determined, you will only have permission to create topics and comment",
+        collapsible: { header: "Error", content: error },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -77,16 +83,27 @@ export const TopicView = (props: Props) => {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The topic could not be loaded",
+        collapsible: { header: "Error", content: error },
       });
 
       setLoading(false);
     }
   };
 
+  const updateVotes = (upVoted: boolean) => {
+    if (upVoted) {
+      topic!.upVotes = topic!.upVotes + 1;
+    } else {
+      topic!.downVotes = topic!.downVotes + 1;
+    }
+  };
+
   useEffect(() => {
     if (connected && !_.isNil(topicId)) {
       getTopicData();
-    } 
+    } else {
+      setLoading(false);
+    }
   }, [connected, topicId]);
 
   useEffect(() => {
@@ -114,9 +131,10 @@ export const TopicView = (props: Props) => {
         <PopUpModal
           id="topic-info"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a className="okInfoButton" onClick={() => setModalInfo(null)}>
               OK
@@ -143,6 +161,7 @@ export const TopicView = (props: Props) => {
                     forum={Forum}
                     collectionId={collectionPublicKey}
                     userRole={role ?? UserRoleType.Poster}
+                    updateVotes={(upVoted) => updateVotes(upVoted)}
                   />
                 </>
               ) : (

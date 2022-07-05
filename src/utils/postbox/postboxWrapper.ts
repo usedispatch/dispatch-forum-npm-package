@@ -83,6 +83,12 @@ export interface IForum {
 
   deleteForumPost(forumPost: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<string>;
 
+  // Vote a post up
+  voteUpForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<string>;
+
+  // Vote a post down
+  voteDownForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<string>;
+
   // This is the same as createPost, but additionally,
   // post.parent = postId
   replyToForumPost(replyToPost: ForumPost, collectionId: web3.PublicKey, post: {
@@ -142,8 +148,8 @@ export class DispatchForum implements IForum {
 
         return forumAsOwner;
       }
-    } catch (error) {
-      throw "The forum could not be created";
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   };
 
@@ -186,8 +192,8 @@ export class DispatchForum implements IForum {
         }
 
       }
-    } catch (error) {
-      throw "The forum could not be created";
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   }
 
@@ -207,7 +213,7 @@ export class DispatchForum implements IForum {
       }
     } catch (error) {
       console.log(error);
-      throw "The moderator could not be added";
+      throw(JSON.stringify(error))
     }
   }
 
@@ -226,7 +232,7 @@ export class DispatchForum implements IForum {
         return tx;
       }
     } catch (error) {
-      throw "The moderators could not be retrieved";
+      throw(JSON.stringify(error))
     }
   }
 
@@ -276,7 +282,7 @@ export class DispatchForum implements IForum {
         return newTopic;
       }
     } catch (err) {
-      console.log("create a new topic error:", err);
+      throw(JSON.stringify(err))
     }
   };
 
@@ -337,10 +343,42 @@ export class DispatchForum implements IForum {
       const tx = await forum.deleteForumPost(post, asMod);
 
       return tx;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   };
+
+
+  // Vote a post up
+  voteUpForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<string> =>{
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const tx = await forum.voteUpForumPost(post);
+
+      return tx;
+    } catch (error) {      
+      throw(JSON.stringify(error))
+    }
+  }
+
+  // Vote a post down
+  voteDownForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<string> => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const tx = await forum.voteDownForumPost(post);
+
+      return tx;
+    } catch (error) {      
+      throw(JSON.stringify(error))
+    }
+  }
+  
 
   replyToForumPost = async (
     replyToPost: ForumPost, collectionId: web3.PublicKey, 
@@ -357,8 +395,8 @@ export class DispatchForum implements IForum {
       const reply = await forum.replyToForumPost(replyToPost, post);
 
       return reply;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
     };
 
@@ -371,8 +409,8 @@ export class DispatchForum implements IForum {
       const replies = await forum.getReplies(topic);
 
       return replies;
-    } catch (error) {
-      throw(error)
+    } catch (error) {      
+      throw(JSON.stringify(error))
     }
   }
 }

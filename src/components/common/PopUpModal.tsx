@@ -3,6 +3,7 @@ import { ReactNode, useRef } from "react";
 
 import { Close, Success, Warning, Error, Info } from "../../assets";
 
+import { CollapsibleProps, Collapsible } from "./Collapsible";
 import { Spinner } from "./Spinner";
 
 export enum MessageType {
@@ -40,6 +41,7 @@ interface PopUpModalProps {
   visible: boolean;
   title: string | ReactNode;
   body: ReactNode;
+  collapsible?: CollapsibleProps;
   loading?: boolean;
   messageType?: MessageType;
   okButton?: ReactNode;
@@ -82,6 +84,14 @@ export const PopUpModal = (props: PopUpModalProps) => {
             )}
           </div>
           <div className="modalBody">{props.body}</div>
+          {props.collapsible ? (
+            <div className="modalCollapsible">
+              <Collapsible
+                content={props.collapsible.content}
+                header={props.collapsible.header}
+              />
+            </div>
+          ) : undefined}
           {props.loading ? (
             <div className="modalLoading">
               <Spinner />

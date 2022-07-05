@@ -1,12 +1,18 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../../assets";
-import { MessageType, PopUpModal, Spinner } from "./../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Spinner,
+} from "./../../common";
 import { PostReplies } from "../topic/PostReplies";
+import { Votes } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 // import permission from "../../../utils/postbox/permission.json";
@@ -22,14 +28,8 @@ interface PostContentProps {
 }
 
 export function PostContent(props: PostContentProps) {
-  const {
-    collectionId,
-    deletePermission,
-    forum,
-    post,
-    userRole,
-    onDeletePost,
-  } = props;
+  const { collectionId, deletePermission, forum, userRole, onDeletePost } =
+    props;
 
   const permission = forum.permission;
 
@@ -44,7 +44,18 @@ export function PostContent(props: PostContentProps) {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
+
+  const post = useMemo(() => props.post, [props.post]);
+
+  const updateVotes = (upVoted: boolean) => {
+    if (upVoted) {
+      post.upVotes = post.upVotes + 1;
+    } else {
+      post.downVotes = post.downVotes + 1;
+    }
+  };
 
   const getReplies = async () => {
     setLoading(true);
@@ -58,6 +69,7 @@ export function PostContent(props: PostContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The replies could not be loaded`,
+        collapsible: { header: "Error", content: error },
       });
       setLoading(false);
     }
@@ -74,6 +86,12 @@ export function PostContent(props: PostContentProps) {
       setShowReplyBox(false);
       setReply("");
     } catch (error) {
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The reply could not be sent`,
+        collapsible: { header: "Error", content: error },
+      });
       setSendingReply(false);
     }
   };
@@ -96,6 +114,7 @@ export function PostContent(props: PostContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The post could not be deleted`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -126,14 +145,9 @@ export function PostContent(props: PostContentProps) {
             visible
             title="Are you sure you want to delete this post?"
             body={
-              deleting ? (
-                <div className="deleteSpinner">
-                  <Spinner />
-                </div>
-              ) : (
-                "This is permanent and you won’t be able to retrieve this comment again. Upvotes and downvotes will go too."
-              )
+              "This is permanent and you won’t be able to retrieve this comment again. Upvotes and downvotes will go too."
             }
+            loading={deleting}
             okButton={
               !deleting && (
                 <a
@@ -197,6 +211,14 @@ export function PostContent(props: PostContentProps) {
                 onClick={() => setShowReplyBox(true)}>
                 Reply
               </button>
+              <Votes
+                post={post}
+                onDownVotePost={() =>
+                  forum.voteDownForumPost(post, collectionId)
+                }
+                onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
+                updateVotes={(upVoted) => updateVotes(upVoted)}
+              />
             </div>
             <div
               className="repliesSection"
@@ -206,6 +228,12 @@ export function PostContent(props: PostContentProps) {
                   replies={replies}
                   userRole={userRole}
                   onDeletePost={onDeletePost}
+                  onDownVotePost={(reply) =>
+                    forum.voteDownForumPost(reply, collectionId)
+                  }
+                  onUpVotePost={(reply) =>
+                    forum.voteUpForumPost(reply, collectionId)
+                  }
                   onReplyClick={() => setShowReplyBox(true)}
                 />
               </div>

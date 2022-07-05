@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo, useContext } from "react";
+import { useState, useEffect, useCallback, useMemo, useContext, useRef } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
@@ -73,14 +73,16 @@ function RowContent(props: RowContentProps) {
   const Forum = useForum();
   const { buildTopicPath } = usePath();
   const topicPath = buildTopicPath(collectionId.toBase58(), topic.postId);
-
+  const mount = useRef(false);
   const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
   const getMessages = async () => {
     try {
       const data = await Forum.getTopicMessages(topic.postId, collectionId);
-      setMessages(data ?? []);
+      if (mount.current) {
+        setMessages(data ?? []);
+      }
       setLoading(false);
     } catch (error) {
       setMessages(undefined);
@@ -89,7 +91,11 @@ function RowContent(props: RowContentProps) {
   };
 
   useEffect(() => {
+    mount.current = true;
     getMessages();
+    return () => {
+      mount.current = false;
+    }
   }, [topic.postId, collectionId]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {
@@ -144,15 +150,11 @@ function RowContent(props: RowContentProps) {
   );
 
   return (
-    <tr
-      className="row "
-      >
+    <tr className="row ">
       <>
         <th>
           <div className="rowSubj">
-            <a href={topicPath}>
-            {topic.data.subj}
-            </a>
+            <a href={topicPath}>{topic.data.subj}</a>
           </div>
         </th>
         <td>

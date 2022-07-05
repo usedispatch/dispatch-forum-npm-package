@@ -161,7 +161,6 @@
   }
 
   .row {
-    cursor: pointer;
     border-bottom: 1px solid #b8b9dc;
 
     &:hover {
@@ -178,6 +177,10 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
+
+      a {
+        cursor: pointer;
+      }
     }
 
     .rowIconReplies {

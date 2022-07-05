@@ -1,12 +1,12 @@
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useContext } from "react";
+import { useState, useEffect, ReactNode, useContext, useRef } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 
 import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
 import { Plus } from "../../../assets";
-import { MessageType, PopUpModal, Spinner } from "../../common";
+import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
 import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -26,6 +26,7 @@ export function ForumContent(props: ForumContentProps) {
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const permission = Forum.permission;
+  const mount = useRef(false);
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -37,6 +38,7 @@ export function ForumContent(props: ForumContentProps) {
     title: string | ReactNode;
     type: MessageType;
     body?: string;
+    collapsible?: CollapsibleProps;
   } | null>(null);
 
   const [topics, setTopics] = useState<ForumPost[]>([]);
@@ -69,6 +71,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The moderators could not be added`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -77,14 +80,17 @@ export function ForumContent(props: ForumContentProps) {
     try {
       setLoadingTopics(true);
       const topics = await Forum.getTopicsForForum(forum.collectionId);
-      setTopics(topics ?? []);
-      setLoadingTopics(false);
+      if (mount.current) {
+        setTopics(topics ?? []);
+        setLoadingTopics(false);
+      }
     } catch (error) {
       setLoadingTopics(false);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topics for the forum could not be loaded`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -118,6 +124,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
+        collapsible: { header: "Error", content: error },
       });
     }
   };
@@ -155,18 +162,23 @@ export function ForumContent(props: ForumContentProps) {
   );
 
   useEffect(() => {
+    mount.current = true
     getTopicsForForum();
+    return () => {
+      mount.current = false;
+    }
   }, [forum]);
 
   return (
     <div className="forumContent">
-      {modalInfo !== null && !showNewTopicModal && (
+      {!_.isNil(modalInfo) && !showNewTopicModal && (
         <PopUpModal
           id="create-topic-info"
           visible
-          title={modalInfo?.title}
-          messageType={modalInfo?.type}
-          body={modalInfo?.body}
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
           okButton={
             <a className="okButton" onClick={() => setModalInfo(null)}>
               OK
@@ -174,7 +186,7 @@ export function ForumContent(props: ForumContentProps) {
           }
         />
       )}
-      {showNewTopicModal && modalInfo === null && (
+      {showNewTopicModal && _.isNil(modalInfo) && (
         <PopUpModal
           id="create-topic"
           visible
@@ -207,7 +219,6 @@ export function ForumContent(props: ForumContentProps) {
           }
           okButton={
             <button
-              type="submit"
               className="okButton"
               onClick={() => {
                 setShowNewTopicModal(false);
@@ -233,38 +244,31 @@ export function ForumContent(props: ForumContentProps) {
           title={"Manage moderators"}
           body={
             <div className="addModeratorsBody">
-              {addingNewModerators ? (
-                <Spinner />
-              ) : (
-                <>
-                  <label className="addModeratorsLabel">Add new</label>
-                  <input
-                    placeholder="Add moderators' wallet ID here, separated by commas"
-                    className="addModeratorsInput"
-                    maxLength={800}
-                    value={moderators}
-                    onChange={(e) => setModerators(e.target.value)}
-                  />
-                  <label className="addModeratorsLabel">
-                    Current moderators
-                  </label>
-                  <ul>
-                    {forum?.moderators.map((m) => {
-                      const key = m.toBase58();
-                      return (
-                        <li key={key} className="currentModerators">
-                          <div className="iconContainer">
-                            <Jdenticon value={key} alt="moderatorId" />
-                          </div>
-                          {key}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </>
-              )}
+              <label className="addModeratorsLabel">Add new</label>
+              <input
+                placeholder="Add moderators' wallet ID here, separated by commas"
+                className="addModeratorsInput"
+                maxLength={800}
+                value={moderators}
+                onChange={(e) => setModerators(e.target.value)}
+              />
+              <label className="addModeratorsLabel">Current moderators</label>
+              <ul>
+                {forum?.moderators.map((m) => {
+                  const key = m.toBase58();
+                  return (
+                    <li key={key} className="currentModerators">
+                      <div className="iconContainer">
+                        <Jdenticon value={key} alt="moderatorId" />
+                      </div>
+                      {key}
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           }
+          loading={addingNewModerators}
           okButton={
             !addingNewModerators && (
               <button className="okButton" onClick={() => addModerators()}>

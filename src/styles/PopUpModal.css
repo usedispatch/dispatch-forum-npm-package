@@ -54,7 +54,6 @@
       .cancelAction {
         display: flex;
         justify-content: flex-end;
-        margin-top: 24px;
         margin-right: 8px;
         cursor: pointer;
       }
@@ -62,7 +61,6 @@
       .acceptAction {
         display: flex;
         justify-content: flex-end;
-        margin-top: 24px;
         cursor: pointer;
       }
     }
@@ -102,6 +100,10 @@
     .modalBody {
       display: flex;
       padding: 16px 0;
+    }
+
+    .modalCollapsible {
+      margin-bottom: 16px;
     }
 
     .modalLoading {

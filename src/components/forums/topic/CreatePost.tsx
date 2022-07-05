@@ -1,9 +1,9 @@
 import * as _ from "lodash";
-import { useState, useContext, ReactNode } from "react";
+import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 
 import { CollapsibleProps, MessageType, PopUpModal, Spinner } from "../../common";
-import { ForumContext } from "../../../contexts/DispatchProvider";
+import { useForum } from "../../../contexts/DispatchProvider";
 
 
 interface CreatePostProps {
@@ -24,7 +24,7 @@ interface CreatePostProps {
 export function CreatePost(props: CreatePostProps) {
   const { createForumPost, collectionId, topicId, onReload } = props;
   const [loading, setLoading] = useState(false);
-  const Forum = useContext(ForumContext);
+  const Forum = useForum();
   const permission = Forum.permission;
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;

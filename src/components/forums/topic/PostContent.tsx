@@ -152,7 +152,7 @@ export function PostContent(props: PostContentProps) {
                 <a
                   className="acceptDeletePostButton"
                   onClick={() => onDelete(post)}>
-                  Accept
+                  Confirm
                 </a>
               )
             }

@@ -49,7 +49,7 @@ export function TopicContent(props: TopicContentProps) {
       setLoadingMessages(false);
     } catch (error) {
       setPosts([]);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -176,7 +176,7 @@ export function TopicContent(props: TopicContentProps) {
           loading={deletingTopic}
           okButton={
             <a className="acceptDeleteTopicButton" onClick={onDeleteTopic}>
-              Accept
+              Confirm
             </a>
           }
           cancelButton={

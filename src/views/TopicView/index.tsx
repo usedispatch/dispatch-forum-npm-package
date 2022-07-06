@@ -4,6 +4,7 @@ import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
+import { Chevron } from "../../assets";
 import {
   PopUpModal,
   MessageType,
@@ -39,8 +40,10 @@ export const TopicView = (props: Props) => {
   } | null>(null);
 
   const [role, setRole] = useState<UserRoleType | null>(null);
+
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
+  const [parent, setParent] = useState<string | undefined>();
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
 
@@ -74,7 +77,11 @@ export const TopicView = (props: Props) => {
   const getTopicData = async () => {
     setLoading(true);
     try {
-      const res = await Forum.getTopicData(topicId, collectionPublicKey);
+      const [desc, res] = await Promise.all([
+        Forum.getDescription(collectionPublicKey),
+        Forum.getTopicData(topicId, collectionPublicKey),
+      ]);
+      setParent(desc?.title);
       setTopic(res);
       setLoading(false);
     } catch (error) {
@@ -152,9 +159,11 @@ export const TopicView = (props: Props) => {
                 </div>
               ) : topic ? (
                 <>
-                  <a href={forumPath}>
-                    <button className="backButton">Back</button>
-                  </a>
+                  <Breadcrumb
+                    navigateTo={forumPath}
+                    parent={parent!}
+                    current={topic.data.subj!}
+                  />
                   <TopicContent
                     topic={topic}
                     forum={Forum}
@@ -174,3 +183,25 @@ export const TopicView = (props: Props) => {
     </div>
   );
 };
+
+interface BreadcrumbProps {
+  navigateTo: string;
+  parent: string;
+  current: string;
+}
+
+function Breadcrumb(props: BreadcrumbProps) {
+  const { navigateTo, current, parent } = props;
+
+  return (
+    <div className="breadcrumbContainer">
+      <a href={navigateTo}>
+        <div className="parent">{parent}</div>
+      </a>
+      <div className="separationIcon">
+        <Chevron />
+      </div>
+      <div className="current">{current}</div>
+    </div>
+  );
+}

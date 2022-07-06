@@ -125,6 +125,7 @@ export const TopicView = (props: Props) => {
   );
 
   return (
+    <div className="dsp- ">
     <div className="topicView">
       {!_.isNil(modalInfo) && (
         <PopUpModal
@@ -171,6 +172,7 @@ export const TopicView = (props: Props) => {
         </div>
         <PoweredByDispatch />
       </div>
+    </div>
     </div>
   );
 };

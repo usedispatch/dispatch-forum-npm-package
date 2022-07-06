@@ -58,50 +58,52 @@ export const PopUpModal = (props: PopUpModalProps) => {
   const icon = getMessageTypeIcon(props.messageType);
 
   return (
-    <div className="popUpModal">
-      <input
-        type="checkbox"
-        id={props.id}
-        className="modal-toggle"
-        ref={modalRef}
-      />
-      <div className="modalContainer">
-        <div className="modalBox">
-          <div className="modalTitle">
-            <div className="titleTextIcon">
-              {!_.isNil(props.messageType) && icon}
-              {props.title}
+    <div className="dsp-">
+      <div className="popUpModal">
+        <input
+          type="checkbox"
+          id={props.id}
+          className="modal-toggle"
+          ref={modalRef}
+        />
+        <div className="modalContainer">
+          <div className="modalBox">
+            <div className="modalTitle">
+              <div className="titleTextIcon">
+                {!_.isNil(props.messageType) && icon}
+                {props.title}
+              </div>
+              {props.onClose && (
+                <label
+                  htmlFor={props.id}
+                  className="modalClose"
+                  onClick={props.onClose}>
+                  <div className="closeIcon">
+                    <Close />
+                  </div>
+                </label>
+              )}
             </div>
-            {props.onClose && (
-              <label
-                htmlFor={props.id}
-                className="modalClose"
-                onClick={props.onClose}>
-                <div className="closeIcon">
-                  <Close />
-                </div>
-              </label>
+            <div className="modalBody">{props.body}</div>
+            {props.collapsible ? (
+              <div className="modalCollapsible">
+                <Collapsible
+                  content={props.collapsible.content}
+                  header={props.collapsible.header}
+                />
+              </div>
+            ) : undefined}
+            {props.loading ? (
+              <div className="modalLoading">
+                <Spinner />
+              </div>
+            ) : (
+              <div className="modalActionsContainer">
+                <div className="cancelAction">{props.cancelButton}</div>
+                <div className="acceptAction">{props.okButton}</div>
+              </div>
             )}
           </div>
-          <div className="modalBody">{props.body}</div>
-          {props.collapsible ? (
-            <div className="modalCollapsible">
-              <Collapsible
-                content={props.collapsible.content}
-                header={props.collapsible.header}
-              />
-            </div>
-          ) : undefined}
-          {props.loading ? (
-            <div className="modalLoading">
-              <Spinner />
-            </div>
-          ) : (
-            <div className="modalActionsContainer">
-              <div className="cancelAction">{props.cancelButton}</div>
-              <div className="acceptAction">{props.okButton}</div>
-            </div>
-          )}
         </div>
       </div>
     </div>

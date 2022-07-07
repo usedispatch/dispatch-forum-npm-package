@@ -2760,6 +2760,11 @@ async-mutex@^0.3.2:
   dependencies:
     tslib "^2.3.1"
 
+async@^3.2.4:
+  version "3.2.4"
+  resolved "https://registry.yarnpkg.com/async/-/async-3.2.4.tgz#2d22e00f8cddeb5fde5dd33522b56d1cf569a81c"
+  integrity sha512-iAB+JbDEGXhyIUavoDl9WP/Jj106Kz9DEn1DPgYw5ruDn0e3Wgi3sKFm55sASdGBNOQB8F59d9qQ7deqrHA8wQ==
+
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
@@ -5602,6 +5607,11 @@ postcss-nested@5.0.6:
   integrity sha512-rKqm2Fk0KbA8Vt3AdGN0FB9OBOMDVajMG6ZCf/GoHgdxUJ4sBFp0A/uMIRm+MJUdo33YXEtjqIz8u7DAp8B7DA==
   dependencies:
     postcss-selector-parser "^6.0.6"
+
+postcss-prefix-selector@^1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/postcss-prefix-selector/-/postcss-prefix-selector-1.16.0.tgz#ad5b56f9a73a2c090ca7161049632c9d89bcb404"
+  integrity sha512-rdVMIi7Q4B0XbXqNUEI+Z4E+pueiu/CS5E6vRCQommzdQ/sgsS4dK42U7GX8oJR+TJOtT+Qv3GkNo6iijUMp3Q==
 
 postcss-selector-parser@^6.0.2, postcss-selector-parser@^6.0.4, postcss-selector-parser@^6.0.6:
   version "6.0.10"

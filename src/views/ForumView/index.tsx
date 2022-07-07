@@ -229,16 +229,9 @@ export const ForumView = (props: ForumViewProps) => {
 
   useEffect(() => {
     if (isNotEmpty && !_.isNil(forum)) {
-      const localStorageRole = localStorage.getItem("role");
-      if (_.isNil(localStorageRole)) {
-        getUserRole();
-      } else {
-        setRole(localStorageRole as UserRoleType);
-      }
-    } else {
-      localStorage.removeItem("role");
+      getUserRole();
     }
-  }, [forum, isNotEmpty]);
+  }, [forum, isNotEmpty, publicKey]);
 
   const createForumButton = (
     <div className="createForumButtonContainer">
@@ -284,119 +277,121 @@ export const ForumView = (props: ForumViewProps) => {
   );
 
   return (
-    <div className="forumView">
-      {!_.isNil(modalInfo) && (
-        <PopUpModal
-          id="create-forum-info"
-          visible
-          title={modalInfo.title}
-          messageType={modalInfo.type}
-          body={modalInfo.body}
-          collapsible={modalInfo.collapsible}
-          okButton={
-            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-              OK
-            </a>
-          }
-        />
-      )}
-      {showNewForumModal && (
-        <PopUpModal
-          id="create-forum"
-          visible
-          title={"Create new Forum"}
-          body={
-            <div className="createForumBody">
-              <>
-                <span className="createForumLabel">Forum Title</span>
-                <input
-                  type="text"
-                  placeholder="Title"
-                  className="createForumTitle"
-                  name="name"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </>
-              <>
-                <span className="createForumLabel">Forum Description</span>
-                <textarea
-                  placeholder="Description"
-                  className="createForumTitle createForumDescription"
-                  maxLength={800}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                />
-              </>
-              <>
-                <span className="createForumLabel">Moderators</span>
-                <input
-                  placeholder="Add moderators' wallet ID here, separated by commas"
-                  className="createForumTitle createForumTextArea"
-                  maxLength={800}
-                  value={newModerators}
-                  onChange={(e) => setNewModerators(e.target.value.split(","))}
-                />
-              </>
-            </div>
-          }
-          okButton={
-            <button
-              type="submit"
-              className="acceptCreateForumButton"
-              onClick={() => {
-                setShowNewForumModal(false);
-                onCreateForumClick();
-              }}>
-              Create
-            </button>
-          }
-          cancelButton={
-            <div
-              className="cancelCreateForumButton"
-              onClick={() => setShowNewForumModal(false)}>
-              Cancel
-            </div>
-          }
-        />
-      )}
-      {!permission.readAndWrite && <ConnectionAlert />}
-      <div className="forumViewContainer">
-        <div className="forumViewContent">
-          {!_.isNil(forum) && (
-            <div
-              className={`forumViewTitle ${
-                !permission.readAndWrite ? "alert" : ""
-              }`}>
-              {forum.title}
-            </div>
-          )}
-          <main>
-            <div className="forumViewContentBox">
-              <div>
-                {loading ? (
-                  <div className="forumLoading">
-                    <Spinner />
-                  </div>
-                ) : isNotEmpty ? (
-                  !_.isNil(forum) ? (
-                    <ForumContent
-                      forum={forum}
-                      role={role ?? UserRoleType.Poster}
-                      onAddModerators={getModerators}
-                    />
-                  ) : (
-                    emptyView
-                  )
-                ) : (
-                  disconnectedView
-                )}
+    <div className="dsp-">
+      <div className="forumView">
+        {!_.isNil(modalInfo) && (
+          <PopUpModal
+            id="create-forum-info"
+            visible
+            title={modalInfo.title}
+            messageType={modalInfo.type}
+            body={modalInfo.body}
+            collapsible={modalInfo.collapsible}
+            okButton={
+              <a className="okInfoButton" onClick={() => setModalInfo(null)}>
+                OK
+              </a>
+            }
+          />
+        )}
+        {showNewForumModal && (
+          <PopUpModal
+            id="create-forum"
+            visible
+            title={"Create new Forum"}
+            body={
+              <div className="createForumBody">
+                <>
+                  <span className="createForumLabel">Forum Title</span>
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    className="createForumTitle"
+                    name="name"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                </>
+                <>
+                  <span className="createForumLabel">Forum Description</span>
+                  <textarea
+                    placeholder="Description"
+                    className="createForumTitle createForumDescription"
+                    maxLength={800}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </>
+                <>
+                  <span className="createForumLabel">Moderators</span>
+                  <input
+                    placeholder="Add moderators' wallet ID here, separated by commas"
+                    className="createForumTitle createForumTextArea"
+                    maxLength={800}
+                    value={newModerators}
+                    onChange={(e) => setNewModerators(e.target.value.split(","))}
+                  />
+                </>
               </div>
-            </div>
-          </main>
+            }
+            okButton={
+              <button
+                type="submit"
+                className="acceptCreateForumButton"
+                onClick={() => {
+                  setShowNewForumModal(false);
+                  onCreateForumClick();
+                }}>
+                Create
+              </button>
+            }
+            cancelButton={
+              <div
+                className="cancelCreateForumButton"
+                onClick={() => setShowNewForumModal(false)}>
+                Cancel
+              </div>
+            }
+          />
+        )}
+        {!permission.readAndWrite && <ConnectionAlert />}
+        <div className="forumViewContainer">
+          <div className="forumViewContent">
+            {!_.isNil(forum) && (
+              <div
+                className={`forumViewTitle ${
+                  !permission.readAndWrite ? "alert" : ""
+                }`}>
+                {forum.title}
+              </div>
+            )}
+            <main>
+              <div className="forumViewContentBox">
+                <div>
+                  {loading ? (
+                    <div className="forumLoading">
+                      <Spinner />
+                    </div>
+                  ) : isNotEmpty ? (
+                    !_.isNil(forum) ? (
+                      <ForumContent
+                        forum={forum}
+                        role={role ?? UserRoleType.Poster}
+                        onAddModerators={getModerators}
+                      />
+                    ) : (
+                      emptyView
+                    )
+                  ) : (
+                    disconnectedView
+                  )}
+                </div>
+              </div>
+            </main>
+          </div>
+          <PoweredByDispatch />
         </div>
-        <PoweredByDispatch />
       </div>
     </div>
   );

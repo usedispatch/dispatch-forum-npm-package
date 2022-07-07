@@ -169,6 +169,7 @@ export function ForumContent(props: ForumContentProps) {
   }, [forum]);
 
   return (
+    <div className="dsp- ">
     <div className="forumContent">
       {!_.isNil(modalInfo) && !showNewTopicModal && (
         <PopUpModal
@@ -304,6 +305,7 @@ export function ForumContent(props: ForumContentProps) {
         topics={topics}
         collectionId={forum.collectionId}
       />
+    </div>
     </div>
   );
 }

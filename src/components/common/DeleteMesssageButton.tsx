@@ -75,7 +75,7 @@ export const DeleteMesssageButton = (props: DeleteMesssageButtonProps) => {
           }
           okButton={
             <div className="okButton" onClick={deleteMessage}>
-              Accept
+              Confirm
             </div>
           }
           cancelButton={

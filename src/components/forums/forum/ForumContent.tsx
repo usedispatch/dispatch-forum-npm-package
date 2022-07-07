@@ -161,11 +161,11 @@ export function ForumContent(props: ForumContentProps) {
   );
 
   useEffect(() => {
-    mount.current = true
+    mount.current = true;
     getTopicsForForum();
     return () => {
       mount.current = false;
-    }
+    };
   }, [forum]);
 
   return (
@@ -220,6 +220,7 @@ export function ForumContent(props: ForumContentProps) {
           okButton={
             <button
               className="okButton"
+              disabled={title.length === 0}
               onClick={() => {
                 setShowNewTopicModal(false);
                 setLoadingTopics(true);

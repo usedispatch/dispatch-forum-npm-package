@@ -31,8 +31,8 @@ export function ForumContent(props: ForumContentProps) {
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [moderators, setModerators] = useState<string>("");
-  const [addingNewModerators, setAddingNewModerators] = useState(false);
+  const [newModerator, setNewModerator] = useState<string>("");
+  const [addingNewModerator, setAddingNewModerator] = useState(false);
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -43,33 +43,27 @@ export function ForumContent(props: ForumContentProps) {
   const [topics, setTopics] = useState<ForumPost[]>([]);
 
   const addModerators = async () => {
-    setAddingNewModerators(true);
     try {
-      const moderatorsIds = moderators
-        .split(",")
-        .map((m) => new web3.PublicKey(m));
+      const moderatorId = new web3.PublicKey(newModerator);
+      await Forum.addModerator(moderatorId, forum.collectionId);
 
-      const p = moderatorsIds.map(async (t) => {
-        return Forum.addModerator(t, forum.collectionId);
-      });
-      const mods = await Promise.all(p);
       onAddModerators();
-      setModerators("");
+      setNewModerator("");
       setShowAddModerators(false);
-      setAddingNewModerators(false);
+      setAddingNewModerator(false);
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
-        body: `The moderators were added`,
+        body: `The moderator was added`,
       });
     } catch (error) {
-      setModerators("");
-      setAddingNewModerators(false);
+      setNewModerator("");
+      setAddingNewModerator(false);
       setShowAddModerators(false);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        body: `The moderators could not be added`,
+        body: `The moderator could not be added`,
         collapsible: { header: "Error", content: error },
       });
     }
@@ -247,11 +241,11 @@ export function ForumContent(props: ForumContentProps) {
             <div className="addModeratorsBody">
               <label className="addModeratorsLabel">Add new</label>
               <input
-                placeholder="Add moderators' wallet ID here, separated by commas"
+                placeholder="Add moderators' wallet ID here"
                 className="addModeratorsInput"
                 maxLength={800}
-                value={moderators}
-                onChange={(e) => setModerators(e.target.value)}
+                value={newModerator}
+                onChange={(e) => setNewModerator(e.target.value)}
               />
               <label className="addModeratorsLabel">Current moderators</label>
               <ul>
@@ -269,21 +263,21 @@ export function ForumContent(props: ForumContentProps) {
               </ul>
             </div>
           }
-          loading={addingNewModerators}
+          loading={addingNewModerator}
           okButton={
-            !addingNewModerators && (
+            !addingNewModerator && (
               <button className="okButton" onClick={() => addModerators()}>
                 Save
               </button>
             )
           }
           cancelButton={
-            !addingNewModerators && (
+            !addingNewModerator && (
               <button
                 className="cancelButton"
                 onClick={() => {
                   setShowAddModerators(false);
-                  setModerators("");
+                  setNewModerator("");
                 }}>
                 Cancel
               </button>

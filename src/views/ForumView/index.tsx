@@ -229,16 +229,9 @@ export const ForumView = (props: ForumViewProps) => {
 
   useEffect(() => {
     if (isNotEmpty && !_.isNil(forum)) {
-      const localStorageRole = localStorage.getItem("role");
-      if (_.isNil(localStorageRole)) {
-        getUserRole();
-      } else {
-        setRole(localStorageRole as UserRoleType);
-      }
-    } else {
-      localStorage.removeItem("role");
+      getUserRole();
     }
-  }, [forum, isNotEmpty]);
+  }, [forum, isNotEmpty, publicKey]);
 
   const createForumButton = (
     <div className="createForumButtonContainer">

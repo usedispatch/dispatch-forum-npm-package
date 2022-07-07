@@ -8,7 +8,6 @@ import {
   useCallback,
 } from "react";
 import Jdenticon from "react-jdenticon";
-import * as web3 from "@solana/web3.js";
 
 import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
@@ -18,6 +17,7 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
@@ -69,7 +69,7 @@ export function ForumContent(props: ForumContentProps) {
   const addModerators = async () => {
     setAddingNewModerator(true);
     try {
-      const moderatorId = new web3.PublicKey(newModerator);
+      const moderatorId = newPublicKey(newModerator);
       await Forum.addModerator(moderatorId, forum.collectionId);
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");

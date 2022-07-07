@@ -1,6 +1,13 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useContext, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useCallback,
+  useContext,
+  useRef,
+} from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -97,7 +104,7 @@ export const ForumView = (props: ForumViewProps) => {
     }
     return () => {
       mount.current = false;
-    }
+    };
   }, []);
 
   const getForumForCollection = useCallback(async () => {
@@ -141,23 +148,6 @@ export const ForumView = (props: ForumViewProps) => {
         type: MessageType.error,
         body: "Your user role could not be determined, you will only have permission to create topics and comment",
         collapsible: { header: "Error", content: error },
-      });
-    }
-  }, [Forum, collectionPublicKey]);
-
-  const getModerators = useCallback(async () => {
-    try {
-      const mods = await Forum.getModerators(collectionPublicKey);
-      if (!_.isNil(mods) && mount.current) {
-        setForum({ ...forum, moderators: mods ?? [] } as ForumInfo);
-      }
-    } catch (error) {
-      const message = JSON.stringify(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The moderators could not be determined",
-        collapsible: { header: "Error", content: message },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -218,7 +208,12 @@ export const ForumView = (props: ForumViewProps) => {
   };
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(publicKey) && !_.isNil(collectionPublicKey) && mount.current) {
+    if (
+      isNotEmpty &&
+      !_.isNil(publicKey) &&
+      !_.isNil(collectionPublicKey) &&
+      mount.current
+    ) {
       setLoading(true);
       getForumForCollection();
     } else {
@@ -378,7 +373,6 @@ export const ForumView = (props: ForumViewProps) => {
                       <ForumContent
                         forum={forum}
                         role={role ?? UserRoleType.Poster}
-                        onAddModerators={getModerators}
                       />
                     ) : (
                       emptyView

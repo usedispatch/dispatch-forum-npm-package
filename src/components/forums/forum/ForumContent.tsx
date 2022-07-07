@@ -1,5 +1,12 @@
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useContext, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 
@@ -15,13 +22,12 @@ import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;
-  onAddModerators: () => void;
   forumObject?: DispatchForum;
   role?: UserRoleType;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum, role, onAddModerators } = props;
+  const { forum, role } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const permission = Forum.permission;
@@ -31,6 +37,7 @@ export function ForumContent(props: ForumContentProps) {
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [currentMods, setCurrentMods] = useState<string[]>([]);
   const [newModerator, setNewModerator] = useState<string>("");
   const [addingNewModerator, setAddingNewModerator] = useState(false);
   const [modalInfo, setModalInfo] = useState<{
@@ -42,12 +49,29 @@ export function ForumContent(props: ForumContentProps) {
 
   const [topics, setTopics] = useState<ForumPost[]>([]);
 
+  const getModerators = useCallback(async () => {
+    try {
+      const mods = await Forum.getModerators(forum.collectionId);
+      if (!_.isNil(mods)) {
+        setCurrentMods(mods.map((m) => m.toBase58()));
+      }
+    } catch (error) {
+      const message = JSON.stringify(error);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The moderators could not be determined",
+        collapsible: { header: "Error", content: message },
+      });
+    }
+  }, [Forum]);
+
   const addModerators = async () => {
+    setAddingNewModerator(true);
     try {
       const moderatorId = new web3.PublicKey(newModerator);
       await Forum.addModerator(moderatorId, forum.collectionId);
-
-      onAddModerators();
+      setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
       setAddingNewModerator(false);
@@ -157,6 +181,7 @@ export function ForumContent(props: ForumContentProps) {
   useEffect(() => {
     mount.current = true;
     getTopicsForForum();
+    getModerators();
     return () => {
       mount.current = false;
     };
@@ -249,14 +274,13 @@ export function ForumContent(props: ForumContentProps) {
               />
               <label className="addModeratorsLabel">Current moderators</label>
               <ul>
-                {forum?.moderators.map((m) => {
-                  const key = m.toBase58();
+                {currentMods.map((m) => {
                   return (
-                    <li key={key} className="currentModerators">
+                    <li key={m} className="currentModerators">
                       <div className="iconContainer">
-                        <Jdenticon value={key} alt="moderatorId" />
+                        <Jdenticon value={m} alt="moderatorId" />
                       </div>
-                      {key}
+                      {m}
                     </li>
                   );
                 })}
@@ -294,11 +318,13 @@ export function ForumContent(props: ForumContentProps) {
           Manage moderators
         </button>
       )}
-      <TopicList
-        loading={loadingTopics}
-        topics={topics}
-        collectionId={forum.collectionId}
-      />
+      {!_.isNil(forum.collectionId) && (
+        <TopicList
+          loading={loadingTopics}
+          topics={topics}
+          collectionId={forum.collectionId}
+        />
+      )}
     </div>
     </div>
   );

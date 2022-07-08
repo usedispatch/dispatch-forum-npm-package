@@ -1,7 +1,13 @@
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useContext, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+  useRef,
+  useCallback,
+} from "react";
 import Jdenticon from "react-jdenticon";
-import * as web3 from "@solana/web3.js";
 
 import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
 
@@ -11,17 +17,17 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { ForumContext } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;
-  onAddModerators: () => void;
   forumObject?: DispatchForum;
   role?: UserRoleType;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum, role, onAddModerators } = props;
+  const { forum, role } = props;
   const Forum = useContext(ForumContext);
   const connected = Forum.isNotEmpty;
   const permission = Forum.permission;
@@ -31,8 +37,9 @@ export function ForumContent(props: ForumContentProps) {
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [moderators, setModerators] = useState<string>("");
-  const [addingNewModerators, setAddingNewModerators] = useState(false);
+  const [currentMods, setCurrentMods] = useState<string[]>([]);
+  const [newModerator, setNewModerator] = useState<string>("");
+  const [addingNewModerator, setAddingNewModerator] = useState(false);
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -42,34 +49,45 @@ export function ForumContent(props: ForumContentProps) {
 
   const [topics, setTopics] = useState<ForumPost[]>([]);
 
-  const addModerators = async () => {
-    setAddingNewModerators(true);
+  const getModerators = useCallback(async () => {
     try {
-      const moderatorsIds = moderators
-        .split(",")
-        .map((m) => new web3.PublicKey(m));
-
-      const p = moderatorsIds.map(async (t) => {
-        return Forum.addModerator(t, forum.collectionId);
+      const mods = await Forum.getModerators(forum.collectionId);
+      if (!_.isNil(mods)) {
+        setCurrentMods(mods.map((m) => m.toBase58()));
+      }
+    } catch (error) {
+      const message = JSON.stringify(error);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The moderators could not be determined",
+        collapsible: { header: "Error", content: message },
       });
-      const mods = await Promise.all(p);
-      onAddModerators();
-      setModerators("");
+    }
+  }, [Forum]);
+
+  const addModerators = async () => {
+    setAddingNewModerator(true);
+    try {
+      const moderatorId = newPublicKey(newModerator);
+      await Forum.addModerator(moderatorId, forum.collectionId);
+      setCurrentMods(currentMods.concat(newModerator));
+      setNewModerator("");
       setShowAddModerators(false);
-      setAddingNewModerators(false);
+      setAddingNewModerator(false);
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
-        body: `The moderators were added`,
+        body: `The moderator was added`,
       });
     } catch (error) {
-      setModerators("");
-      setAddingNewModerators(false);
+      setNewModerator("");
+      setAddingNewModerator(false);
       setShowAddModerators(false);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        body: `The moderators could not be added`,
+        body: `The moderator could not be added`,
         collapsible: { header: "Error", content: error },
       });
     }
@@ -163,6 +181,7 @@ export function ForumContent(props: ForumContentProps) {
   useEffect(() => {
     mount.current = true;
     getTopicsForForum();
+    getModerators();
     return () => {
       mount.current = false;
     };
@@ -247,43 +266,42 @@ export function ForumContent(props: ForumContentProps) {
             <div className="addModeratorsBody">
               <label className="addModeratorsLabel">Add new</label>
               <input
-                placeholder="Add moderators' wallet ID here, separated by commas"
+                placeholder="Add moderators' wallet ID here"
                 className="addModeratorsInput"
                 maxLength={800}
-                value={moderators}
-                onChange={(e) => setModerators(e.target.value)}
+                value={newModerator}
+                onChange={(e) => setNewModerator(e.target.value)}
               />
               <label className="addModeratorsLabel">Current moderators</label>
               <ul>
-                {forum?.moderators.map((m) => {
-                  const key = m.toBase58();
+                {currentMods.map((m) => {
                   return (
-                    <li key={key} className="currentModerators">
+                    <li key={m} className="currentModerators">
                       <div className="iconContainer">
-                        <Jdenticon value={key} alt="moderatorId" />
+                        <Jdenticon value={m} alt="moderatorId" />
                       </div>
-                      {key}
+                      {m}
                     </li>
                   );
                 })}
               </ul>
             </div>
           }
-          loading={addingNewModerators}
+          loading={addingNewModerator}
           okButton={
-            !addingNewModerators && (
+            !addingNewModerator && (
               <button className="okButton" onClick={() => addModerators()}>
                 Save
               </button>
             )
           }
           cancelButton={
-            !addingNewModerators && (
+            !addingNewModerator && (
               <button
                 className="cancelButton"
                 onClick={() => {
                   setShowAddModerators(false);
-                  setModerators("");
+                  setNewModerator("");
                 }}>
                 Cancel
               </button>
@@ -300,11 +318,13 @@ export function ForumContent(props: ForumContentProps) {
           Manage moderators
         </button>
       )}
-      <TopicList
-        loading={loadingTopics}
-        topics={topics}
-        collectionId={forum.collectionId}
-      />
+      {!_.isNil(forum.collectionId) && (
+        <TopicList
+          loading={loadingTopics}
+          topics={topics}
+          collectionId={forum.collectionId}
+        />
+      )}
     </div>
     </div>
   );

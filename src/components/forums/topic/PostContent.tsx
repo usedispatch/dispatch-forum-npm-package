@@ -64,11 +64,13 @@ export function PostContent(props: PostContentProps) {
       setLoading(false);
     } catch (error) {
       setReplies([]);
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The replies could not be loaded`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
       setLoading(false);
     }
@@ -85,11 +87,13 @@ export function PostContent(props: PostContentProps) {
       setShowReplyBox(false);
       setReply("");
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The reply could not be sent`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
       setSendingReply(false);
     }
@@ -109,11 +113,13 @@ export function PostContent(props: PostContentProps) {
     } catch (error) {
       setShowDeleteConfirmation(false);
       setDeleting(false);
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The post could not be deleted`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   };

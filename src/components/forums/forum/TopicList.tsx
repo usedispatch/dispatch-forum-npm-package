@@ -85,6 +85,8 @@ function RowContent(props: RowContentProps) {
       }
       setLoading(false);
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setMessages(undefined);
       setLoading(false);
     }
@@ -159,17 +161,23 @@ function RowContent(props: RowContentProps) {
         </th>
         <td>
           <div className="rowIconReplies">
-            {loading || !messages ? spinner : icons(messages)}
+            <a href={topicPath}>
+              {loading || !messages ? spinner : icons(messages)}
+            </a>
           </div>
         </td>
         <td>
           <div className="rowAmountReplies">
-            {loading || !messages ? spinner : messages.length}
+            <a href={topicPath}>
+              {loading || !messages ? spinner : messages.length}
+            </a>
           </div>
         </td>
         <td>
           <div className="rowDate">
-            {loading || !messages ? spinner : activtyDate(messages)}
+            <a href={topicPath}>
+              {loading || !messages ? spinner : activtyDate(messages)}
+            </a>
           </div>
         </td>
       </>

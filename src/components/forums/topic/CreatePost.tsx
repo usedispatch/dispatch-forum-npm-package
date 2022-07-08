@@ -52,11 +52,13 @@ export function CreatePost(props: CreatePostProps) {
       setLoading(false);
       onReload();
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The new post could not be created",
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
       setLoading(false);
     }

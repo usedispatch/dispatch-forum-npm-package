@@ -26,6 +26,7 @@ import {
 
 import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { useForum } from "./../../contexts/DispatchProvider";
+import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 
 interface ForumViewProps {
   collectionId: string;
@@ -95,11 +96,13 @@ export const ForumView = (props: ForumViewProps) => {
       setCollectionPublicKey(collectionIdKey);
       setCroppedCollectionId(collectionId);
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Invalid Collection ID Public Key",
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
     return () => {
@@ -127,11 +130,13 @@ export const ForumView = (props: ForumViewProps) => {
       }
     } catch (error) {
       setLoading(false);
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -143,11 +148,13 @@ export const ForumView = (props: ForumViewProps) => {
         setRole(role);
       }
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Your user role could not be determined, you will only have permission to create topics and comment",
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -179,7 +186,7 @@ export const ForumView = (props: ForumViewProps) => {
       const forum = {
         owners: [publicKey],
         moderators: [publicKey].concat(
-          newModerators.map((m) => new web3.PublicKey(m))
+          newModerators.map((m) => newPublicKey(m))
         ),
         title: title,
         description: description,
@@ -198,11 +205,13 @@ export const ForumView = (props: ForumViewProps) => {
       }
     } catch (error) {
       setLoading(false);
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   };

@@ -65,11 +65,13 @@ export const TopicView = (props: Props) => {
       const role = await userRole(Forum, collectionPublicKey);
       setRole(role);
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Your user role could not be determined, you will only have permission to create topics and comment",
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   }, [Forum, collectionPublicKey]);
@@ -85,11 +87,13 @@ export const TopicView = (props: Props) => {
       setTopic(res);
       setLoading(false);
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The topic could not be loaded",
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
 
       setLoading(false);

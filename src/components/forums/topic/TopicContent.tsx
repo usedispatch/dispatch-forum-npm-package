@@ -17,6 +17,7 @@ import { Votes } from "./Votes";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import { usePath } from "../../../contexts/DispatchProvider";
 
 interface TopicContentProps {
   forum: DispatchForum;
@@ -29,6 +30,8 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { collectionId, forum, topic, userRole, updateVotes } = props;
   const router = useRouter();
+  const {buildForumPath} = usePath();
+  const forumPath = buildForumPath(collectionId.toBase58());
   const permission = forum.permission;
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
@@ -39,6 +42,7 @@ export function TopicContent(props: TopicContentProps) {
     type: MessageType;
     body?: string;
     collapsible?: CollapsibleProps;
+    okPath?: string;
   } | null>(null);
 
   const getMessages = async () => {
@@ -49,12 +53,13 @@ export function TopicContent(props: TopicContentProps) {
       setLoadingMessages(false);
     } catch (error) {
       setPosts([]);
-      console.log(error);
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The messages could not be loaded`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
       setLoadingMessages(false);
     }
@@ -70,6 +75,14 @@ export function TopicContent(props: TopicContentProps) {
       await getMessages();
       return tx;
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
+            setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The messages could not be loaded`,
+        collapsible: { header: "Error", content: message },
+      });
       throw error;
     }
   };
@@ -86,16 +99,19 @@ export function TopicContent(props: TopicContentProps) {
         title: "Success!",
         type: MessageType.success,
         body: `The topic and all its posts were deleted`,
+        okPath: forumPath,
       });
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);
       return tx;
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be deleted`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
@@ -152,14 +168,9 @@ export function TopicContent(props: TopicContentProps) {
           okButton={
             <a
               className="okButton"
-              onClick={() => {
-                if (modalInfo.type === MessageType.success) {
-                  router.push(`/forum/${collectionId.toBase58()}`);
-                  setModalInfo(null);
-                } else {
-                  setModalInfo(null);
-                }
-              }}>
+              href={modalInfo.okPath}
+              onClick={() => setModalInfo(null)}
+            >
               OK
             </a>
           }

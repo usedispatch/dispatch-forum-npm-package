@@ -46,11 +46,13 @@ export function Votes(props: VotesProps) {
       setAlreadyVoted(true);
       setLoading(false);
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
-        body: `The post could not be up voted. Error: ${error}`,
-        collapsible: { header: "Error", content: error },
+        body: `The post could not be up voted. Error: ${message}`,
+        collapsible: { header: "Error", content: message },
       });
       setLoading(false);
     }
@@ -71,11 +73,13 @@ export function Votes(props: VotesProps) {
       setAlreadyVoted(true);
       setLoading(false);
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The post could not be down voted.",
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
       setLoading(false);
     }

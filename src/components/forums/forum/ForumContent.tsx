@@ -57,6 +57,7 @@ export function ForumContent(props: ForumContentProps) {
       }
     } catch (error) {
       const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -81,6 +82,8 @@ export function ForumContent(props: ForumContentProps) {
         body: `The moderator was added`,
       });
     } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error)
       setNewModerator("");
       setAddingNewModerator(false);
       setShowAddModerators(false);
@@ -88,7 +91,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The moderator could not be added`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   };
@@ -103,11 +106,14 @@ export function ForumContent(props: ForumContentProps) {
       }
     } catch (error) {
       setLoadingTopics(false);
+      const message = JSON.stringify(error);
+      console.log(error)
+
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topics for the forum could not be loaded`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   };
@@ -137,11 +143,13 @@ export function ForumContent(props: ForumContentProps) {
       }
     } catch (error) {
       setLoadingTopics(false);
+      const message = JSON.stringify(error);
+      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
-        collapsible: { header: "Error", content: error },
+        collapsible: { header: "Error", content: message },
       });
     }
   };

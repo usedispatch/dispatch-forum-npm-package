@@ -131,25 +131,27 @@ export function TopicContent(props: TopicContentProps) {
           </div>
           {`${posts.length} comments`}
         </div>
-        {permission.readAndWrite && (
-          <Votes
-            onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
-            onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
-            post={topic}
-            updateVotes={(upVoted) => updateVotes(upVoted)}
-          />
-        )}
+        <div className="actionDivider" />
+        <Votes
+          onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
+          onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
+          post={topic}
+          updateVotes={(upVoted) => updateVotes(upVoted)}
+        />
         {(userRole === UserRoleType.Moderator ||
           userRole === UserRoleType.Owner) && (
-          <button
-            className="delete"
-            disabled={!permission.readAndWrite}
-            onClick={() => setShowDeleteConfirmation(true)}>
-            <div className="icon">
-              <Trash />
-            </div>
-            delete topic
-          </button>
+          <>
+            <div className="actionDivider" />
+            <button
+              className="delete"
+              disabled={!permission.readAndWrite}
+              onClick={() => setShowDeleteConfirmation(true)}>
+              <div className="icon">
+                <Trash />
+              </div>
+              delete topic
+            </button>
+          </>
         )}
       </div>
     </>

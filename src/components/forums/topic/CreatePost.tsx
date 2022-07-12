@@ -2,9 +2,13 @@ import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 
-import { CollapsibleProps, MessageType, PopUpModal, Spinner } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Spinner,
+} from "../../common";
 import { useForum } from "../../../contexts/DispatchProvider";
-
 
 interface CreatePostProps {
   topicId: number;
@@ -44,23 +48,19 @@ export function CreatePost(props: CreatePostProps) {
 
     try {
       await createForumPost(post, topicId, collectionId);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: "The new post was created",
-      });
       setLoading(false);
       onReload();
-    } catch (error) {
+    } catch (error: any) {
       const message = JSON.stringify(error);
-      console.log(error)
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The new post could not be created",
-        collapsible: { header: "Error", content: message },
-      });
       setLoading(false);
+      if (error.code !== 4001) {
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: "The new post could not be created",
+          collapsible: { header: "Error", content: message },
+        });
+      }
     }
   };
 

@@ -12,7 +12,7 @@ import { Votes } from "./Votes";
 interface PostRepliesProps {
   userRole: UserRoleType;
   replies: ForumPost[];
-  onDeletePost: (post: ForumPost) => Promise<string>;
+  onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
   onReplyClick: () => void;

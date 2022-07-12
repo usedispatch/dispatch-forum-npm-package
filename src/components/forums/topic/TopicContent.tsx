@@ -65,28 +65,6 @@ export function TopicContent(props: TopicContentProps) {
     }
   };
 
-  const onDeletePost = async (post: ForumPost) => {
-    try {
-      const tx = await forum.deleteForumPost(
-        post,
-        collectionId,
-        userRole === UserRoleType.Moderator
-      );
-      await getMessages();
-      return tx;
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log(error)
-            setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The messages could not be loaded`,
-        collapsible: { header: "Error", content: message },
-      });
-      throw error;
-    }
-  };
-
   const onDeleteTopic = async () => {
     try {
       setDeletingTopic(true);
@@ -104,17 +82,23 @@ export function TopicContent(props: TopicContentProps) {
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);
       return tx;
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log(error)
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The topic could not be deleted`,
-        collapsible: { header: "Error", content: message },
-      });
+    } catch (error: any) {
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
+      if (error.code === 4001) {
+        setModalInfo({
+          title: "The topic could not be deleted",
+          type: MessageType.error,
+          body: `The user cancelled the request`,
+        });
+      } else {
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The topic could not be deleted`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        });
+      }
     }
   };
 
@@ -216,7 +200,9 @@ export function TopicContent(props: TopicContentProps) {
         collectionId={collectionId}
         posts={posts}
         loading={loadingMessages}
-        onDeletePost={onDeletePost}
+        onDeletePost={async () => {
+          await getMessages();
+        }}
         userRole={userRole}
       />
     </>

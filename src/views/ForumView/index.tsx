@@ -74,6 +74,7 @@ export const ForumView = (props: ForumViewProps) => {
   const mount = useRef(false);
   const [forum, setForum] = useState<ForumInfo>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
+  const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [role, setRole] = useState<UserRoleType | null>();
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
@@ -172,7 +173,7 @@ export const ForumView = (props: ForumViewProps) => {
   };
 
   const createForum = async () => {
-    setLoading(true);
+    setCreatingNewForum(true);
 
     try {
       if (!wallet) {
@@ -197,22 +198,27 @@ export const ForumView = (props: ForumViewProps) => {
 
       if (createdForum) {
         getForumForCollection();
+        setShowNewForumModal(false);
         setModalInfo({
           title: `The forum  was created!`,
           body: `The forum '${title}' for the collection ${croppedCollectionID} was created`,
           type: MessageType.success,
         });
       }
-    } catch (error) {
-      setLoading(false);
-      const message = JSON.stringify(error);
-      console.log(error)
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: "Error", content: message },
-      });
+    } catch (error: any) {
+      if (error.code === 4001) {
+        setShowNewForumModal(true);
+      } else {
+        setShowNewForumModal(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        });
+      }
+    } finally {
+      setCreatingNewForum(false);
     }
   };
 
@@ -314,6 +320,7 @@ export const ForumView = (props: ForumViewProps) => {
                     name="name"
                     required
                     value={title}
+                    disabled={creatingNewForum}
                     onChange={(e) => setTitle(e.target.value)}
                   />
                 </>
@@ -324,6 +331,7 @@ export const ForumView = (props: ForumViewProps) => {
                     className="createForumTitle createForumDescription"
                     maxLength={800}
                     value={description}
+                    disabled={creatingNewForum}
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </>
@@ -334,19 +342,20 @@ export const ForumView = (props: ForumViewProps) => {
                     className="createForumTitle createForumTextArea"
                     maxLength={800}
                     value={newModerators}
-                    onChange={(e) => setNewModerators(e.target.value.split(","))}
+                    disabled={creatingNewForum}
+                    onChange={(e) =>
+                      setNewModerators(e.target.value.split(","))
+                    }
                   />
                 </>
               </div>
             }
+            loading={creatingNewForum}
             okButton={
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => {
-                  setShowNewForumModal(false);
-                  onCreateForumClick();
-                }}>
+                onClick={() => onCreateForumClick()}>
                 Create
               </button>
             }

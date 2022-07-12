@@ -101,6 +101,10 @@
       display: flex;
       padding: 16px 0;
       overflow-wrap: anywhere;
+
+      &.loading {
+        opacity: 0.6;
+      }
     }
 
     .modalCollapsible {

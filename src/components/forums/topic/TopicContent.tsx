@@ -6,12 +6,7 @@ import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
 import { MessageSquare, Trash } from "../../../assets";
-import {
-  CollapsibleProps,
-  MessageType,
-  PopUpModal,
-  Spinner,
-} from "../../common";
+import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
 import { CreatePost, PostList } from "..";
 import { Votes } from "./Votes";
 
@@ -30,9 +25,10 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { collectionId, forum, topic, userRole, updateVotes } = props;
   const router = useRouter();
-  const {buildForumPath} = usePath();
+  const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId.toBase58());
   const permission = forum.permission;
+
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -54,7 +50,7 @@ export function TopicContent(props: TopicContentProps) {
     } catch (error) {
       setPosts([]);
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -155,8 +151,7 @@ export function TopicContent(props: TopicContentProps) {
             <a
               className="okButton"
               href={modalInfo.okPath}
-              onClick={() => setModalInfo(null)}
-            >
+              onClick={() => setModalInfo(null)}>
               OK
             </a>
           }

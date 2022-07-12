@@ -32,6 +32,7 @@ export function ForumContent(props: ForumContentProps) {
   const connected = Forum.isNotEmpty;
   const permission = Forum.permission;
   const mount = useRef(false);
+
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
@@ -273,7 +274,7 @@ export function ForumContent(props: ForumContentProps) {
               <div className="addModeratorsBody">
                 <label className="addModeratorsLabel">Add new</label>
                 <input
-                  placeholder="Add moderators' wallet ID here, separated by commas"
+                  placeholder="Add moderator's wallet ID here"
                   className="addModeratorsInput"
                   maxLength={800}
                   value={newModerator}
@@ -281,14 +282,13 @@ export function ForumContent(props: ForumContentProps) {
                 />
                 <label className="addModeratorsLabel">Current moderators</label>
                 <ul>
-                  {forum?.moderators.map((m) => {
-                    const key = m.toBase58();
+                  {currentMods.map((m) => {
                     return (
-                      <li key={key} className="currentModerators">
+                      <li key={m} className="currentModerators">
                         <div className="iconContainer">
-                          <Jdenticon value={key} alt="moderatorId" />
+                          <Jdenticon value={m} alt="moderatorId" />
                         </div>
-                        {key}
+                        {m}
                       </li>
                     );
                   })}
@@ -304,10 +304,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => {
-                  setShowAddModerators(false);
-                  setNewModerator("");
-                }}>
+                disabled={title.length === 0}
+                onClick={() => setShowAddModerators(false)}>
                 Cancel
               </button>
             }

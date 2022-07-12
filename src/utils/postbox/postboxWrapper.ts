@@ -363,7 +363,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {      
-      throw(JSON.stringify(error))
+      throw(error)
     }
   }
 
@@ -377,8 +377,8 @@ export class DispatchForum implements IForum {
       const tx = await forum.voteDownForumPost(post);
 
       return tx;
-    } catch (error) {      
-      throw(JSON.stringify(error))
+    } catch (error) {          
+      throw(error)
     }
   }
   

@@ -1,0 +1,61 @@
+@layer components {
+  .notificationContainer {
+    display: grid;
+    grid-auto-flow: row;
+    grid-gap: 20px;
+    grid-template-columns: auto 20px;
+    align-content: center;
+
+    max-width: 1280px;
+    width: 60%;
+    margin: 0 auto 8px;
+    padding: 12px 20px;
+    transition: height 0.5s ease-out;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0px 4px 4px rgb(0 0 0 / 16%);
+
+    position: fixed;
+    top: 15%;
+    right: 0;
+    left: 0;
+    z-index: 999;
+
+    svg {
+      height: 12px;
+      width: 12px;
+    }
+
+    .closeContainer {
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+
+      cursor: pointer;
+    }
+
+    &.isHidden {
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      padding: 0;
+      margin: 0;
+    }
+  }
+
+  .notificationText {
+    color: #414149;
+    font-weight: 400;
+    font-size: 16px;
+
+    display: flex;
+    align-items: center;
+    overflow-y: overlay;
+
+    svg {
+      height: 18px;
+      width: 18px;
+      margin-right: 6px;
+    }
+  }
+}

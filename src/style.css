@@ -11,6 +11,7 @@
 /* Forums */
 @import "./styles/PoweredByDispatch.css";
 @import "./styles/ConnectionAlert.css";
+@import "./styles/Notification.css";
 
 /* Forum */
 @import "./styles/ForumContent.css";

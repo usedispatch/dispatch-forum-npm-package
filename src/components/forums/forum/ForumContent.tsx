@@ -32,6 +32,7 @@ export function ForumContent(props: ForumContentProps) {
   const connected = Forum.isNotEmpty;
   const permission = Forum.permission;
   const mount = useRef(false);
+
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
@@ -303,11 +304,20 @@ export function ForumContent(props: ForumContentProps) {
             }
             cancelButton={
               <button
-                className="cancelButton"
+                className="okButton"
+                disabled={title.length === 0}
                 onClick={() => {
-                  setShowAddModerators(false);
-                  setNewModerator("");
+                  setShowNewTopicModal(false);
+                  setLoadingTopics(true);
+                  createTopic();
                 }}>
+                Create
+              </button>
+            }
+            cancelButton={
+              <div
+                className="cancelButton"
+                onClick={() => setShowNewTopicModal(false)}>
                 Cancel
               </button>
             }

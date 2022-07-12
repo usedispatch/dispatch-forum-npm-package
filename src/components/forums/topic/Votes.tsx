@@ -1,16 +1,16 @@
 import * as _ from "lodash";
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import { ForumPost } from "@usedispatch/client";
 
+import { DownVote, UpVote, Success } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
   Spinner,
 } from "../../common";
-import { DownVote, UpVote } from "../../../assets";
+import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
-
 
 interface VotesProps {
   post: ForumPost;
@@ -22,6 +22,11 @@ interface VotesProps {
 export function Votes(props: VotesProps) {
   const Forum = useForum();
   const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
+
+  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [notificationContent, setNotificationContent] = useState<
+    string | ReactNode
+  >("");
   const [loading, setLoading] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
   const permission = Forum.permission;
@@ -37,17 +42,19 @@ export function Votes(props: VotesProps) {
 
     try {
       await onUpVotePost();
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: "The post was up voted",
-      });
       updateVotes(true);
       setAlreadyVoted(true);
       setLoading(false);
+      setNotificationContent(
+        <>
+          <Success />
+          Up voted successfully
+        </>
+      );
+      setIsNotificationHidden(false);
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -64,17 +71,19 @@ export function Votes(props: VotesProps) {
 
     try {
       await onDownVotePost();
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: "The post was down voted",
-      });
       updateVotes(false);
       setAlreadyVoted(true);
+      setNotificationContent(
+        <>
+          <Success />
+          Down voted successfully
+        </>
+      );
+      setIsNotificationHidden(false);
       setLoading(false);
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -84,6 +93,12 @@ export function Votes(props: VotesProps) {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!isNotificationHidden) {
+      setTimeout(() => setIsNotificationHidden(true), 4000);
+    }
+  }, [isNotificationHidden]);
 
   return (
     <>
@@ -103,6 +118,11 @@ export function Votes(props: VotesProps) {
         />
       )}
       <div className="votePostContainer">
+        <Notification
+          hidden={isNotificationHidden}
+          content={notificationContent}
+          onClose={() => setIsNotificationHidden(true)}
+        />
         <div className="votePostContent">
           <button
             className="votePostButton"

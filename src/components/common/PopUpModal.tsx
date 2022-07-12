@@ -84,7 +84,9 @@ export const PopUpModal = (props: PopUpModalProps) => {
                 </label>
               )}
             </div>
-            <div className="modalBody">{props.body}</div>
+            <div className={`modalBody ${props.loading ? "loading" : ""}`}>
+              {props.body}
+            </div>
             {props.collapsible ? (
               <div className="modalCollapsible">
                 <Collapsible

@@ -33,6 +33,7 @@ export function ForumContent(props: ForumContentProps) {
   const permission = Forum.permission;
   const mount = useRef(false);
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
+  const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [title, setTitle] = useState("");
@@ -57,7 +58,6 @@ export function ForumContent(props: ForumContentProps) {
       }
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -81,18 +81,18 @@ export function ForumContent(props: ForumContentProps) {
         type: MessageType.success,
         body: `The moderator was added`,
       });
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log(error)
-      setNewModerator("");
+    } catch (error: any) {
       setAddingNewModerator(false);
-      setShowAddModerators(false);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The moderator could not be added`,
-        collapsible: { header: "Error", content: message },
-      });
+      if (error.code !== 4001) {
+        setNewModerator("");
+        setShowAddModerators(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The moderators could not be added`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        });
+      }
     }
   };
 
@@ -107,7 +107,7 @@ export function ForumContent(props: ForumContentProps) {
     } catch (error) {
       setLoadingTopics(false);
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
 
       setModalInfo({
         title: "Something went wrong!",
@@ -124,6 +124,7 @@ export function ForumContent(props: ForumContentProps) {
       body: description,
     };
 
+    setCreatingNewTopic(true);
     try {
       const tx = await Forum.createTopic(p, forum.collectionId);
       if (!_.isNil(tx)) {
@@ -134,23 +135,24 @@ export function ForumContent(props: ForumContentProps) {
           title: "Success!",
         });
       } else {
-        setLoadingTopics(false);
+        setCreatingNewTopic(false);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The topic could not be created`,
         });
       }
-    } catch (error) {
-      setLoadingTopics(false);
-      const message = JSON.stringify(error);
-      console.log(error)
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The topic could not be created`,
-        collapsible: { header: "Error", content: message },
-      });
+    } catch (error: any) {
+      setCreatingNewTopic(false);
+      if (error.code !== 4001) {
+        setShowNewTopicModal(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The topic could not be created`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        });
+      }
     }
   };
 
@@ -197,114 +199,109 @@ export function ForumContent(props: ForumContentProps) {
 
   return (
     <div className="dsp- ">
-    <div className="forumContent">
-      {!_.isNil(modalInfo) && !showNewTopicModal && (
-        <PopUpModal
-          id="create-topic-info"
-          visible
-          title={modalInfo.title}
-          messageType={modalInfo.type}
-          body={modalInfo.body}
-          collapsible={modalInfo.collapsible}
-          okButton={
-            <a className="okButton" onClick={() => setModalInfo(null)}>
-              OK
-            </a>
-          }
-        />
-      )}
-      {showNewTopicModal && _.isNil(modalInfo) && (
-        <PopUpModal
-          id="create-topic"
-          visible
-          title={"Create new Topic"}
-          body={
-            <div className="createTopicBody">
-              <>
-                <span className="createTopicLabel">Topic Title</span>
+      <div className="forumContent">
+        {!_.isNil(modalInfo) && (
+          <PopUpModal
+            id="create-topic-info"
+            visible
+            title={modalInfo.title}
+            messageType={modalInfo.type}
+            body={modalInfo.body}
+            collapsible={modalInfo.collapsible}
+            okButton={
+              <a className="okButton" onClick={() => setModalInfo(null)}>
+                OK
+              </a>
+            }
+          />
+        )}
+        {showNewTopicModal && _.isNil(modalInfo) && (
+          <PopUpModal
+            id="create-topic"
+            visible
+            title={"Create new Topic"}
+            body={
+              <div className="createTopicBody">
+                <>
+                  <span className="createTopicLabel">Topic Title</span>
+                  <input
+                    type="text"
+                    placeholder="Title"
+                    className="createTopicTitleInput"
+                    name="name"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                </>
+                <>
+                  <span className="createTopicLabel">Topic Description</span>
+                  <textarea
+                    placeholder="Description"
+                    className="createTopicTitleInput createTopicTextArea"
+                    maxLength={800}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </>
+              </div>
+            }
+            loading={creatingNewTopic}
+            okButton={
+              <button
+                className="okButton"
+                disabled={title.length === 0}
+                onClick={() => createTopic()}>
+                Create
+              </button>
+            }
+            cancelButton={
+              <button
+                className="cancelButton"
+                onClick={() => setShowNewTopicModal(false)}>
+                Cancel
+              </button>
+            }
+          />
+        )}
+        {_.isNil(modalInfo) && showAddModerators && (
+          <PopUpModal
+            id="add-moderators"
+            visible
+            title={"Manage moderators"}
+            body={
+              <div className="addModeratorsBody">
+                <label className="addModeratorsLabel">Add new</label>
                 <input
-                  type="text"
-                  placeholder="Title"
-                  className="createTopicTitleInput"
-                  name="name"
-                  required
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                />
-              </>
-              <>
-                <span className="createTopicLabel">Topic Description</span>
-                <textarea
-                  placeholder="Description"
-                  className="createTopicTitleInput createTopicTextArea"
+                  placeholder="Add moderators' wallet ID here, separated by commas"
+                  className="addModeratorsInput"
                   maxLength={800}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={newModerator}
+                  onChange={(e) => setNewModerator(e.target.value)}
                 />
-              </>
-            </div>
-          }
-          okButton={
-            <button
-              className="okButton"
-              disabled={title.length === 0}
-              onClick={() => {
-                setShowNewTopicModal(false);
-                setLoadingTopics(true);
-                createTopic();
-              }}>
-              Create
-            </button>
-          }
-          cancelButton={
-            <div
-              className="cancelButton"
-              onClick={() => setShowNewTopicModal(false)}>
-              Cancel
-            </div>
-          }
-        />
-      )}
-      {_.isNil(modalInfo) && showAddModerators && (
-        <PopUpModal
-          id="add-moderators"
-          visible
-          title={"Manage moderators"}
-          body={
-            <div className="addModeratorsBody">
-              <label className="addModeratorsLabel">Add new</label>
-              <input
-                placeholder="Add moderators' wallet ID here"
-                className="addModeratorsInput"
-                maxLength={800}
-                value={newModerator}
-                onChange={(e) => setNewModerator(e.target.value)}
-              />
-              <label className="addModeratorsLabel">Current moderators</label>
-              <ul>
-                {currentMods.map((m) => {
-                  return (
-                    <li key={m} className="currentModerators">
-                      <div className="iconContainer">
-                        <Jdenticon value={m} alt="moderatorId" />
-                      </div>
-                      {m}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          }
-          loading={addingNewModerator}
-          okButton={
-            !addingNewModerator && (
+                <label className="addModeratorsLabel">Current moderators</label>
+                <ul>
+                  {forum?.moderators.map((m) => {
+                    const key = m.toBase58();
+                    return (
+                      <li key={key} className="currentModerators">
+                        <div className="iconContainer">
+                          <Jdenticon value={key} alt="moderatorId" />
+                        </div>
+                        {key}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            }
+            loading={addingNewModerator}
+            okButton={
               <button className="okButton" onClick={() => addModerators()}>
                 Save
               </button>
-            )
-          }
-          cancelButton={
-            !addingNewModerator && (
+            }
+            cancelButton={
               <button
                 className="cancelButton"
                 onClick={() => {
@@ -313,27 +310,26 @@ export function ForumContent(props: ForumContentProps) {
                 }}>
                 Cancel
               </button>
-            )
-          }
-        />
-      )}
-      {forumHeader}
-      {(role === UserRoleType.Owner || role == UserRoleType.Moderator) && (
-        <button
-          className="manageModerators"
-          disabled={!permission.readAndWrite}
-          onClick={() => setShowAddModerators(true)}>
-          Manage moderators
-        </button>
-      )}
-      {!_.isNil(forum.collectionId) && (
-        <TopicList
-          loading={loadingTopics}
-          topics={topics}
-          collectionId={forum.collectionId}
-        />
-      )}
-    </div>
+            }
+          />
+        )}
+        {forumHeader}
+        {(role === UserRoleType.Owner || role == UserRoleType.Moderator) && (
+          <button
+            className="manageModerators"
+            disabled={!permission.readAndWrite}
+            onClick={() => setShowAddModerators(true)}>
+            Manage moderators
+          </button>
+        )}
+        {!_.isNil(forum.collectionId) && (
+          <TopicList
+            loading={loadingTopics}
+            topics={topics}
+            collectionId={forum.collectionId}
+          />
+        )}
+      </div>
     </div>
   );
 }

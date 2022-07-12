@@ -23,7 +23,7 @@ interface PostContentProps {
   post: ForumPost;
   deletePermission: boolean;
   userRole: UserRoleType;
-  onDeletePost: (post: ForumPost) => Promise<string>;
+  onDeletePost: () => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
@@ -35,6 +35,7 @@ export function PostContent(props: PostContentProps) {
   const [loading, setLoading] = useState(true);
   const [replies, setReplies] = useState<ForumPost[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [postToDelete, setPostToDelete] = useState(props.post);
   const [deleting, setDeleting] = useState(false);
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [reply, setReply] = useState("");
@@ -65,7 +66,7 @@ export function PostContent(props: PostContentProps) {
     } catch (error) {
       setReplies([]);
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -88,7 +89,7 @@ export function PostContent(props: PostContentProps) {
       setReply("");
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -99,10 +100,15 @@ export function PostContent(props: PostContentProps) {
     }
   };
 
-  const onDelete = async (post: ForumPost) => {
+  const onDelete = async () => {
     setDeleting(true);
     try {
-      await onDeletePost(post);
+      await forum.deleteForumPost(
+        postToDelete,
+        collectionId,
+        userRole === UserRoleType.Moderator
+      );
+      onDeletePost();
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -110,17 +116,25 @@ export function PostContent(props: PostContentProps) {
       });
       setShowDeleteConfirmation(false);
       setDeleting(false);
-    } catch (error) {
+    } catch (error: any) {
       setShowDeleteConfirmation(false);
       setDeleting(false);
-      const message = JSON.stringify(error);
-      console.log(error)
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The post could not be deleted`,
-        collapsible: { header: "Error", content: message },
-      });
+      let modalInfoError;
+      if (error.code === 4001) {
+        modalInfoError = {
+          title: "The post could not be deleted",
+          type: MessageType.error,
+          body: `The user cancelled the request`,
+        };
+      } else {
+        modalInfoError = {
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The post could not be deleted`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        };
+      }
+      setModalInfo(modalInfoError);
     }
   };
 
@@ -157,7 +171,7 @@ export function PostContent(props: PostContentProps) {
               !deleting && (
                 <a
                   className="acceptDeletePostButton"
-                  onClick={() => onDelete(post)}>
+                  onClick={() => onDelete()}>
                   Confirm
                 </a>
               )
@@ -209,7 +223,7 @@ export function PostContent(props: PostContentProps) {
                 }
                 onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
                 updateVotes={(upVoted) => updateVotes(upVoted)}
-              />{" "}
+              />
               <div className="actionDivider" />
               <button
                 className="replyButton"
@@ -223,7 +237,10 @@ export function PostContent(props: PostContentProps) {
                   <button
                     className="deleteButton"
                     disabled={!permission.readAndWrite}
-                    onClick={() => setShowDeleteConfirmation(true)}>
+                    onClick={() => {
+                      setPostToDelete(props.post);
+                      setShowDeleteConfirmation(true);
+                    }}>
                     <Trash />
                   </button>
                 </>
@@ -236,7 +253,10 @@ export function PostContent(props: PostContentProps) {
                 <PostReplies
                   replies={replies}
                   userRole={userRole}
-                  onDeletePost={onDeletePost}
+                  onDeletePost={async (postToDelete) => {
+                    setPostToDelete(postToDelete);
+                    setShowDeleteConfirmation(true);
+                  }}
                   onDownVotePost={(reply) =>
                     forum.voteDownForumPost(reply, collectionId)
                   }

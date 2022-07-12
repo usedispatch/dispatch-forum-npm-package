@@ -149,7 +149,7 @@ export class DispatchForum implements IForum {
         return forumAsOwner;
       }
     } catch (error) {      
-      throw(JSON.stringify(error))
+      throw(error)
     }
   };
 
@@ -212,8 +212,7 @@ export class DispatchForum implements IForum {
         return tx;
       }
     } catch (error) {
-      console.log(error);
-      throw(JSON.stringify(error))
+      throw(error)
     }
   }
 
@@ -282,7 +281,7 @@ export class DispatchForum implements IForum {
         return newTopic;
       }
     } catch (err) {
-      throw(JSON.stringify(err))
+      throw(err)
     }
   };
 
@@ -312,14 +311,18 @@ export class DispatchForum implements IForum {
     const owner = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(
-      new DispatchConnection(conn, owner),
-      collectionId
-    );
-    const topic = await this.getTopicData(topicId, collectionId);
-    if ((await forum.exists()) && topic) {
-      const tx1 = await forum.createForumPost(post, topic);
-      await conn.confirmTransaction(tx1);
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner),
+        collectionId
+      );
+      const topic = await this.getTopicData(topicId, collectionId);
+      if ((await forum.exists()) && topic) {
+        const tx1 = await forum.createForumPost(post, topic);
+        await conn.confirmTransaction(tx1);
+      } 
+    } catch (error: any) {   
+      throw(error)      
     }
   };
 
@@ -344,7 +347,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {      
-      throw(JSON.stringify(error))
+      throw(error)
     }
   };
 

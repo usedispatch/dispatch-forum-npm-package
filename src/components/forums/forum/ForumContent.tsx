@@ -274,7 +274,7 @@ export function ForumContent(props: ForumContentProps) {
               <div className="addModeratorsBody">
                 <label className="addModeratorsLabel">Add new</label>
                 <input
-                  placeholder="Add moderators' wallet ID here, separated by commas"
+                  placeholder="Add moderator's wallet ID here"
                   className="addModeratorsInput"
                   maxLength={800}
                   value={newModerator}
@@ -282,14 +282,13 @@ export function ForumContent(props: ForumContentProps) {
                 />
                 <label className="addModeratorsLabel">Current moderators</label>
                 <ul>
-                  {forum?.moderators.map((m) => {
-                    const key = m.toBase58();
+                  {currentMods.map((m) => {
                     return (
-                      <li key={key} className="currentModerators">
+                      <li key={m} className="currentModerators">
                         <div className="iconContainer">
-                          <Jdenticon value={key} alt="moderatorId" />
+                          <Jdenticon value={m} alt="moderatorId" />
                         </div>
-                        {key}
+                        {m}
                       </li>
                     );
                   })}
@@ -304,20 +303,9 @@ export function ForumContent(props: ForumContentProps) {
             }
             cancelButton={
               <button
-                className="okButton"
-                disabled={title.length === 0}
-                onClick={() => {
-                  setShowNewTopicModal(false);
-                  setLoadingTopics(true);
-                  createTopic();
-                }}>
-                Create
-              </button>
-            }
-            cancelButton={
-              <div
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}>
+                disabled={title.length === 0}
+                onClick={() => setShowAddModerators(false)}>
                 Cancel
               </button>
             }

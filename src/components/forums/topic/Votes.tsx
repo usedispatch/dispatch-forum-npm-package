@@ -52,15 +52,23 @@ export function Votes(props: VotesProps) {
         </>
       );
       setIsNotificationHidden(false);
-    } catch (error) {
-      const message = JSON.stringify(error);
+    } catch (error: any) {
       console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The post could not be up voted. Error: ${message}`,
-        collapsible: { header: "Error", content: message },
-      });
+      if (error.code === 4001) {
+        setModalInfo({
+          title: "The post could not be up voted",
+          type: MessageType.error,
+          body: `The user cancelled the request`,
+        });
+      } else {
+        const message = JSON.stringify(error);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The post could not be up voted. Error: ${message}`,
+          collapsible: { header: "Error", content: message },
+        });
+      }
       setLoading(false);
     }
   };
@@ -81,15 +89,24 @@ export function Votes(props: VotesProps) {
       );
       setIsNotificationHidden(false);
       setLoading(false);
-    } catch (error) {
-      const message = JSON.stringify(error);
+    } catch (error: any) {
       console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The post could not be down voted.",
-        collapsible: { header: "Error", content: message },
-      });
+      if (error.code === 4001) {
+        setModalInfo({
+          title: "The post could not be down voted",
+          type: MessageType.error,
+          body: `The user cancelled the request`,
+        });
+      } else {
+        const message = JSON.stringify(error);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: "The post could not be down voted.",
+          collapsible: { header: "Error", content: message },
+        });
+      }
+
       setLoading(false);
     }
   };

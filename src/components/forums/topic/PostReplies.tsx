@@ -56,6 +56,8 @@ export function PostReplies(props: PostRepliesProps) {
     return null;
   }
 
+  const actions = [];
+
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
@@ -82,26 +84,30 @@ export function PostReplies(props: PostRepliesProps) {
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
-                {deletePermission && (
-                  <button
-                    className="deleteButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => onDeletePost(reply)}>
-                    <Trash />
-                  </button>
-                )}
-                <button
-                  className="replyButton"
-                  onClick={onReplyClick}
-                  disabled={!permission.readAndWrite}>
-                  Reply
-                </button>
                 <Votes
                   updateVotes={(upVoted) => updateVotes(upVoted, reply)}
                   onUpVotePost={() => onUpVotePost(reply)}
                   onDownVotePost={() => onDownVotePost(reply)}
                   post={reply}
                 />
+                <div className="actionDivider" />
+                <button
+                  className="replyButton"
+                  onClick={onReplyClick}
+                  disabled={!permission.readAndWrite}>
+                  Reply
+                </button>
+                {deletePermission && (
+                  <>
+                    <div className="actionDivider" />
+                    <button
+                      className="deleteButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => onDeletePost(reply)}>
+                      <Trash />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

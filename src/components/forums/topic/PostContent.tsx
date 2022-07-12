@@ -202,20 +202,6 @@ export function PostContent(props: PostContentProps) {
             </div>
             <div className="postBody">{post?.data.body}</div>
             <div className="actionsContainer">
-              {deletePermission && (
-                <button
-                  className="deleteButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowDeleteConfirmation(true)}>
-                  <Trash />
-                </button>
-              )}
-              <button
-                className="replyButton"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowReplyBox(true)}>
-                Reply
-              </button>
               <Votes
                 post={post}
                 onDownVotePost={() =>
@@ -223,7 +209,25 @@ export function PostContent(props: PostContentProps) {
                 }
                 onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
                 updateVotes={(upVoted) => updateVotes(upVoted)}
-              />
+              />{" "}
+              <div className="actionDivider" />
+              <button
+                className="replyButton"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowReplyBox(true)}>
+                Reply
+              </button>
+              {deletePermission && (
+                <>
+                  <div className="actionDivider" />
+                  <button
+                    className="deleteButton"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowDeleteConfirmation(true)}>
+                    <Trash />
+                  </button>
+                </>
+              )}
             </div>
             <div
               className="repliesSection"

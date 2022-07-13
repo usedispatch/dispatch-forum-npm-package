@@ -1,0 +1,17 @@
+@layer components {
+  .transactionLinkContainer {
+    .transactionLink {
+      cursor: pointer;
+      text-decoration: underline;
+
+      &:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+
+      &:focus-visible {
+        box-shadow: 0 0 0 2px currentColor;
+      }
+    }
+  }
+}

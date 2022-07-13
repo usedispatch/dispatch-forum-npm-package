@@ -79,7 +79,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [newModerators, setNewModerators] = useState<string[]>([]);
+  const [newModerator, setNewModerator] = useState<string>("");
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -98,7 +98,7 @@ export const ForumView = (props: ForumViewProps) => {
       setCroppedCollectionId(collectionId);
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -132,7 +132,7 @@ export const ForumView = (props: ForumViewProps) => {
     } catch (error) {
       setLoading(false);
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -150,7 +150,7 @@ export const ForumView = (props: ForumViewProps) => {
       }
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -186,9 +186,7 @@ export const ForumView = (props: ForumViewProps) => {
 
       const forum = {
         owners: [publicKey],
-        moderators: [publicKey].concat(
-          newModerators.map((m) => newPublicKey(m))
-        ),
+        moderators: [publicKey].concat([newPublicKey(newModerator)]),
         title: title,
         description: description,
         collectionId: collectionPublicKey,
@@ -336,16 +334,14 @@ export const ForumView = (props: ForumViewProps) => {
                   />
                 </>
                 <>
-                  <span className="createForumLabel">Moderators</span>
+                  <span className="createForumLabel">Moderator</span>
                   <input
-                    placeholder="Add moderators' wallet ID here, separated by commas"
+                    placeholder="Add moderator's wallet ID here"
                     className="createForumTitle createForumTextArea"
                     maxLength={800}
-                    value={newModerators}
+                    value={newModerator}
                     disabled={creatingNewForum}
-                    onChange={(e) =>
-                      setNewModerators(e.target.value.split(","))
-                    }
+                    onChange={(e) => setNewModerator(e.target.value)}
                   />
                 </>
               </div>

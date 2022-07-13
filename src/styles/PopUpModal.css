@@ -2,6 +2,7 @@
   .popUpModal {
     .iconTypeContainer {
       display: flex;
+      align-items: center;
       margin-right: 8px;
       height: 32px;
       width: 32px;
@@ -25,6 +26,7 @@
       overflow-y: hidden;
       overscroll-behavior: contain;
       background-color: #4b556385;
+      text-transform: none;
 
       .modalBox {
         position: absolute;

@@ -12,7 +12,12 @@ import Jdenticon from "react-jdenticon";
 import { ForumInfo, ForumPost } from "@usedispatch/client";
 
 import { Plus } from "../../../assets";
-import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  TransactionLink,
+} from "../../common";
 import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -135,6 +140,10 @@ export function ForumContent(props: ForumContentProps) {
           body: "The new topic was created",
           type: MessageType.success,
           title: "Success!",
+          collapsible: {
+            header: "Transaction: ",
+            content: <TransactionLink transaction={tx} />,
+          },
         });
         setShowNewTopicModal(false);
       } else {

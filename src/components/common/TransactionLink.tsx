@@ -1,10 +1,14 @@
+import { useClusterAndSetter } from "../../contexts/ClusterProvider";
+
 interface TransactionLinkProps {
   transaction: string;
-  cluster: string;
 }
 
 export const TransactionLink = (props: TransactionLinkProps) => {
-  const { transaction, cluster } = props;
+  const { transaction } = props;
+
+  const { cluster } = useClusterAndSetter();
+
   const firstFour = transaction.substring(0, 4);
   const lastFour = transaction.substring(props.transaction.length - 4);
   const displayText = `${firstFour}...${lastFour}`;

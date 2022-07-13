@@ -3,6 +3,8 @@
     .transactionLink {
       cursor: pointer;
       text-decoration: underline;
+      font-weight: 600;
+      color: #58a6ff;
 
       &:focus {
         outline: 2px solid transparent;

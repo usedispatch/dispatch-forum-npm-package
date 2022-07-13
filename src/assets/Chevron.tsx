@@ -9,8 +9,8 @@ export function Chevron() {
       <path
         d="M0.5 7L3.5 4L0.5 1"
         stroke="#CAC9CB"
-        stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

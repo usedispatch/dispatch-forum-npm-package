@@ -9,7 +9,7 @@ import {
 } from "react";
 import Jdenticon from "react-jdenticon";
 
-import { ForumInfo, ForumPost, IForum } from "@usedispatch/client";
+import { ForumInfo, ForumPost } from "@usedispatch/client";
 
 import { Plus } from "../../../assets";
 import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
@@ -136,6 +136,7 @@ export function ForumContent(props: ForumContentProps) {
           type: MessageType.success,
           title: "Success!",
         });
+        setShowNewTopicModal(false);
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -143,6 +144,7 @@ export function ForumContent(props: ForumContentProps) {
           type: MessageType.error,
           body: `The topic could not be created`,
         });
+        setShowNewTopicModal(false);
       }
     } catch (error: any) {
       setCreatingNewTopic(false);

@@ -184,9 +184,14 @@ export const ForumView = (props: ForumViewProps) => {
         });
       }
 
+      const moderators =
+        newModerator.length > 0
+          ? [publicKey, newPublicKey(newModerator)]
+          : [publicKey];
+
       const forum = {
         owners: [publicKey],
-        moderators: [publicKey].concat([newPublicKey(newModerator)]),
+        moderators,
         title: title,
         description: description,
         collectionId: collectionPublicKey,

@@ -162,7 +162,7 @@
 
   .row {
     border-bottom: 1px solid #b8b9dc;
-    height:4rem;
+    height: 4rem;
 
     &:hover {
       background: #dbeafe;
@@ -173,14 +173,10 @@
       align-items: center;
       height: 100%;
       white-space: nowrap;
-      width: 100%;
       cursor: pointer;
-      /* width: 215%; */
-      /* position: absolute; */
     }
 
     .rowSubj {
-
       width: 100%;
       font-weight: 600;
 
@@ -188,7 +184,7 @@
       text-overflow: ellipsis;
       white-space: nowrap;
       overflow: hidden;
-      height:4rem;
+      height: 4rem;
     }
 
     .rowIconReplies {
@@ -197,16 +193,22 @@
     }
 
     .rowAmountReplies {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       color: #414149;
-      height:4rem;
-      width:100%
+      height: 4rem;
+      width: 100%;
     }
 
     .rowDate {
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
       color: #414149;
-      height:4rem;
+      height: 4rem;
     }
   }
 }

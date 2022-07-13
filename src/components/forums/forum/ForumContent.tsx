@@ -130,6 +130,7 @@ export function ForumContent(props: ForumContentProps) {
       const tx = await Forum.createTopic(p, forum.collectionId);
       if (!_.isNil(tx)) {
         getTopicsForForum();
+        setCreatingNewTopic(false);
         setModalInfo({
           body: "The new topic was created",
           type: MessageType.success,

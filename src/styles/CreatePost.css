@@ -5,17 +5,18 @@
     margin-bottom: 16px;
     padding-top: 32px;
     border-top: 1px solid #b8b9dc;
+
+    .spinnerContainer {
+      padding: 40px 0 60px;
+      height: auto;
+      width: auto;
+    }
   }
 
   .createPostContent {
     display: grid;
     grid-auto-flow: column;
     gap: 12px;
-  }
-
-  .spinnerContainer {
-    padding: 40px 0 60px;
-    display: flex;
   }
 
   .formContainer {

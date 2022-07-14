@@ -24,6 +24,7 @@ export function PostReplies(props: PostRepliesProps) {
   const Forum = useForum();
   const permission = Forum.permission;
   const { publicKey } = Forum.wallet;
+  const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
 
   const postedAt = (reply: ForumPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
@@ -63,7 +64,7 @@ export function PostReplies(props: PostRepliesProps) {
       {replies.map((reply, index) => {
         const deletePermission = publicKey
           ? publicKey.toBase58() === reply.poster.toBase58() ||
-            userRole === UserRoleType.Moderator
+            isAdmin
           : false;
 
         return (

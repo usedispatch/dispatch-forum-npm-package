@@ -21,6 +21,7 @@ export function PostList(props: PostListProps) {
   const { collectionId, forum, loading, userRole, onDeletePost } = props;
   const Forum = useForum();
   const { publicKey } = Forum.wallet;
+  const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
 
   const emptyList = (
     <div className="emptyList">
@@ -45,7 +46,7 @@ export function PostList(props: PostListProps) {
         posts.map((post) => {
           const deletePermission = publicKey
             ? publicKey.toBase58() === post.poster.toBase58() ||
-              userRole === UserRoleType.Moderator
+              isAdmin
             : false;
 
           return (

@@ -1,6 +1,6 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useContext } from "react";
+import { useState, useEffect, ReactNode, useCallback } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
@@ -27,9 +27,9 @@ interface Props {
 
 export const TopicView = (props: Props) => {
   const Forum = useForum();
-  const connected = Forum.isNotEmpty;
-  const permission = Forum.permission;
+  const { isNotEmpty, permission } = Forum;
   const { collectionId, topicId } = props;
+
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
   const [modalInfo, setModalInfo] = useState<{
@@ -66,7 +66,7 @@ export const TopicView = (props: Props) => {
       setRole(role);
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -88,7 +88,7 @@ export const TopicView = (props: Props) => {
       setLoading(false);
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -109,25 +109,22 @@ export const TopicView = (props: Props) => {
   };
 
   useEffect(() => {
-    if (connected && !_.isNil(topicId) && !_.isNil(collectionPublicKey)) {
+    if (isNotEmpty && !_.isNil(topicId) && !_.isNil(collectionPublicKey)) {
       getTopicData();
     } else {
       setLoading(false);
     }
-  }, [connected, topicId, collectionPublicKey]);
+  }, [isNotEmpty, topicId, collectionPublicKey]);
 
   useEffect(() => {
-    if (connected && !_.isNil(collectionPublicKey) && !_.isNil(topic)) {
-      const localStorageRole = localStorage.getItem("role");
-      if (_.isNil(localStorageRole)) {
-        getUserRole();
-      } else {
-        setRole(localStorageRole as UserRoleType);
-      }
-    } else {
-      localStorage.removeItem("role");
+    if (
+      !_.isNil(collectionPublicKey) &&
+      !_.isNil(topic) &&
+      Forum.wallet.publicKey
+    ) {
+      getUserRole();
     }
-  }, [connected, collectionPublicKey, topic]);
+  }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
 
   const disconnectedView = (
     <div className="disconnectedTopicView">
@@ -137,55 +134,55 @@ export const TopicView = (props: Props) => {
 
   return (
     <div className="dsp- ">
-    <div className="topicView">
-      {!_.isNil(modalInfo) && (
-        <PopUpModal
-          id="topic-info"
-          visible
-          title={modalInfo.title}
-          messageType={modalInfo.type}
-          body={modalInfo.body}
-          collapsible={modalInfo.collapsible}
-          okButton={
-            <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-              OK
-            </a>
-          }
-        />
-      )}
-      {!permission.readAndWrite && <ConnectionAlert />}
-      <div className="topicViewContainer">
-        <div className="topicViewContent">
-          <main>
-            <div>
-              {loading ? (
-                <div className="topicViewLoading">
-                  <Spinner />
-                </div>
-              ) : topic ? (
-                <>
-                  <Breadcrumb
-                    navigateTo={forumPath}
-                    parent={parent!}
-                    current={topic.data.subj!}
-                  />
-                  <TopicContent
-                    topic={topic}
-                    forum={Forum}
-                    collectionId={collectionPublicKey}
-                    userRole={role ?? UserRoleType.Poster}
-                    updateVotes={(upVoted) => updateVotes(upVoted)}
-                  />
-                </>
-              ) : (
-                disconnectedView
-              )}
-            </div>
-          </main>
+      <div className="topicView">
+        {!_.isNil(modalInfo) && (
+          <PopUpModal
+            id="topic-info"
+            visible
+            title={modalInfo.title}
+            messageType={modalInfo.type}
+            body={modalInfo.body}
+            collapsible={modalInfo.collapsible}
+            okButton={
+              <a className="okInfoButton" onClick={() => setModalInfo(null)}>
+                OK
+              </a>
+            }
+          />
+        )}
+        {!permission.readAndWrite && <ConnectionAlert />}
+        <div className="topicViewContainer">
+          <div className="topicViewContent">
+            <main>
+              <div>
+                {loading ? (
+                  <div className="topicViewLoading">
+                    <Spinner />
+                  </div>
+                ) : topic ? (
+                  <>
+                    <Breadcrumb
+                      navigateTo={forumPath}
+                      parent={parent!}
+                      current={topic.data.subj!}
+                    />
+                    <TopicContent
+                      topic={topic}
+                      forum={Forum}
+                      collectionId={collectionPublicKey}
+                      userRole={role ?? UserRoleType.Poster}
+                      updateVotes={(upVoted) => updateVotes(upVoted)}
+                    />
+                  </>
+                ) : (
+                  disconnectedView
+                )}
+              </div>
+            </main>
+          </div>
+          <PoweredByDispatch />
         </div>
-        <PoweredByDispatch />
       </div>
-    </div>
     </div>
   );
 };

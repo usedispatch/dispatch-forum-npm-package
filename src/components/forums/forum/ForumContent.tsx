@@ -307,7 +307,6 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                disabled={title.length === 0}
                 onClick={() => setShowAddModerators(false)}>
                 Cancel
               </button>

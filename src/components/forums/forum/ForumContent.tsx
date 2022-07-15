@@ -145,9 +145,7 @@ export function ForumContent(props: ForumContentProps) {
           body: (
             <div className="successBody">
               <div>The new topic was created</div>
-              <div className="successTransactionLink">
-                <TransactionLink transaction={tx} />
-              </div>
+              <TransactionLink transaction={tx} />
             </div>
           ),
           type: MessageType.success,

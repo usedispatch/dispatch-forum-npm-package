@@ -32,7 +32,7 @@ export interface IForum {
   // Create a postbox for a given collection ID
   createForum(
     forumInfo: ForumInfo
-  ): Promise<Forum | undefined>;
+  ): Promise<{forum: Forum, txs: string[]} | undefined>;
 
   // Get the description of the forum: title and blurb
   getDescription(collectionId: web3.PublicKey): Promise<{
@@ -135,8 +135,9 @@ export class DispatchForum implements IForum {
           collectionPublicKey
         );
 
+        let txs = [] as string[];
         if (!(await forumAsOwner.exists())) {
-          const txs = await forumAsOwner.createForum({
+          txs = await forumAsOwner.createForum({
             collectionId: collectionPublicKey,
             owners: [owner.publicKey],
             moderators: forumInfo.moderators,
@@ -146,7 +147,7 @@ export class DispatchForum implements IForum {
           await Promise.all(txs.map((t) => conn.confirmTransaction(t)));
         }
 
-        return forumAsOwner;
+        return {forum: forumAsOwner, txs};
       }
     } catch (error) {      
       throw(error)

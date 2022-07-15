@@ -12,7 +12,7 @@ import { Votes } from "./Votes";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
-import { usePath } from "../../../contexts/DispatchProvider";
+import { useForum, usePath } from "../../../contexts/DispatchProvider";
 
 interface TopicContentProps {
   forum: DispatchForum;
@@ -28,11 +28,14 @@ export function TopicContent(props: TopicContentProps) {
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId.toBase58());
   const permission = forum.permission;
-
+  const Forum = useForum();
+  const userPubKey = Forum.wallet.publicKey;
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
+  const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
+  const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -118,8 +121,7 @@ export function TopicContent(props: TopicContentProps) {
           post={topic}
           updateVotes={(upVoted) => updateVotes(upVoted)}
         />
-        {(userRole === UserRoleType.Moderator ||
-          userRole === UserRoleType.Owner) && (
+        {(isTopicPoster || isAdmin)  && (
           <>
             <div className="actionDivider" />
             <button

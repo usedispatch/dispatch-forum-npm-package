@@ -34,7 +34,7 @@ export function TopicContent(props: TopicContentProps) {
   const [posts, setPosts] = useState<ForumPost[]>([]);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
-  const isPoster = topic.poster.toBase58() == userPubKey?.toBase58();
+  const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
   const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -121,7 +121,7 @@ export function TopicContent(props: TopicContentProps) {
           post={topic}
           updateVotes={(upVoted) => updateVotes(upVoted)}
         />
-        {(isPoster || isAdmin)  && (
+        {(isTopicPoster || isAdmin)  && (
           <>
             <div className="actionDivider" />
             <button

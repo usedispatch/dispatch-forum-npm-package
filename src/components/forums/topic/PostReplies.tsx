@@ -56,8 +56,6 @@ export function PostReplies(props: PostRepliesProps) {
     return null;
   }
 
-  const actions = [];
-
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {

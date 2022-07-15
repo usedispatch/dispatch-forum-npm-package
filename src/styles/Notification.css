@@ -57,5 +57,9 @@
       width: 18px;
       margin-right: 6px;
     }
+
+    .transactionLinkContainer {
+      margin-left: 3px;
+    }
   }
 }

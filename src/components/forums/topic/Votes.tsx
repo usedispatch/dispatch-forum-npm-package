@@ -8,14 +8,15 @@ import {
   MessageType,
   PopUpModal,
   Spinner,
+  TransactionLink,
 } from "../../common";
 import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
 
 interface VotesProps {
   post: ForumPost;
-  onUpVotePost: () => void;
-  onDownVotePost: () => void;
+  onUpVotePost: () => Promise<string>;
+  onDownVotePost: () => Promise<string>;
   updateVotes: (upVoted: boolean) => void;
 }
 
@@ -41,17 +42,19 @@ export function Votes(props: VotesProps) {
     setLoading(true);
 
     try {
-      await onUpVotePost();
+      const tx = await onUpVotePost();
       updateVotes(true);
       setAlreadyVoted(true);
       setLoading(false);
+      setIsNotificationHidden(false);
       setNotificationContent(
         <>
           <Success />
-          Up voted successfully
+          Up voted successfully.
+          <TransactionLink transaction={tx} />
         </>
       );
-      setIsNotificationHidden(false);
+      setTimeout(() => setIsNotificationHidden(true), 4000);
     } catch (error: any) {
       console.log(error);
       if (error.code === 4001) {
@@ -78,16 +81,18 @@ export function Votes(props: VotesProps) {
     setLoading(true);
 
     try {
-      await onDownVotePost();
+      const tx = await onDownVotePost();
       updateVotes(false);
       setAlreadyVoted(true);
+      setIsNotificationHidden(false);
       setNotificationContent(
         <>
           <Success />
-          Down voted successfully
+          Down voted successfully.
+          <TransactionLink transaction={tx} />
         </>
       );
-      setIsNotificationHidden(false);
+      setTimeout(() => setIsNotificationHidden(true), 4000);
       setLoading(false);
     } catch (error: any) {
       console.log(error);
@@ -110,12 +115,6 @@ export function Votes(props: VotesProps) {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!isNotificationHidden) {
-      setTimeout(() => setIsNotificationHidden(true), 4000);
-    }
-  }, [isNotificationHidden]);
 
   return (
     <>

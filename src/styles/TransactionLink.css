@@ -6,6 +6,8 @@
       font-weight: 600;
       color: #58a6ff;
 
+      margin-left: 3px;
+
       &:focus {
         outline: 2px solid transparent;
         outline-offset: 2px;

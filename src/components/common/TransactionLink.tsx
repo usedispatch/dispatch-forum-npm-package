@@ -14,6 +14,7 @@ export const TransactionLink = (props: TransactionLinkProps) => {
   const displayText = `${firstFour}...${lastFour}`;
   return (
     <div className="transactionLinkContainer">
+      Transaction:
       <a
         href={`https://solscan.io/tx/${transaction}?cluster=${cluster}`}
         className="transactionLink">

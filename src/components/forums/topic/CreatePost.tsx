@@ -7,8 +7,11 @@ import {
   MessageType,
   PopUpModal,
   Spinner,
+  TransactionLink,
 } from "../../common";
+import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
+import { Success } from "../../../assets";
 
 interface CreatePostProps {
   topicId: number;
@@ -21,15 +24,20 @@ interface CreatePostProps {
     },
     topicId: number,
     collectionId: web3.PublicKey
-  ) => Promise<void>;
+  ) => Promise<string | undefined>;
   onReload: () => void;
 }
 
 export function CreatePost(props: CreatePostProps) {
   const { createForumPost, collectionId, topicId, onReload } = props;
-  const [loading, setLoading] = useState(false);
   const Forum = useForum();
   const permission = Forum.permission;
+
+  const [loading, setLoading] = useState(false);
+  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [notificationContent, setNotificationContent] = useState<
+    string | ReactNode
+  >("");
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -47,8 +55,17 @@ export function CreatePost(props: CreatePostProps) {
     const post = { body: target.post.value };
 
     try {
-      await createForumPost(post, topicId, collectionId);
+      const tx = await createForumPost(post, topicId, collectionId);
       setLoading(false);
+      setIsNotificationHidden(false);
+      setNotificationContent(
+        <>
+          <Success />
+          Post created successfully.
+          <TransactionLink transaction={tx!} />
+        </>
+      );
+      setTimeout(() => setIsNotificationHidden(true), 4000);
       onReload();
     } catch (error: any) {
       const message = JSON.stringify(error);
@@ -81,6 +98,11 @@ export function CreatePost(props: CreatePostProps) {
           }
         />
       )}
+      <Notification
+        hidden={isNotificationHidden}
+        content={notificationContent}
+        onClose={() => setIsNotificationHidden(true)}
+      />
       <div className="createPostContainer">
         <div className="createPostContent">
           {loading ? (

@@ -97,6 +97,11 @@
     height: 144px;
   }
 
+  .successBody {
+    display: flex;
+    flex-direction: column;
+  }
+
   .manageModerators {
     display: flex;
     align-items: center;

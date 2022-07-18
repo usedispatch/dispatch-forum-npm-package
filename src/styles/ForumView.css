@@ -179,6 +179,11 @@
     }
   }
 
+  .successBody {
+    display: flex;
+    flex-direction: column;
+  }
+
   .forumView {
     background: #f7f7fe;
     padding-top: 24px;

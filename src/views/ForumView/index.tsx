@@ -17,6 +17,7 @@ import {
   MessageType,
   PopUpModal,
   Spinner,
+  TransactionLink,
 } from "../../components/common";
 import {
   ConnectionAlert,
@@ -83,7 +84,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
-    body?: string;
+    body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
 
@@ -95,7 +96,9 @@ export const ForumView = (props: ForumViewProps) => {
     try {
       const collectionIdKey = new web3.PublicKey(collectionId);
       setCollectionPublicKey(collectionIdKey);
-      setCroppedCollectionId(collectionId);
+      setCroppedCollectionId(
+        `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`
+      );
     } catch (error) {
       const message = JSON.stringify(error);
       console.log(error);
@@ -197,14 +200,23 @@ export const ForumView = (props: ForumViewProps) => {
         collectionId: collectionPublicKey,
       } as ForumInfo;
 
-      const createdForum = await Forum.createForum(forum);
+      const res = await Forum.createForum(forum);
 
-      if (createdForum) {
+      if (!_.isNil(res?.forum)) {
         getForumForCollection();
         setShowNewForumModal(false);
         setModalInfo({
-          title: `The forum  was created!`,
-          body: `The forum '${title}' for the collection ${croppedCollectionID} was created`,
+          title: `Success!`,
+          body: (
+            <div className="successBody">
+              <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
+              <div>
+                {res?.txs.map((tx) => (
+                  <TransactionLink transaction={tx} />
+                ))}
+              </div>
+            </div>
+          ),
           type: MessageType.success,
         });
       }

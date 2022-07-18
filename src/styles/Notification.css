@@ -12,6 +12,7 @@
     padding: 12px 20px;
     transition: height 0.5s ease-out;
     background: white;
+    text-transform: none;
     border-radius: 12px;
     box-shadow: 0px 4px 4px rgb(0 0 0 / 16%);
 
@@ -56,6 +57,10 @@
       height: 18px;
       width: 18px;
       margin-right: 6px;
+    }
+
+    .transactionLinkContainer {
+      margin-left: 3px;
     }
   }
 }

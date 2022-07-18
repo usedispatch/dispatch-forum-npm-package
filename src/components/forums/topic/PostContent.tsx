@@ -4,18 +4,20 @@ import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Trash } from "../../../assets";
+import { Success, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
   Spinner,
+  TransactionLink,
 } from "./../../common";
 import { PostReplies } from "../topic/PostReplies";
-import { Votes } from "../../../components/forums";
+import { Votes, Notification } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -23,7 +25,7 @@ interface PostContentProps {
   post: ForumPost;
   deletePermission: boolean;
   userRole: UserRoleType;
-  onDeletePost: () => Promise<void>;
+  onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
@@ -34,16 +36,24 @@ export function PostContent(props: PostContentProps) {
 
   const [loading, setLoading] = useState(true);
   const [replies, setReplies] = useState<ForumPost[]>([]);
+
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
   const [deleting, setDeleting] = useState(false);
+
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [reply, setReply] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+
+  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [notificationContent, setNotificationContent] = useState<
+    string | ReactNode
+  >("");
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
-    body?: string;
+    body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
 
@@ -80,13 +90,22 @@ export function PostContent(props: PostContentProps) {
   const onReplyToPost = async () => {
     setSendingReply(true);
     try {
-      await forum.replyToForumPost(post, collectionId, {
+      const tx = await forum.replyToForumPost(post, collectionId, {
         body: reply,
       });
       getReplies();
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
+      setIsNotificationHidden(false);
+      setNotificationContent(
+        <>
+          <Success />
+          Replied successfully.
+          <TransactionLink transaction={tx!} />
+        </>
+      );
+      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
     } catch (error) {
       const message = JSON.stringify(error);
       console.log(error);
@@ -103,12 +122,12 @@ export function PostContent(props: PostContentProps) {
   const onDelete = async () => {
     setDeleting(true);
     try {
-      await forum.deleteForumPost(
+      const tx = await forum.deleteForumPost(
         postToDelete,
         collectionId,
         userRole === UserRoleType.Moderator
       );
-      onDeletePost();
+      onDeletePost(tx);
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -201,6 +220,11 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
+        <Notification
+          hidden={isNotificationHidden}
+          content={notificationContent}
+          onClose={() => setIsNotificationHidden(true)}
+        />
         {loading ? (
           <Spinner />
         ) : (

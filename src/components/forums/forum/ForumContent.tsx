@@ -12,7 +12,12 @@ import Jdenticon from "react-jdenticon";
 import { ForumInfo, ForumPost } from "@usedispatch/client";
 
 import { Plus } from "../../../assets";
-import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  TransactionLink,
+} from "../../common";
 import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -45,7 +50,7 @@ export function ForumContent(props: ForumContentProps) {
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
-    body?: string;
+    body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
 
@@ -72,7 +77,7 @@ export function ForumContent(props: ForumContentProps) {
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
-      await Forum.addModerator(moderatorId, forum.collectionId);
+      const tx = await Forum.addModerator(moderatorId, forum.collectionId);
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
@@ -80,7 +85,12 @@ export function ForumContent(props: ForumContentProps) {
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
-        body: `The moderator was added`,
+        body: (
+          <div className="successBody">
+            <div>The moderator was added</div>
+            <TransactionLink transaction={tx!} />
+          </div>
+        ),
       });
     } catch (error: any) {
       setAddingNewModerator(false);
@@ -132,10 +142,17 @@ export function ForumContent(props: ForumContentProps) {
         getTopicsForForum();
         setCreatingNewTopic(false);
         setModalInfo({
-          body: "The new topic was created",
+          body: (
+            <div className="successBody">
+              <div>The new topic was created</div>
+              <TransactionLink transaction={tx} />
+            </div>
+          ),
           type: MessageType.success,
           title: "Success!",
         });
+        setTitle("");
+        setDescription("");
         setShowNewTopicModal(false);
       } else {
         setCreatingNewTopic(false);

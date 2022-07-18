@@ -14,7 +14,7 @@ interface PostListProps {
   posts: ForumPost[];
   loading: boolean;
   userRole: UserRoleType;
-  onDeletePost: () => Promise<void>;
+  onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostList(props: PostListProps) {

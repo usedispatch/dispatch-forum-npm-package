@@ -5,14 +5,20 @@ import { useRouter } from "next/router";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { MessageSquare, Trash } from "../../../assets";
-import { CollapsibleProps, MessageType, PopUpModal } from "../../common";
+import { MessageSquare, Success, Trash } from "../../../assets";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  TransactionLink,
+} from "../../common";
 import { CreatePost, PostList } from "..";
-import { Votes } from "./Votes";
+import { Notification, Votes } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 import { useForum, usePath } from "../../../contexts/DispatchProvider";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface TopicContentProps {
   forum: DispatchForum;
@@ -24,7 +30,6 @@ interface TopicContentProps {
 
 export function TopicContent(props: TopicContentProps) {
   const { collectionId, forum, topic, userRole, updateVotes } = props;
-  const router = useRouter();
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId.toBase58());
   const permission = forum.permission;
@@ -32,14 +37,20 @@ export function TopicContent(props: TopicContentProps) {
   const userPubKey = Forum.wallet.publicKey;
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
+
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
+
+  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [notificationContent, setNotificationContent] = useState<
+    string | ReactNode
+  >("");
   const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
   const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
-    body?: string;
+    body?: string | ReactNode;
     collapsible?: CollapsibleProps;
     okPath?: string;
   } | null>(null);
@@ -75,7 +86,12 @@ export function TopicContent(props: TopicContentProps) {
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
-        body: `The topic and all its posts were deleted`,
+        body: (
+          <div className="successBody">
+            <div>The topic and all its posts were deleted</div>
+            <TransactionLink transaction={tx} />
+          </div>
+        ),
         okPath: forumPath,
       });
       setShowDeleteConfirmation(false);
@@ -192,12 +208,26 @@ export function TopicContent(props: TopicContentProps) {
           onReload={() => getMessages()}
         />
       </div>
+      <Notification
+        hidden={isNotificationHidden}
+        content={notificationContent}
+        onClose={() => setIsNotificationHidden(true)}
+      />
       <PostList
         forum={forum}
         collectionId={collectionId}
         posts={posts}
         loading={loadingMessages}
-        onDeletePost={async () => {
+        onDeletePost={async (tx) => {
+          setIsNotificationHidden(false);
+          setNotificationContent(
+            <>
+              <Success />
+              Post deleted successfully.
+              <TransactionLink transaction={tx} />
+            </>
+          );
+          setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
           await getMessages();
         }}
         userRole={userRole}

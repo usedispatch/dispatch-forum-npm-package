@@ -32,7 +32,7 @@ export interface IForum {
   // Create a postbox for a given collection ID
   createForum(
     forumInfo: ForumInfo
-  ): Promise<Forum | undefined>;
+  ): Promise<{forum: Forum, txs: string[]} | undefined>;
 
   // Get the description of the forum: title and blurb
   getDescription(collectionId: web3.PublicKey): Promise<{
@@ -76,7 +76,7 @@ export interface IForum {
     },
     topicId: number,
     collectionId: web3.PublicKey
-  ): Promise<void>;
+  ): Promise<string | undefined>;
 
   // For a given topic, the messages
   getTopicMessages(topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined>;
@@ -135,8 +135,9 @@ export class DispatchForum implements IForum {
           collectionPublicKey
         );
 
+        let txs = [] as string[];
         if (!(await forumAsOwner.exists())) {
-          const txs = await forumAsOwner.createForum({
+          txs = await forumAsOwner.createForum({
             collectionId: collectionPublicKey,
             owners: [owner.publicKey],
             moderators: forumInfo.moderators,
@@ -146,7 +147,7 @@ export class DispatchForum implements IForum {
           await Promise.all(txs.map((t) => conn.confirmTransaction(t)));
         }
 
-        return forumAsOwner;
+        return {forum: forumAsOwner, txs};
       }
     } catch (error) {      
       throw(error)
@@ -307,7 +308,7 @@ export class DispatchForum implements IForum {
     },
     topicId: number,
     collectionId: web3.PublicKey
-  ): Promise<void> => {
+  ): Promise<string | undefined> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -320,6 +321,8 @@ export class DispatchForum implements IForum {
       if ((await forum.exists()) && topic) {
         const tx1 = await forum.createForumPost(post, topic);
         await conn.confirmTransaction(tx1);
+
+        return tx1
       } 
     } catch (error: any) {   
       throw(error)      
@@ -417,7 +420,5 @@ export class DispatchForum implements IForum {
     }
   }
 }
-
-//TODO(Ana): bring back the db, put it on a differnt file
 
 export const MainForum = DispatchForum;

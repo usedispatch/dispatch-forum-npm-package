@@ -17,6 +17,7 @@ import { Votes, Notification } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -104,7 +105,7 @@ export function PostContent(props: PostContentProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), 4000);
+      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
     } catch (error) {
       const message = JSON.stringify(error);
       console.log(error);

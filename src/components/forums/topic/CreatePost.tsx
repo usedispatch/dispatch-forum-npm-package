@@ -12,6 +12,7 @@ import {
 import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { Success } from "../../../assets";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface CreatePostProps {
   topicId: number;
@@ -65,7 +66,7 @@ export function CreatePost(props: CreatePostProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), 4000);
+      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
       onReload();
     } catch (error: any) {
       const message = JSON.stringify(error);

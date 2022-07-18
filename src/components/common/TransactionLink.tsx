@@ -17,7 +17,8 @@ export const TransactionLink = (props: TransactionLinkProps) => {
       Transaction:
       <a
         href={`https://solscan.io/tx/${transaction}?cluster=${cluster}`}
-        className="transactionLink">
+        className="transactionLink"
+        target="_blank">
         {displayText}
       </a>
     </div>

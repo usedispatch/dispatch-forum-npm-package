@@ -12,7 +12,7 @@ export const Notification = (props: NotificationProps) => {
   const { content, hidden, onClose } = props;
 
   /*  On the component using Notification use a timeout to hide it after some seconds
-      setTimeout(() => setIsNotificationHidden(true), 4000);
+      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
   */
 
   return (

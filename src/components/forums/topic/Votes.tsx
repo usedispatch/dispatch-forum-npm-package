@@ -12,6 +12,7 @@ import {
 } from "../../common";
 import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface VotesProps {
   post: ForumPost;
@@ -54,7 +55,7 @@ export function Votes(props: VotesProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), 4000);
+      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
     } catch (error: any) {
       console.log(error);
       if (error.code === 4001) {
@@ -92,7 +93,7 @@ export function Votes(props: VotesProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), 4000);
+      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
       setLoading(false);
     } catch (error: any) {
       console.log(error);

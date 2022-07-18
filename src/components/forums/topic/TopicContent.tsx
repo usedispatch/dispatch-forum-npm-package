@@ -18,6 +18,7 @@ import { Notification, Votes } from "..";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/postbox/userRole";
 import { useForum, usePath } from "../../../contexts/DispatchProvider";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface TopicContentProps {
   forum: DispatchForum;
@@ -226,7 +227,7 @@ export function TopicContent(props: TopicContentProps) {
               <TransactionLink transaction={tx} />
             </>
           );
-          setTimeout(() => setIsNotificationHidden(true), 4000);
+          setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
           await getMessages();
         }}
         userRole={userRole}

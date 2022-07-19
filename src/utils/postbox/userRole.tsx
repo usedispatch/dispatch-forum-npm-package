@@ -23,6 +23,5 @@ export const userRole = async (
     ? UserRoleType.Moderator
     : UserRoleType.Poster;
 
-  localStorage.setItem("role", value);
   return value;
 };

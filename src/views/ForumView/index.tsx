@@ -65,10 +65,8 @@ interface ForumViewProps {
 
 export const ForumView = (props: ForumViewProps) => {
   const Forum = useForum();
-  const wallet = Forum.wallet;
-  const { publicKey } = Forum.wallet;
-  const isNotEmpty = Forum.isNotEmpty;
-  const permission = Forum.permission;
+  const { isNotEmpty, wallet, permission } = Forum;
+  const { publicKey } = wallet;
 
   const collectionId = props.collectionId;
 
@@ -253,7 +251,7 @@ export const ForumView = (props: ForumViewProps) => {
   }, [isNotEmpty, publicKey, collectionId, mount.current]);
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(forum)) {
+    if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {
       getUserRole();
     }
   }, [forum, isNotEmpty, publicKey]);

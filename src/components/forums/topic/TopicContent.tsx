@@ -16,8 +16,8 @@ import { CreatePost, PostList } from "..";
 import { Notification, Votes } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/postbox/userRole";
-import { useForum, usePath } from "../../../contexts/DispatchProvider";
+// import { UserRoleType } from "../../../utils/postbox/userRole";
+import { useForum, usePath, UserRoleType } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface TopicContentProps {

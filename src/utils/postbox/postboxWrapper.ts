@@ -263,6 +263,20 @@ export class DispatchForum implements IForum {
     }
   };
 
+  canCreateTopic = async(
+    collectionId: web3.PublicKey
+  ): Promise<boolean | undefined> => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    if (await forum.canCreateTopic()) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   createTopic = async (
     topic: { subj?: string; body: string; meta?: any },
     collectionId: web3.PublicKey
@@ -299,6 +313,21 @@ export class DispatchForum implements IForum {
     const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
     return topic[0];
   };
+
+  canPost = async (
+    topic: ForumPost,
+    collectionId: web3.PublicKey
+  ): Promise<boolean | undefined> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    const forum = new Forum(new DispatchConnection(conn, owner), collectionId);
+    if (await forum.canPost(topic)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   createForumPost = async (
     post: {

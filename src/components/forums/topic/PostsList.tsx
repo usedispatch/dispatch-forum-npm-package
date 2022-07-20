@@ -3,9 +3,9 @@ import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../common";
 import { PostContent } from "../../forums";
-import { UserRoleType } from "../../../utils/postbox/userRole";
+// import { UserRoleType } from "../../../utils/postbox/userRole";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { useForum } from "../../../contexts/DispatchProvider";
+import { useForum, UserRoleType } from "../../../contexts/DispatchProvider";
 import { useMemo } from "react";
 
 interface PostListProps {

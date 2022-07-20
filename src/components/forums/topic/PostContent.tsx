@@ -16,8 +16,9 @@ import { PostReplies } from "../topic/PostReplies";
 import { Votes, Notification } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/postbox/userRole";
+// import { UserRoleType } from "../../../utils/postbox/userRole";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { UserRoleType } from "../../../contexts/DispatchProvider";
 
 interface PostContentProps {
   forum: DispatchForum;

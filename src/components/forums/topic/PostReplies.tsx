@@ -4,8 +4,8 @@ import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../../assets";
-import { UserRoleType } from "../../../utils/postbox/userRole";
-import { useForum } from "../../../contexts/DispatchProvider";
+// import { UserRoleType } from "../../../utils/postbox/userRole";
+import { useForum, UserRoleType } from "../../../contexts/DispatchProvider";
 
 import { Votes } from "./Votes";
 

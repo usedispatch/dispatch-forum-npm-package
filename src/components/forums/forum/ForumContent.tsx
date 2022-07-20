@@ -21,9 +21,9 @@ import {
 import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/postbox/userRole";
+// import { UserRoleType } from "../../../utils/postbox/userRole";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { ForumContext } from "../../../contexts/DispatchProvider";
+import { ForumContext, UserRoleType } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;

@@ -17,8 +17,8 @@ import {
   TopicContent,
 } from "../../components/forums";
 
-import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import { useForum, usePath } from "./../../contexts/DispatchProvider";
+// import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 
 interface Props {
   topicId: number;
@@ -27,6 +27,7 @@ interface Props {
 
 export const TopicView = (props: Props) => {
   const Forum = useForum();
+  const Role = useRole();
   const { isNotEmpty, permission } = Forum;
   const { collectionId, topicId } = props;
 
@@ -39,7 +40,7 @@ export const TopicView = (props: Props) => {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const [role, setRole] = useState<UserRoleType | null>(null);
+  // const [role, setRole] = useState<UserRoleType | null>(null);
 
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
@@ -60,21 +61,21 @@ export const TopicView = (props: Props) => {
     }
   }, []);
 
-  const getUserRole = useCallback(async () => {
-    try {
-      const role = await userRole(Forum, collectionPublicKey);
-      setRole(role);
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "Your user role could not be determined, you will only have permission to create topics and comment",
-        collapsible: { header: "Error", content: message },
-      });
-    }
-  }, [Forum, collectionPublicKey]);
+  // const getUserRole = useCallback(async () => {
+  //   try {
+  //     const role = await userRole(Forum, collectionPublicKey);
+  //     setRole(role);
+  //   } catch (error) {
+  //     const message = JSON.stringify(error);
+  //     console.log(error);
+  //     setModalInfo({
+  //       title: "Something went wrong!",
+  //       type: MessageType.error,
+  //       body: "Your user role could not be determined, you will only have permission to create topics and comment",
+  //       collapsible: { header: "Error", content: message },
+  //     });
+  //   }
+  // }, [Forum, collectionPublicKey]);
 
   const getTopicData = async () => {
     setLoading(true);
@@ -122,7 +123,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(topic) &&
       Forum.wallet.publicKey
     ) {
-      getUserRole();
+      Role.getUserRole(topic, collectionId);
     }
   }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
 
@@ -170,7 +171,7 @@ export const TopicView = (props: Props) => {
                       topic={topic}
                       forum={Forum}
                       collectionId={collectionPublicKey}
-                      userRole={role ?? UserRoleType.Poster}
+                      userRole={Role.role}
                       updateVotes={(upVoted) => updateVotes(upVoted)}
                     />
                   </>

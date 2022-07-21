@@ -74,8 +74,8 @@ export const ForumView = (props: ForumViewProps) => {
   const [forum, setForum] = useState<ForumInfo>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
-  const [role, setRole] = useState<UserRoleType | null>();
   const [loading, setLoading] = useState(true);
+  const [role, setRole] = useState<UserRoleType | null>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [newModerator, setNewModerator] = useState("");

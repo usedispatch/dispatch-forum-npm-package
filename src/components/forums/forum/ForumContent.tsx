@@ -179,7 +179,12 @@ export function ForumContent(props: ForumContentProps) {
 
     setCreatingNewTopic(true);
     try {
-      const tx = await Forum.createTopic(p, forum.collectionId);
+      const token = accessToken ? newPublicKey(accessToken) : undefined;
+      const tx = await Forum.createTopic(
+        p,
+        forum.collectionId,
+        token ? { tokenOwnership: { mint: token, amount: 50000 } } : undefined
+      );
       if (!_.isNil(tx)) {
         getTopicsForForum();
         setCreatingNewTopic(false);
@@ -299,6 +304,7 @@ export function ForumContent(props: ForumContentProps) {
               </div>
             }
             loading={addingAccessToken}
+            onClose={() => setShowAddAccessToken(false)}
             okButton={
               <button
                 className="okButton"
@@ -343,6 +349,17 @@ export function ForumContent(props: ForumContentProps) {
                     maxLength={800}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
+                  />
+                </>
+                <>
+                  <span className="createTopicLabel">Limit post access</span>
+                  <input
+                    type="text"
+                    placeholder="Token mint ID"
+                    className="newAccessToken"
+                    name="accessToken"
+                    value={accessToken}
+                    onChange={(e) => setAccessToken(e.target.value)}
                   />
                 </>
               </div>

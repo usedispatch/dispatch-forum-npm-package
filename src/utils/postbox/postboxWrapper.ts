@@ -58,7 +58,8 @@ export interface IForum {
       body: string;
       meta?: any;
     },
-    collectionId: web3.PublicKey
+    collectionId: web3.PublicKey,
+    postRestriction?: PostRestriction
   ): Promise<string | undefined>;
 
   // For a given topic ID
@@ -275,7 +276,8 @@ export class DispatchForum implements IForum {
 
   createTopic = async (
     topic: { subj?: string; body: string; meta?: any },
-    collectionId: web3.PublicKey
+    collectionId: web3.PublicKey,
+    postRestriction?: PostRestriction
   ): Promise<string | undefined> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -286,7 +288,7 @@ export class DispatchForum implements IForum {
         collectionId
       );
       if (await forum.exists()) {
-        const newTopic = await forum.createTopic(topic);
+        const newTopic = await forum.createTopic(topic, postRestriction);
         await conn.confirmTransaction(newTopic);
 
         return newTopic;

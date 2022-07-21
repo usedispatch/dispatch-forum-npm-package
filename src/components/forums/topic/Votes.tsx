@@ -55,7 +55,10 @@ export function Votes(props: VotesProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
     } catch (error: any) {
       console.log(error);
       if (error.code === 4001) {
@@ -69,7 +72,7 @@ export function Votes(props: VotesProps) {
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
-          body: `The post could not be up voted. Error: ${message}`,
+          body: "The post could not be up voted",
           collapsible: { header: "Error", content: message },
         });
       }
@@ -93,7 +96,10 @@ export function Votes(props: VotesProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
       setLoading(false);
     } catch (error: any) {
       console.log(error);
@@ -101,7 +107,7 @@ export function Votes(props: VotesProps) {
         setModalInfo({
           title: "The post could not be down voted",
           type: MessageType.error,
-          body: `The user cancelled the request`,
+          body: "The user cancelled the request",
         });
       } else {
         const message = JSON.stringify(error);

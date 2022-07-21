@@ -6,6 +6,7 @@ import {
   useContext,
   useRef,
   useCallback,
+  useMemo,
 } from "react";
 import Jdenticon from "react-jdenticon";
 
@@ -53,6 +54,7 @@ export function ForumContent(props: ForumContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
+  const [accessToCreateTopic, setAccessToCreateTopic] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -200,6 +202,7 @@ export function ForumContent(props: ForumContentProps) {
         });
         setTitle("");
         setDescription("");
+        setAccessToken(undefined);
         setShowNewTopicModal(false);
       } else {
         setCreatingNewTopic(false);
@@ -224,11 +227,20 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
+  const canCreateTopic = async () => {
+    const canCreate = await Forum.canCreateTopic(forum.collectionId);
+    setAccessToCreateTopic(permission.readAndWrite && canCreate);
+  };
+
+  useEffect(() => {
+    canCreateTopic();
+  }, [forum.collectionId, permission.readAndWrite]);
+
   const createTopicButton = (
     <button
       className={"createTopicButton"}
       type="button"
-      disabled={!permission.readAndWrite}
+      disabled={!accessToCreateTopic}
       onClick={() => {
         if (connected) {
           setShowNewTopicModal(true);

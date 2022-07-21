@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
@@ -51,6 +51,7 @@ export function TopicContent(props: TopicContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
+  const [accessToPost, setAccessToPost] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -96,6 +97,7 @@ export function TopicContent(props: TopicContentProps) {
       setAccessToken("");
       setShowAddAccessToken(false);
       setAddingAccessToken(false);
+      setAccessToken(undefined);
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -227,6 +229,15 @@ export function TopicContent(props: TopicContentProps) {
     </>
   );
 
+  const canPostOnTopic = async () => {
+    const canPost = await Forum.canPost(collectionId, topic);
+    setAccessToPost(permission.readAndWrite && canPost);
+  };
+
+  useEffect(() => {
+    canPostOnTopic();
+  }, [collectionId, permission.readAndWrite]);
+
   return (
     <>
       {!_.isNil(modalInfo) && (
@@ -315,6 +326,7 @@ export function TopicContent(props: TopicContentProps) {
         <CreatePost
           topicId={topic.postId}
           collectionId={collectionId}
+          hasAccess={accessToPost}
           createForumPost={forum.createForumPost}
           onReload={() => getMessages()}
         />

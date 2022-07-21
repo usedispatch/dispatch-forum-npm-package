@@ -1,8 +1,8 @@
 import { web3 } from '@project-serum/anchor';
-import { ForumPost, WalletInterface } from '@usedispatch/client';
-import { isUndefined } from 'lodash';
+import { WalletInterface } from '@usedispatch/client';
 import { FC, ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
+import { UserRoleType } from './../utils/permissions';
 export interface DispatchAppProps {
     wallet: WalletInterface;
     connection: web3.Connection;
@@ -16,12 +16,6 @@ let ForumPathFunction: (collectionId: string) => string;
 let TopicPathFunction: (collectionId: string, topicId: number) => string;
 
 
-export enum UserRoleType {
-    Owner = "owner",
-    Moderator = "mod",
-    Poster = "poster",
-    Viewer = "viewer"
-  }
 export interface PathObject {
     buildForumPath: typeof ForumPathFunction;
     buildTopicPath: typeof TopicPathFunction;
@@ -29,7 +23,7 @@ export interface PathObject {
 
 export interface UserObject {
     role: UserRoleType;
-    getUserRole: Function;
+    setRole: Function;
 }
 
 export const ForumContext = createContext<DispatchForum>({} as DispatchForum);
@@ -50,43 +44,7 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
     }
     const [role, setRole] = useState(UserRoleType.Viewer);
 
-    const getUserRole = async (
-        forum: DispatchForum,
-        collectionId: web3.PublicKey,
-        topic?: ForumPost
-      ) => {
-        if (isUndefined(topic)) {
-            const [isMod, isOwner, canCreateTopic] = await Promise.all([
-                forum.isModerator(collectionId),
-                forum.isOwner(collectionId),
-                forum.canCreateTopic(collectionId)
-            ]);
-            const value = isOwner
-                ? UserRoleType.Owner
-                : isMod
-                ? UserRoleType.Moderator
-                : canCreateTopic
-                ? UserRoleType.Poster
-                : UserRoleType.Viewer;
-            setRole(value);
-        } else {
-            const [isMod, isOwner, canPost] = await Promise.all([
-                forum.isModerator(collectionId),
-                forum.isOwner(collectionId),
-                forum.canPost(topic, collectionId)
-            ]);
-                const value = isOwner
-                    ? UserRoleType.Owner
-                    : isMod
-                    ? UserRoleType.Moderator
-                    : canPost
-                    ? UserRoleType.Poster
-                    : UserRoleType.Viewer;
-                setRole(value);
-        }
-      };
-      
-    const userRole = {role, getUserRole}
+    const userRole = {role, setRole}
     return (
         <ForumContext.Provider value={forum}>
             <PathContext.Provider value={paths}>

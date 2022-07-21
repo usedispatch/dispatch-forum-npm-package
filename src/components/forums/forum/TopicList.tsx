@@ -6,7 +6,6 @@ import { ForumPost } from "@usedispatch/client";
 import { Spinner } from "../../common";
 
 import {
-  ForumContext,
   useForum,
   usePath,
 } from "./../../../contexts/DispatchProvider";
@@ -70,7 +69,7 @@ interface RowContentProps {
 
 function RowContent(props: RowContentProps) {
   const { collectionId, topic } = props;
-  const Forum = useForum();
+  const DispatchForumObject = useForum();
   const { buildTopicPath } = usePath();
   const topicPath = buildTopicPath(collectionId.toBase58(), topic.postId);
   const mount = useRef(false);
@@ -79,7 +78,7 @@ function RowContent(props: RowContentProps) {
 
   const getMessages = async () => {
     try {
-      const data = await Forum.getTopicMessages(topic.postId, collectionId);
+      const data = await DispatchForumObject.getTopicMessages(topic.postId, collectionId);
       if (mount.current) {
         setMessages(data ?? []);
       }

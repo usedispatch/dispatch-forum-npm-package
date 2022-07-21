@@ -3,11 +3,10 @@ import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../common";
 import { PostContent } from "../../forums";
-// import { UserRoleType } from "../../../utils/postbox/userRole";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { useForum, UserRoleType } from "../../../contexts/DispatchProvider";
 import { useMemo } from "react";
 
+import { UserRoleType } from "../../../utils/permissions";
 interface PostListProps {
   forum: DispatchForum;
   collectionId: web3.PublicKey;
@@ -19,9 +18,6 @@ interface PostListProps {
 
 export function PostList(props: PostListProps) {
   const { collectionId, forum, loading, userRole, onDeletePost } = props;
-  const Forum = useForum();
-  const { publicKey } = Forum.wallet;
-  const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
 
   const emptyList = (
     <div className="emptyList">
@@ -44,10 +40,6 @@ export function PostList(props: PostListProps) {
         emptyList
       ) : (
         posts.map((post) => {
-          const deletePermission = publicKey
-            ? publicKey.toBase58() === post.poster.toBase58() ||
-              isAdmin
-            : false;
 
           return (
             <div key={`post_${post.postId}`}>
@@ -56,7 +48,6 @@ export function PostList(props: PostListProps) {
                 collectionId={collectionId}
                 post={post}
                 onDeletePost={onDeletePost}
-                deletePermission={deletePermission}
                 userRole={userRole}
               />
             </div>

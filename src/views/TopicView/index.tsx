@@ -19,6 +19,7 @@ import {
 
 // import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
+import { getUserRole } from "./../../utils/postbox/userRole";
 
 interface Props {
   topicId: number;
@@ -123,7 +124,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(topic) &&
       Forum.wallet.publicKey
     ) {
-      Role.getUserRole(topic, collectionId);
+      getUserRole(Forum, collectionPublicKey, Role)
     }
   }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
 

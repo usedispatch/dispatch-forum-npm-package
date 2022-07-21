@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import { useRouter } from "next/router";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
@@ -16,10 +15,11 @@ import { CreatePost, PostList } from "..";
 import { Notification, Votes } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-// import { UserRoleType } from "../../../utils/postbox/userRole";
-import { useForum, usePath, UserRoleType } from "../../../contexts/DispatchProvider";
+import { useForum, usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-
+import { UserRoleType } from "../../../utils/permissions";
+import PermissionsGate from "../../../components/common/PermissionsGate";
+import { SCOPES } from "../../../utils/permissions";
 interface TopicContentProps {
   forum: DispatchForum;
   topic: ForumPost;
@@ -131,14 +131,20 @@ export function TopicContent(props: TopicContentProps) {
           {`${posts.length} comments`}
         </div>
         <div className="actionDivider" />
-        <Votes
-          onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
-          onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
-          post={topic}
-          updateVotes={(upVoted) => updateVotes(upVoted)}
-        />
-        {(isTopicPoster || isAdmin)  && (
-          <>
+        <PermissionsGate
+          scopes={[SCOPES.canVote]}
+          >
+          <Votes
+            onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
+            onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
+            post={topic}
+            updateVotes={(upVoted) => updateVotes(upVoted)}
+          />
+        </PermissionsGate>
+        <PermissionsGate
+          scopes={[SCOPES.canDeleteTopic]}
+          posterKey={topic.poster}
+          >
             <div className="actionDivider" />
             <button
               className="delete"
@@ -149,8 +155,7 @@ export function TopicContent(props: TopicContentProps) {
               </div>
               delete topic
             </button>
-          </>
-        )}
+        </PermissionsGate>
       </div>
     </>
   );
@@ -201,12 +206,16 @@ export function TopicContent(props: TopicContentProps) {
       <div className="topicContentBox">
         <TopicHeader topic={topic} />
         {data}
-        <CreatePost
-          topicId={topic.postId}
-          collectionId={collectionId}
-          createForumPost={forum.createForumPost}
-          onReload={() => getMessages()}
-        />
+        <PermissionsGate
+          scopes={[SCOPES.canCreatePost]}
+          >
+          <CreatePost
+            topicId={topic.postId}
+            collectionId={collectionId}
+            createForumPost={forum.createForumPost}
+            onReload={() => getMessages()}
+          />
+        </PermissionsGate>
       </div>
       <Notification
         hidden={isNotificationHidden}

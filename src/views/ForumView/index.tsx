@@ -5,7 +5,6 @@ import {
   useEffect,
   ReactNode,
   useCallback,
-  useContext,
   useRef,
 } from "react";
 import { ForumInfo } from "@usedispatch/client";
@@ -28,6 +27,7 @@ import {
 // import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
+import { getUserRole } from "./../../utils/postbox/userRole";
 
 interface ForumViewProps {
   collectionId: string;
@@ -144,23 +144,6 @@ export const ForumView = (props: ForumViewProps) => {
     }
   }, [Forum, collectionPublicKey]);
 
-  // const getUserRole = useCallback(async () => {
-  //   try {
-  //     const role = await userRole(Forum, collectionPublicKey);
-  //     if (mount.current) {
-  //       setRole(role);
-  //     }
-  //   } catch (error) {
-  //     const message = JSON.stringify(error);
-  //     console.log(error);
-  //     setModalInfo({
-  //       title: "Something went wrong!",
-  //       type: MessageType.error,
-  //       body: "Your user role could not be determined, you will only have permission to create topics and comment",
-  //       collapsible: { header: "Error", content: message },
-  //     });
-  //   }
-  // }, [Forum, collectionPublicKey]);
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -253,7 +236,7 @@ export const ForumView = (props: ForumViewProps) => {
 
   useEffect(() => {
     if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {
-      Role.getUserRole(Forum, collectionId);
+      getUserRole(Forum, collectionPublicKey, Role)
     }
   }, [forum, isNotEmpty, publicKey]);
 
@@ -402,7 +385,6 @@ export const ForumView = (props: ForumViewProps) => {
                     !_.isNil(forum) ? (
                       <ForumContent
                         forum={forum}
-                        role={Role.role}
                       />
                     ) : (
                       emptyView

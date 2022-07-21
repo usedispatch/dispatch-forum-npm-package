@@ -16,21 +16,20 @@ import { PostReplies } from "../topic/PostReplies";
 import { Votes, Notification } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-// import { UserRoleType } from "../../../utils/postbox/userRole";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { UserRoleType } from "../../../contexts/DispatchProvider";
+import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import PermissionsGate from "../../common/PermissionsGate";
 
 interface PostContentProps {
   forum: DispatchForum;
   collectionId: web3.PublicKey;
   post: ForumPost;
-  deletePermission: boolean;
   userRole: UserRoleType;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { collectionId, deletePermission, forum, userRole, onDeletePost } =
+  const { collectionId, forum, userRole, onDeletePost } =
     props;
 
   const permission = forum.permission;
@@ -241,23 +240,34 @@ export function PostContent(props: PostContentProps) {
             </div>
             <div className="postBody">{post?.data.body}</div>
             <div className="actionsContainer">
-              <Votes
-                post={post}
-                onDownVotePost={() =>
-                  forum.voteDownForumPost(post, collectionId)
-                }
-                onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
-                updateVotes={(upVoted) => updateVotes(upVoted)}
-              />
+            <PermissionsGate
+              scopes={[SCOPES.canDeletePost]}
+              posterKey={post.poster}
+              >
+                <Votes
+                  post={post}
+                  onDownVotePost={() =>
+                    forum.voteDownForumPost(post, collectionId)
+                  }
+                  onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
+                  updateVotes={(upVoted) => updateVotes(upVoted)}
+                />
               <div className="actionDivider" />
-              <button
-                className="replyButton"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowReplyBox(true)}>
-                Reply
-              </button>
-              {deletePermission && (
-                <>
+              </PermissionsGate>
+              <PermissionsGate
+                scopes={[SCOPES.canCreateReply]}
+              >
+                <button
+                  className="replyButton"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowReplyBox(true)}>
+                  Reply
+                </button>
+              </PermissionsGate>
+              <PermissionsGate
+                scopes={[SCOPES.canDeletePost]}
+                posterKey={post.poster}
+                >
                   <div className="actionDivider" />
                   <button
                     className="deleteButton"
@@ -268,8 +278,7 @@ export function PostContent(props: PostContentProps) {
                     }}>
                     <Trash />
                   </button>
-                </>
-              )}
+              </PermissionsGate>
             </div>
             <div
               className="repliesSection"

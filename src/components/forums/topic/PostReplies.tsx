@@ -4,10 +4,10 @@ import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../../assets";
-// import { UserRoleType } from "../../../utils/postbox/userRole";
-import { useForum, UserRoleType } from "../../../contexts/DispatchProvider";
-
+import { useForum } from "../../../contexts/DispatchProvider";
+import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Votes } from "./Votes";
+import PermissionsGate from "../../../components/common/PermissionsGate";
 
 interface PostRepliesProps {
   userRole: UserRoleType;
@@ -83,12 +83,16 @@ export function PostReplies(props: PostRepliesProps) {
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
-                <Votes
-                  updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                  onUpVotePost={() => onUpVotePost(reply)}
-                  onDownVotePost={() => onDownVotePost(reply)}
-                  post={reply}
-                />
+                <PermissionsGate
+                  scopes={[SCOPES.canCreateReply]}
+                >
+                  <Votes
+                    updateVotes={(upVoted) => updateVotes(upVoted, reply)}
+                    onUpVotePost={() => onUpVotePost(reply)}
+                    onDownVotePost={() => onDownVotePost(reply)}
+                    post={reply}
+                  />
+                </PermissionsGate>
                 <div className="actionDivider" />
                 <button
                   className="replyButton"
@@ -96,8 +100,10 @@ export function PostReplies(props: PostRepliesProps) {
                   disabled={!permission.readAndWrite}>
                   Reply
                 </button>
-                {deletePermission && (
-                  <>
+                <PermissionsGate
+                  scopes={[SCOPES.canDeleteReply]}
+                  posterKey={reply.poster}
+                >
                     <div className="actionDivider" />
                     <button
                       className="deleteButton"
@@ -105,8 +111,7 @@ export function PostReplies(props: PostRepliesProps) {
                       onClick={() => onDeletePost(reply)}>
                       <Trash />
                     </button>
-                  </>
-                )}
+                </PermissionsGate>
               </div>
             </div>
           </div>

@@ -78,7 +78,8 @@ export const ForumView = (props: ForumViewProps) => {
   const [loading, setLoading] = useState(true);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [newModerator, setNewModerator] = useState<string>("");
+  const [newModerator, setNewModerator] = useState("");
+  const [accessToken, setAccessToken] = useState<string>();
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -198,9 +199,20 @@ export const ForumView = (props: ForumViewProps) => {
         collectionId: collectionPublicKey,
       } as ForumInfo;
 
+      const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
+
       const res = await Forum.createForum(forum);
 
       if (!_.isNil(res?.forum)) {
+        if (!_.isNil(tokenAccess)) {
+          await Forum.setForumPostRestriction(collectionPublicKey, {
+            tokenOwnership: {
+              mint: tokenAccess,
+              amount: 50000,
+            },
+          });
+        }
+
         getForumForCollection();
         setShowNewForumModal(false);
         setModalInfo({
@@ -329,7 +341,7 @@ export const ForumView = (props: ForumViewProps) => {
                   <input
                     type="text"
                     placeholder="Title"
-                    className="createForumTitle"
+                    className="createForumInput"
                     name="name"
                     required
                     value={title}
@@ -341,7 +353,7 @@ export const ForumView = (props: ForumViewProps) => {
                   <span className="createForumLabel">Forum Description</span>
                   <textarea
                     placeholder="Description"
-                    className="createForumTitle createForumDescription"
+                    className="createForumInput createForumDescription"
                     maxLength={800}
                     value={description}
                     disabled={creatingNewForum}
@@ -352,11 +364,20 @@ export const ForumView = (props: ForumViewProps) => {
                   <span className="createForumLabel">Moderator</span>
                   <input
                     placeholder="Add moderator's wallet ID here"
-                    className="createForumTitle createForumTextArea"
-                    maxLength={800}
+                    className="createForumInput"
                     value={newModerator}
                     disabled={creatingNewForum}
                     onChange={(e) => setNewModerator(e.target.value)}
+                  />
+                </>
+                <>
+                  <span className="createForumLabel">Limit forum access</span>
+                  <input
+                    placeholder="Token mint ID"
+                    className="createForumInput lastInputField"
+                    value={accessToken}
+                    disabled={creatingNewForum}
+                    onChange={(e) => setAccessToken(e.target.value)}
                   />
                 </>
               </div>

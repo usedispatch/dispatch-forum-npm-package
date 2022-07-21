@@ -5,7 +5,7 @@ import {
   ForumInfo,
   ForumPost,
   WalletInterface,
-  KeyPairWallet
+  PostRestriction
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -99,6 +99,16 @@ export interface IForum {
 
   // For a given topic, the messages
   getReplies(topic: ForumPost, collectionId: web3.PublicKey): Promise<ForumPost[]>;
+
+  getForumPostRestriction(collectionId: web3.PublicKey): Promise<PostRestriction | null>;
+
+  setForumPostRestriction(collectionId: web3.PublicKey, restriction: PostRestriction): Promise<string>;
+
+  canCreateTopic(collectionId: web3.PublicKey): Promise<boolean>;
+
+  canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
+
+  canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
 }
 
 export class DispatchForum implements IForum {
@@ -354,8 +364,6 @@ export class DispatchForum implements IForum {
     }
   };
 
-
-  // Vote a post up
   voteUpForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<string> =>{
     const wallet = this.wallet;
     const conn = this.connection;
@@ -370,7 +378,6 @@ export class DispatchForum implements IForum {
     }
   }
 
-  // Vote a post down
   voteDownForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<string> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -385,7 +392,6 @@ export class DispatchForum implements IForum {
     }
   }
   
-
   replyToForumPost = async (
     replyToPost: ForumPost, collectionId: web3.PublicKey, 
     post: {
@@ -404,9 +410,9 @@ export class DispatchForum implements IForum {
     } catch (error) {      
       throw(JSON.stringify(error))
     }
-    };
+  };
 
-  getReplies= async (topic: ForumPost, collectionId: web3.PublicKey): Promise<ForumPost[]> =>{
+  getReplies = async (topic: ForumPost, collectionId: web3.PublicKey): Promise<ForumPost[]> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -419,6 +425,76 @@ export class DispatchForum implements IForum {
       throw(JSON.stringify(error))
     }
   }
+
+  getForumPostRestriction = async(collectionId: web3.PublicKey) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const restriction = await forum.getForumPostRestriction();
+
+      return restriction;
+    } catch (error) {          
+      throw(error)
+    }
+  };
+
+  setForumPostRestriction = async(collectionId: web3.PublicKey, restriction: PostRestriction) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const tx = await forum.setForumPostRestriction(restriction);
+
+      return tx;
+    } catch (error) {          
+      throw(error)
+    }
+  };
+
+  canCreateTopic = async(collectionId: web3.PublicKey) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const tx = await forum.canCreateTopic();
+
+      return tx;
+    } catch (error) {          
+      throw(error)
+    }
+  };
+
+  canPost = async(collectionId: web3.PublicKey, topic: ForumPost) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const tx = await forum.canPost(topic);
+
+      return tx;
+    } catch (error) {          
+      throw(error)
+    }
+  };
+
+  canVote = async(collectionId: web3.PublicKey, post: ForumPost) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const tx = await forum.canVote(post);
+
+      return tx;
+    } catch (error) {          
+      throw(error)
+    }
+  };
 }
 
 export const MainForum = DispatchForum;

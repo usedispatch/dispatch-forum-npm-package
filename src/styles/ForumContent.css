@@ -1,9 +1,8 @@
 @layer components {
   .forumContentHeader {
     height: auto;
-    margin: 0;
-    margin-bottom: 48px;
-    padding: 0 24px;
+    border-bottom: 1px solid #b8b9dc;
+    padding: 0 24px 48px;
   }
 
   .forumContentHeader .box {
@@ -17,6 +16,17 @@
     color: #414149;
 
     margin-right: 40px;
+  }
+
+  .newAccessToken {
+    width: 100%;
+    padding: 12px;
+    margin-top: 16px;
+
+    font-size: 14px;
+    border-width: 1px;
+    border-color: #d1d5db;
+    border-radius: 6px;
   }
 
   .createTopicButton {
@@ -102,24 +112,22 @@
     flex-direction: column;
   }
 
-  .manageModerators {
+  .moderatorToolsContainer {
     display: flex;
     align-items: center;
-    justify-content: center;
 
-    height: 48px;
+    padding: 20px 24px;
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  .moderatorTool {
+    display: flex;
+    align-items: center;
+
     margin-left: 24px;
-    padding: 0 16px;
-    border-width: 1px;
-    border-radius: 6px;
-    border-color: #3f1d96;
-
     background: transparent;
     color: #3f1d96;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    text-transform: none;
 
     &:hover {
       opacity: 0.85;
@@ -127,7 +135,6 @@
 
     &:disabled {
       color: #7c7b7c;
-      border: 1px solid #7c7b7c;
       cursor: not-allowed;
 
       svg path {

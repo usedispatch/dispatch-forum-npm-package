@@ -16,6 +16,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface VotesProps {
   post: ForumPost;
+  accessToVote: boolean;
   onUpVotePost: () => Promise<string>;
   onDownVotePost: () => Promise<string>;
   updateVotes: (upVoted: boolean) => void;
@@ -23,15 +24,18 @@ interface VotesProps {
 
 export function Votes(props: VotesProps) {
   const Forum = useForum();
-  const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
+  const permission = Forum.permission;
+  const { post, onDownVotePost, onUpVotePost, updateVotes, accessToVote } =
+    props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<
     string | ReactNode
   >("");
+
   const [loading, setLoading] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
-  const permission = Forum.permission;
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -149,7 +153,9 @@ export function Votes(props: VotesProps) {
         <div className="votePostContent">
           <button
             className="votePostButton"
-            disabled={alreadyVoted || !permission.readAndWrite}
+            disabled={
+              alreadyVoted || !(permission.readAndWrite && accessToVote)
+            }
             onClick={upVotePost}>
             <UpVote />
           </button>
@@ -162,7 +168,9 @@ export function Votes(props: VotesProps) {
           )}
           <button
             className="votePostButton"
-            disabled={alreadyVoted || !permission.readAndWrite}
+            disabled={
+              alreadyVoted || !(permission.readAndWrite && accessToVote)
+            }
             onClick={downVotePost}>
             <DownVote />
           </button>

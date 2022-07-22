@@ -120,7 +120,7 @@ export function ForumContent(props: ForumContentProps) {
       const token = newPublicKey(accessToken!);
 
       const tx = await Forum.setForumPostRestriction(forum.collectionId, {
-        tokenOwnership: { mint: token, amount: 5000 },
+        tokenOwnership: { mint: token, amount: 1 },
       });
 
       setAccessToken("");
@@ -185,7 +185,7 @@ export function ForumContent(props: ForumContentProps) {
       const tx = await Forum.createTopic(
         p,
         forum.collectionId,
-        token ? { tokenOwnership: { mint: token, amount: 50000 } } : undefined
+        token ? { tokenOwnership: { mint: token, amount: 1 } } : undefined
       );
       if (!_.isNil(tx)) {
         getTopicsForForum();

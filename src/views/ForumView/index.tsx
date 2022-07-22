@@ -208,7 +208,7 @@ export const ForumView = (props: ForumViewProps) => {
           await Forum.setForumPostRestriction(collectionPublicKey, {
             tokenOwnership: {
               mint: tokenAccess,
-              amount: 50000,
+              amount: 1,
             },
           });
         }

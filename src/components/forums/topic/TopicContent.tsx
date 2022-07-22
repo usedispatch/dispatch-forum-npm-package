@@ -52,6 +52,7 @@ export function TopicContent(props: TopicContentProps) {
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
   const [accessToPost, setAccessToPost] = useState(false);
+  const [accessToVote, setAccessToVote] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -91,7 +92,7 @@ export function TopicContent(props: TopicContentProps) {
       const token = newPublicKey(accessToken!);
 
       const tx = await Forum.setForumPostRestriction(collectionId, {
-        tokenOwnership: { mint: token, amount: 5000 },
+        tokenOwnership: { mint: token, amount: 1 },
       });
 
       setAccessToken("");
@@ -180,6 +181,7 @@ export function TopicContent(props: TopicContentProps) {
         </div>
         <div className="actionDivider" />
         <Votes
+          accessToVote={accessToVote}
           onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
           onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
           post={topic}
@@ -199,7 +201,7 @@ export function TopicContent(props: TopicContentProps) {
                 </div>
                 delete topic
               </button>
-              <button
+              {/* <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
                 onClick={() => setShowAddAccessToken(true)}>
@@ -207,7 +209,7 @@ export function TopicContent(props: TopicContentProps) {
                   <Lock />
                 </div>
                 manage post access
-              </button>
+              </button> */}
             </div>
           </>
         )}
@@ -229,13 +231,17 @@ export function TopicContent(props: TopicContentProps) {
     </>
   );
 
-  const canPostOnTopic = async () => {
-    const canPost = await Forum.canPost(collectionId, topic);
+  const accessTo = async () => {
+    const [canPost, canVote] = await Promise.all([
+      Forum.canPost(collectionId, topic),
+      Forum.canVote(collectionId, topic),
+    ]);
     setAccessToPost(permission.readAndWrite && canPost);
+    setAccessToVote(permission.readAndWrite && canVote);
   };
 
   useEffect(() => {
-    canPostOnTopic();
+    accessTo();
   }, [collectionId, permission.readAndWrite]);
 
   return (

@@ -50,6 +50,9 @@ export function PostContent(props: PostContentProps) {
     string | ReactNode
   >("");
 
+  const [accessToVote, setAccessToVote] = useState(false);
+  const [accessToReply, setAccessToReply] = useState(false);
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -105,7 +108,10 @@ export function PostContent(props: PostContentProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
     } catch (error) {
       const message = JSON.stringify(error);
       console.log(error);
@@ -285,6 +291,7 @@ export function PostContent(props: PostContentProps) {
               hidden={replies.length === 0 && !showReplyBox}>
               <div className="repliesBox">
                 <PostReplies
+                  accessTo={{ vote: accessToVote, reply: accessToReply }}
                   replies={replies}
                   userRole={userRole}
                   onDeletePost={async (postToDelete) => {

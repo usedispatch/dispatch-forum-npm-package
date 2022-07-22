@@ -23,15 +23,18 @@ interface VotesProps {
 
 export function Votes(props: VotesProps) {
   const Forum = useForum();
-  const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
+  const permission = Forum.permission;
+  const { post, onDownVotePost, onUpVotePost, updateVotes } =
+    props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<
     string | ReactNode
   >("");
+
   const [loading, setLoading] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
-  const permission = Forum.permission;
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -55,7 +58,10 @@ export function Votes(props: VotesProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
     } catch (error: any) {
       console.log(error);
       if (error.code === 4001) {
@@ -69,7 +75,7 @@ export function Votes(props: VotesProps) {
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
-          body: `The post could not be up voted. Error: ${message}`,
+          body: "The post could not be up voted",
           collapsible: { header: "Error", content: message },
         });
       }
@@ -93,7 +99,10 @@ export function Votes(props: VotesProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
       setLoading(false);
     } catch (error: any) {
       console.log(error);
@@ -101,7 +110,7 @@ export function Votes(props: VotesProps) {
         setModalInfo({
           title: "The post could not be down voted",
           type: MessageType.error,
-          body: `The user cancelled the request`,
+          body: "The user cancelled the request",
         });
       } else {
         const message = JSON.stringify(error);
@@ -143,7 +152,9 @@ export function Votes(props: VotesProps) {
         <div className="votePostContent">
           <button
             className="votePostButton"
-            disabled={alreadyVoted || !permission.readAndWrite}
+            disabled={
+              alreadyVoted || !(permission.readAndWrite)
+            }
             onClick={upVotePost}>
             <UpVote />
           </button>
@@ -156,7 +167,9 @@ export function Votes(props: VotesProps) {
           )}
           <button
             className="votePostButton"
-            disabled={alreadyVoted || !permission.readAndWrite}
+            disabled={
+              alreadyVoted || !(permission.readAndWrite)
+            }
             onClick={downVotePost}>
             <DownVote />
           </button>

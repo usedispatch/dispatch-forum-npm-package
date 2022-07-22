@@ -17,7 +17,6 @@ import {
   TopicContent,
 } from "../../components/forums";
 
-// import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
 
@@ -32,8 +31,11 @@ export const TopicView = (props: Props) => {
   const { isNotEmpty, permission } = Forum;
   const { collectionId, topicId } = props;
 
+  const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
+
   const [loading, setLoading] = useState(true);
   const [topic, setTopic] = useState<ForumPost>();
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -41,13 +43,9 @@ export const TopicView = (props: Props) => {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  // const [role, setRole] = useState<UserRoleType | null>(null);
-
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
   const [parent, setParent] = useState<string | undefined>();
-
-  const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
 
   useEffect(() => {
     try {

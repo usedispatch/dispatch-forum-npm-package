@@ -1,10 +1,10 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { MessageSquare, Success, Trash } from "../../../assets";
+import { Lock, MessageSquare, Success, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -20,6 +20,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import PermissionsGate from "../../../components/common/PermissionsGate";
 import { SCOPES } from "../../../utils/permissions";
+import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 interface TopicContentProps {
   forum: DispatchForum;
   topic: ForumPost;
@@ -35,6 +36,7 @@ export function TopicContent(props: TopicContentProps) {
   const permission = forum.permission;
   const Forum = useForum();
   const userPubKey = Forum.wallet.publicKey;
+
   const [loadingMessages, setLoadingMessages] = useState(true);
   const [posts, setPosts] = useState<ForumPost[]>([]);
 
@@ -45,8 +47,13 @@ export function TopicContent(props: TopicContentProps) {
   const [notificationContent, setNotificationContent] = useState<
     string | ReactNode
   >("");
-  const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
-  const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
+
+  const [showAddAccessToken, setShowAddAccessToken] = useState(false);
+  const [accessToken, setAccessToken] = useState<string>();
+  const [addingAccessToken, setAddingAccessToken] = useState(false);
+  const [accessToPost, setAccessToPost] = useState(false);
+  const [accessToVote, setAccessToVote] = useState(false);
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -54,6 +61,10 @@ export function TopicContent(props: TopicContentProps) {
     collapsible?: CollapsibleProps;
     okPath?: string;
   } | null>(null);
+
+  const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
+  const isAdmin =
+    userRole == UserRoleType.Owner || userRole == UserRoleType.Moderator;
 
   const getMessages = async () => {
     setLoadingMessages(true);
@@ -74,6 +85,45 @@ export function TopicContent(props: TopicContentProps) {
       setLoadingMessages(false);
     }
   };
+
+  // TODO (Ana): add corresponding function when its available
+  /*const addAccessToken = async () => {
+    setAddingAccessToken(true);
+    try {
+      const token = newPublicKey(accessToken!);
+
+      const tx = await Forum.setForumPostRestriction(collectionId, {
+        tokenOwnership: { mint: token, amount: 1 },
+      });
+
+      setAccessToken("");
+      setShowAddAccessToken(false);
+      setAddingAccessToken(false);
+      setAccessToken(undefined);
+      setModalInfo({
+        title: "Success!",
+        type: MessageType.success,
+        body: (
+          <div className="successBody">
+            <div>The access token was added</div>
+            <TransactionLink transaction={tx} />
+          </div>
+        ),
+      });
+    } catch (error: any) {
+      setAddingAccessToken(false);
+      if (error.code !== 4001) {
+        setAccessToken("");
+        setShowAddAccessToken(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The access token could not be added`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        });
+      }
+    }
+  }; */
 
   const onDeleteTopic = async () => {
     try {
@@ -146,19 +196,33 @@ export function TopicContent(props: TopicContentProps) {
           posterKey={topic.poster}
           >
             <div className="actionDivider" />
-            <button
-              className="delete"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowDeleteConfirmation(true)}>
-              <div className="icon">
-                <Trash />
-              </div>
-              delete topic
-            </button>
+            <div className="moderatorToolsContainer">
+              <div>Moderator tools: </div>
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowDeleteConfirmation(true)}>
+                <div className="delete">
+                  <Trash />
+                </div>
+                delete topic
+              </button>
+              {/* TODO (Ana): waiting for endpoint to be implemented
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddAccessToken(true)}>
+                <div className="lock">
+                  <Lock />
+                </div>
+                manage post access
+              </button> */}
+            </div>
         </PermissionsGate>
       </div>
     </>
   );
+
 
   return (
     <>
@@ -177,6 +241,45 @@ export function TopicContent(props: TopicContentProps) {
               onClick={() => setModalInfo(null)}>
               OK
             </a>
+          }
+        />
+      )}
+      {showAddAccessToken && _.isNil(modalInfo) && (
+        <PopUpModal
+          id="add-access-token"
+          visible
+          title="Limit post access"
+          body={
+            <div className="">
+              You can enter one token mint ID here such that only holders of
+              this token can participate in this topic. This mint can be for any
+              spl-token, eg SOL, NFTs, etc.
+              <input
+                type="text"
+                placeholder="Token mint ID"
+                className="newAccessToken"
+                name="accessToken"
+                value={accessToken}
+                onChange={(e) => setAccessToken(e.target.value)}
+              />
+            </div>
+          }
+          loading={addingAccessToken}
+          onClose={() => setShowAddAccessToken(false)}
+          okButton={
+            <button
+              className="okButton"
+              disabled={accessToken?.length === 0}
+            >
+              Save
+            </button>
+          }
+          cancelButton={
+            <button
+              className="cancelDeleteTopicButton"
+              onClick={() => setShowAddAccessToken(false)}>
+              Cancel
+            </button>
           }
         />
       )}
@@ -236,7 +339,10 @@ export function TopicContent(props: TopicContentProps) {
               <TransactionLink transaction={tx} />
             </>
           );
-          setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+          setTimeout(
+            () => setIsNotificationHidden(true),
+            NOTIFICATION_BANNER_TIMEOUT
+          );
           await getMessages();
         }}
         userRole={userRole}

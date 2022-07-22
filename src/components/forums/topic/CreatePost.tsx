@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 
 import {
@@ -66,7 +66,10 @@ export function CreatePost(props: CreatePostProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
       onReload();
     } catch (error: any) {
       const message = JSON.stringify(error);
@@ -117,7 +120,7 @@ export function CreatePost(props: CreatePostProps) {
                   className="postContent"
                   placeholder="Type your comment here"
                   required
-                  disabled={!permission.readAndWrite}
+                  disabled={!(permission.readAndWrite)}
                   maxLength={800}
                   name="post"
                 />
@@ -126,7 +129,7 @@ export function CreatePost(props: CreatePostProps) {
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!permission.readAndWrite}>
+                  disabled={!(permission.readAndWrite)}>
                   Post
                 </button>
               </div>

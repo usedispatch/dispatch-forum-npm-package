@@ -6,6 +6,7 @@ export * from "./Error";
 export * from "./ForumLogo";
 export * from "./InboxLogo";
 export * from "./Info";
+export * from "./Lock";
 export * from "./LogoV2";
 export * from "./MessageSquare";
 export * from "./OutlinedCross";

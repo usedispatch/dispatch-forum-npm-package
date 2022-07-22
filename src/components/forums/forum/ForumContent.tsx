@@ -35,8 +35,7 @@ interface ForumContentProps {
 export function ForumContent(props: ForumContentProps) {
   const { forum, role } = props;
   const Forum = useContext(ForumContext);
-  const connected = Forum.isNotEmpty;
-  const permission = Forum.permission;
+  const { isNotEmpty: connected, permission } = Forum;
   const mount = useRef(false);
 
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -363,17 +362,20 @@ export function ForumContent(props: ForumContentProps) {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </>
-                <>
-                  <span className="createTopicLabel">Limit post access</span>
-                  <input
-                    type="text"
-                    placeholder="Token mint ID"
-                    className="newAccessToken"
-                    name="accessToken"
-                    value={accessToken}
-                    onChange={(e) => setAccessToken(e.target.value)}
-                  />
-                </>
+                {(UserRoleType.Moderator === role ||
+                  UserRoleType.Owner === role) && (
+                  <>
+                    <span className="createTopicLabel">Limit post access</span>
+                    <input
+                      type="text"
+                      placeholder="Token mint ID"
+                      className="newAccessToken"
+                      name="accessToken"
+                      value={accessToken}
+                      onChange={(e) => setAccessToken(e.target.value)}
+                    />
+                  </>
+                )}
               </div>
             }
             loading={creatingNewTopic}

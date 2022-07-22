@@ -120,7 +120,7 @@ export function CreatePost(props: CreatePostProps) {
                   className="postContent"
                   placeholder="Type your comment here"
                   required
-                  disabled={!(permission.readAndWrite)}
+                  disabled={!permission.readAndWrite}
                   maxLength={800}
                   name="post"
                 />
@@ -129,7 +129,7 @@ export function CreatePost(props: CreatePostProps) {
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!(permission.readAndWrite)}>
+                  disabled={!permission.readAndWrite}>
                   Post
                 </button>
               </div>

@@ -291,7 +291,6 @@ export function PostContent(props: PostContentProps) {
               hidden={replies.length === 0 && !showReplyBox}>
               <div className="repliesBox">
                 <PostReplies
-                  accessTo={{ vote: accessToVote, reply: accessToReply }}
                   replies={replies}
                   userRole={userRole}
                   onDeletePost={async (postToDelete) => {

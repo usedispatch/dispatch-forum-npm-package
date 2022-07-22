@@ -51,8 +51,6 @@ export function TopicContent(props: TopicContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
-  const [accessToPost, setAccessToPost] = useState(false);
-  const [accessToVote, setAccessToVote] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -62,9 +60,6 @@ export function TopicContent(props: TopicContentProps) {
     okPath?: string;
   } | null>(null);
 
-  const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
-  const isAdmin =
-    userRole == UserRoleType.Owner || userRole == UserRoleType.Moderator;
 
   const getMessages = async () => {
     setLoadingMessages(true);

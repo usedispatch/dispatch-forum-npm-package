@@ -54,7 +54,6 @@ export function ForumContent(props: ForumContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
-  const [accessToCreateTopic, setAccessToCreateTopic] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -231,7 +230,7 @@ export function ForumContent(props: ForumContentProps) {
     <button
       className={"createTopicButton"}
       type="button"
-      disabled={!accessToCreateTopic}
+      disabled={!permission.readAndWrite}
       onClick={() => {
         if (connected) {
           setShowNewTopicModal(true);

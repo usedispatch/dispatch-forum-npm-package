@@ -86,7 +86,8 @@ export function TopicContent(props: TopicContentProps) {
     }
   };
 
-  const addAccessToken = async () => {
+  // TODO (Ana): add corresponding function when its available
+  /*const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
       const token = newPublicKey(accessToken!);
@@ -122,7 +123,7 @@ export function TopicContent(props: TopicContentProps) {
         });
       }
     }
-  };
+  }; */
 
   const onDeleteTopic = async () => {
     try {
@@ -201,7 +202,8 @@ export function TopicContent(props: TopicContentProps) {
                 </div>
                 delete topic
               </button>
-              {/* <button
+              {/* TODO (Ana): waiting for endpoint to be implemented
+              <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
                 onClick={() => setShowAddAccessToken(true)}>

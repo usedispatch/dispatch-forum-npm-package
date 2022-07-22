@@ -36,7 +36,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const { forum } = props;
   const DispatchForumObject = useForum();
-  const { isNotEmpty: connected, permission } = Forum;
+  const { isNotEmpty: connected, permission } = DispatchForumObject;
   const mount = useRef(false);
 
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -357,8 +357,8 @@ export function ForumContent(props: ForumContentProps) {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </>
-                {(UserRoleType.Moderator === role ||
-                  UserRoleType.Owner === role) && (
+                <PermissionsGate
+                  scopes={[SCOPES.canAddTopicRestriction]}>
                   <>
                     <span className="createTopicLabel">Limit post access</span>
                     <input
@@ -370,7 +370,7 @@ export function ForumContent(props: ForumContentProps) {
                       onChange={(e) => setAccessToken(e.target.value)}
                     />
                   </>
-                )}
+                </PermissionsGate>
               </div>
             }
             loading={creatingNewTopic}

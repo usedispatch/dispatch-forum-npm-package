@@ -292,7 +292,8 @@ export function TopicContent(props: TopicContentProps) {
             <button
               className="okButton"
               disabled={accessToken?.length === 0}
-              onClick={() => addAccessToken()}>
+              // onClick={() => addAccessToken()}
+            >
               Save
             </button>
           }

@@ -276,7 +276,7 @@ export class DispatchForum implements IForum {
 
   canCreateTopic = async(
     collectionId: web3.PublicKey
-  ): Promise<boolean | undefined> => {
+  ): Promise<boolean> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -327,9 +327,9 @@ export class DispatchForum implements IForum {
   };
 
   canPost = async (
-    topic: ForumPost,
-    collectionId: web3.PublicKey
-  ): Promise<boolean | undefined> => {
+    collectionId: web3.PublicKey,
+    topic: ForumPost
+  ): Promise<boolean> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -478,34 +478,6 @@ export class DispatchForum implements IForum {
     try {
       const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
       const tx = await forum.setForumPostRestriction(restriction);
-
-      return tx;
-    } catch (error) {          
-      throw(error)
-    }
-  };
-
-  canCreateTopic = async(collectionId: web3.PublicKey) => {
-    const wallet = this.wallet;
-    const conn = this.connection;
-
-    try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
-      const tx = await forum.canCreateTopic();
-
-      return tx;
-    } catch (error) {          
-      throw(error)
-    }
-  };
-
-  canPost = async(collectionId: web3.PublicKey, topic: ForumPost) => {
-    const wallet = this.wallet;
-    const conn = this.connection;
-
-    try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
-      const tx = await forum.canPost(topic);
 
       return tx;
     } catch (error) {          

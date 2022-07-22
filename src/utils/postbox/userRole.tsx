@@ -29,7 +29,7 @@ export const getUserRole = async (
         const [ isMod, isOwner, canPost] = await Promise.all([
             forum.isModerator(collectionId),
             forum.isOwner(collectionId),
-            forum.canPost(topic, collectionId)
+            forum.canPost(collectionId, topic)
         ]);
         const value = isOwner
             ? UserRoleType.Owner

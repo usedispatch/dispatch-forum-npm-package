@@ -192,7 +192,6 @@ export function TopicContent(props: TopicContentProps) {
           >
             <div className="actionDivider" />
             <div className="moderatorToolsContainer">
-              <div>Moderator tools: </div>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}

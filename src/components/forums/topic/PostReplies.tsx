@@ -63,8 +63,6 @@ export function PostReplies(props: PostRepliesProps) {
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
-
-
         return (
           <div key={index}>
             {index > 0 && <div className="repliesDivider" />}

@@ -437,22 +437,15 @@ export function ForumContent(props: ForumContentProps) {
         <PermissionsGate
           scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
           >
-          <button
-            className="manageModerators"
-            disabled={!permission.readAndWrite}
-            onClick={() => setShowAddModerators(true)}>
-            Manage moderators
-          </button>
           <div className="moderatorToolsContainer">
-            <div>Moderator tools: </div>
             <button
-              className="moderatorTool"
+              className="moderatorButton"
               disabled={!permission.readAndWrite}
               onClick={() => setShowAddModerators(true)}>
               Manage moderators
             </button>
             <button
-              className="moderatorTool"
+              className="moderatorButton"
               disabled={!permission.readAndWrite}
               onClick={() => setShowAddAccessToken(true)}>
               Manage forum access

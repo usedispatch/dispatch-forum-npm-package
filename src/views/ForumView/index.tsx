@@ -205,7 +205,7 @@ export const ForumView = (props: ForumViewProps) => {
               <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
               <div>
                 {res?.txs.map((tx) => (
-                  <TransactionLink transaction={tx} />
+                  <TransactionLink transaction={tx} key={tx}/>
                 ))}
               </div>
             </div>

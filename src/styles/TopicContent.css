@@ -60,7 +60,7 @@
 
     height: 48px;
     padding: 0 30px;
-    border-radius: 6px;
+    border-radius: 10px;
 
     cursor: pointer;
     background: #3f1d96;
@@ -166,34 +166,56 @@
         }
       }
 
-      .delete {
+      .moderatorToolsContainer {
         display: flex;
         align-items: center;
 
-        cursor: pointer;
-        padding-left: 6px;
-        color: #4f39a2;
+        padding: 0;
+        color: #414149;
+        font-size: 12px;
+        font-weight: 400;
 
-        .icon {
-          margin-right: 4px;
-          height: 12px;
-          width: 12px;
+        .moderatorTool {
+          display: flex;
+          align-items: center;
 
-          svg {
-            path {
-              fill: #3f1d96;
+          margin-left: 14px;
+          background: transparent;
+          color: #3f1d96;
+
+          &:hover {
+            opacity: 0.85;
+          }
+
+          &:disabled {
+            color: #7c7b7c;
+            cursor: not-allowed;
+
+            svg path {
+              fill: #7c7b7c;
             }
           }
         }
+      }
 
-        &:disabled {
-          cursor: not-allowed;
-          color: #7c7b7c;
+      .lock {
+        margin-right: 4px;
+        height: 12px;
+        width: 12px;
+      }
 
-          svg {
-            path {
-              fill: #7c7b7c;
-            }
+      .deleteButton {
+        margin: 0;
+      }
+
+      .delete {
+        margin-right: 4px;
+        height: 12px;
+        width: 12px;
+
+        svg {
+          path {
+            fill: #3f1d96;
           }
         }
       }

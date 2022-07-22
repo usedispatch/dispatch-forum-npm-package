@@ -146,20 +146,18 @@
 
     .createForumLabel {
       padding: 0 4px;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 500;
     }
 
-    .createForumTitle {
+    .createForumInput {
       width: 100%;
-      height: 32px;
       font-size: 14px;
-      padding-left: 12px;
-      padding-right: 12px;
+      padding: 12px;
       margin-top: 4px;
       margin-bottom: 16px;
 
-      border-color: #3f1d96;
+      border-color: #cac9cb;
       border-width: 1px;
       border-radius: 6px;
 
@@ -170,11 +168,10 @@
     }
 
     .createForumDescription {
-      padding-top: 4px;
       height: 144px;
     }
 
-    .createForumTextArea {
+    .lastInputField {
       margin-bottom: 0;
     }
   }

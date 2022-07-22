@@ -12,6 +12,7 @@ import { Votes } from "./Votes";
 interface PostRepliesProps {
   userRole: UserRoleType;
   replies: ForumPost[];
+  accessTo: { vote: boolean; reply: boolean };
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
@@ -19,12 +20,19 @@ interface PostRepliesProps {
 }
 
 export function PostReplies(props: PostRepliesProps) {
-  const { userRole, onDeletePost, onReplyClick, onDownVotePost, onUpVotePost } =
-    props;
+  const {
+    accessTo,
+    userRole,
+    onDeletePost,
+    onReplyClick,
+    onDownVotePost,
+    onUpVotePost,
+  } = props;
   const Forum = useForum();
   const permission = Forum.permission;
   const { publicKey } = Forum.wallet;
-  const isAdmin = (userRole == UserRoleType.Owner) || (userRole == UserRoleType.Moderator);
+  const isAdmin =
+    userRole == UserRoleType.Owner || userRole == UserRoleType.Moderator;
 
   const postedAt = (reply: ForumPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
@@ -61,8 +69,7 @@ export function PostReplies(props: PostRepliesProps) {
     <div className="repliesContainer">
       {replies.map((reply, index) => {
         const deletePermission = publicKey
-          ? publicKey.toBase58() === reply.poster.toBase58() ||
-            isAdmin
+          ? publicKey.toBase58() === reply.poster.toBase58() || isAdmin
           : false;
 
         return (
@@ -84,6 +91,7 @@ export function PostReplies(props: PostRepliesProps) {
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
                 <Votes
+                  accessToVote={accessTo.vote}
                   updateVotes={(upVoted) => updateVotes(upVoted, reply)}
                   onUpVotePost={() => onUpVotePost(reply)}
                   onDownVotePost={() => onDownVotePost(reply)}
@@ -93,7 +101,7 @@ export function PostReplies(props: PostRepliesProps) {
                 <button
                   className="replyButton"
                   onClick={onReplyClick}
-                  disabled={!permission.readAndWrite}>
+                  disabled={!(permission.readAndWrite && accessTo.reply)}>
                   Reply
                 </button>
                 {deletePermission && (

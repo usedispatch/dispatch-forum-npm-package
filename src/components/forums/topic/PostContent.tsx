@@ -50,6 +50,9 @@ export function PostContent(props: PostContentProps) {
     string | ReactNode
   >("");
 
+  const [accessToVote, setAccessToVote] = useState(false);
+  const [accessToReply, setAccessToReply] = useState(false);
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -105,7 +108,10 @@ export function PostContent(props: PostContentProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
-      setTimeout(() => setIsNotificationHidden(true), NOTIFICATION_BANNER_TIMEOUT);
+      setTimeout(
+        () => setIsNotificationHidden(true),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
     } catch (error) {
       const message = JSON.stringify(error);
       console.log(error);
@@ -156,6 +162,19 @@ export function PostContent(props: PostContentProps) {
       setModalInfo(modalInfoError);
     }
   };
+
+  const accessTo = async () => {
+    const [canPost, canVote] = await Promise.all([
+      forum.canPost(collectionId, post),
+      forum.canVote(collectionId, post),
+    ]);
+    setAccessToReply(permission.readAndWrite && canPost);
+    setAccessToVote(permission.readAndWrite && canVote);
+  };
+
+  useEffect(() => {
+    accessTo();
+  }, [collectionId, permission.readAndWrite]);
 
   useEffect(() => {
     if (!_.isNil(post) && !_.isNil(collectionId)) {
@@ -241,6 +260,7 @@ export function PostContent(props: PostContentProps) {
             <div className="postBody">{post?.data.body}</div>
             <div className="actionsContainer">
               <Votes
+                accessToVote={accessToVote}
                 post={post}
                 onDownVotePost={() =>
                   forum.voteDownForumPost(post, collectionId)
@@ -251,7 +271,7 @@ export function PostContent(props: PostContentProps) {
               <div className="actionDivider" />
               <button
                 className="replyButton"
-                disabled={!permission.readAndWrite}
+                disabled={!(permission.readAndWrite && accessToReply)}
                 onClick={() => setShowReplyBox(true)}>
                 Reply
               </button>
@@ -275,6 +295,7 @@ export function PostContent(props: PostContentProps) {
               hidden={replies.length === 0 && !showReplyBox}>
               <div className="repliesBox">
                 <PostReplies
+                  accessTo={{ vote: accessToVote, reply: accessToReply }}
                   replies={replies}
                   userRole={userRole}
                   onDeletePost={async (postToDelete) => {

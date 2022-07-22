@@ -15,12 +15,12 @@ import { CreatePost, PostList } from "..";
 import { Notification, Votes } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/postbox/userRole";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-
 import { useForum, usePath } from "../../../contexts/DispatchProvider";
-
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { UserRoleType } from "../../../utils/permissions";
+import PermissionsGate from "../../../components/common/PermissionsGate";
+import { SCOPES } from "../../../utils/permissions";
+import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 interface TopicContentProps {
   forum: DispatchForum;
   topic: ForumPost;
@@ -51,8 +51,6 @@ export function TopicContent(props: TopicContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
-  const [accessToPost, setAccessToPost] = useState(false);
-  const [accessToVote, setAccessToVote] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -62,9 +60,6 @@ export function TopicContent(props: TopicContentProps) {
     okPath?: string;
   } | null>(null);
 
-  const isTopicPoster = topic.poster.toBase58() == userPubKey?.toBase58();
-  const isAdmin =
-    userRole == UserRoleType.Owner || userRole == UserRoleType.Moderator;
 
   const getMessages = async () => {
     setLoadingMessages(true);
@@ -181,18 +176,22 @@ export function TopicContent(props: TopicContentProps) {
           {`${posts.length} comments`}
         </div>
         <div className="actionDivider" />
-        <Votes
-          accessToVote={accessToVote}
-          onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
-          onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
-          post={topic}
-          updateVotes={(upVoted) => updateVotes(upVoted)}
-        />
-        {isAdmin && (
-          <>
+        <PermissionsGate
+          scopes={[SCOPES.canVote]}
+          >
+          <Votes
+            onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
+            onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
+            post={topic}
+            updateVotes={(upVoted) => updateVotes(upVoted)}
+          />
+        </PermissionsGate>
+        <PermissionsGate
+          scopes={[SCOPES.canDeleteTopic]}
+          posterKey={topic.poster}
+          >
             <div className="actionDivider" />
             <div className="moderatorToolsContainer">
-              <div>Moderator tools: </div>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
@@ -213,38 +212,11 @@ export function TopicContent(props: TopicContentProps) {
                 manage post access
               </button> */}
             </div>
-          </>
-        )}
-        {isTopicPoster && !isAdmin && (
-          <>
-            <div className="actionDivider" />
-            <button
-              className="moderatorTool deleteButton"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowDeleteConfirmation(true)}>
-              <div className="delete">
-                <Trash />
-              </div>
-              delete topic
-            </button>
-          </>
-        )}
+        </PermissionsGate>
       </div>
     </>
   );
 
-  const accessTo = async () => {
-    const [canPost, canVote] = await Promise.all([
-      Forum.canPost(collectionId, topic),
-      Forum.canVote(collectionId, topic),
-    ]);
-    setAccessToPost(permission.readAndWrite && canPost);
-    setAccessToVote(permission.readAndWrite && canVote);
-  };
-
-  useEffect(() => {
-    accessTo();
-  }, [collectionId, permission.readAndWrite]);
 
   return (
     <>
@@ -292,7 +264,6 @@ export function TopicContent(props: TopicContentProps) {
             <button
               className="okButton"
               disabled={accessToken?.length === 0}
-              // onClick={() => addAccessToken()}
             >
               Save
             </button>
@@ -332,13 +303,16 @@ export function TopicContent(props: TopicContentProps) {
       <div className="topicContentBox">
         <TopicHeader topic={topic} />
         {data}
-        <CreatePost
-          topicId={topic.postId}
-          collectionId={collectionId}
-          hasAccess={accessToPost}
-          createForumPost={forum.createForumPost}
-          onReload={() => getMessages()}
-        />
+        <PermissionsGate
+          scopes={[SCOPES.canCreatePost]}
+          >
+          <CreatePost
+            topicId={topic.postId}
+            collectionId={collectionId}
+            createForumPost={forum.createForumPost}
+            onReload={() => getMessages()}
+          />
+        </PermissionsGate>
       </div>
       <Notification
         hidden={isNotificationHidden}

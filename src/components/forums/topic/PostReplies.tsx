@@ -4,15 +4,14 @@ import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
 import { Trash } from "../../../assets";
-import { UserRoleType } from "../../../utils/postbox/userRole";
 import { useForum } from "../../../contexts/DispatchProvider";
-
+import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Votes } from "./Votes";
+import PermissionsGate from "../../../components/common/PermissionsGate";
 
 interface PostRepliesProps {
   userRole: UserRoleType;
   replies: ForumPost[];
-  accessTo: { vote: boolean; reply: boolean };
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
@@ -21,7 +20,6 @@ interface PostRepliesProps {
 
 export function PostReplies(props: PostRepliesProps) {
   const {
-    accessTo,
     userRole,
     onDeletePost,
     onReplyClick,
@@ -30,9 +28,6 @@ export function PostReplies(props: PostRepliesProps) {
   } = props;
   const Forum = useForum();
   const permission = Forum.permission;
-  const { publicKey } = Forum.wallet;
-  const isAdmin =
-    userRole == UserRoleType.Owner || userRole == UserRoleType.Moderator;
 
   const postedAt = (reply: ForumPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
@@ -68,10 +63,6 @@ export function PostReplies(props: PostRepliesProps) {
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
-        const deletePermission = publicKey
-          ? publicKey.toBase58() === reply.poster.toBase58() || isAdmin
-          : false;
-
         return (
           <div key={index}>
             {index > 0 && <div className="repliesDivider" />}
@@ -90,22 +81,27 @@ export function PostReplies(props: PostRepliesProps) {
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
-                <Votes
-                  accessToVote={accessTo.vote}
-                  updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                  onUpVotePost={() => onUpVotePost(reply)}
-                  onDownVotePost={() => onDownVotePost(reply)}
-                  post={reply}
-                />
+                <PermissionsGate
+                  scopes={[SCOPES.canCreateReply]}
+                >
+                  <Votes
+                    updateVotes={(upVoted) => updateVotes(upVoted, reply)}
+                    onUpVotePost={() => onUpVotePost(reply)}
+                    onDownVotePost={() => onDownVotePost(reply)}
+                    post={reply}
+                  />
+                </PermissionsGate>
                 <div className="actionDivider" />
                 <button
                   className="replyButton"
                   onClick={onReplyClick}
-                  disabled={!(permission.readAndWrite && accessTo.reply)}>
+                  disabled={!permission.readAndWrite}>
                   Reply
                 </button>
-                {deletePermission && (
-                  <>
+                <PermissionsGate
+                  scopes={[SCOPES.canDeleteReply]}
+                  posterKey={reply.poster}
+                >
                     <div className="actionDivider" />
                     <button
                       className="deleteButton"
@@ -113,8 +109,7 @@ export function PostReplies(props: PostRepliesProps) {
                       onClick={() => onDeletePost(reply)}>
                       <Trash />
                     </button>
-                  </>
-                )}
+                </PermissionsGate>
               </div>
             </div>
           </div>

@@ -22,19 +22,20 @@ import {
 import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/postbox/userRole";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { ForumContext } from "../../../contexts/DispatchProvider";
+import { useForum } from "../../../contexts/DispatchProvider";
+import PermissionsGate from "../../../components/common/PermissionsGate";
+import { SCOPES } from "../../../utils/permissions";
 
 interface ForumContentProps {
   forum: ForumInfo;
   forumObject?: DispatchForum;
-  role?: UserRoleType;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum, role } = props;
-  const Forum = useContext(ForumContext);
+
+  const { forum } = props;
+  const DispatchForumObject = useForum();
   const { isNotEmpty: connected, permission } = Forum;
   const mount = useRef(false);
 
@@ -53,7 +54,6 @@ export function ForumContent(props: ForumContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
-  const [accessToCreateTopic, setAccessToCreateTopic] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -64,7 +64,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const getModerators = useCallback(async () => {
     try {
-      const mods = await Forum.getModerators(forum.collectionId);
+      const mods = await DispatchForumObject.getModerators(forum.collectionId);
       if (!_.isNil(mods)) {
         setCurrentMods(mods.map((m) => m.toBase58()));
       }
@@ -77,13 +77,13 @@ export function ForumContent(props: ForumContentProps) {
         collapsible: { header: "Error", content: message },
       });
     }
-  }, [Forum]);
+  }, [DispatchForumObject]);
 
   const addModerators = async () => {
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
-      const tx = await Forum.addModerator(moderatorId, forum.collectionId);
+      const tx = await DispatchForumObject.addModerator(moderatorId, forum.collectionId);
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
@@ -118,7 +118,7 @@ export function ForumContent(props: ForumContentProps) {
     try {
       const token = newPublicKey(accessToken!);
 
-      const tx = await Forum.setForumPostRestriction(forum.collectionId, {
+      const tx = await DispatchForumObject.setForumPostRestriction(forum.collectionId, {
         tokenOwnership: { mint: token, amount: 1 },
       });
 
@@ -153,7 +153,7 @@ export function ForumContent(props: ForumContentProps) {
   const getTopicsForForum = async () => {
     try {
       setLoadingTopics(true);
-      const topics = await Forum.getTopicsForForum(forum.collectionId);
+      const topics = await DispatchForumObject.getTopicsForForum(forum.collectionId);
       if (mount.current) {
         setTopics(topics ?? []);
         setLoadingTopics(false);
@@ -181,7 +181,7 @@ export function ForumContent(props: ForumContentProps) {
     setCreatingNewTopic(true);
     try {
       const token = accessToken ? newPublicKey(accessToken) : undefined;
-      const tx = await Forum.createTopic(
+      const tx = await DispatchForumObject.createTopic(
         p,
         forum.collectionId,
         token ? { tokenOwnership: { mint: token, amount: 1 } } : undefined
@@ -226,20 +226,11 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
-  const canCreateTopic = async () => {
-    const canCreate = await Forum.canCreateTopic(forum.collectionId);
-    setAccessToCreateTopic(permission.readAndWrite && canCreate);
-  };
-
-  useEffect(() => {
-    canCreateTopic();
-  }, [forum.collectionId, permission.readAndWrite]);
-
   const createTopicButton = (
     <button
       className={"createTopicButton"}
       type="button"
-      disabled={!accessToCreateTopic}
+      disabled={!permission.readAndWrite}
       onClick={() => {
         if (connected) {
           setShowNewTopicModal(true);
@@ -262,7 +253,11 @@ export function ForumContent(props: ForumContentProps) {
     <div className="forumContentHeader">
       <div className="box">
         <div className="description">{forum.description}</div>
-        {createTopicButton}
+        <PermissionsGate
+          scopes={[SCOPES.canCreateTopic]}
+          >
+          {createTopicButton}
+        </PermissionsGate>
       </div>
     </div>
   );
@@ -442,23 +437,24 @@ export function ForumContent(props: ForumContentProps) {
           />
         )}
         {forumHeader}
-        {(role === UserRoleType.Owner || role == UserRoleType.Moderator) && (
+        <PermissionsGate
+          scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
+          >
           <div className="moderatorToolsContainer">
-            <div>Moderator tools: </div>
             <button
-              className="moderatorTool"
+              className="moderatorButton"
               disabled={!permission.readAndWrite}
               onClick={() => setShowAddModerators(true)}>
               Manage moderators
             </button>
             <button
-              className="moderatorTool"
+              className="moderatorButton"
               disabled={!permission.readAndWrite}
               onClick={() => setShowAddAccessToken(true)}>
               Manage forum access
             </button>
           </div>
-        )}
+          </PermissionsGate>
         {!_.isNil(forum.collectionId) && (
           <TopicList
             loading={loadingTopics}

@@ -274,6 +274,20 @@ export class DispatchForum implements IForum {
     }
   };
 
+  canCreateTopic = async(
+    collectionId: web3.PublicKey
+  ): Promise<boolean> => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    if (await forum.canCreateTopic()) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   createTopic = async (
     topic: { subj?: string; body: string; meta?: any },
     collectionId: web3.PublicKey,
@@ -311,6 +325,21 @@ export class DispatchForum implements IForum {
     const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
     return topic[0];
   };
+
+  canPost = async (
+    collectionId: web3.PublicKey,
+    topic: ForumPost
+  ): Promise<boolean> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    const forum = new Forum(new DispatchConnection(conn, owner), collectionId);
+    if (await forum.canPost(topic)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   createForumPost = async (
     post: {
@@ -449,34 +478,6 @@ export class DispatchForum implements IForum {
     try {
       const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
       const tx = await forum.setForumPostRestriction(restriction);
-
-      return tx;
-    } catch (error) {          
-      throw(error)
-    }
-  };
-
-  canCreateTopic = async(collectionId: web3.PublicKey) => {
-    const wallet = this.wallet;
-    const conn = this.connection;
-
-    try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
-      const tx = await forum.canCreateTopic();
-
-      return tx;
-    } catch (error) {          
-      throw(error)
-    }
-  };
-
-  canPost = async(collectionId: web3.PublicKey, topic: ForumPost) => {
-    const wallet = this.wallet;
-    const conn = this.connection;
-
-    try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
-      const tx = await forum.canPost(topic);
 
       return tx;
     } catch (error) {          

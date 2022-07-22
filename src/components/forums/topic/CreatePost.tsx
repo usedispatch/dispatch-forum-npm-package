@@ -17,7 +17,6 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 interface CreatePostProps {
   topicId: number;
   collectionId: web3.PublicKey;
-  hasAccess: boolean;
   createForumPost: (
     post: {
       subj?: string | undefined;
@@ -31,7 +30,7 @@ interface CreatePostProps {
 }
 
 export function CreatePost(props: CreatePostProps) {
-  const { createForumPost, collectionId, topicId, onReload, hasAccess } = props;
+  const { createForumPost, collectionId, topicId, onReload } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -121,7 +120,7 @@ export function CreatePost(props: CreatePostProps) {
                   className="postContent"
                   placeholder="Type your comment here"
                   required
-                  disabled={!(permission.readAndWrite && hasAccess)}
+                  disabled={!permission.readAndWrite}
                   maxLength={800}
                   name="post"
                 />
@@ -130,7 +129,7 @@ export function CreatePost(props: CreatePostProps) {
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!(permission.readAndWrite && hasAccess)}>
+                  disabled={!permission.readAndWrite}>
                   Post
                 </button>
               </div>

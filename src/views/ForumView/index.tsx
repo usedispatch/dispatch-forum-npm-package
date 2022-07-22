@@ -5,7 +5,6 @@ import {
   useEffect,
   ReactNode,
   useCallback,
-  useContext,
   useRef,
 } from "react";
 import { ForumInfo } from "@usedispatch/client";
@@ -25,9 +24,10 @@ import {
   PoweredByDispatch,
 } from "../../components/forums";
 
-import { userRole, UserRoleType } from "../../utils/postbox/userRole";
-import { useForum } from "./../../contexts/DispatchProvider";
+// import { userRole, UserRoleType } from "../../utils/postbox/userRole";
+import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
+import { getUserRole } from "./../../utils/postbox/userRole";
 
 interface ForumViewProps {
   collectionId: string;
@@ -65,6 +65,7 @@ interface ForumViewProps {
 
 export const ForumView = (props: ForumViewProps) => {
   const Forum = useForum();
+  const Role = useRole();
   const { isNotEmpty, wallet, permission } = Forum;
   const { publicKey } = wallet;
 
@@ -75,7 +76,6 @@ export const ForumView = (props: ForumViewProps) => {
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState<UserRoleType | null>();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [newModerator, setNewModerator] = useState("");
@@ -144,23 +144,6 @@ export const ForumView = (props: ForumViewProps) => {
     }
   }, [Forum, collectionPublicKey]);
 
-  const getUserRole = useCallback(async () => {
-    try {
-      const role = await userRole(Forum, collectionPublicKey);
-      if (mount.current) {
-        setRole(role);
-      }
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "Your user role could not be determined, you will only have permission to create topics and comment",
-        collapsible: { header: "Error", content: message },
-      });
-    }
-  }, [Forum, collectionPublicKey]);
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -222,7 +205,7 @@ export const ForumView = (props: ForumViewProps) => {
               <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
               <div>
                 {res?.txs.map((tx) => (
-                  <TransactionLink transaction={tx} />
+                  <TransactionLink transaction={tx} key={tx}/>
                 ))}
               </div>
             </div>
@@ -264,7 +247,7 @@ export const ForumView = (props: ForumViewProps) => {
 
   useEffect(() => {
     if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {
-      getUserRole();
+      getUserRole(Forum, collectionPublicKey, Role)
     }
   }, [forum, isNotEmpty, publicKey]);
 
@@ -422,7 +405,6 @@ export const ForumView = (props: ForumViewProps) => {
                     !_.isNil(forum) ? (
                       <ForumContent
                         forum={forum}
-                        role={role ?? UserRoleType.Poster}
                       />
                     ) : (
                       emptyView

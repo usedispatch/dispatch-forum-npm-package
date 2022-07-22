@@ -1,8 +1,8 @@
 import { web3 } from '@project-serum/anchor';
 import { WalletInterface } from '@usedispatch/client';
-import { FC, ReactNode, createContext, useContext, useMemo } from 'react';
+import { FC, ReactNode, createContext, useContext, useMemo, useState } from 'react';
 import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
-
+import { UserRoleType } from './../utils/permissions';
 export interface DispatchAppProps {
     wallet: WalletInterface;
     connection: web3.Connection;
@@ -15,13 +15,20 @@ export interface DispatchAppProps {
 let ForumPathFunction: (collectionId: string) => string;
 let TopicPathFunction: (collectionId: string, topicId: number) => string;
 
+
 export interface PathObject {
     buildForumPath: typeof ForumPathFunction;
     buildTopicPath: typeof TopicPathFunction;
 }
 
+export interface UserObject {
+    role: UserRoleType;
+    setRole: Function;
+}
+
 export const ForumContext = createContext<DispatchForum>({} as DispatchForum);
 export const PathContext = createContext<PathObject>({} as PathObject);
+export const UserRoleContext = createContext<UserObject>({} as UserObject);
 
 export const DispatchProvider: FC<DispatchAppProps> = ({ 
     wallet, 
@@ -35,15 +42,24 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
         buildForumPath: buildForumPath,
         buildTopicPath: buildTopicPath
     }
-    
+    const [role, setRole] = useState(UserRoleType.Viewer);
+
+    const userRole = {role, setRole}
     return (
-            <ForumContext.Provider value={forum}>
-                <PathContext.Provider value={paths}>
+        <ForumContext.Provider value={forum}>
+            <PathContext.Provider value={paths}>
+                <UserRoleContext.Provider value={userRole}>
                     {children}
-                </PathContext.Provider>
-            </ForumContext.Provider>
+                </UserRoleContext.Provider>
+            </PathContext.Provider>
+        </ForumContext.Provider>
 
     )
+}
+
+
+export function useRole(): UserObject {
+    return useContext(UserRoleContext);
 }
 
 export function useForum(): DispatchForum {

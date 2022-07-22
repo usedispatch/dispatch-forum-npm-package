@@ -16,7 +16,6 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface VotesProps {
   post: ForumPost;
-  accessToVote: boolean;
   onUpVotePost: () => Promise<string>;
   onDownVotePost: () => Promise<string>;
   updateVotes: (upVoted: boolean) => void;
@@ -25,7 +24,7 @@ interface VotesProps {
 export function Votes(props: VotesProps) {
   const Forum = useForum();
   const permission = Forum.permission;
-  const { post, onDownVotePost, onUpVotePost, updateVotes, accessToVote } =
+  const { post, onDownVotePost, onUpVotePost, updateVotes } =
     props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
@@ -154,7 +153,7 @@ export function Votes(props: VotesProps) {
           <button
             className="votePostButton"
             disabled={
-              alreadyVoted || !(permission.readAndWrite && accessToVote)
+              alreadyVoted || !(permission.readAndWrite)
             }
             onClick={upVotePost}>
             <UpVote />
@@ -169,7 +168,7 @@ export function Votes(props: VotesProps) {
           <button
             className="votePostButton"
             disabled={
-              alreadyVoted || !(permission.readAndWrite && accessToVote)
+              alreadyVoted || !(permission.readAndWrite)
             }
             onClick={downVotePost}>
             <DownVote />

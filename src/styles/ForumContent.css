@@ -1,7 +1,6 @@
 @layer components {
   .forumContentHeader {
     height: auto;
-    border-bottom: 1px solid #b8b9dc;
     padding: 0 24px 48px;
   }
 
@@ -118,6 +117,7 @@
     color: #414149;
     font-size: 12px;
     font-weight: 400;
+    border-top: 1px solid #b8b9dc;
   }
 
   .moderatorTool {

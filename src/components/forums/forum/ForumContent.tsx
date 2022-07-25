@@ -16,6 +16,7 @@ import { Plus } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
+  PermissionsGate,
   PopUpModal,
   TransactionLink,
 } from "../../common";
@@ -23,9 +24,8 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { useForum } from "../../../contexts/DispatchProvider";
-import PermissionsGate from "../../../components/common/PermissionsGate";
-import { SCOPES } from "../../../utils/permissions";
+import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { useForum, useRole } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;
@@ -33,11 +33,11 @@ interface ForumContentProps {
 }
 
 export function ForumContent(props: ForumContentProps) {
-
   const { forum } = props;
   const DispatchForumObject = useForum();
   const { isNotEmpty: connected, permission } = DispatchForumObject;
   const mount = useRef(false);
+  const { role } = useRole();
 
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [topics, setTopics] = useState<ForumPost[]>([]);
@@ -83,7 +83,10 @@ export function ForumContent(props: ForumContentProps) {
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
-      const tx = await DispatchForumObject.addModerator(moderatorId, forum.collectionId);
+      const tx = await DispatchForumObject.addModerator(
+        moderatorId,
+        forum.collectionId
+      );
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
@@ -118,9 +121,12 @@ export function ForumContent(props: ForumContentProps) {
     try {
       const token = newPublicKey(accessToken!);
 
-      const tx = await DispatchForumObject.setForumPostRestriction(forum.collectionId, {
-        tokenOwnership: { mint: token, amount: 1 },
-      });
+      const tx = await DispatchForumObject.setForumPostRestriction(
+        forum.collectionId,
+        {
+          tokenOwnership: { mint: token, amount: 1 },
+        }
+      );
 
       setAccessToken("");
       setShowAddAccessToken(false);
@@ -153,7 +159,9 @@ export function ForumContent(props: ForumContentProps) {
   const getTopicsForForum = async () => {
     try {
       setLoadingTopics(true);
-      const topics = await DispatchForumObject.getTopicsForForum(forum.collectionId);
+      const topics = await DispatchForumObject.getTopicsForForum(
+        forum.collectionId
+      );
       if (mount.current) {
         setTopics(topics ?? []);
         setLoadingTopics(false);
@@ -253,9 +261,7 @@ export function ForumContent(props: ForumContentProps) {
     <div className="forumContentHeader">
       <div className="box">
         <div className="description">{forum.description}</div>
-        <PermissionsGate
-          scopes={[SCOPES.canCreateTopic]}
-          >
+        <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
           {createTopicButton}
         </PermissionsGate>
       </div>
@@ -438,23 +444,23 @@ export function ForumContent(props: ForumContentProps) {
         )}
         {forumHeader}
         <PermissionsGate
-          scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
-          >
+          scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
           <div className="moderatorToolsContainer">
+            <div>Moderator tools: </div>
             <button
-              className="moderatorButton"
+              className="moderatorTool"
               disabled={!permission.readAndWrite}
               onClick={() => setShowAddModerators(true)}>
               Manage moderators
             </button>
             <button
-              className="moderatorButton"
+              className="moderatorTool"
               disabled={!permission.readAndWrite}
               onClick={() => setShowAddAccessToken(true)}>
               Manage forum access
             </button>
           </div>
-          </PermissionsGate>
+        </PermissionsGate>
         {!_.isNil(forum.collectionId) && (
           <TopicList
             loading={loadingTopics}

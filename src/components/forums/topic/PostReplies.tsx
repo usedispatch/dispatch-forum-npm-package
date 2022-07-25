@@ -7,7 +7,7 @@ import { Trash } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Votes } from "./Votes";
-import PermissionsGate from "../../../components/common/PermissionsGate";
+import { PermissionsGate } from "../../../components/common";
 
 interface PostRepliesProps {
   userRole: UserRoleType;
@@ -19,13 +19,7 @@ interface PostRepliesProps {
 }
 
 export function PostReplies(props: PostRepliesProps) {
-  const {
-    userRole,
-    onDeletePost,
-    onReplyClick,
-    onDownVotePost,
-    onUpVotePost,
-  } = props;
+  const { onDeletePost, onReplyClick, onDownVotePost, onUpVotePost } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -81,34 +75,31 @@ export function PostReplies(props: PostRepliesProps) {
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
-                <PermissionsGate
-                  scopes={[SCOPES.canCreateReply]}
-                >
+                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
                   <Votes
                     updateVotes={(upVoted) => updateVotes(upVoted, reply)}
                     onUpVotePost={() => onUpVotePost(reply)}
                     onDownVotePost={() => onDownVotePost(reply)}
                     post={reply}
                   />
+                  <div className="actionDivider" />
+                  <button
+                    className="replyButton"
+                    onClick={onReplyClick}
+                    disabled={!permission.readAndWrite}>
+                    Reply
+                  </button>
                 </PermissionsGate>
-                <div className="actionDivider" />
-                <button
-                  className="replyButton"
-                  onClick={onReplyClick}
-                  disabled={!permission.readAndWrite}>
-                  Reply
-                </button>
                 <PermissionsGate
                   scopes={[SCOPES.canDeleteReply]}
-                  posterKey={reply.poster}
-                >
-                    <div className="actionDivider" />
-                    <button
-                      className="deleteButton"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => onDeletePost(reply)}>
-                      <Trash />
-                    </button>
+                  posterKey={reply.poster}>
+                  <div className="actionDivider" />
+                  <button
+                    className="deleteButton"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => onDeletePost(reply)}>
+                    <Trash />
+                  </button>
                 </PermissionsGate>
               </div>
             </div>

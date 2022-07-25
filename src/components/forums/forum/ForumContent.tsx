@@ -24,8 +24,8 @@ import { TopicList } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { useForum, useRole } from "../../../contexts/DispatchProvider";
+import { SCOPES } from "../../../utils/permissions";
+import { useForum } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;
@@ -37,7 +37,6 @@ export function ForumContent(props: ForumContentProps) {
   const DispatchForumObject = useForum();
   const { isNotEmpty: connected, permission } = DispatchForumObject;
   const mount = useRef(false);
-  const { role } = useRole();
 
   const [loadingTopics, setLoadingTopics] = useState(true);
   const [topics, setTopics] = useState<ForumPost[]>([]);

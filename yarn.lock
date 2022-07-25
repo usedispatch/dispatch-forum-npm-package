@@ -2543,10 +2543,10 @@
     "@typescript-eslint/types" "4.33.0"
     eslint-visitor-keys "^2.0.0"
 
-"@usedispatch/client@^0.8.5":
-  version "0.8.5"
-  resolved "https://registry.yarnpkg.com/@usedispatch/client/-/client-0.8.5.tgz#a0a944010b6303f58c8e5771210c104d4e8c27e0"
-  integrity sha512-85KzWVwSnkfCac5RrX6V7CLp/tWGqIpiPClFxW9Cb8JRnfoCJfDlBYx9RyJn1DwvgcIUXNxSZ8Qc7tDAIDrCBw==
+"@usedispatch/client@^0.9.0":
+  version "0.9.0"
+  resolved "https://registry.yarnpkg.com/@usedispatch/client/-/client-0.9.0.tgz#91c77641db8b46832390eeea481d886d0c0987df"
+  integrity sha512-LuscAZzIpcjQIjFIzTBeGH4O5OnS2WK6l7j5cgcFxxxpstERouneD4wGMjLE8AN7RfsLt9yYbILw3W1x49Otng==
   dependencies:
     "@bonfida/spl-name-service" "^0.1.30"
     "@metaplex-foundation/mpl-token-metadata" "^2.2.2"

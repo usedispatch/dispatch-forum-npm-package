@@ -9,6 +9,7 @@ import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
+  PermissionsGate,
   TransactionLink,
 } from "../../common";
 import { CreatePost, PostList } from "..";
@@ -18,9 +19,8 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { useForum, usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
-import PermissionsGate from "../../../components/common/PermissionsGate";
 import { SCOPES } from "../../../utils/permissions";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
+
 interface TopicContentProps {
   forum: DispatchForum;
   topic: ForumPost;
@@ -59,7 +59,6 @@ export function TopicContent(props: TopicContentProps) {
     collapsible?: CollapsibleProps;
     okPath?: string;
   } | null>(null);
-
 
   const getMessages = async () => {
     setLoadingMessages(true);
@@ -175,10 +174,8 @@ export function TopicContent(props: TopicContentProps) {
           </div>
           {`${posts.length} comments`}
         </div>
-        <div className="actionDivider" />
-        <PermissionsGate
-          scopes={[SCOPES.canVote]}
-          >
+        <PermissionsGate scopes={[SCOPES.canVote]}>
+          <div className="actionDivider" />
           <Votes
             onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
             onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
@@ -188,20 +185,20 @@ export function TopicContent(props: TopicContentProps) {
         </PermissionsGate>
         <PermissionsGate
           scopes={[SCOPES.canDeleteTopic]}
-          posterKey={topic.poster}
-          >
-            <div className="actionDivider" />
-            <div className="moderatorToolsContainer">
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowDeleteConfirmation(true)}>
-                <div className="delete">
-                  <Trash />
-                </div>
-                delete topic
-              </button>
-              {/* TODO (Ana): waiting for endpoint to be implemented
+          posterKey={topic.poster}>
+          <div className="actionDivider" />
+          <div className="moderatorToolsContainer">
+            <div>Moderator tools: </div>
+            <button
+              className="moderatorTool"
+              disabled={!permission.readAndWrite}
+              onClick={() => setShowDeleteConfirmation(true)}>
+              <div className="delete">
+                <Trash />
+              </div>
+              delete topic
+            </button>
+            {/* TODO (Ana): waiting for endpoint to be implemented
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
@@ -211,12 +208,11 @@ export function TopicContent(props: TopicContentProps) {
                 </div>
                 manage post access
               </button> */}
-            </div>
+          </div>
         </PermissionsGate>
       </div>
     </>
   );
-
 
   return (
     <>
@@ -261,10 +257,7 @@ export function TopicContent(props: TopicContentProps) {
           loading={addingAccessToken}
           onClose={() => setShowAddAccessToken(false)}
           okButton={
-            <button
-              className="okButton"
-              disabled={accessToken?.length === 0}
-            >
+            <button className="okButton" disabled={accessToken?.length === 0}>
               Save
             </button>
           }
@@ -303,9 +296,7 @@ export function TopicContent(props: TopicContentProps) {
       <div className="topicContentBox">
         <TopicHeader topic={topic} />
         {data}
-        <PermissionsGate
-          scopes={[SCOPES.canCreatePost]}
-          >
+        <PermissionsGate scopes={[SCOPES.canCreatePost]}>
           <CreatePost
             topicId={topic.postId}
             collectionId={collectionId}

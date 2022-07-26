@@ -117,11 +117,14 @@ export class DispatchForum implements IForum {
   private connection: web3.Connection;
   public isNotEmpty: boolean;
   public permission: Permission;
+  public cluster: web3.Cluster;
 
-  constructor(wallet: WalletInterface, conn: web3.Connection) {
+  constructor(wallet: WalletInterface, conn: web3.Connection, cluster: web3.Cluster) {
     this.connection = conn;
     this.wallet = wallet;
     this.isNotEmpty = true;
+    this.cluster = cluster;
+
     if (wallet.publicKey && conn) {
       this.permission = { readAndWrite: true };
     } else {
@@ -142,7 +145,7 @@ export class DispatchForum implements IForum {
       const collectionPublicKey = new web3.PublicKey(forumInfo.collectionId);
       if (owner.publicKey) {
         const forumAsOwner = new Forum(
-          new DispatchConnection(conn, owner),
+          new DispatchConnection(conn, owner, {cluster: this.cluster}),
           collectionPublicKey
         );
 
@@ -169,7 +172,7 @@ export class DispatchForum implements IForum {
     const wallet = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
     const isOwner= await forum.isOwner();
     return isOwner
   }
@@ -178,7 +181,7 @@ export class DispatchForum implements IForum {
     const wallet = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
     const isMod= await forum.isModerator();
     return isMod  
   }
@@ -194,7 +197,7 @@ export class DispatchForum implements IForum {
     try {
       if (owner.publicKey) {
         const forum = new Forum(
-          new DispatchConnection(conn, owner),
+          new DispatchConnection(conn, owner, {cluster: this.cluster}),
           collectionId
         );
 
@@ -215,7 +218,7 @@ export class DispatchForum implements IForum {
 
     try {
       const forumAsOwner = new Forum(
-        new DispatchConnection(conn, owner),
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
         collectionId
       );
 
@@ -234,7 +237,7 @@ export class DispatchForum implements IForum {
 
     try {
       const forumAsOwner = new Forum(
-        new DispatchConnection(conn, wallet),
+        new DispatchConnection(conn, wallet, {cluster: this.cluster}),
         collectionId
       );
 
@@ -253,7 +256,7 @@ export class DispatchForum implements IForum {
     const wallet = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
 
     if (await forum.exists()) {
       return forum;
@@ -266,7 +269,7 @@ export class DispatchForum implements IForum {
     const wallet = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
     if (await forum.exists()) {
       const topics = await forum.getTopicsForForum();
 
@@ -280,7 +283,7 @@ export class DispatchForum implements IForum {
     const wallet = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
     if (await forum.canCreateTopic()) {
       return true;
     } else {
@@ -298,7 +301,7 @@ export class DispatchForum implements IForum {
 
     try {
       const forum = new Forum(
-        new DispatchConnection(conn, wallet),
+        new DispatchConnection(conn, wallet, {cluster: this.cluster}),
         collectionId
       );
       if (await forum.exists()) {
@@ -319,7 +322,7 @@ export class DispatchForum implements IForum {
     const owner = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, owner), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}), collectionId);
     const topics = await forum.getTopicsForForum();
 
     const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
@@ -333,7 +336,7 @@ export class DispatchForum implements IForum {
     const owner = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, owner), collectionId);
+    const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}), collectionId);
     if (await forum.canPost(topic)) {
       return true;
     } else {
@@ -355,7 +358,7 @@ export class DispatchForum implements IForum {
 
     try {
       const forum = new Forum(
-        new DispatchConnection(conn, owner),
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
         collectionId
       );
       const topic = await this.getTopicData(topicId, collectionId);
@@ -374,7 +377,7 @@ export class DispatchForum implements IForum {
     const owner = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, owner),collectionId);
+    const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}),collectionId);
     const topic = await this.getTopicData(topicId, collectionId);
     const topicPosts = await forum.getTopicMessages(topic);
 
@@ -386,7 +389,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const tx = await forum.deleteForumPost(post, asMod);
 
       return tx;
@@ -400,7 +403,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const tx = await forum.voteUpForumPost(post);
 
       return tx;
@@ -414,7 +417,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const tx = await forum.voteDownForumPost(post);
 
       return tx;
@@ -434,7 +437,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const reply = await forum.replyToForumPost(replyToPost, post);
 
       return reply;
@@ -448,7 +451,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const replies = await forum.getReplies(topic);
 
       return replies;
@@ -462,7 +465,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const restriction = await forum.getForumPostRestriction();
 
       return restriction;
@@ -476,7 +479,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const tx = await forum.setForumPostRestriction(restriction);
 
       return tx;
@@ -490,7 +493,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const forum = new Forum(new DispatchConnection(conn, wallet), collectionId);
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const tx = await forum.canVote(post);
 
       return tx;

@@ -72,7 +72,7 @@ export const ForumView = (props: ForumViewProps) => {
   const collectionId = props.collectionId;
 
   const mount = useRef(false);
-  const [forum, setForum] = useState<ForumInfo>();
+  const [forum, setForum] = useState<ForumInfo | null>();
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -120,7 +120,6 @@ export const ForumView = (props: ForumViewProps) => {
         Forum.getDescription(collectionPublicKey),
         Forum.getModerators(collectionPublicKey),
       ]);
-
       setLoading(false);
       if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods) && mount.current) {
         setForum({
@@ -128,8 +127,10 @@ export const ForumView = (props: ForumViewProps) => {
           owners: publicKey ? [publicKey] : [],
           moderators: mods,
           title: desc.title,
-          description: desc.desc,
+          description: desc.desc ,
         });
+      } else {
+        setForum(null);
       }
     } catch (error) {
       setLoading(false);
@@ -243,7 +244,7 @@ export const ForumView = (props: ForumViewProps) => {
       setLoading(false);
       setForum(undefined);
     }
-  }, [isNotEmpty, publicKey, collectionId, mount.current]);
+  }, [Forum, isNotEmpty, publicKey, collectionId, mount.current]);
 
   useEffect(() => {
     if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {

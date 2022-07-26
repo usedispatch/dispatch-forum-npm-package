@@ -47,7 +47,7 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
 }) => {
   const forum = useMemo(
     () => new MainForum(wallet, connection, cluster),
-    [wallet, connection]
+    [wallet, connection, cluster]
   );
   const paths = {
     buildForumPath: buildForumPath,

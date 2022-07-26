@@ -56,8 +56,6 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
   const [role, setRole] = useState(UserRoleType.Viewer);
 
   const userRole = { role, setRole };
-  console.log("dispatch provider - conn", connection);
-  console.log("dispatch provider - forum", forum);
   return (
     <ForumContext.Provider value={forum}>
       <PathContext.Provider value={paths}>

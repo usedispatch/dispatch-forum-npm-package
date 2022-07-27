@@ -9,6 +9,8 @@ import {
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
+import { parseError } from "../parseErrors";
+
 enum UserCategory {
   moderator,
   owner,
@@ -163,8 +165,8 @@ export class DispatchForum implements IForum {
 
         return {forum: forumAsOwner, txs};
       }
-    } catch (error) {      
-      throw(error)
+    } catch (error) {
+        throw(parseError(error))
     }
   };
 
@@ -208,7 +210,7 @@ export class DispatchForum implements IForum {
 
       }
     } catch (error) {      
-      throw(JSON.stringify(error))
+      throw(parseError(error))
     }
   }
 
@@ -227,7 +229,7 @@ export class DispatchForum implements IForum {
         return tx;
       }
     } catch (error) {
-      throw(error)
+      throw(parseError(error))
     }
   }
 
@@ -246,7 +248,7 @@ export class DispatchForum implements IForum {
         return tx;
       }
     } catch (error) {
-      throw(JSON.stringify(error))
+      throw(parseError(error))
     }
   }
 
@@ -258,8 +260,12 @@ export class DispatchForum implements IForum {
 
     const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
 
-    if (await forum.exists()) {
-      return forum;
+    try {
+      if (await forum.exists()) {
+        return forum;
+      }
+    } catch (error) {
+      throw(parseError(error))
     }
   };
 
@@ -269,11 +275,15 @@ export class DispatchForum implements IForum {
     const wallet = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
-    if (await forum.exists()) {
-      const topics = await forum.getTopicsForForum();
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
+      if (await forum.exists()) {
+        const topics = await forum.getTopicsForForum();
 
-      return topics;
+        return topics;
+      }
+    } catch (error) {
+      throw(parseError(error))
     }
   };
 
@@ -311,7 +321,7 @@ export class DispatchForum implements IForum {
         return newTopic;
       }
     } catch (err) {
-      throw(err)
+      throw(parseError(err))
     }
   };
 
@@ -322,11 +332,15 @@ export class DispatchForum implements IForum {
     const owner = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}), collectionId);
-    const topics = await forum.getTopicsForForum();
+    try {
+      const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}), collectionId);
+      const topics = await forum.getTopicsForForum();
 
-    const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
-    return topic[0];
+      const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
+      return topic[0];
+    } catch (err) {
+      throw(parseError(err))
+    }
   };
 
   canPost = async (
@@ -368,8 +382,8 @@ export class DispatchForum implements IForum {
 
         return tx1
       } 
-    } catch (error: any) {   
-      throw(error)      
+    } catch (error) {   
+      throw(parseError(error))
     }
   };
 
@@ -377,11 +391,15 @@ export class DispatchForum implements IForum {
     const owner = this.wallet;
     const conn = this.connection;
 
-    const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}),collectionId);
-    const topic = await this.getTopicData(topicId, collectionId);
-    const topicPosts = await forum.getTopicMessages(topic);
+    try {
+      const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}),collectionId);
+      const topic = await this.getTopicData(topicId, collectionId);
+      const topicPosts = await forum.getTopicMessages(topic);
 
-    return topicPosts;
+      return topicPosts;
+    } catch (error) {      
+      throw(parseError(error))
+    }
   };
 
   deleteForumPost = async (post: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<string> => {
@@ -394,7 +412,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {      
-      throw(error)
+      throw(parseError(error))
     }
   };
 
@@ -408,7 +426,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {      
-      throw(error)
+      throw(parseError(error))
     }
   }
 
@@ -422,7 +440,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {          
-      throw(error)
+      throw(parseError(error))
     }
   }
   
@@ -433,7 +451,7 @@ export class DispatchForum implements IForum {
       body: string;
       meta?: any;
     }): Promise<string> => {
-      const wallet = this.wallet;
+    const wallet = this.wallet;
     const conn = this.connection;
 
     try {
@@ -442,7 +460,7 @@ export class DispatchForum implements IForum {
 
       return reply;
     } catch (error) {      
-      throw(JSON.stringify(error))
+      throw(parseError(error))
     }
   };
 
@@ -456,7 +474,7 @@ export class DispatchForum implements IForum {
 
       return replies;
     } catch (error) {      
-      throw(JSON.stringify(error))
+      throw(parseError(error))
     }
   }
 
@@ -470,7 +488,7 @@ export class DispatchForum implements IForum {
 
       return restriction;
     } catch (error) {          
-      throw(error)
+      throw(parseError(error))
     }
   };
 
@@ -484,7 +502,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {          
-      throw(error)
+      throw(parseError(error))
     }
   };
 
@@ -498,7 +516,7 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {          
-      throw(error)
+      throw(parseError(error))
     }
   };
 }

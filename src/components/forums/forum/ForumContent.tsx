@@ -176,12 +176,13 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const token = newPublicKey(accessToken!);
 
       const tx = await DispatchForumObject.setForumPostRestriction(
         forum.collectionId,
         {
-          tokenOwnership: { mint: token, amount: 1 },
+          nftOwnership: {
+            collectionId: newPublicKey(accessToken!)
+          },
         }
       );
 
@@ -249,7 +250,7 @@ export function ForumContent(props: ForumContentProps) {
       const tx = await DispatchForumObject.createTopic(
         p,
         forum.collectionId,
-        token ? { tokenOwnership: { mint: token, amount: 1 } } : undefined
+        token ? { nftOwnership: { collectionId: token } } : undefined
       );
       if (!_.isNil(tx)) {
         getTopicsForForum();
@@ -360,12 +361,11 @@ export function ForumContent(props: ForumContentProps) {
             title="Limit forum access"
             body={
               <div className="">
-                You can enter one token mint ID here such that only holders of
-                this token can access this forum. This mint can be for any
-                spl-token, eg SOL, NFTs, etc.
+                You can enter one NFT Collection ID here such that only holders of
+                NFT's in the collection can participate in this forum.
                 <input
                   type="text"
-                  placeholder="Token mint ID"
+                  placeholder="Collection ID"
                   className="newAccessToken"
                   name="accessToken"
                   value={accessToken}

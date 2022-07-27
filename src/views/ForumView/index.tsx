@@ -190,10 +190,9 @@ export const ForumView = (props: ForumViewProps) => {
       if (!_.isNil(res?.forum)) {
         if (!_.isNil(tokenAccess)) {
           await Forum.setForumPostRestriction(collectionPublicKey, {
-            tokenOwnership: {
-              mint: tokenAccess,
-              amount: 1,
-            },
+            nftOwnership: {
+              collectionId: tokenAccess
+            }
           });
         }
 
@@ -357,7 +356,7 @@ export const ForumView = (props: ForumViewProps) => {
                 <>
                   <span className="createForumLabel">Limit forum access</span>
                   <input
-                    placeholder="Token mint ID"
+                    placeholder="Collection ID"
                     className="createForumInput lastInputField"
                     value={accessToken}
                     disabled={creatingNewForum}

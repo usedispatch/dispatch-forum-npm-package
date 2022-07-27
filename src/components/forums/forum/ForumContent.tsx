@@ -46,9 +46,13 @@ export function ForumContent(props: ForumContentProps) {
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
 
   const [currentMods, setCurrentMods] = useState<string[]>([]);
+  const [currentOwners, setCurrentOwners] = useState<string[]>([]);
   const [showAddModerators, setShowAddModerators] = useState(false);
+  const [showAddOwners, setShowAddOwners] = useState(false);
   const [newModerator, setNewModerator] = useState<string>("");
+  const [newOwner, setNewOwner] = useState<string>("");
   const [addingNewModerator, setAddingNewModerator] = useState(false);
+  const [addingNewOwner, setAddingNewOwner] = useState(false);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
@@ -73,6 +77,23 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The moderators could not be determined",
+        collapsible: { header: "Error", content: message },
+      });
+    }
+  }, [DispatchForumObject]);  
+  
+  const getOwners = useCallback(async () => {
+    try {
+      const fetchedOwners = await DispatchForumObject.getOwners(forum.collectionId);
+      if (!_.isNil(fetchedOwners)) {
+        setCurrentOwners(fetchedOwners.map((m) => m.toBase58()));
+      }
+    } catch (error) {
+      const message = JSON.stringify(error);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The owners could not be determined",
         collapsible: { header: "Error", content: message },
       });
     }
@@ -109,6 +130,43 @@ export function ForumContent(props: ForumContentProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The moderators could not be added`,
+          collapsible: { header: "Error", content: JSON.stringify(error) },
+        });
+      }
+    }
+  };
+
+  const addOwner = async () => {
+    setAddingNewOwner(true);
+    try {
+      const ownerId = newPublicKey(newOwner);
+      const tx = await DispatchForumObject.addOwner(
+        ownerId,
+        forum.collectionId
+      );
+      setCurrentOwners(currentOwners.concat(newOwner));
+      setNewOwner("");
+      setShowAddOwners(false);
+      setAddingNewOwner(false);
+      setModalInfo({
+        title: "Success!",
+        type: MessageType.success,
+        body: (
+          <div className="successBody">
+            <div>The owner was added</div>
+            <TransactionLink transaction={tx!} />
+          </div>
+        ),
+      });
+    } catch (error: any) {
+      setAddingNewOwner(false);
+      if (error.code !== 4001) {
+        setNewOwner("");
+        setShowAddOwners(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The owners could not be added`,
           collapsible: { header: "Error", content: JSON.stringify(error) },
         });
       }
@@ -271,6 +329,7 @@ export function ForumContent(props: ForumContentProps) {
     mount.current = true;
     getTopicsForForum();
     getModerators();
+    getOwners();
     return () => {
       mount.current = false;
     };
@@ -441,11 +500,65 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
+        {_.isNil(modalInfo) && showAddOwners && (
+          <PopUpModal
+            id="add-moderators"
+            visible
+            title={"Manage owners"}
+            body={
+              <div className="addModeratorsBody">
+                <label className="addModeratorsLabel">Add new</label>
+                <input
+                  placeholder="Add owners's wallet ID here"
+                  className="addModeratorsInput"
+                  maxLength={800}
+                  value={newOwner}
+                  onChange={(e) => setNewOwner(e.target.value)}
+                />
+                <label className="addModeratorsLabel">Current owners</label>
+                <ul>
+                  {currentOwners.map((m) => {
+                    return (
+                      <li key={m} className="currentModerators">
+                        <div className="iconContainer">
+                          <Jdenticon value={m} alt="moderatorId" />
+                        </div>
+                        {m}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            }
+            loading={addingNewOwner}
+            okButton={
+              <button className="okButton" onClick={() => addOwner()}>
+                Save
+              </button>
+            }
+            cancelButton={
+              <button
+                className="cancelButton"
+                onClick={() => setShowAddOwners(false)}>
+                Cancel
+              </button>
+            }
+          />
+        )}
         {forumHeader}
         <PermissionsGate
           scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
           <div className="moderatorToolsContainer">
             <div>Moderator tools: </div>
+            <PermissionsGate
+            scopes={[SCOPES.canAddOwner]}>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowAddOwners(true)}>
+                  Manage owners
+                </button>
+            </PermissionsGate>
             <button
               className="moderatorTool"
               disabled={!permission.readAndWrite}

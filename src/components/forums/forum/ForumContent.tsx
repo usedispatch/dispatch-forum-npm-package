@@ -191,7 +191,7 @@ export function ForumContent(props: ForumContentProps) {
       const tx = await DispatchForumObject.createTopic(
         p,
         forum.collectionId,
-        token ? { tokenOwnership: { mint: token, amount: 1 } } : undefined
+        token ? { nftOwnership: { collectionId: token } } : undefined
       );
       if (!_.isNil(tx)) {
         getTopicsForForum();

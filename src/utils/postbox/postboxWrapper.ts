@@ -41,9 +41,14 @@ export interface IForum {
   } | undefined>;
 
   addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
+
+  addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
   
   // Get a list of moderators
   getModerators(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
+
+  // Get a list of owners
+  getOwners(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
   
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
@@ -231,6 +236,25 @@ export class DispatchForum implements IForum {
     }
   }
 
+  addOwner = async (newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forumAsOwner = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+
+      if (await forumAsOwner.exists()) {
+        const tx = await forumAsOwner.addOwners([newOwner]);
+        return tx;
+      }
+    } catch (error) {
+      throw(error)
+    }
+  }
+
   getModerators = async (collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -243,6 +267,25 @@ export class DispatchForum implements IForum {
 
       if (await forumAsOwner.exists()) {
         const tx = await forumAsOwner.getModerators();
+        return tx;
+      }
+    } catch (error) {
+      throw(JSON.stringify(error))
+    }
+  }
+
+  getOwners = async (collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined> => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forumAsOwner = new Forum(
+        new DispatchConnection(conn, wallet, {cluster: this.cluster}),
+        collectionId
+      );
+
+      if (await forumAsOwner.exists()) {
+        const tx = await forumAsOwner.getOwners();
         return tx;
       }
     } catch (error) {

@@ -9,12 +9,12 @@ import {
   TransactionLink,
 } from "../../common";
 
-import { Success, SolanaLogo, Plus } from "../../../assets";
+import { Success, SolanaLogo, Plus, Coins } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 enum AwardType {
-  NFT,
-  SOL,
+  NFT = "NFT",
+  SOL = "SOL",
 }
 
 interface GiveAwardProps {
@@ -68,33 +68,54 @@ export function GiveAward(props: GiveAwardProps) {
       : "Awards"
     : "Select type of award";
 
+  const nfts = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
   const content = (
     <div className="awardContainer">
       <div className="awardContent">
         {selectedType ? (
-          selectedType === AwardType.SOL ? (
-            <form onSubmit={attachAward}>
-              <div className="inputContainer">
-                <div className="iconContainer">
-                  <SolanaLogo color="black" />
+          <>
+            {selectedType === AwardType.SOL && (
+              <form onSubmit={attachAward}>
+                <div className="amountInputContainer">
+                  <div className="iconContainer">
+                    <SolanaLogo color="black" />
+                  </div>
+                  <input
+                    name="award"
+                    className="amountInput"
+                    placeholder="Insert a numeric value bigger than 0"
+                    required
+                    disabled={!permission.readAndWrite}
+                  />
                 </div>
-                <input
-                  name="award"
-                  className="amountInput"
-                  placeholder="Insert a numeric value bigger than 0"
-                  required
-                  disabled={!permission.readAndWrite}
-                />
-              </div>
-              <div className="attachButtonContainer">
-                <button className="attachButton" type="submit">
-                  Attach
+                <div className="attachButtonContainer">
+                  <button className="attachButton" type="submit">
+                    Attach
+                  </button>
+                </div>
+              </form>
+            )}
+            {selectedType === AwardType.NFT && (
+              <div className="giftsContainer">
+                <div className="giftsGrid">
+                  {nfts.map((value, index) => (
+                    <div key={index} className="giftContainer">
+                      <div>nft {value}</div>
+                      <div>
+                        <Coins /> x SOL
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  className="buyAndAwardButton"
+                  onClick={() => console.log("buy and award")}>
+                  Buy and award
                 </button>
               </div>
-            </form>
-          ) : (
-            <div>nfts</div>
-          )
+            )}
+          </>
         ) : (
           <div>
             You can award one of your NFTs or select a custom amount of SOL

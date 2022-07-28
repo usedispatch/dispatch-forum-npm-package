@@ -8,7 +8,70 @@
     font-weight: 400;
     font-size: 14px;
 
-    .inputContainer {
+    .typeSelector {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 24px;
+
+      .nftType {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #4a279c;
+
+        font-weight: 600;
+        font-size: 16px;
+        color: #4a279c;
+
+        svg {
+          height: 12px;
+
+          path {
+            fill: #191919;
+          }
+        }
+      }
+
+      .solType {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+
+        padding: 12px 20px;
+        border-radius: 8px;
+        background: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2)
+          ),
+          linear-gradient(
+            44.76deg,
+            #9945ff 10.43%,
+            #8752f3 30.84%,
+            #5497d5 49.4%,
+            #43b4ca 58.68%,
+            #28e0b9 69.81%,
+            #19fb9b 93.01%
+          );
+
+        svg {
+          height: 12px;
+        }
+      }
+    }
+
+    .amountInputContainer {
       .iconContainer {
         position: relative;
 
@@ -23,7 +86,7 @@
 
     .amountInput {
       width: 100%;
-      padding: 12px 12px 12px 40px px;
+      padding: 12px 12px 12px 40px;
       margin-top: 4px;
       margin-bottom: 16px;
 
@@ -65,42 +128,36 @@
         );
     }
 
-    .typeSelector {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 14px;
-      margin-top: 24px;
+    .giftsContainer {
+      padding: 0 24px;
 
-      font-weight: 600;
-      font-size: 16px;
-
-      .nftType {
+      .giftsGrid {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 5px;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        align-content: flex-start;
+        gap: 15%;
 
-        padding: 12px 20px;
+        overflow-x: overlay;
 
-        border-radius: 8px;
-        border: 1px solid #4a279c;
-        color: #4a279c;
-
-        svg {
-          height: 12px;
-          fill: #191919;
+        .giftContainer {
+          margin-bottom: 15px;
         }
       }
 
-      .solType {
+      .buyAndAwardButton {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 5px;
 
+        margin: 16px 0 0 auto;
         padding: 12px 20px;
         border-radius: 8px;
+
+        font-weight: 600;
+        font-size: 16px;
         color: white;
         background: linear-gradient(
             0deg,
@@ -116,10 +173,6 @@
             #28e0b9 69.81%,
             #19fb9b 93.01%
           );
-
-        svg {
-          height: 12px;
-        }
       }
     }
   }

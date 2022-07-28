@@ -10,6 +10,7 @@ import {
   MessageType,
   Spinner,
   CollapsibleProps,
+  Link,
 } from "../../components/common";
 import {
   ConnectionAlert,
@@ -19,7 +20,6 @@ import {
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
-
 interface Props {
   topicId: number;
   collectionId: string;
@@ -34,7 +34,7 @@ export const TopicView = (props: Props) => {
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
 
   const [loading, setLoading] = useState(true);
-  const [topic, setTopic] = useState<ForumPost>();
+  const [topic, setTopic] = useState<ForumPost | null | undefined>();
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -60,22 +60,6 @@ export const TopicView = (props: Props) => {
     }
   }, []);
 
-  // const getUserRole = useCallback(async () => {
-  //   try {
-  //     const role = await userRole(Forum, collectionPublicKey);
-  //     setRole(role);
-  //   } catch (error) {
-  //     const message = JSON.stringify(error);
-  //     console.log(error);
-  //     setModalInfo({
-  //       title: "Something went wrong!",
-  //       type: MessageType.error,
-  //       body: "Your user role could not be determined, you will only have permission to create topics and comment",
-  //       collapsible: { header: "Error", content: message },
-  //     });
-  //   }
-  // }, [Forum, collectionPublicKey]);
-
   const getTopicData = async () => {
     setLoading(true);
     try {
@@ -97,6 +81,7 @@ export const TopicView = (props: Props) => {
       });
 
       setLoading(false);
+      setTopic(null);
     }
   };
 
@@ -114,7 +99,7 @@ export const TopicView = (props: Props) => {
     } else {
       setLoading(false);
     }
-  }, [isNotEmpty, topicId, collectionPublicKey]);
+  }, [isNotEmpty, topicId, collectionPublicKey, Forum]);
 
   useEffect(() => {
     if (
@@ -122,7 +107,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(topic) &&
       Forum.wallet.publicKey
     ) {
-      getUserRole(Forum, collectionPublicKey, Role)
+      getUserRole(Forum, collectionPublicKey, Role);
     }
   }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
 
@@ -164,7 +149,7 @@ export const TopicView = (props: Props) => {
                     <Breadcrumb
                       navigateTo={forumPath}
                       parent={parent!}
-                      current={topic.data.subj!}
+                      current={topic?.data.subj!}
                     />
                     <TopicContent
                       topic={topic}
@@ -198,9 +183,9 @@ function Breadcrumb(props: BreadcrumbProps) {
 
   return (
     <div className="breadcrumbContainer">
-      <a href={navigateTo}>
+      <Link className="test" href={navigateTo}>
         <div className="parent">{parent}</div>
-      </a>
+      </Link>
       <div className="separationIcon">
         <Chevron />
       </div>

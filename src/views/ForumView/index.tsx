@@ -1,12 +1,6 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import {
-  useState,
-  useEffect,
-  ReactNode,
-  useCallback,
-  useRef,
-} from "react";
+import { useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -24,7 +18,6 @@ import {
   PoweredByDispatch,
 } from "../../components/forums";
 
-// import { userRole, UserRoleType } from "../../utils/postbox/userRole";
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -127,24 +120,22 @@ export const ForumView = (props: ForumViewProps) => {
           owners: publicKey ? [publicKey] : [],
           moderators: mods,
           title: desc.title,
-          description: desc.desc ,
+          description: desc.desc,
         });
       } else {
         setForum(null);
       }
-    } catch (error) {
+    } catch (error: any) {
       setLoading(false);
-      const message = JSON.stringify(error);
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
     }
   }, [Forum, collectionPublicKey]);
-
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -205,7 +196,7 @@ export const ForumView = (props: ForumViewProps) => {
               <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
               <div>
                 {res?.txs.map((tx) => (
-                  <TransactionLink transaction={tx} key={tx}/>
+                  <TransactionLink transaction={tx} key={tx} />
                 ))}
               </div>
             </div>
@@ -213,8 +204,8 @@ export const ForumView = (props: ForumViewProps) => {
           type: MessageType.success,
         });
       }
-    } catch (error: any) {
-      if (error.code === 4001) {
+    } catch (e: any) {
+      if (e.error.code === 4001) {
         setShowNewForumModal(true);
       } else {
         setShowNewForumModal(false);
@@ -222,7 +213,7 @@ export const ForumView = (props: ForumViewProps) => {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
+          collapsible: { header: "Error", content: e.message },
         });
       }
     } finally {
@@ -247,7 +238,7 @@ export const ForumView = (props: ForumViewProps) => {
 
   useEffect(() => {
     if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {
-      getUserRole(Forum, collectionPublicKey, Role)
+      getUserRole(Forum, collectionPublicKey, Role);
     }
   }, [forum, isNotEmpty, publicKey]);
 
@@ -403,9 +394,7 @@ export const ForumView = (props: ForumViewProps) => {
                     </div>
                   ) : isNotEmpty ? (
                     !_.isNil(forum) ? (
-                      <ForumContent
-                        forum={forum}
-                      />
+                      <ForumContent forum={forum} />
                     ) : (
                       emptyView
                     )

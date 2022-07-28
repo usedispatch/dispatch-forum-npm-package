@@ -24,8 +24,7 @@ interface VotesProps {
 export function Votes(props: VotesProps) {
   const Forum = useForum();
   const permission = Forum.permission;
-  const { post, onDownVotePost, onUpVotePost, updateVotes } =
-    props;
+  const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<
@@ -71,12 +70,11 @@ export function Votes(props: VotesProps) {
           body: `The user cancelled the request`,
         });
       } else {
-        const message = JSON.stringify(error);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: "The post could not be up voted",
-          collapsible: { header: "Error", content: message },
+          collapsible: { header: "Error", content: error.message },
         });
       }
       setLoading(false);
@@ -113,12 +111,11 @@ export function Votes(props: VotesProps) {
           body: "The user cancelled the request",
         });
       } else {
-        const message = JSON.stringify(error);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: "The post could not be down voted.",
-          collapsible: { header: "Error", content: message },
+          collapsible: { header: "Error", content: error.message },
         });
       }
 
@@ -152,9 +149,7 @@ export function Votes(props: VotesProps) {
         <div className="votePostContent">
           <button
             className="votePostButton"
-            disabled={
-              alreadyVoted || !(permission.readAndWrite)
-            }
+            disabled={alreadyVoted || !permission.readAndWrite}
             onClick={upVotePost}>
             <UpVote />
           </button>
@@ -167,9 +162,7 @@ export function Votes(props: VotesProps) {
           )}
           <button
             className="votePostButton"
-            disabled={
-              alreadyVoted || !(permission.readAndWrite)
-            }
+            disabled={alreadyVoted || !permission.readAndWrite}
             onClick={downVotePost}>
             <DownVote />
           </button>

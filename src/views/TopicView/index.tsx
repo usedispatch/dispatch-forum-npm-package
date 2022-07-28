@@ -86,14 +86,13 @@ export const TopicView = (props: Props) => {
       setParent(desc?.title);
       setTopic(res);
       setLoading(false);
-    } catch (error) {
-      const message = JSON.stringify(error);
+    } catch (error: any) {
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The topic could not be loaded",
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
 
       setLoading(false);
@@ -122,7 +121,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(topic) &&
       Forum.wallet.publicKey
     ) {
-      getUserRole(Forum, collectionPublicKey, Role)
+      getUserRole(Forum, collectionPublicKey, Role);
     }
   }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
 

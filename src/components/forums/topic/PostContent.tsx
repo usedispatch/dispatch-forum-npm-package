@@ -49,9 +49,6 @@ export function PostContent(props: PostContentProps) {
     string | ReactNode
   >("");
 
-  const [accessToVote, setAccessToVote] = useState(false);
-  const [accessToReply, setAccessToReply] = useState(false);
-
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -75,15 +72,14 @@ export function PostContent(props: PostContentProps) {
       const data = await forum.getReplies(post, collectionId);
       setReplies(data ?? []);
       setLoading(false);
-    } catch (error) {
+    } catch (error: any) {
       setReplies([]);
-      const message = JSON.stringify(error);
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The replies could not be loaded`,
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
       setLoading(false);
     }
@@ -111,14 +107,13 @@ export function PostContent(props: PostContentProps) {
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
       );
-    } catch (error) {
-      const message = JSON.stringify(error);
+    } catch (error: any) {
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The reply could not be sent`,
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
       setSendingReply(false);
     }
@@ -155,7 +150,7 @@ export function PostContent(props: PostContentProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The post could not be deleted`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
+          collapsible: { header: "Error", content: error.message },
         };
       }
       setModalInfo(modalInfoError);

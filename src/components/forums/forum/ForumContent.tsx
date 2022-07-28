@@ -71,13 +71,12 @@ export function ForumContent(props: ForumContentProps) {
       if (!_.isNil(mods)) {
         setCurrentMods(mods.map((m) => m.toBase58()));
       }
-    } catch (error) {
-      const message = JSON.stringify(error);
+    } catch (error: any) {
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The moderators could not be determined",
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
     }
   }, [DispatchForumObject]);  
@@ -130,7 +129,7 @@ export function ForumContent(props: ForumContentProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The moderators could not be added`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
+          collapsible: { header: "Error", content: error.message },
         });
       }
     }
@@ -208,7 +207,7 @@ export function ForumContent(props: ForumContentProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The access token could not be added`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
+          collapsible: { header: "Error", content: error.message },
         });
       }
     }
@@ -224,16 +223,15 @@ export function ForumContent(props: ForumContentProps) {
         setTopics(topics ?? []);
         setLoadingTopics(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       setLoadingTopics(false);
-      const message = JSON.stringify(error);
       console.log(error);
 
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topics for the forum could not be loaded`,
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
     }
   };
@@ -280,13 +278,13 @@ export function ForumContent(props: ForumContentProps) {
       }
     } catch (error: any) {
       setCreatingNewTopic(false);
-      if (error.code !== 4001) {
+      if (error?.code !== 4001) {
         setShowNewTopicModal(false);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The topic could not be created`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
+          collapsible: { header: "Error", content: error.message },
         });
       }
     }
@@ -421,8 +419,7 @@ export function ForumContent(props: ForumContentProps) {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </>
-                <PermissionsGate
-                  scopes={[SCOPES.canAddTopicRestriction]}>
+                <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
                   <>
                     <span className="createTopicLabel">Limit post access</span>
                     <input

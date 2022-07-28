@@ -66,15 +66,14 @@ export function TopicContent(props: TopicContentProps) {
       const data = await forum.getTopicMessages(topic.postId, collectionId);
       setPosts(data ?? []);
       setLoadingMessages(false);
-    } catch (error) {
+    } catch (error: any) {
       setPosts([]);
-      const message = JSON.stringify(error);
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The messages could not be loaded`,
-        collapsible: { header: "Error", content: message },
+        collapsible: { header: "Error", content: error.message },
       });
       setLoadingMessages(false);
     }
@@ -155,7 +154,7 @@ export function TopicContent(props: TopicContentProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The topic could not be deleted`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
+          collapsible: { header: "Error", content: error.message },
         });
       }
     }

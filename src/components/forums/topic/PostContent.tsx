@@ -4,7 +4,7 @@ import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Success, Trash } from "../../../assets";
+import { Award, Success, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -19,6 +19,7 @@ import { Votes, Notification } from "../../../components/forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { GiveAward } from "./GiveAward";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -43,6 +44,8 @@ export function PostContent(props: PostContentProps) {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [reply, setReply] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+
+  const [showGiveAward, setShowGiveAward] = useState(false);
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<
@@ -220,6 +223,31 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
+        {showGiveAward && (
+          <GiveAward
+            postId={post.postId}
+            collectionId={collectionId}
+            onCancel={() => setShowGiveAward(false)}
+            onSuccess={(notificationContent) => {
+              setShowGiveAward(false);
+              setIsNotificationHidden(false);
+              setNotificationContent(notificationContent);
+              setTimeout(
+                () => setIsNotificationHidden(true),
+                NOTIFICATION_BANNER_TIMEOUT
+              );
+            }}
+            onError={(error) => {
+              setShowGiveAward(false);
+              setModalInfo({
+                title: "Something went wrong!",
+                type: MessageType.error,
+                body: `The award could not be given`,
+                collapsible: { header: "Error", content: error?.message },
+              });
+            }}
+          />
+        )}
         <Notification
           hidden={isNotificationHidden}
           content={notificationContent}
@@ -259,6 +287,12 @@ export function PostContent(props: PostContentProps) {
                   disabled={!permission.readAndWrite}
                   onClick={() => setShowReplyBox(true)}>
                   Reply
+                </button>
+                <button
+                  className="awardButton"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowGiveAward(true)}>
+                  <Award />
                 </button>
               </PermissionsGate>
               <PermissionsGate

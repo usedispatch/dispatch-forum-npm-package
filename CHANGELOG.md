@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+# [0.1.4] 2022-07-29
+
+- client: Update token check for gating
+
 # [0.1.3] 2022-07-29
 
 - forum: Performance enhancements on page navigation

@@ -10,6 +10,7 @@ import {
 } from "react";
 import { DispatchForum, MainForum } from "./../utils/postbox/postboxWrapper";
 import { UserRoleType } from "./../utils/permissions";
+import { DebugWarning } from "./../components/common/DebugWarning";
 export interface DispatchAppProps {
   wallet: WalletInterface;
   connection: web3.Connection;
@@ -60,6 +61,7 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
     <ForumContext.Provider value={forum}>
       <PathContext.Provider value={paths}>
         <UserRoleContext.Provider value={userRole}>
+          <DebugWarning />
           {children}
         </UserRoleContext.Provider>
       </PathContext.Provider>

@@ -79,11 +79,13 @@ export function ForumContent(props: ForumContentProps) {
         collapsible: { header: "Error", content: error.message },
       });
     }
-  }, [DispatchForumObject]);  
-  
+  }, [DispatchForumObject]);
+
   const getOwners = useCallback(async () => {
     try {
-      const fetchedOwners = await DispatchForumObject.getOwners(forum.collectionId);
+      const fetchedOwners = await DispatchForumObject.getOwners(
+        forum.collectionId
+      );
       if (!_.isNil(fetchedOwners)) {
         setCurrentOwners(fetchedOwners.map((m) => m.toBase58()));
       }
@@ -175,12 +177,11 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-
       const tx = await DispatchForumObject.setForumPostRestriction(
         forum.collectionId,
         {
           nftOwnership: {
-            collectionId: newPublicKey(accessToken!)
+            collectionId: newPublicKey(accessToken!),
           },
         }
       );
@@ -305,7 +306,8 @@ export function ForumContent(props: ForumContentProps) {
             body: "Connect to your wallet in order to create a forum",
           });
         }
-      }}>
+      }}
+    >
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -359,8 +361,8 @@ export function ForumContent(props: ForumContentProps) {
             title="Limit forum access"
             body={
               <div className="">
-                You can enter one NFT Collection ID here such that only holders of
-                NFT's in the collection can participate in this forum.
+                You can enter one NFT Collection ID here such that only holders
+                of NFT's in the collection can participate in this forum.
                 <input
                   type="text"
                   placeholder="Collection ID"
@@ -377,14 +379,16 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={accessToken?.length === 0}
-                onClick={() => addAccessToken()}>
+                onClick={() => addAccessToken()}
+              >
                 Save
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddAccessToken(false)}>
+                onClick={() => setShowAddAccessToken(false)}
+              >
                 Cancel
               </button>
             }
@@ -439,14 +443,16 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={title.length === 0}
-                onClick={() => createTopic()}>
+                onClick={() => createTopic()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}>
+                onClick={() => setShowNewTopicModal(false)}
+              >
                 Cancel
               </button>
             }
@@ -491,7 +497,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddModerators(false)}>
+                onClick={() => setShowAddModerators(false)}
+              >
                 Cancel
               </button>
             }
@@ -536,7 +543,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddOwners(false)}>
+                onClick={() => setShowAddOwners(false)}
+              >
                 Cancel
               </button>
             }
@@ -544,28 +552,31 @@ export function ForumContent(props: ForumContentProps) {
         )}
         {forumHeader}
         <PermissionsGate
-          scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
+          scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
+        >
           <div className="moderatorToolsContainer">
             <div>Moderator tools: </div>
-            <PermissionsGate
-            scopes={[SCOPES.canAddOwner]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}>
-                  Manage owners
-                </button>
+            <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddOwners(true)}
+              >
+                Manage owners
+              </button>
             </PermissionsGate>
             <button
               className="moderatorTool"
               disabled={!permission.readAndWrite}
-              onClick={() => setShowAddModerators(true)}>
+              onClick={() => setShowAddModerators(true)}
+            >
               Manage moderators
             </button>
             <button
               className="moderatorTool"
               disabled={!permission.readAndWrite}
-              onClick={() => setShowAddAccessToken(true)}>
+              onClick={() => setShowAddAccessToken(true)}
+            >
               Manage forum access
             </button>
           </div>

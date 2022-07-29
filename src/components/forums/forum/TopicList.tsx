@@ -1,14 +1,19 @@
-import { useState, useEffect, useCallback, useMemo, useContext, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext,
+  useRef,
+} from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../common";
 
-import {
-  useForum,
-  usePath,
-} from "./../../../contexts/DispatchProvider";
+import { useForum, usePath } from "./../../../contexts/DispatchProvider";
+import { Link } from "./../../../components/common";
 
 interface TopicListProps {
   loading: boolean;
@@ -78,14 +83,17 @@ function RowContent(props: RowContentProps) {
 
   const getMessages = async () => {
     try {
-      const data = await DispatchForumObject.getTopicMessages(topic.postId, collectionId);
+      const data = await DispatchForumObject.getTopicMessages(
+        topic.postId,
+        collectionId
+      );
       if (mount.current) {
         setMessages(data ?? []);
       }
       setLoading(false);
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error)
+      console.log(error);
       setMessages(undefined);
       setLoading(false);
     }
@@ -96,7 +104,7 @@ function RowContent(props: RowContentProps) {
     getMessages();
     return () => {
       mount.current = false;
-    }
+    };
   }, [topic.postId, collectionId]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {
@@ -152,34 +160,26 @@ function RowContent(props: RowContentProps) {
 
   return (
     <tr className="row ">
-      <>
-        <th>
-          <div className="rowSubj">
-            <a href={topicPath}>{topic.data.subj}</a>
-          </div>
-        </th>
-        <td>
-          <div className="rowIconReplies">
-            <a href={topicPath}>
-              {loading || !messages ? spinner : icons(messages)}
-            </a>
-          </div>
-        </td>
-        <td>
-          <div className="rowAmountReplies">
-            <a href={topicPath}>
-              {loading || !messages ? spinner : messages.length}
-            </a>
-          </div>
-        </td>
-        <td>
-          <div className="rowDate">
-            <a href={topicPath}>
-              {loading || !messages ? spinner : activtyDate(messages)}
-            </a>
-          </div>
-        </td>
-      </>
+      <th>
+        <Link className="rowSubj" href={topicPath}>
+          {topic.data.subj}
+        </Link>
+      </th>
+      <td>
+        <Link className="rowIconReplies" href={topicPath}>
+          {loading || !messages ? spinner : icons(messages)}
+        </Link>
+      </td>
+      <td>
+        <Link className="rowAmountReplies" href={topicPath}>
+          {loading || !messages ? spinner : messages.length}
+        </Link>
+      </td>
+      <td>
+        <Link className="rowDate" href={topicPath}>
+          {loading || !messages ? spinner : activtyDate(messages)}
+        </Link>
+      </td>
     </tr>
   );
 }

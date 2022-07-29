@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost, WalletInterface } from "@usedispatch/client";
+import { WalletContextState } from "@solana/wallet-adapter-react";
 
 import {
   CollapsibleProps,
@@ -59,7 +60,7 @@ export function GiveAward(props: GiveAwardProps) {
         <>
           <Success />
           Award attached successfully.
-          <TransactionLink transaction={""} />
+          <TransactionLink transaction={tx} />
         </>
       );
     } catch (error: any) {
@@ -190,8 +191,6 @@ interface TransferSOLProps {
 
 async function transferSOL(props: TransferSOLProps) {
   const { posterId, amount, wallet } = props;
-
-  // connection
   const connection = new web3.Connection("https://api.devnet.solana.com");
 
   let tx = new web3.Transaction().add(
@@ -202,8 +201,10 @@ async function transferSOL(props: TransferSOLProps) {
     })
   );
 
-  // let result = await connection.sendTransaction(tx, []);
-  let result = await wallet.signTransaction!(tx);
-  console.log(`result: ${result}`, result);
-  return result;
+  // TODO (Ana - Andrew): change this ugly line
+  let w = wallet as WalletContextState;
+
+  const s = await w.sendTransaction(tx, connection);
+
+  return s;
 }

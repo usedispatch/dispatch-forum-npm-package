@@ -76,6 +76,7 @@ export function GiveAward(props: GiveAwardProps) {
       : "Awards"
     : "Select type of award";
 
+  // TODO (ANA): implement this correctly
   const nfts = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const content = (

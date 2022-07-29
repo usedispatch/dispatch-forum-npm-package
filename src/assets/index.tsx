@@ -1,7 +1,6 @@
 export * from "./Award";
 export * from "./Chevron";
 export * from "./Close";
-export * from "./Coins";
 export * from "./DispatchLogo";
 export * from "./DownVote";
 export * from "./Error";

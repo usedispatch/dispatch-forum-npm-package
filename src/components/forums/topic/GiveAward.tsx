@@ -9,7 +9,7 @@ import {
   TransactionLink,
 } from "../../common";
 
-import { Success, SolanaLogo, Plus, Coins } from "../../../assets";
+import { Success, SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 enum AwardType {
@@ -40,6 +40,8 @@ export function GiveAward(props: GiveAwardProps) {
   } | null>(null);
 
   const [selectedType, setSelectedType] = useState<AwardType>();
+  const [selectedAmount, setSelectedAmount] = useState(0);
+  const [selectedNFT, setSelectedNFT] = useState<any>();
 
   const attachAward = async (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -71,76 +73,64 @@ export function GiveAward(props: GiveAwardProps) {
   const nfts = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const content = (
-    <div className="awardContainer">
-      <div className="awardContent">
-        {selectedType ? (
-          <>
-            {selectedType === AwardType.SOL && (
-              <form onSubmit={attachAward}>
-                <div className="amountInputContainer">
-                  <div className="iconContainer">
-                    <SolanaLogo color="black" />
-                  </div>
-                  <input
-                    name="award"
-                    className="amountInput"
-                    placeholder="Insert a numeric value bigger than 0"
-                    required
-                    disabled={!permission.readAndWrite}
-                  />
-                </div>
-                <div className="attachButtonContainer">
-                  <button className="attachButton" type="submit">
-                    Attach
-                  </button>
-                </div>
-              </form>
-            )}
-            {selectedType === AwardType.NFT && (
-              <div className="giftsContainer">
-                <div className="giftsGrid">
-                  {nfts.map((value, index) => (
-                    <div key={index} className="giftContainer">
-                      <div>nft {value}</div>
-                      <div>
-                        <Coins /> x SOL
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <button
-                  className="buyAndAwardButton"
-                  onClick={() => console.log("buy and award")}>
-                  Buy and award
-                </button>
+    <div className="awardContent">
+      {selectedType ? (
+        <>
+          {selectedType === AwardType.SOL && (
+            <div className="amountInputContainer">
+              <div className="iconContainer">
+                <SolanaLogo color="black" />
               </div>
-            )}
-          </>
-        ) : (
-          <div>
-            You can award one of your NFTs or select a custom amount of SOL
-            <div className="typeSelector">
-              <button
-                className="nftType"
-                onClick={() => setSelectedType(AwardType.NFT)}>
-                <Plus />
-                NFT
-              </button>
-              <button
-                className="solType"
-                onClick={() => setSelectedType(AwardType.SOL)}>
-                <SolanaLogo color="white" />
-                SOL
-              </button>
+              <input
+                name="award"
+                className="amountInput"
+                type="number"
+                value={selectedAmount}
+                placeholder="Insert a numeric value bigger than 0"
+                onChange={(e) => setSelectedAmount(Number(e.target.value))}
+                disabled={!permission.readAndWrite}
+              />
             </div>
+          )}
+          {selectedType === AwardType.NFT && (
+            <div className="giftsContainer">
+              <div className="giftsGrid">
+                {nfts.map((value, index) => (
+                  <div
+                    key={index}
+                    className="giftContainer"
+                    onClick={() => setSelectedNFT(value)}>
+                    <div>nft {value}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      ) : (
+        <div>
+          You can award one of your NFTs or select a custom amount of SOL
+          <div className="typeSelector">
+            <button
+              className="nftType"
+              onClick={() => setSelectedType(AwardType.NFT)}>
+              <Plus />
+              NFT
+            </button>
+            <button
+              className="solType"
+              onClick={() => setSelectedType(AwardType.SOL)}>
+              <SolanaLogo color="white" />
+              SOL
+            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 
   return (
-    <>
+    <div className="awardContainer">
       {!_.isNil(modalInfo) && (
         <PopUpModal
           id="give-award-info"
@@ -163,7 +153,25 @@ export function GiveAward(props: GiveAwardProps) {
         body={content}
         loading={loading}
         onClose={() => onCancel()}
+        okButton={
+          selectedType &&
+          (selectedType === AwardType.SOL ? (
+            <button
+              className="attachButton"
+              disabled={selectedAmount === 0}
+              onClick={(e) => attachAward(e)}>
+              Attach
+            </button>
+          ) : (
+            <button
+              className="confirmAndAwardButton"
+              disabled={_.isNil(selectedNFT)}
+              onClick={() => console.log("confirm and award")}>
+              Confirm and award
+            </button>
+          ))
+        }
       />
-    </>
+    </div>
   );
 }

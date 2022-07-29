@@ -46,6 +46,7 @@ export function PostContent(props: PostContentProps) {
   const [sendingReply, setSendingReply] = useState(false);
 
   const [showGiveAward, setShowGiveAward] = useState(false);
+  const [postToAward, setPostToAward] = useState<ForumPost>();
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<
@@ -223,9 +224,9 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
-        {showGiveAward && (
+        {showGiveAward && postToAward && (
           <GiveAward
-            postId={post.postId}
+            postId={postToAward.postId}
             collectionId={collectionId}
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
@@ -242,7 +243,7 @@ export function PostContent(props: PostContentProps) {
               setModalInfo({
                 title: "Something went wrong!",
                 type: MessageType.error,
-                body: `The award could not be given`,
+                body: `The award could not be given to ${postToAward.data.subj}`,
                 collapsible: { header: "Error", content: error?.message },
               });
             }}
@@ -291,7 +292,10 @@ export function PostContent(props: PostContentProps) {
                 <button
                   className="awardButton"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowGiveAward(true)}>
+                  onClick={() => {
+                    setPostToAward(post);
+                    setShowGiveAward(true);
+                  }}>
                   <Award />
                 </button>
               </PermissionsGate>
@@ -328,6 +332,10 @@ export function PostContent(props: PostContentProps) {
                     forum.voteUpForumPost(reply, collectionId)
                   }
                   onReplyClick={() => setShowReplyBox(true)}
+                  onAwardReply={(reply) => {
+                    setPostToAward(reply);
+                    setShowGiveAward(true);
+                  }}
                 />
               </div>
               {showReplyBox &&

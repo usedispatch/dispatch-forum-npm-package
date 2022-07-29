@@ -5,6 +5,7 @@
   }
 
   .awardContent {
+    width: 100%;
     font-weight: 400;
     font-size: 14px;
 
@@ -101,33 +102,6 @@
       }
     }
 
-    .attachButtonContainer {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .attachButton {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 12px 20px;
-
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      border-radius: 8px;
-      background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-        linear-gradient(
-          44.76deg,
-          #9945ff 10.43%,
-          #8752f3 30.84%,
-          #5497d5 49.4%,
-          #43b4ca 58.68%,
-          #28e0b9 69.81%,
-          #19fb9b 93.01%
-        );
-    }
-
     .giftsContainer {
       padding: 0 24px;
 
@@ -144,36 +118,65 @@
 
         .giftContainer {
           margin-bottom: 15px;
+          cursor: pointer;
         }
       }
+    }
+  }
 
-      .buyAndAwardButton {
-        display: flex;
-        justify-content: center;
-        align-items: center;
+  .confirmAndAwardButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-        margin: 16px 0 0 auto;
-        padding: 12px 20px;
-        border-radius: 8px;
+    margin: 16px 0 0 auto;
+    padding: 12px 20px;
+    border-radius: 8px;
 
-        font-weight: 600;
-        font-size: 16px;
-        color: white;
-        background: linear-gradient(
-            0deg,
-            rgba(0, 0, 0, 0.2),
-            rgba(0, 0, 0, 0.2)
-          ),
-          linear-gradient(
-            44.76deg,
-            #9945ff 10.43%,
-            #8752f3 30.84%,
-            #5497d5 49.4%,
-            #43b4ca 58.68%,
-            #28e0b9 69.81%,
-            #19fb9b 93.01%
-          );
-      }
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+      linear-gradient(
+        44.76deg,
+        #9945ff 10.43%,
+        #8752f3 30.84%,
+        #5497d5 49.4%,
+        #43b4ca 58.68%,
+        #28e0b9 69.81%,
+        #19fb9b 93.01%
+      );
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  .attachButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+      linear-gradient(
+        44.76deg,
+        #9945ff 10.43%,
+        #8752f3 30.84%,
+        #5497d5 49.4%,
+        #43b4ca 58.68%,
+        #28e0b9 69.81%,
+        #19fb9b 93.01%
+      );
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
     }
   }
 

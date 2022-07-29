@@ -226,7 +226,7 @@ export function PostContent(props: PostContentProps) {
         )}
         {showGiveAward && postToAward && (
           <GiveAward
-            postId={postToAward.postId}
+            post={postToAward}
             collectionId={collectionId}
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
@@ -243,7 +243,7 @@ export function PostContent(props: PostContentProps) {
               setModalInfo({
                 title: "Something went wrong!",
                 type: MessageType.error,
-                body: `The award could not be given to ${postToAward.data.subj}`,
+                body: `The award could not be given.`,
                 collapsible: { header: "Error", content: error?.message },
               });
             }}

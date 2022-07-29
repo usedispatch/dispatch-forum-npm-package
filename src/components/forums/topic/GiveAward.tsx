@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
+import { ForumPost, WalletInterface } from "@usedispatch/client";
 
 import {
   CollapsibleProps,
@@ -18,7 +19,7 @@ enum AwardType {
 }
 
 interface GiveAwardProps {
-  postId: number;
+  post: ForumPost;
   collectionId: web3.PublicKey;
   onCancel: () => void;
   onSuccess: (notificationContent: ReactNode) => void;
@@ -26,7 +27,7 @@ interface GiveAwardProps {
 }
 
 export function GiveAward(props: GiveAwardProps) {
-  const { collectionId, postId, onCancel, onSuccess, onError } = props;
+  const { collectionId, post, onCancel, onSuccess, onError } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -39,26 +40,30 @@ export function GiveAward(props: GiveAwardProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const [selectedType, setSelectedType] = useState<AwardType>();
+  const [selectedType, setSelectedType] = useState<AwardType>(AwardType.SOL); // TODO (Ana): include both types later
   const [selectedAmount, setSelectedAmount] = useState(0);
   const [selectedNFT, setSelectedNFT] = useState<any>();
 
-  const attachAward = async (event: React.SyntheticEvent) => {
-    event.preventDefault();
+  const attachAward = async () => {
     setLoading(true);
-    const amount = event.target;
 
     try {
-      const tx = "funca";
+      const tx = await transferSOL({
+        wallet: Forum.wallet,
+        posterId: post.poster,
+        collectionId: collectionId,
+        amount: selectedAmount,
+      });
       setLoading(false);
       onSuccess(
         <>
           <Success />
           Award attached successfully.
-          <TransactionLink transaction={tx!} />
+          <TransactionLink transaction={""} />
         </>
       );
     } catch (error: any) {
+      console.log(error);
       setLoading(false);
       onError(error);
     }
@@ -159,7 +164,7 @@ export function GiveAward(props: GiveAwardProps) {
             <button
               className="attachButton"
               disabled={selectedAmount === 0}
-              onClick={(e) => attachAward(e)}>
+              onClick={() => attachAward()}>
               Attach
             </button>
           ) : (
@@ -174,4 +179,31 @@ export function GiveAward(props: GiveAwardProps) {
       />
     </div>
   );
+}
+
+interface TransferSOLProps {
+  wallet: WalletInterface;
+  posterId: web3.PublicKey;
+  collectionId: web3.PublicKey;
+  amount: number;
+}
+
+async function transferSOL(props: TransferSOLProps) {
+  const { posterId, amount, wallet } = props;
+
+  // connection
+  const connection = new web3.Connection("https://api.devnet.solana.com");
+
+  let tx = new web3.Transaction().add(
+    web3.SystemProgram.transfer({
+      fromPubkey: wallet.publicKey!,
+      toPubkey: posterId,
+      lamports: amount * web3.LAMPORTS_PER_SOL,
+    })
+  );
+
+  // let result = await connection.sendTransaction(tx, []);
+  let result = await wallet.signTransaction!(tx);
+  console.log(`result: ${result}`, result);
+  return result;
 }

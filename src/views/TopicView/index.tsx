@@ -106,7 +106,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(topic) &&
       Forum.wallet.publicKey
     ) {
-      getUserRole(Forum, collectionPublicKey, Role);
+      getUserRole(Forum, collectionPublicKey, Role, topic);
     }
   }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
 

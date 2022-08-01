@@ -25,6 +25,7 @@ import { TopicList } from "..";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
+import { selectTopics } from '../../../utils/posts';
 import { useForum } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
@@ -39,6 +40,8 @@ export function ForumContent(props: ForumContentProps) {
   const mount = useRef(false);
 
   const [loadingTopics, setLoadingTopics] = useState(true);
+  // The posts and topics that make up the forum
+  const [posts, setPosts] = useState<ForumPost[]>([]);
   const [topics, setTopics] = useState<ForumPost[]>([]);
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [title, setTitle] = useState("");
@@ -65,41 +68,18 @@ export function ForumContent(props: ForumContentProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const getModerators = useCallback(async () => {
-    try {
-      const mods = await forumObject.getModerators(forum.collectionId);
-      if (!_.isNil(mods)) {
-        setCurrentMods(mods.map((m) => m.toBase58()));
-      }
-    } catch (error: any) {
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The moderators could not be determined",
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  }, [forumObject]);
+  // TODO memoize this
+  const refresh = async () => {
+    // Refresh posts and topics
+    const posts = await forumObject.getPostsForForum(forum.collectionId);
+    const topics = selectTopics(posts!);
+    setPosts(posts!);
+    setTopics(topics!);
+    setLoadingTopics(false);
+    // TODO moderators, owners
+  };
 
-  const getOwners = useCallback(async () => {
-    try {
-      const fetchedOwners = await forumObject.getOwners(
-        forum.collectionId
-      );
-      if (!_.isNil(fetchedOwners)) {
-        setCurrentOwners(fetchedOwners.map((m) => m.toBase58()));
-      }
-    } catch (error) {
-      const message = JSON.stringify(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The owners could not be determined",
-        collapsible: { header: "Error", content: message },
-      });
-    }
-  }, [forumObject]);
-
+  // Begin mutating operations
   const addModerators = async () => {
     setAddingNewModerator(true);
     try {
@@ -214,29 +194,6 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
-  const getTopicsForForum = async () => {
-    try {
-      setLoadingTopics(true);
-      const topics = await forumObject.getTopicsForForum(
-        forum.collectionId
-      );
-      if (mount.current) {
-        setTopics(topics ?? []);
-        setLoadingTopics(false);
-      }
-    } catch (error: any) {
-      setLoadingTopics(false);
-      console.log(error);
-
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The topics for the forum could not be loaded`,
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  };
-
   const createTopic = async () => {
     const p = {
       subj: title,
@@ -252,7 +209,6 @@ export function ForumContent(props: ForumContentProps) {
         token ? { nftOwnership: { collectionId: token } } : undefined
       );
       if (!_.isNil(tx)) {
-        getTopicsForForum();
         setCreatingNewTopic(false);
         setModalInfo({
           body: (
@@ -328,9 +284,7 @@ export function ForumContent(props: ForumContentProps) {
 
   useEffect(() => {
     mount.current = true;
-    getTopicsForForum();
-    getModerators();
-    getOwners();
+    refresh()
     return () => {
       mount.current = false;
     };

@@ -155,60 +155,6 @@ export class DispatchForum implements IForum {
     }
   }
 
-  getNFTs = async() => {
-    const wallet = this.wallet;
-    const conn = this.connection;
-
-    try {
-      const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
-      return mintsForOwner;
-    } catch (error) {
-        throw(parseError(error))
-    }
-  }
-
-  transferNFTs = async(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
-    const wallet = this.wallet;
-    const conn = this.connection;
-
-    try {
-      const mintPubKey = new web3.PublicKey(mint);
-      let receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
-      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
-      
-      if (!receiverAcc) {
-        let createAccountTx = new web3.Transaction().add(
-          createAssociatedTokenAccountInstruction(
-            wallet.publicKey!, // payer
-            ownerAcc, // ata
-            receiverId, // owner
-            mintPubKey // mint
-          )
-        );
-
-        await sendTransaction(createAccountTx, conn);
-        receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
-      }
-
-      let tx = new web3.Transaction().add(
-        createTransferCheckedInstruction(
-          ownerAcc, // from (should be a token account)
-          mintPubKey, // mint
-          receiverAcc, // to (should be a token account)
-          wallet.publicKey!, // from's owner
-          0, // amount, if your deciamls is 8, send 10^8 for 1 token
-          8 // decimals
-        )
-      );
-
-      const result= sendTransaction(tx, conn);
-      
-      return result;
-    } catch (error) {
-        throw(parseError(error))
-    }
-  }
-
   createForum = async (forumInfo: ForumInfo) => {
     const owner = this.wallet;
     const conn = this.connection;
@@ -627,6 +573,60 @@ export class DispatchForum implements IForum {
       throw(parseError(error))
     }
   };
+  
+  getNFTs = async() => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
+      return mintsForOwner;
+    } catch (error) {
+        throw(parseError(error))
+    }
+  }
+
+  transferNFTs = async(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const mintPubKey = new web3.PublicKey(mint);
+      let receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      
+      if (!receiverAcc) {
+        let createAccountTx = new web3.Transaction().add(
+          createAssociatedTokenAccountInstruction(
+            wallet.publicKey!, // payer
+            ownerAcc, // ata
+            receiverId, // owner
+            mintPubKey // mint
+          )
+        );
+
+        await sendTransaction(createAccountTx, conn);
+        receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      }
+
+      let tx = new web3.Transaction().add(
+        createTransferCheckedInstruction(
+          ownerAcc, // from (should be a token account)
+          mintPubKey, // mint
+          receiverAcc, // to (should be a token account)
+          wallet.publicKey!, // from's owner
+          0, // amount, if your deciamls is 8, send 10^8 for 1 token
+          8 // decimals
+        )
+      );
+
+      const result= sendTransaction(tx, conn);
+      
+      return result;
+    } catch (error) {
+        throw(parseError(error))
+    }
+  }
 }
 
 export const MainForum = DispatchForum;

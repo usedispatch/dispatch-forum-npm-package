@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _, { min } from "lodash";
 import {
   DispatchConnection,
   Forum,
@@ -13,7 +13,8 @@ import * as web3 from "@solana/web3.js";
 import { 
   getAssociatedTokenAddress,
   createAssociatedTokenAccountInstruction,
-createTransferCheckedInstruction
+createTransferCheckedInstruction,
+getAccount
 } from "@solana/spl-token";
 
 import { parseError } from "../parseErrors";
@@ -593,37 +594,39 @@ export class DispatchForum implements IForum {
     try {
       const mintPubKey = new web3.PublicKey(mint);
       let receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
-      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
-      
-      if (!receiverAcc) {
-        let createAccountTx = new web3.Transaction().add(
+      let txn = new web3.Transaction();
+      try {
+        await getAccount(conn, receiverAcc);
+      } catch (error: any) {
+
+        txn.add(
           createAssociatedTokenAccountInstruction(
             wallet.publicKey!, // payer
-            ownerAcc, // ata
+            receiverAcc, // ata
             receiverId, // owner
             mintPubKey // mint
           )
         );
 
-        await sendTransaction(createAccountTx, conn);
-        receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
       }
+      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, wallet.publicKey!);
 
-      let tx = new web3.Transaction().add(
+      txn.add(
         createTransferCheckedInstruction(
           ownerAcc, // from (should be a token account)
           mintPubKey, // mint
           receiverAcc, // to (should be a token account)
           wallet.publicKey!, // from's owner
-          0, // amount, if your deciamls is 8, send 10^8 for 1 token
-          8 // decimals
+          //TODO[zfaizal2] : get amount and decimals from tokenAccount
+          1, // amount, if your deciamls is 8, send 10^8 for 1 token
+          0 // decimals
         )
       );
-
-      const result= sendTransaction(tx, conn);
+      const result = sendTransaction(txn, conn);
       
       return result;
     } catch (error) {
+      console.log(error)
         throw(parseError(error))
     }
   }

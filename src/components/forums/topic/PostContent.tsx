@@ -19,6 +19,9 @@ import { Votes, Notification } from "../../../components/forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import {
+  selectReplies
+} from '../../../utils/posts';
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -27,11 +30,6 @@ interface PostContentProps {
   posts: ForumPost[];
   userRole: UserRoleType;
   onDeletePost: (tx: string) => Promise<void>;
-}
-
-// TODO consider moving this helper into a helpers file
-function selectReplies(posts: ForumPost[], to: ForumPost) {
-  return posts.filter(({ replyTo }) => replyTo && replyTo.equals(to.address))
 }
 
 export function PostContent(props: PostContentProps) {

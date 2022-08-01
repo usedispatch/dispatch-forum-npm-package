@@ -5,9 +5,16 @@ import {
   ForumInfo,
   ForumPost,
   WalletInterface,
-  PostRestriction
+  PostRestriction,
+  getMintsForOwner  
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
+
+import { 
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+createTransferCheckedInstruction
+} from "@solana/spl-token";
 
 import { parseError } from "../parseErrors";
 
@@ -117,6 +124,10 @@ export interface IForum {
   canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
 
   canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
+
+  getNFTs(): Promise<web3.PublicKey[]>
+
+  transferNFTs(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>
 }
 
 export class DispatchForum implements IForum {
@@ -141,6 +152,60 @@ export class DispatchForum implements IForum {
         signTransaction: () => {return Promise.resolve(new web3.Transaction())}
       };
       this.permission = { readAndWrite: false };
+    }
+  }
+
+  getNFTs = async() => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
+      return mintsForOwner;
+    } catch (error) {
+        throw(parseError(error))
+    }
+  }
+
+  transferNFTs = async(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const mintPubKey = new web3.PublicKey(mint);
+      let receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      
+      if (!receiverAcc) {
+        let createAccountTx = new web3.Transaction().add(
+          createAssociatedTokenAccountInstruction(
+            wallet.publicKey!, // payer
+            ownerAcc, // ata
+            receiverId, // owner
+            mintPubKey // mint
+          )
+        );
+
+        await sendTransaction(createAccountTx, conn);
+        receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      }
+
+      let tx = new web3.Transaction().add(
+        createTransferCheckedInstruction(
+          ownerAcc, // from (should be a token account)
+          mintPubKey, // mint
+          receiverAcc, // to (should be a token account)
+          wallet.publicKey!, // from's owner
+          0, // amount, if your deciamls is 8, send 10^8 for 1 token
+          8 // decimals
+        )
+      );
+
+      const result= sendTransaction(tx, conn);
+      
+      return result;
+    } catch (error) {
+        throw(parseError(error))
     }
   }
 

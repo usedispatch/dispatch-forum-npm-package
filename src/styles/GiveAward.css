@@ -104,6 +104,8 @@
 
     .giftsContainer {
       padding: 0 24px;
+      max-height: 280px;
+      overflow-y: overlay;
 
       .giftsGrid {
         display: flex;
@@ -117,8 +119,16 @@
         overflow-x: overlay;
 
         .giftContainer {
-          margin-bottom: 15px;
           cursor: pointer;
+          padding: 8px;
+        }
+
+        .selectedNFT {
+          text-decoration: none;
+          color: #46427c;
+          font-weight: 600;
+          border-radius: 6px;
+          border: 1px solid #46427c;
         }
       }
     }

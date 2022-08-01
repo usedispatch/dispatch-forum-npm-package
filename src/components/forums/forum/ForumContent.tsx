@@ -34,8 +34,8 @@ interface ForumContentProps {
 
 export function ForumContent(props: ForumContentProps) {
   const { forum } = props;
-  const DispatchForumObject = useForum();
-  const { isNotEmpty: connected, permission } = DispatchForumObject;
+  const forumObject = useForum();
+  const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
   const [loadingTopics, setLoadingTopics] = useState(true);
@@ -67,7 +67,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const getModerators = useCallback(async () => {
     try {
-      const mods = await DispatchForumObject.getModerators(forum.collectionId);
+      const mods = await forumObject.getModerators(forum.collectionId);
       if (!_.isNil(mods)) {
         setCurrentMods(mods.map((m) => m.toBase58()));
       }
@@ -79,11 +79,11 @@ export function ForumContent(props: ForumContentProps) {
         collapsible: { header: "Error", content: error.message },
       });
     }
-  }, [DispatchForumObject]);
+  }, [forumObject]);
 
   const getOwners = useCallback(async () => {
     try {
-      const fetchedOwners = await DispatchForumObject.getOwners(
+      const fetchedOwners = await forumObject.getOwners(
         forum.collectionId
       );
       if (!_.isNil(fetchedOwners)) {
@@ -98,13 +98,13 @@ export function ForumContent(props: ForumContentProps) {
         collapsible: { header: "Error", content: message },
       });
     }
-  }, [DispatchForumObject]);
+  }, [forumObject]);
 
   const addModerators = async () => {
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
-      const tx = await DispatchForumObject.addModerator(
+      const tx = await forumObject.addModerator(
         moderatorId,
         forum.collectionId
       );
@@ -141,7 +141,7 @@ export function ForumContent(props: ForumContentProps) {
     setAddingNewOwner(true);
     try {
       const ownerId = newPublicKey(newOwner);
-      const tx = await DispatchForumObject.addOwner(
+      const tx = await forumObject.addOwner(
         ownerId,
         forum.collectionId
       );
@@ -177,7 +177,7 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const tx = await DispatchForumObject.setForumPostRestriction(
+      const tx = await forumObject.setForumPostRestriction(
         forum.collectionId,
         {
           nftOwnership: {
@@ -217,7 +217,7 @@ export function ForumContent(props: ForumContentProps) {
   const getTopicsForForum = async () => {
     try {
       setLoadingTopics(true);
-      const topics = await DispatchForumObject.getTopicsForForum(
+      const topics = await forumObject.getTopicsForForum(
         forum.collectionId
       );
       if (mount.current) {
@@ -246,7 +246,7 @@ export function ForumContent(props: ForumContentProps) {
     setCreatingNewTopic(true);
     try {
       const token = accessToken ? newPublicKey(accessToken) : undefined;
-      const tx = await DispatchForumObject.createTopic(
+      const tx = await forumObject.createTopic(
         p,
         forum.collectionId,
         token ? { nftOwnership: { collectionId: token } } : undefined

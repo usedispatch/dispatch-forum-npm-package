@@ -47,6 +47,7 @@ export function PostList(props: PostListProps) {
                 forum={forum}
                 collectionId={collectionId}
                 post={post}
+                posts={posts}
                 onDeletePost={onDeletePost}
                 userRole={userRole}
               />

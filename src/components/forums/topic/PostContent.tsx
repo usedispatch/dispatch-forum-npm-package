@@ -24,17 +24,22 @@ interface PostContentProps {
   forum: DispatchForum;
   collectionId: web3.PublicKey;
   post: ForumPost;
+  posts: ForumPost[];
   userRole: UserRoleType;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
+// TODO consider moving this helper into a helpers file
+function selectReplies(posts: ForumPost[], to: ForumPost) {
+  return posts.filter(({ replyTo }) => replyTo && replyTo.equals(to.address))
+}
+
 export function PostContent(props: PostContentProps) {
-  const { collectionId, forum, userRole, onDeletePost } = props;
+  const { collectionId, forum, userRole, onDeletePost, posts } = props;
 
   const permission = forum.permission;
 
   const [loading, setLoading] = useState(true);
-  const [replies, setReplies] = useState<ForumPost[]>([]);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
@@ -58,30 +63,13 @@ export function PostContent(props: PostContentProps) {
 
   const post = useMemo(() => props.post, [props.post]);
 
+  const replies: ForumPost[] = selectReplies(posts, post);
+
   const updateVotes = (upVoted: boolean) => {
     if (upVoted) {
       post.upVotes = post.upVotes + 1;
     } else {
       post.downVotes = post.downVotes + 1;
-    }
-  };
-
-  const getReplies = async () => {
-    setLoading(true);
-    try {
-      const data = await forum.getReplies(post, collectionId);
-      setReplies(data ?? []);
-      setLoading(false);
-    } catch (error: any) {
-      setReplies([]);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The replies could not be loaded`,
-        collapsible: { header: "Error", content: error.message },
-      });
-      setLoading(false);
     }
   };
 
@@ -91,7 +79,8 @@ export function PostContent(props: PostContentProps) {
       const tx = await forum.replyToForumPost(post, collectionId, {
         body: reply,
       });
-      getReplies();
+      // TODO add a reply here
+      // getReplies();
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
@@ -156,14 +145,6 @@ export function PostContent(props: PostContentProps) {
       setModalInfo(modalInfoError);
     }
   };
-
-  useEffect(() => {
-    if (!_.isNil(post) && !_.isNil(collectionId)) {
-      getReplies();
-    } else {
-      setLoading(false);
-    }
-  }, [post, collectionId]);
 
   const postedAt = `${post.data.ts.toLocaleDateString(undefined, {
     year: "numeric",

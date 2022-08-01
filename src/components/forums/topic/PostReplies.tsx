@@ -1,9 +1,9 @@
 import * as _ from "lodash";
-import { useMemo } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Trash } from "../../../assets";
+import { Award, Trash } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Votes } from "./Votes";
@@ -16,10 +16,17 @@ interface PostRepliesProps {
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
   onReplyClick: () => void;
+  onAwardReply: (post: ForumPost) => void;
 }
 
 export function PostReplies(props: PostRepliesProps) {
-  const { onDeletePost, onReplyClick, onDownVotePost, onUpVotePost } = props;
+  const {
+    onDeletePost,
+    onReplyClick,
+    onDownVotePost,
+    onUpVotePost,
+    onAwardReply,
+  } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -88,6 +95,12 @@ export function PostReplies(props: PostRepliesProps) {
                     onClick={onReplyClick}
                     disabled={!permission.readAndWrite}>
                     Reply
+                  </button>
+                  <button
+                    className="awardButton"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => onAwardReply(reply)}>
+                    <Award />
                   </button>
                 </PermissionsGate>
                 <PermissionsGate

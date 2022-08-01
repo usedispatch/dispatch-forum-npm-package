@@ -1,9 +1,13 @@
 @layer components {
   .postContentContainer {
     font-family: Manrope, sans-serif;
-    margin-top: 40px;
-    padding-bottom: 40px;
-    border-bottom: 1px solid #b8b9dc;
+
+    background: white;
+    box-shadow: 0px 4px 12px rgb(0 0 0 / 16%);
+    border-radius: 12px;
+
+    margin: 40px 0;
+    padding: 24px;
   }
 
   .deleteSpinner {
@@ -158,6 +162,32 @@
       height: 24px;
       max-height: 24px;
       padding: 8px;
+
+      color: #3f1d96;
+      font-size: 12px;
+
+      &:disabled {
+        border-color: #7c7b7c;
+        color: #7c7b7c;
+        cursor: not-allowed;
+
+        svg path {
+          fill: #7c7b7c;
+        }
+      }
+    }
+
+    .awardButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 24px;
+      width: 28px;
+      padding: 8px;
+      margin-left: 10px;
+      border: 1px solid #3f1d96;
+      border-radius: 9999px;
 
       color: #3f1d96;
       font-size: 12px;

@@ -66,9 +66,12 @@ export const ForumView = (props: ForumViewProps) => {
   const { publicKey } = wallet;
 
   const collectionId = props.collectionId;
+  const collectionPublicKey = useMemo(() => {
+    // TODO show modal if this fails
+    return newPublicKey(collectionId);
+  }, [collectionId]);
 
   const mount = useRef(false);
-  const [collectionPublicKey, setCollectionPublicKey] = useState<web3.PublicKey | null>(null);
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
   // Title and description for editing
@@ -86,30 +89,6 @@ export const ForumView = (props: ForumViewProps) => {
   } | null>(null);
 
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
-
-  useEffect(() => {
-    mount.current = true;
-    try {
-      const collectionIdKey = new web3.PublicKey(collectionId);
-      setCollectionPublicKey(collectionIdKey);
-      setCroppedCollectionId(
-        `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`
-      );
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log('collection id parsing');
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "Invalid Collection ID Public Key",
-        collapsible: { header: "Error", content: message },
-      });
-    }
-    return () => {
-      mount.current = false;
-    };
-  }, []);
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -193,6 +172,11 @@ export const ForumView = (props: ForumViewProps) => {
       setCreatingNewForum(false);
     }
   };
+
+  useEffect(() => {
+    update();
+  }, []);
+
 
   useEffect(() => {
     if( isNotEmpty && forumData.state === 'success' && forumObject.wallet.publicKey) {
@@ -347,7 +331,8 @@ export const ForumView = (props: ForumViewProps) => {
               <div className="forumViewContentBox">
                 <div>
                   {(() => {
-                    if (forumData.state === 'pending') {
+                    if (forumData.state === 'initial' ||
+                        forumData.state === 'pending') {
                       return (
                         <div className="forumLoading">
                           <Spinner />

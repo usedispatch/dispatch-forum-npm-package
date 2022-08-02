@@ -21,7 +21,7 @@ export function useForumData(
   const [data, setData] = useState<Loading<ForumData>>({ state: 'initial' });
   const forumData = useMemo(() => {
     return data;
-  }, [data]);
+  }, [data, collectionId]);
 
   async function fetchState(): Promise<Loading<ForumData>> {
     if (collectionId === null) { return { state: 'initial' }; }

@@ -155,6 +155,7 @@ export const ForumView = (props: ForumViewProps) => {
           ),
           type: MessageType.success,
         });
+        update();
       }
     } catch (e: any) {
       if (e.error.code === 4001) {

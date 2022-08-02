@@ -23,9 +23,17 @@ export function PostList(props: PostListProps) {
     [props.posts]
   );
 
+  const emptyList = (
+    <div className="emptyList">
+      <div className="text">The topic has no comments</div>
+    </div>
+  );
+
   return (
     <div className="postListContainer">
-      {posts.map((post) => {
+      {posts.length === 0 ?
+        emptyList :
+        posts.map((post) => {
 
           return (
             <div key={`post_${post.postId}`}>
@@ -39,7 +47,7 @@ export function PostList(props: PostListProps) {
               />
             </div>
           );
-      })}
+        })}
     </div>
   );
 }

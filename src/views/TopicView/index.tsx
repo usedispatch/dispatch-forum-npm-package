@@ -146,6 +146,7 @@ export const TopicView = (props: Props) => {
                       forum={forum}
                       topic={topic.value}
                       userRole={role.role}
+                      update={update}
                       updateVotes={(upVoted) => updateVotes(upVoted)}
                     />
                   </>

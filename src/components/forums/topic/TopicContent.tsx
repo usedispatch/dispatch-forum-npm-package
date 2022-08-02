@@ -26,13 +26,14 @@ import { ForumData } from '../../../utils/hooks';
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
+  update: () => Promise<void>;
   topic: ForumPost;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, updateVotes, topic } = props;
+  const { forum, forumData, userRole, update, updateVotes, topic } = props;
   const replies = useMemo(() => {
     return selectReplies(forumData.posts, topic);
   }, [forumData])
@@ -276,7 +277,11 @@ export function TopicContent(props: TopicContentProps) {
           <CreatePost
             topicId={topic.postId}
             collectionId={forumData.info.collectionId}
-            createForumPost={forum.createForumPost}
+            createForumPost={async ({ subj, body, meta, }, topicId, collectionId) => {
+              const signature = forum.createForumPost({ subj, body, meta }, topicId, collectionId);
+              return signature;
+            }}
+            update={update}
             onReload={() => {}}
           />
         </PermissionsGate>

@@ -126,7 +126,7 @@ export interface IForum {
 
   canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
 
-  getNFTs(): Promise<web3.PublicKey[]>
+  getNFTsForCurrentUser(): Promise<web3.PublicKey[]>
 
   transferNFTs(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>
 }
@@ -575,7 +575,7 @@ export class DispatchForum implements IForum {
     }
   };
   
-  getNFTs = async() => {
+  getNFTsForCurrentUser = async() => {
     const wallet = this.wallet;
     const conn = this.connection;
 

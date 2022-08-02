@@ -87,7 +87,7 @@ export function GiveAward(props: GiveAwardProps) {
     setLoading(true);
 
     try {
-      // TODO (Ana - Andrew): change this ugly line
+      // TODO (Ana - Andrew): change this ugly line -- "Update wallet interface to support WalletContextState" on Notion
       let w = Forum.wallet as WalletContextState;
 
       const tx = await Forum.transferNFTs(
@@ -146,7 +146,8 @@ export function GiveAward(props: GiveAwardProps) {
                     className={`giftContainer ${
                       value === selectedNFT ? "selectedNFT" : ""
                     }`}
-                    onClick={() => setSelectedNFT(value)}>
+                    onClick={() => setSelectedNFT(value)}
+                  >
                     <div>{value}</div>
                   </div>
                 ))}
@@ -162,14 +163,16 @@ export function GiveAward(props: GiveAwardProps) {
               className="nftType"
               onClick={() => {
                 setSelectedType(AwardType.NFT);
-                getNFTs();
-              }}>
+                getNFTsForCurrentUser();
+              }}
+            >
               <Plus />
               NFT
             </button>
             <button
               className="solType"
-              onClick={() => setSelectedType(AwardType.SOL)}>
+              onClick={() => setSelectedType(AwardType.SOL)}
+            >
               <SolanaLogo color="white" />
               SOL
             </button>
@@ -179,9 +182,9 @@ export function GiveAward(props: GiveAwardProps) {
     </div>
   );
 
-  const getNFTs = async () => {
+  const getNFTsForCurrentUser = async () => {
     try {
-      const nfts = await Forum.getNFTs();
+      const nfts = await Forum.getNFTsForCurrentUser();
       setNFTs(nfts.map((n) => n.toBase58()));
     } catch (error: any) {
       onError(error);
@@ -218,14 +221,16 @@ export function GiveAward(props: GiveAwardProps) {
             <button
               className="attachButton"
               disabled={selectedAmount === 0}
-              onClick={() => attachAward()}>
+              onClick={() => attachAward()}
+            >
               Attach
             </button>
           ) : (
             <button
               className="confirmAndAwardButton"
               disabled={_.isNil(selectedNFT)}
-              onClick={() => transferNFT()}>
+              onClick={() => transferNFT()}
+            >
               Confirm and award
             </button>
           ))

@@ -293,8 +293,9 @@ export function TopicContent(props: TopicContentProps) {
       />
       <PostList
         forum={forum}
-        collectionId={forumData.info.collectionId}
-        posts={replies}
+        forumData={forumData}
+        update={update}
+        topic={topic}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);
           setNotificationContent(

@@ -19,6 +19,7 @@ import { Votes, Notification } from "../../../components/forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { ForumData } from '../../../utils/hooks';
 import {
   selectReplies
 } from '../../../utils/posts';
@@ -26,15 +27,15 @@ import { GiveAward } from "./GiveAward";
 
 interface PostContentProps {
   forum: DispatchForum;
-  collectionId: web3.PublicKey;
+  forumData: ForumData;
   post: ForumPost;
-  posts: ForumPost[];
   userRole: UserRoleType;
+  update: () => Promise<void>;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { collectionId, forum, userRole, onDeletePost, posts } = props;
+  const { forumData, forum, userRole, onDeletePost, update } = props;
 
   const permission = forum.permission;
 
@@ -63,7 +64,7 @@ export function PostContent(props: PostContentProps) {
 
   const post = useMemo(() => props.post, [props.post]);
 
-  const replies: ForumPost[] = selectReplies(posts, post);
+  const replies: ForumPost[] = selectReplies(forumData.posts, post);
 
   const updateVotes = (upVoted: boolean) => {
     if (upVoted) {
@@ -76,7 +77,7 @@ export function PostContent(props: PostContentProps) {
   const onReplyToPost = async () => {
     setSendingReply(true);
     try {
-      const tx = await forum.replyToForumPost(post, collectionId, {
+      const tx = await forum.replyToForumPost(post, forumData.info.collectionId, {
         body: reply,
       });
       // TODO add a reply here
@@ -92,6 +93,7 @@ export function PostContent(props: PostContentProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
+      update();
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
@@ -113,7 +115,7 @@ export function PostContent(props: PostContentProps) {
     try {
       const tx = await forum.deleteForumPost(
         postToDelete,
-        collectionId,
+        forumData.info.collectionId,
         userRole === UserRoleType.Moderator
       );
       onDeletePost(tx);
@@ -204,7 +206,7 @@ export function PostContent(props: PostContentProps) {
         {showGiveAward && postToAward && (
           <GiveAward
             post={postToAward}
-            collectionId={collectionId}
+            collectionId={forumData.info.collectionId}
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
               setShowGiveAward(false);
@@ -249,9 +251,9 @@ export function PostContent(props: PostContentProps) {
                 <Votes
                   post={post}
                   onDownVotePost={() =>
-                    forum.voteDownForumPost(post, collectionId)
+                    forum.voteDownForumPost(post, forumData.info.collectionId)
                   }
-                  onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
+                  onUpVotePost={() => forum.voteUpForumPost(post, forumData.info.collectionId)}
                   updateVotes={(upVoted) => updateVotes(upVoted)}
                 />
               </PermissionsGate>
@@ -300,10 +302,10 @@ export function PostContent(props: PostContentProps) {
                     setShowDeleteConfirmation(true);
                   }}
                   onDownVotePost={(reply) =>
-                    forum.voteDownForumPost(reply, collectionId)
+                    forum.voteDownForumPost(reply, forumData.info.collectionId)
                   }
                   onUpVotePost={(reply) =>
-                    forum.voteUpForumPost(reply, collectionId)
+                    forum.voteUpForumPost(reply, forumData.info.collectionId)
                   }
                   onReplyClick={() => setShowReplyBox(true)}
                   onAwardReply={(reply) => {

@@ -1,27 +1,28 @@
 import * as web3 from "@solana/web3.js";
+import { useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../common";
 import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { useMemo } from "react";
-
 import { UserRoleType } from "../../../utils/permissions";
+import { ForumData } from '../../../utils/hooks';
+import { selectReplies } from '../../../utils/posts';
+
 interface PostListProps {
   forum: DispatchForum;
-  collectionId: web3.PublicKey;
-  posts: ForumPost[];
+  forumData: ForumData;
   userRole: UserRoleType;
+  update: () => Promise<void>;
+  topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostList(props: PostListProps) {
-  const { collectionId, forum, userRole, onDeletePost } = props;
-
-  const posts = useMemo(
-    () => props.posts.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
-    [props.posts]
-  );
+  const { forumData, forum, userRole, onDeletePost, topic, update } = props;
+  const posts = useMemo(() => {
+    return selectReplies(forumData.posts, topic)
+  }, [forumData]);
 
   const emptyList = (
     <div className="emptyList">
@@ -39,10 +40,10 @@ export function PostList(props: PostListProps) {
             <div key={`post_${post.postId}`}>
               <PostContent
                 forum={forum}
-                collectionId={collectionId}
+                forumData={forumData}
                 post={post}
-                posts={posts}
                 onDeletePost={onDeletePost}
+                update={update}
                 userRole={userRole}
               />
             </div>

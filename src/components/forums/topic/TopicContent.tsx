@@ -16,7 +16,7 @@ import { CreatePost, PostList } from "..";
 import { Notification, Votes } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { useForum, usePath } from "../../../contexts/DispatchProvider";
+import { usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
@@ -24,21 +24,17 @@ import { SCOPES } from "../../../utils/permissions";
 interface TopicContentProps {
   forum: DispatchForum;
   topic: ForumPost;
+  posts: ForumPost[];
   collectionId: web3.PublicKey;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { collectionId, forum, topic, userRole, updateVotes } = props;
+  const { collectionId, forum, topic, posts, userRole, updateVotes } = props;
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId.toBase58());
   const permission = forum.permission;
-  const Forum = useForum();
-  const userPubKey = Forum.wallet.publicKey;
-
-  const [loadingMessages, setLoadingMessages] = useState(true);
-  const [posts, setPosts] = useState<ForumPost[]>([]);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
@@ -59,25 +55,6 @@ export function TopicContent(props: TopicContentProps) {
     collapsible?: CollapsibleProps;
     okPath?: string;
   } | null>(null);
-
-  const getMessages = async () => {
-    setLoadingMessages(true);
-    try {
-      const data = await forum.getTopicMessages(topic.postId, collectionId);
-      setPosts(data ?? []);
-      setLoadingMessages(false);
-    } catch (error: any) {
-      setPosts([]);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The messages could not be loaded`,
-        collapsible: { header: "Error", content: error.message },
-      });
-      setLoadingMessages(false);
-    }
-  };
 
   // TODO (Ana): add corresponding function when its available
   /*const addAccessToken = async () => {
@@ -159,10 +136,6 @@ export function TopicContent(props: TopicContentProps) {
       }
     }
   };
-
-  useEffect(() => {
-    getMessages();
-  }, [topic, collectionId]);
 
   const data = (
     <>
@@ -300,7 +273,7 @@ export function TopicContent(props: TopicContentProps) {
             topicId={topic.postId}
             collectionId={collectionId}
             createForumPost={forum.createForumPost}
-            onReload={() => getMessages()}
+            onReload={() => {}}
           />
         </PermissionsGate>
       </div>
@@ -313,7 +286,6 @@ export function TopicContent(props: TopicContentProps) {
         forum={forum}
         collectionId={collectionId}
         posts={posts}
-        loading={loadingMessages}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);
           setNotificationContent(
@@ -323,11 +295,7 @@ export function TopicContent(props: TopicContentProps) {
               <TransactionLink transaction={tx} />
             </>
           );
-          setTimeout(
-            () => setIsNotificationHidden(true),
-            NOTIFICATION_BANNER_TIMEOUT
-          );
-          await getMessages();
+          // TODO refresh here
         }}
         userRole={userRole}
       />

@@ -40,6 +40,10 @@ export const TopicView = (props: Props) => {
     { state: 'initial' }
   );
 
+  const [posts, setPosts] = useState<Loading<ForumPost[]>>(
+    { state: 'initial' }
+  );
+
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -70,14 +74,16 @@ export const TopicView = (props: Props) => {
     setParent({ state: 'pending' });
     setTopic({ state: 'pending' });
     try {
-      const [desc, res] = await Promise.all([
+      const [desc, res, ps] = await Promise.all([
         // TODO consider gracefully handling null instead of
         // using nonnull asserts
         forum.getDescription(collectionPublicKey!),
         forum.getTopicData(topicId, collectionPublicKey!),
+        forum.getPostsForForum(collectionPublicKey!)
       ]);
       setParent({ state: 'success', value: desc?.title });
       setTopic({ state: 'success', value: res });
+      setPosts({ state: 'success', value: ps! });
     } catch (error: any) {
       console.log(error);
       setModalInfo({
@@ -160,7 +166,8 @@ export const TopicView = (props: Props) => {
                     <Spinner />
                   </div>
                 ) : topic.state === 'success' &&
-                  parent.state === 'success'
+                  parent.state === 'success' &&
+                  posts.state === 'success'
                   ? (
                   <>
                     <Breadcrumb
@@ -170,6 +177,7 @@ export const TopicView = (props: Props) => {
                     />
                     <TopicContent
                       topic={topic.value}
+                      posts={posts.value}
                       forum={forum}
                       collectionId={collectionPublicKey!}
                       userRole={role.role}

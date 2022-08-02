@@ -37,8 +37,6 @@ export function PostContent(props: PostContentProps) {
 
   const permission = forum.permission;
 
-  const [loading, setLoading] = useState(true);
-
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
   const [deleting, setDeleting] = useState(false);
@@ -204,10 +202,7 @@ export function PostContent(props: PostContentProps) {
           content={notificationContent}
           onClose={() => setIsNotificationHidden(true)}
         />
-        {loading ? (
-          <Spinner />
-        ) : (
-          <>
+        {<>
             <div className="postHeader">
               <div className="posterId">
                 <div className="icon">
@@ -301,8 +296,7 @@ export function PostContent(props: PostContentProps) {
                   </form>
                 ))}
             </div>
-          </>
-        )}
+          </>}
       </div>
     </>
   );

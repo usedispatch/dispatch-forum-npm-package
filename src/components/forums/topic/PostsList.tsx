@@ -11,19 +11,12 @@ interface PostListProps {
   forum: DispatchForum;
   collectionId: web3.PublicKey;
   posts: ForumPost[];
-  loading: boolean;
   userRole: UserRoleType;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostList(props: PostListProps) {
-  const { collectionId, forum, loading, userRole, onDeletePost } = props;
-
-  const emptyList = (
-    <div className="emptyList">
-      <div className="text">The topic has no comments</div>
-    </div>
-  );
+  const { collectionId, forum, userRole, onDeletePost } = props;
 
   const posts = useMemo(
     () => props.posts.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
@@ -32,14 +25,7 @@ export function PostList(props: PostListProps) {
 
   return (
     <div className="postListContainer">
-      {loading ? (
-        <div className="postListSpinnerContainer">
-          <Spinner />
-        </div>
-      ) : posts.length === 0 ? (
-        emptyList
-      ) : (
-        posts.map((post) => {
+      {posts.map((post) => {
 
           return (
             <div key={`post_${post.postId}`}>
@@ -53,8 +39,7 @@ export function PostList(props: PostListProps) {
               />
             </div>
           );
-        })
-      )}
+      })}
     </div>
   );
 }

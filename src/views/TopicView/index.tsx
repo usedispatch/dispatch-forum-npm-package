@@ -26,9 +26,9 @@ interface Props {
 }
 
 export const TopicView = (props: Props) => {
-  const Forum = useForum();
+  const forum = useForum();
   const Role = useRole();
-  const { isNotEmpty, permission } = Forum;
+  const { isNotEmpty, permission } = forum;
   const { collectionId, topicId } = props;
 
   const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
@@ -64,8 +64,8 @@ export const TopicView = (props: Props) => {
     setLoading(true);
     try {
       const [desc, res] = await Promise.all([
-        Forum.getDescription(collectionPublicKey),
-        Forum.getTopicData(topicId, collectionPublicKey),
+        forum.getDescription(collectionPublicKey),
+        forum.getTopicData(topicId, collectionPublicKey),
       ]);
       setParent(desc?.title);
       setTopic(res);
@@ -98,17 +98,17 @@ export const TopicView = (props: Props) => {
     } else {
       setLoading(false);
     }
-  }, [isNotEmpty, topicId, collectionPublicKey, Forum]);
+  }, [isNotEmpty, topicId, collectionPublicKey, forum]);
 
   useEffect(() => {
     if (
       !_.isNil(collectionPublicKey) &&
       !_.isNil(topic) &&
-      Forum.wallet.publicKey
+      forum.wallet.publicKey
     ) {
-      getUserRole(Forum, collectionPublicKey, Role, topic);
+      getUserRole(forum, collectionPublicKey, Role, topic);
     }
-  }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
+  }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
   const disconnectedView = (
     <div className="disconnectedTopicView">
@@ -152,7 +152,7 @@ export const TopicView = (props: Props) => {
                     />
                     <TopicContent
                       topic={topic}
-                      forum={Forum}
+                      forum={forum}
                       collectionId={collectionPublicKey}
                       userRole={Role.role}
                       updateVotes={(upVoted) => updateVotes(upVoted)}

@@ -27,7 +27,7 @@ interface Props {
 
 export const TopicView = (props: Props) => {
   const forum = useForum();
-  const Role = useRole();
+  const role = useRole();
   const { isNotEmpty, permission } = forum;
   const { collectionId, topicId } = props;
 
@@ -106,7 +106,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(topic) &&
       forum.wallet.publicKey
     ) {
-      getUserRole(forum, collectionPublicKey, Role, topic);
+      getUserRole(forum, collectionPublicKey, role, topic);
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
@@ -154,7 +154,7 @@ export const TopicView = (props: Props) => {
                       topic={topic}
                       forum={forum}
                       collectionId={collectionPublicKey}
-                      userRole={Role.role}
+                      userRole={role.role}
                       updateVotes={(upVoted) => updateVotes(upVoted)}
                     />
                   </>

@@ -4,7 +4,7 @@ import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Success, Trash } from "../../../assets";
+import { Award, Success, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -22,6 +22,7 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import {
   selectReplies
 } from '../../../utils/posts';
+import { GiveAward } from "./GiveAward";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -44,6 +45,9 @@ export function PostContent(props: PostContentProps) {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [reply, setReply] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+
+  const [showGiveAward, setShowGiveAward] = useState(false);
+  const [postToAward, setPostToAward] = useState<ForumPost>();
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<
@@ -197,6 +201,31 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
+        {showGiveAward && postToAward && (
+          <GiveAward
+            post={postToAward}
+            collectionId={collectionId}
+            onCancel={() => setShowGiveAward(false)}
+            onSuccess={(notificationContent) => {
+              setShowGiveAward(false);
+              setIsNotificationHidden(false);
+              setNotificationContent(notificationContent);
+              setTimeout(
+                () => setIsNotificationHidden(true),
+                NOTIFICATION_BANNER_TIMEOUT
+              );
+            }}
+            onError={(error) => {
+              setShowGiveAward(false);
+              setModalInfo({
+                title: "Something went wrong!",
+                type: MessageType.error,
+                body: `The award could not be given.`,
+                collapsible: { header: "Error", content: error?.message },
+              });
+            }}
+          />
+        )}
         <Notification
           hidden={isNotificationHidden}
           content={notificationContent}
@@ -234,6 +263,15 @@ export function PostContent(props: PostContentProps) {
                   onClick={() => setShowReplyBox(true)}>
                   Reply
                 </button>
+                <button
+                  className="awardButton"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => {
+                    setPostToAward(post);
+                    setShowGiveAward(true);
+                  }}>
+                  <Award />
+                </button>
               </PermissionsGate>
               <PermissionsGate
                 scopes={[SCOPES.canDeletePost]}
@@ -268,6 +306,10 @@ export function PostContent(props: PostContentProps) {
                     forum.voteUpForumPost(reply, collectionId)
                   }
                   onReplyClick={() => setShowReplyBox(true)}
+                  onAwardReply={(reply) => {
+                    setPostToAward(reply);
+                    setShowGiveAward(true);
+                  }}
                 />
               </div>
               {showReplyBox &&

@@ -1,13 +1,21 @@
-import _ from "lodash";
+import _, { min } from "lodash";
 import {
   DispatchConnection,
   Forum,
   ForumInfo,
   ForumPost,
   WalletInterface,
-  PostRestriction
+  PostRestriction,
+  getMintsForOwner  
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
+
+import { 
+  getAssociatedTokenAddress,
+  createAssociatedTokenAccountInstruction,
+createTransferCheckedInstruction,
+getAccount
+} from "@solana/spl-token";
 
 import { parseError } from "../parseErrors";
 
@@ -117,6 +125,10 @@ export interface IForum {
   canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
 
   canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
+
+  getNFTsForCurrentUser(): Promise<web3.PublicKey[]>
+
+  transferNFTs(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>
 }
 
 export class DispatchForum implements IForum {
@@ -579,6 +591,62 @@ export class DispatchForum implements IForum {
       throw(parseError(error))
     }
   };
+  
+  getNFTsForCurrentUser = async() => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
+      return mintsForOwner;
+    } catch (error) {
+        throw(parseError(error))
+    }
+  }
+
+  transferNFTs = async(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const mintPubKey = new web3.PublicKey(mint);
+      let receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      let txn = new web3.Transaction();
+      try {
+        await getAccount(conn, receiverAcc);
+      } catch (error: any) {
+
+        txn.add(
+          createAssociatedTokenAccountInstruction(
+            wallet.publicKey!, // payer
+            receiverAcc, // ata
+            receiverId, // owner
+            mintPubKey // mint
+          )
+        );
+
+      }
+      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, wallet.publicKey!);
+
+      txn.add(
+        createTransferCheckedInstruction(
+          ownerAcc, // from (should be a token account)
+          mintPubKey, // mint
+          receiverAcc, // to (should be a token account)
+          wallet.publicKey!, // from's owner
+          //TODO[zfaizal2] : get amount and decimals from tokenAccount
+          1, // amount, if your deciamls is 8, send 10^8 for 1 token
+          0 // decimals
+        )
+      );
+      const result = sendTransaction(txn, conn);
+      
+      return result;
+    } catch (error) {
+      console.log(error)
+        throw(parseError(error))
+    }
+  }
 }
 
 export const MainForum = DispatchForum;

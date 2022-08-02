@@ -1,0 +1,210 @@
+@layer components {
+  .awardContainer {
+    height: auto;
+    width: 100%;
+  }
+
+  .awardContent {
+    width: 100%;
+    font-weight: 400;
+    font-size: 14px;
+
+    .typeSelector {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 14px;
+      margin-top: 24px;
+
+      .nftType {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: 1px solid #4a279c;
+
+        font-weight: 600;
+        font-size: 16px;
+        color: #4a279c;
+
+        svg {
+          height: 12px;
+
+          path {
+            fill: #191919;
+          }
+        }
+      }
+
+      .solType {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+
+        padding: 12px 20px;
+        border-radius: 8px;
+        background: linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.2),
+            rgba(0, 0, 0, 0.2)
+          ),
+          linear-gradient(
+            44.76deg,
+            #9945ff 10.43%,
+            #8752f3 30.84%,
+            #5497d5 49.4%,
+            #43b4ca 58.68%,
+            #28e0b9 69.81%,
+            #19fb9b 93.01%
+          );
+
+        svg {
+          height: 12px;
+        }
+      }
+    }
+
+    .amountInputContainer {
+      .iconContainer {
+        position: relative;
+
+        svg {
+          height: 18px;
+          position: absolute;
+          top: 17px;
+          left: 11px;
+        }
+      }
+    }
+
+    .amountInput {
+      width: 100%;
+      padding: 12px 12px 12px 40px;
+      margin-top: 4px;
+      margin-bottom: 16px;
+
+      font-size: 14px;
+      border-color: #d1d5db;
+      border-width: 1px;
+      border-radius: 6px;
+
+      &:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+    }
+
+    .giftsContainer {
+      padding: 0 24px;
+      max-height: 280px;
+      overflow-y: overlay;
+
+      .giftsGrid {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        align-content: flex-start;
+        gap: 15%;
+
+        overflow-x: overlay;
+
+        .giftContainer {
+          cursor: pointer;
+          padding: 8px;
+        }
+
+        .selectedNFT {
+          text-decoration: none;
+          color: #46427c;
+          font-weight: 600;
+          border-radius: 6px;
+          border: 1px solid #46427c;
+        }
+      }
+    }
+  }
+
+  .confirmAndAwardButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin: 16px 0 0 auto;
+    padding: 12px 20px;
+    border-radius: 8px;
+
+    font-weight: 600;
+    font-size: 16px;
+    color: white;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+      linear-gradient(
+        44.76deg,
+        #9945ff 10.43%,
+        #8752f3 30.84%,
+        #5497d5 49.4%,
+        #43b4ca 58.68%,
+        #28e0b9 69.81%,
+        #19fb9b 93.01%
+      );
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  .attachButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 12px 20px;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
+      linear-gradient(
+        44.76deg,
+        #9945ff 10.43%,
+        #8752f3 30.84%,
+        #5497d5 49.4%,
+        #43b4ca 58.68%,
+        #28e0b9 69.81%,
+        #19fb9b 93.01%
+      );
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
+  }
+
+  .okButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: #4a279c;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 600;
+  }
+}

@@ -104,6 +104,32 @@
       }
     }
 
+    .awardButton {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      height: 24px;
+      width: 28px;
+      padding: 8px;
+      margin-left: 10px;
+      border: 1px solid #3f1d96;
+      border-radius: 9999px;
+
+      color: #3f1d96;
+      font-size: 12px;
+
+      &:disabled {
+        border-color: #7c7b7c;
+        color: #7c7b7c;
+        cursor: not-allowed;
+
+        svg path {
+          fill: #7c7b7c;
+        }
+      }
+    }
+
     .actionDivider {
       width: 1px;
       height: 22px;

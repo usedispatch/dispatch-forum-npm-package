@@ -1,4 +1,3 @@
-export { Counter } from "./components/counter";
 export { PopUpModal, MessageType } from "./components/common/PopUpModal";
 export { PoweredByDispatch } from "./components/forums/PoweredByDispatch";
 export { ForumContent } from "./components/forums/forum/ForumContent";

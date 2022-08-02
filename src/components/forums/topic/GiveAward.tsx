@@ -1,19 +1,7 @@
 import * as _ from "lodash";
-import { useState, ReactNode, useMemo, useEffect } from "react";
+import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost, WalletInterface } from "@usedispatch/client";
-import { WalletContextState } from "@solana/wallet-adapter-react";
-
-import {
-  ConnectionProvider,
-  WalletProvider,
-  useConnection,
-  useWallet,
-} from "@solana/wallet-adapter-react";
-import {
-  WalletModalProvider,
-  WalletMultiButton,
-} from "@solana/wallet-adapter-react-ui";
 
 import {
   CollapsibleProps,
@@ -24,7 +12,6 @@ import {
 
 import { Success, SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
-import { map } from "lodash";
 
 enum AwardType {
   NFT = "NFT",
@@ -88,11 +75,12 @@ export function GiveAward(props: GiveAwardProps) {
 
     try {
       // TODO (Ana - Andrew): change this ugly line -- "Update wallet interface to support WalletContextState" on Notion
-      let w = Forum.wallet as WalletContextState;
+      let w = Forum.wallet; //as WalletContextState;
 
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT!,
+        // @ts-ignore
         w.sendTransaction
       );
 
@@ -260,7 +248,8 @@ async function transferSOL(props: TransferSOLProps) {
   );
 
   // TODO (Ana - Andrew): change this ugly line
-  let w = wallet as WalletContextState;
+  let w = wallet; //as WalletContextState;
+  // @ts-ignore
 
   const s = await w.sendTransaction(tx, connection);
 

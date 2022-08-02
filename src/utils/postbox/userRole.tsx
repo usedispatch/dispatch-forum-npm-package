@@ -11,33 +11,33 @@ export const getUserRole = async (
   roleContext: UserObject,
   topic?: ForumPost
 ) => {
-    if (isUndefined(topic)) {
-      const [isMod, isOwner, canCreateTopic] = await Promise.all([
-          forum.isModerator(collectionId),
-          forum.isOwner(collectionId),
-          forum.canCreateTopic(collectionId)
-        ]);
-        const value = isOwner
-        ? UserRoleType.Owner
-        : isMod
-        ? UserRoleType.Moderator
-        : canCreateTopic
-        ? UserRoleType.Poster
-        : UserRoleType.Viewer;
-        roleContext.setRole(value);
-    } else {
-        const [ isMod, isOwner, canPost] = await Promise.all([
-            forum.isModerator(collectionId),
-            forum.isOwner(collectionId),
-            forum.canPost(collectionId, topic)
-        ]);
-        const value = isOwner
-            ? UserRoleType.Owner
-            : isMod
-            ? UserRoleType.Moderator
-            : canPost
-            ? UserRoleType.Poster
-            : UserRoleType.Viewer;
-        roleContext.setRole(value);
+  if (isUndefined(topic)) {
+    const [isMod, isOwner, canCreateTopic] = await Promise.all([
+      forum.isModerator(collectionId),
+      forum.isOwner(collectionId),
+      forum.canCreateTopic(collectionId),
+    ]);
+    const value = isOwner
+      ? UserRoleType.Owner
+      : isMod
+      ? UserRoleType.Moderator
+      : canCreateTopic
+      ? UserRoleType.Poster
+      : UserRoleType.Viewer;
+    roleContext.setRole(value);
+  } else {
+    const [isMod, isOwner, canPost] = await Promise.all([
+      forum.isModerator(collectionId),
+      forum.isOwner(collectionId),
+      forum.canPost(collectionId, topic),
+    ]);
+    const value = isOwner
+      ? UserRoleType.Owner
+      : isMod
+      ? UserRoleType.Moderator
+      : canPost
+      ? UserRoleType.Poster
+      : UserRoleType.Viewer;
+    roleContext.setRole(value);
   }
 };

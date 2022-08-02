@@ -31,10 +31,11 @@ import { ForumData } from '../../../utils/hooks';
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
+  update: () => Promise<void>;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forumData, forumObject } = props;
+  const { forumData, forumObject, update } = props;
   const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
@@ -209,6 +210,7 @@ export function ForumContent(props: ForumContentProps) {
         setDescription("");
         setAccessToken(undefined);
         setShowNewTopicModal(false);
+        update();
       } else {
         setCreatingNewTopic(false);
         setModalInfo({

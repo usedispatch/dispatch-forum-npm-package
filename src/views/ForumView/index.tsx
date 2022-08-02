@@ -344,6 +344,7 @@ export const ForumView = (props: ForumViewProps) => {
                         <ForumContent
                           forumObject={forumObject}
                           forumData={forumData.value}
+                          update={update}
                         />
                       );
                     } else if (forumData.state === 'notFound' ) {

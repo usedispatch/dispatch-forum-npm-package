@@ -57,9 +57,9 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  const Forum = useForum();
+  const forumObject = useForum();
   const Role = useRole();
-  const { isNotEmpty, wallet, permission } = Forum;
+  const { isNotEmpty, wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
   const collectionId = props.collectionId;
@@ -109,9 +109,9 @@ export const ForumView = (props: ForumViewProps) => {
   const getForumForCollection = useCallback(async () => {
     try {
       const [res, desc, mods] = await Promise.all([
-        Forum.getForumForCollection(collectionPublicKey),
-        Forum.getDescription(collectionPublicKey),
-        Forum.getModerators(collectionPublicKey),
+        forumObject.getForumForCollection(collectionPublicKey),
+        forumObject.getDescription(collectionPublicKey),
+        forumObject.getModerators(collectionPublicKey),
       ]);
       setLoading(false);
       if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods) && mount.current) {
@@ -135,7 +135,7 @@ export const ForumView = (props: ForumViewProps) => {
         collapsible: { header: "Error", content: error.message },
       });
     }
-  }, [Forum, collectionPublicKey]);
+  }, [forumObject, collectionPublicKey]);
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -176,11 +176,11 @@ export const ForumView = (props: ForumViewProps) => {
 
       const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
 
-      const res = await Forum.createForum(forum);
+      const res = await forumObject.createForum(forum);
 
       if (!_.isNil(res?.forum)) {
         if (!_.isNil(tokenAccess)) {
-          await Forum.setForumPostRestriction(collectionPublicKey, {
+          await forumObject.setForumPostRestriction(collectionPublicKey, {
             nftOwnership: {
               collectionId: tokenAccess
             }
@@ -234,11 +234,11 @@ export const ForumView = (props: ForumViewProps) => {
       setLoading(false);
       setForum(undefined);
     }
-  }, [Forum, isNotEmpty, publicKey, collectionId, mount.current]);
+  }, [forumObject/* , isNotEmpty, publicKey, collectionId, mount.current */]);
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {
-      getUserRole(Forum, collectionPublicKey, Role);
+    if (isNotEmpty && !_.isNil(forum) && forumObject.wallet.publicKey) {
+      getUserRole(forumObject, collectionPublicKey, Role);
     }
   }, [forum, isNotEmpty, publicKey]);
 
@@ -394,7 +394,7 @@ export const ForumView = (props: ForumViewProps) => {
                     </div>
                   ) : isNotEmpty ? (
                     !_.isNil(forum) ? (
-                      <ForumContent forum={forum} />
+                      <ForumContent forum={forum} forumObject={forumObject} />
                     ) : (
                       emptyView
                     )

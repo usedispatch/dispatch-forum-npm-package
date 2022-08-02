@@ -26,16 +26,14 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { selectTopics } from '../../../utils/posts';
-import { useForum } from "../../../contexts/DispatchProvider";
 
 interface ForumContentProps {
   forum: ForumInfo;
-  forumObject?: DispatchForum;
+  forumObject: DispatchForum;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum } = props;
-  const forumObject = useForum();
+  const { forum, forumObject } = props;
   const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
@@ -74,9 +72,10 @@ export function ForumContent(props: ForumContentProps) {
     const posts = await forumObject.getPostsForForum(forum.collectionId);
     const topics = selectTopics(posts!);
     setPosts(posts!);
-    setTopics(topics!);
+    setTopics(topics);
     setLoadingTopics(false);
     // TODO moderators, owners
+    console.log('refresh', Math.random());
   };
 
   // Begin mutating operations
@@ -288,7 +287,7 @@ export function ForumContent(props: ForumContentProps) {
     return () => {
       mount.current = false;
     };
-  }, [forum]);
+  }, []);
 
   return (
     <div className="dsp- ">
@@ -539,6 +538,7 @@ export function ForumContent(props: ForumContentProps) {
           <TopicList
             loading={loadingTopics}
             topics={topics}
+            posts={posts}
             collectionId={forum.collectionId}
           />
         )}

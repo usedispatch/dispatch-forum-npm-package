@@ -41,8 +41,12 @@ export function ForumContent(props: ForumContentProps) {
 
   const [title, setTitle] = useState(forumData.info.title);
   const [description, setDescription] = useState(forumData.info.description);
-  const [currentMods, setCurrentMods] = useState<string[]>([]);
-  const [currentOwners, setCurrentOwners] = useState<string[]>([]);
+  const [currentMods, setCurrentMods] = useState<string[]>(
+    forumData.info.moderators.map(pkey => pkey.toBase58())
+  );
+  const [currentOwners, setCurrentOwners] = useState<string[]>(
+    forumData.info.owners.map(pkey => pkey.toBase58())
+  );
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);

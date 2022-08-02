@@ -1,8 +1,19 @@
 import * as _ from "lodash";
-import { useState, ReactNode, useMemo } from "react";
+import { useState, ReactNode, useMemo, useEffect } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost, WalletInterface } from "@usedispatch/client";
 import { WalletContextState } from "@solana/wallet-adapter-react";
+
+import {
+  ConnectionProvider,
+  WalletProvider,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
+import {
+  WalletModalProvider,
+  WalletMultiButton,
+} from "@solana/wallet-adapter-react-ui";
 
 import {
   CollapsibleProps,
@@ -13,6 +24,7 @@ import {
 
 import { Success, SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
+import { map } from "lodash";
 
 enum AwardType {
   NFT = "NFT",
@@ -41,9 +53,10 @@ export function GiveAward(props: GiveAwardProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const [selectedType, setSelectedType] = useState<AwardType>(AwardType.SOL); // TODO (Ana): include both types later
+  const [selectedType, setSelectedType] = useState<AwardType>(); // TODO (Ana): include both types later
   const [selectedAmount, setSelectedAmount] = useState(0);
-  const [selectedNFT, setSelectedNFT] = useState<any>();
+  const [selectedNFT, setSelectedNFT] = useState<string>();
+  const [nfts, setNFTs] = useState<string[]>([]); // [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const attachAward = async () => {
     setLoading(true);
@@ -70,14 +83,39 @@ export function GiveAward(props: GiveAwardProps) {
     }
   };
 
+  const transferNFT = async () => {
+    setLoading(true);
+
+    try {
+      // TODO (Ana - Andrew): change this ugly line -- "Update wallet interface to support WalletContextState" on Notion
+      let w = Forum.wallet as WalletContextState;
+
+      const tx = await Forum.transferNFTs(
+        post.poster,
+        selectedNFT!,
+        w.sendTransaction
+      );
+
+      setLoading(false);
+      onSuccess(
+        <>
+          <Success />
+          NFT transferred successfully.
+          <TransactionLink transaction={tx} />
+        </>
+      );
+    } catch (error: any) {
+      console.log(error);
+      setLoading(false);
+      onError(error);
+    }
+  };
+
   const title = selectedType
     ? selectedType === AwardType.SOL
       ? "How many SOL do you want to award?"
       : "Awards"
     : "Select type of award";
-
-  // TODO (ANA): implement this correctly
-  const nfts = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 
   const content = (
     <div className="awardContent">
@@ -99,15 +137,18 @@ export function GiveAward(props: GiveAwardProps) {
               />
             </div>
           )}
-          {selectedType === AwardType.NFT && (
+          {selectedType === AwardType.NFT && nfts && (
             <div className="giftsContainer">
               <div className="giftsGrid">
                 {nfts.map((value, index) => (
                   <div
                     key={index}
-                    className="giftContainer"
-                    onClick={() => setSelectedNFT(value)}>
-                    <div>nft {value}</div>
+                    className={`giftContainer ${
+                      value === selectedNFT ? "selectedNFT" : ""
+                    }`}
+                    onClick={() => setSelectedNFT(value)}
+                  >
+                    <div>{value}</div>
                   </div>
                 ))}
               </div>
@@ -120,13 +161,18 @@ export function GiveAward(props: GiveAwardProps) {
           <div className="typeSelector">
             <button
               className="nftType"
-              onClick={() => setSelectedType(AwardType.NFT)}>
+              onClick={() => {
+                setSelectedType(AwardType.NFT);
+                getNFTsForCurrentUser();
+              }}
+            >
               <Plus />
               NFT
             </button>
             <button
               className="solType"
-              onClick={() => setSelectedType(AwardType.SOL)}>
+              onClick={() => setSelectedType(AwardType.SOL)}
+            >
               <SolanaLogo color="white" />
               SOL
             </button>
@@ -135,6 +181,15 @@ export function GiveAward(props: GiveAwardProps) {
       )}
     </div>
   );
+
+  const getNFTsForCurrentUser = async () => {
+    try {
+      const nfts = await Forum.getNFTsForCurrentUser();
+      setNFTs(nfts.map((n) => n.toBase58()));
+    } catch (error: any) {
+      onError(error);
+    }
+  };
 
   return (
     <div className="awardContainer">
@@ -166,14 +221,16 @@ export function GiveAward(props: GiveAwardProps) {
             <button
               className="attachButton"
               disabled={selectedAmount === 0}
-              onClick={() => attachAward()}>
+              onClick={() => attachAward()}
+            >
               Attach
             </button>
           ) : (
             <button
               className="confirmAndAwardButton"
               disabled={_.isNil(selectedNFT)}
-              onClick={() => console.log("confirm and award")}>
+              onClick={() => transferNFT()}
+            >
               Confirm and award
             </button>
           ))

@@ -181,9 +181,7 @@ export const ForumView = (props: ForumViewProps) => {
       if (!_.isNil(res?.forum)) {
         if (!_.isNil(tokenAccess)) {
           await Forum.setForumPostRestriction(collectionPublicKey, {
-            nftOwnership: {
-              collectionId: tokenAccess
-            }
+            nftOwnership: { collectionId: tokenAccess },
           });
         }
 

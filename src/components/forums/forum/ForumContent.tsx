@@ -100,6 +100,24 @@ export function ForumContent(props: ForumContentProps) {
     }
   }, [DispatchForumObject]);
 
+  const getForumRestriction = useCallback(async () => {
+    try {
+      const restriction = await DispatchForumObject.getForumPostRestriction(
+        forum.collectionId
+      );
+      if (!_.isNil(restriction)) {
+        setAccessToken(restriction.nftOwnership?.collectionId.toBase58());
+      }
+    } catch (error: any) {
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The restriction could not be determined",
+        collapsible: { header: "Error", content: error.message },
+      });
+    }
+  }, [DispatchForumObject]);
+
   const addModerators = async () => {
     setAddingNewModerator(true);
     try {
@@ -186,7 +204,6 @@ export function ForumContent(props: ForumContentProps) {
         }
       );
 
-      setAccessToken("");
       setShowAddAccessToken(false);
       setAddingAccessToken(false);
       setModalInfo({
@@ -330,6 +347,7 @@ export function ForumContent(props: ForumContentProps) {
     getTopicsForForum();
     getModerators();
     getOwners();
+    getForumRestriction();
     return () => {
       mount.current = false;
     };
@@ -364,7 +382,7 @@ export function ForumContent(props: ForumContentProps) {
                 of NFT's in the collection can participate in this forum.
                 <input
                   type="text"
-                  placeholder="Collection ID"
+                  placeholder="NFT Collection ID"
                   className="newAccessToken"
                   name="accessToken"
                   value={accessToken}

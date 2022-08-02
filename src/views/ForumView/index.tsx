@@ -1,7 +1,7 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useRef } from "react";
-import { ForumInfo } from "@usedispatch/client";
+import { useState, useEffect, useMemo, ReactNode, useCallback, useRef } from "react";
+import { ForumInfo, ForumPost } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
 import { Plus } from "../../assets";
@@ -17,10 +17,12 @@ import {
   ForumContent,
   PoweredByDispatch,
 } from "../../components/forums";
+import { selectTopics } from '../../utils/posts';
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
+import { Loading } from 'types/loading';
 
 interface ForumViewProps {
   collectionId: string;
@@ -65,12 +67,24 @@ export const ForumView = (props: ForumViewProps) => {
   const collectionId = props.collectionId;
 
   const mount = useRef(false);
-  const [forum, setForum] = useState<ForumInfo | null>();
+  const [forumInfo, setForumInfo] = useState<Loading<ForumInfo>>({ state: 'initial' });
+  const [posts, setPosts] = useState<Loading<ForumPost[]>>({ state: 'initial' });
+  const topics: Loading<ForumPost[]> = useMemo(() => {
+    if (posts.state === 'success') {
+      return {
+        state: 'success',
+        value: selectTopics(posts.value)
+      };
+    } else {
+      return posts;
+    }
+  }, [posts]);
+
+  // Title and description for editing
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [newModerator, setNewModerator] = useState("");
   const [accessToken, setAccessToken] = useState<string>();
   const [modalInfo, setModalInfo] = useState<{
@@ -80,8 +94,49 @@ export const ForumView = (props: ForumViewProps) => {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
+  const [collectionPublicKey, setCollectionPublicKey] = useState<web3.PublicKey | null>(null);
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
+
+  const refresh = async () => {
+    setForumInfo({ state: 'pending' });
+    setPosts({ state: 'pending' });
+    try {
+      const [res, desc, mods] = await Promise.all([
+        forumObject.getForumForCollection(collectionPublicKey!),
+        forumObject.getDescription(collectionPublicKey!),
+        forumObject.getModerators(collectionPublicKey!)
+      ]);
+
+      if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods) && mount.current) {
+        setForumInfo({
+          state: 'success',
+          value: {
+            collectionId: collectionPublicKey!,
+            owners: publicKey ? [publicKey] : [],
+            moderators: mods!,
+            title: desc!.title,
+            description: desc!.desc,
+          }
+        });
+        // Refresh posts and topics
+        const posts = await forumObject.getPostsForForum(collectionPublicKey!);
+        setPosts({ state: 'success', value: posts! });
+      } else {
+        setForumInfo({ state: 'notFound' });
+        setPosts({ state: 'notFound' });
+      }
+    } catch (error: any) {
+      setForumInfo({ state: 'failed' });
+      setPosts({ state: 'failed' });
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
+        collapsible: { header: "Error", content: error.message },
+      });
+    }
+  };
+
 
   useEffect(() => {
     mount.current = true;
@@ -93,6 +148,7 @@ export const ForumView = (props: ForumViewProps) => {
       );
     } catch (error) {
       const message = JSON.stringify(error);
+      console.log('collection id parsing');
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
@@ -101,41 +157,11 @@ export const ForumView = (props: ForumViewProps) => {
         collapsible: { header: "Error", content: message },
       });
     }
+    refresh();
     return () => {
       mount.current = false;
     };
   }, []);
-
-  const getForumForCollection = useCallback(async () => {
-    try {
-      const [res, desc, mods] = await Promise.all([
-        forumObject.getForumForCollection(collectionPublicKey),
-        forumObject.getDescription(collectionPublicKey),
-        forumObject.getModerators(collectionPublicKey),
-      ]);
-      setLoading(false);
-      if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods) && mount.current) {
-        setForum({
-          collectionId: collectionPublicKey,
-          owners: publicKey ? [publicKey] : [],
-          moderators: mods,
-          title: desc.title,
-          description: desc.desc,
-        });
-      } else {
-        setForum(null);
-      }
-    } catch (error: any) {
-      setLoading(false);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  }, [forumObject, collectionPublicKey]);
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -180,14 +206,14 @@ export const ForumView = (props: ForumViewProps) => {
 
       if (!_.isNil(res?.forum)) {
         if (!_.isNil(tokenAccess)) {
-          await forumObject.setForumPostRestriction(collectionPublicKey, {
+          await forumObject.setForumPostRestriction(collectionPublicKey!, {
             nftOwnership: {
               collectionId: tokenAccess
             }
           });
         }
 
-        getForumForCollection();
+        refresh();
         setShowNewForumModal(false);
         setModalInfo({
           title: `Success!`,
@@ -222,25 +248,10 @@ export const ForumView = (props: ForumViewProps) => {
   };
 
   useEffect(() => {
-    if (
-      isNotEmpty &&
-      !_.isNil(publicKey) &&
-      !_.isNil(collectionPublicKey) &&
-      mount.current
-    ) {
-      setLoading(true);
-      getForumForCollection();
-    } else {
-      setLoading(false);
-      setForum(undefined);
+    if (isNotEmpty && !_.isNil(forumInfo) && forumObject.wallet.publicKey) {
+      getUserRole(forumObject, collectionPublicKey!, Role);
     }
-  }, [forumObject/* , isNotEmpty, publicKey, collectionId, mount.current */]);
-
-  useEffect(() => {
-    if (isNotEmpty && !_.isNil(forum) && forumObject.wallet.publicKey) {
-      getUserRole(forumObject, collectionPublicKey, Role);
-    }
-  }, [forum, isNotEmpty, publicKey]);
+  }, [forumInfo, isNotEmpty, publicKey]);
 
   const createForumButton = (
     <div className="createForumButtonContainer">
@@ -377,30 +388,41 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {!_.isNil(forum) && (
+            {forumInfo.state === 'success' && (
               <div
                 className={`forumViewTitle ${
                   !permission.readAndWrite ? "alert" : ""
                 }`}>
-                {forum.title}
+                {forumInfo.value.title}
               </div>
             )}
             <main>
               <div className="forumViewContentBox">
                 <div>
-                  {loading ? (
-                    <div className="forumLoading">
-                      <Spinner />
-                    </div>
-                  ) : isNotEmpty ? (
-                    !_.isNil(forum) ? (
-                      <ForumContent forum={forum} forumObject={forumObject} />
-                    ) : (
-                      emptyView
-                    )
-                  ) : (
-                    disconnectedView
-                  )}
+                  {(() => {
+                    if (forumInfo.state === 'pending' && posts.state === 'pending') {
+                      return (
+                        <div className="forumLoading">
+                          <Spinner />
+                        </div>
+                      );
+                    } else if (forumInfo.state === 'success' && posts.state === 'success' && topics.state === 'success') {
+                      return (
+                        <ForumContent
+                          forumInfo={forumInfo.value} 
+                          forumObject={forumObject}
+                          posts={posts.value}
+                          topics={topics.value}
+                          title={forumInfo.value.title}
+                          description={forumInfo.value.description}
+                        />
+                      );
+                    } else if (forumInfo.state === 'notFound' ) {
+                      return emptyView;
+                    } else {
+                      return disconnectedView
+                    }
+                  })()}
                 </div>
               </div>
             </main>

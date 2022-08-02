@@ -28,26 +28,29 @@ import { SCOPES } from "../../../utils/permissions";
 import { selectTopics } from '../../../utils/posts';
 
 interface ForumContentProps {
-  forum: ForumInfo;
+  forumInfo: ForumInfo;
   forumObject: DispatchForum;
+  // The topics and posts making up the forum
+  topics: ForumPost[];
+  posts: ForumPost[];
+  title: string;
+  description: string;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum, forumObject } = props;
+  const { forumObject, topics, posts } = props;
+  const forum = props.forumInfo;
   const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
-  const [loadingTopics, setLoadingTopics] = useState(true);
-  // The posts and topics that make up the forum
-  const [posts, setPosts] = useState<ForumPost[]>([]);
-  const [topics, setTopics] = useState<ForumPost[]>([]);
-  const [showNewTopicModal, setShowNewTopicModal] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [creatingNewTopic, setCreatingNewTopic] = useState(false);
-
+  const [title, setTitle] = useState(props.title);
+  const [description, setDescription] = useState(props.title);
   const [currentMods, setCurrentMods] = useState<string[]>([]);
   const [currentOwners, setCurrentOwners] = useState<string[]>([]);
+
+  const [showNewTopicModal, setShowNewTopicModal] = useState(false);
+  const [creatingNewTopic, setCreatingNewTopic] = useState(false);
+
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [showAddOwners, setShowAddOwners] = useState(false);
   const [newModerator, setNewModerator] = useState<string>("");
@@ -65,18 +68,6 @@ export function ForumContent(props: ForumContentProps) {
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
-
-  // TODO memoize this
-  const refresh = async () => {
-    // Refresh posts and topics
-    const posts = await forumObject.getPostsForForum(forum.collectionId);
-    const topics = selectTopics(posts!);
-    setPosts(posts!);
-    setTopics(topics);
-    setLoadingTopics(false);
-    // TODO moderators, owners
-    console.log('refresh', Math.random());
-  };
 
   // Begin mutating operations
   const addModerators = async () => {
@@ -283,7 +274,6 @@ export function ForumContent(props: ForumContentProps) {
 
   useEffect(() => {
     mount.current = true;
-    refresh()
     return () => {
       mount.current = false;
     };
@@ -536,7 +526,6 @@ export function ForumContent(props: ForumContentProps) {
         </PermissionsGate>
         {!_.isNil(forum.collectionId) && (
           <TopicList
-            loading={loadingTopics}
             topics={topics}
             posts={posts}
             collectionId={forum.collectionId}

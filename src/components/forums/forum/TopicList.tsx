@@ -17,14 +17,13 @@ import { Link } from "./../../../components/common";
 import { selectReplies } from '../../../utils/posts';
 
 interface TopicListProps {
-  loading: boolean;
   topics: ForumPost[];
   posts: ForumPost[];
   collectionId: web3.PublicKey;
 }
 
 export function TopicList(props: TopicListProps) {
-  const { topics, posts, collectionId, loading } = props;
+  const { topics, posts, collectionId } = props;
 
   return (
     <div className="topicListContainer">
@@ -45,8 +44,7 @@ export function TopicList(props: TopicListProps) {
             </tr>
           </thead>
           <tbody>
-            {!loading &&
-              topics.map((topic, index) => (
+            {topics.map((topic, index) => (
                 <RowContent
                   key={index}
                   topic={topic}
@@ -56,14 +54,8 @@ export function TopicList(props: TopicListProps) {
               ))}
           </tbody>
         </table>
-        {loading ? (
-          <div className="topicListSpinner">
-            <Spinner />
-          </div>
-        ) : (
-          topics.length === 0 && (
-            <div className="emptyTopicList">No topics yet</div>
-          )
+        {topics.length === 0 && (
+          <div className="emptyTopicList">No topics yet</div>
         )}
       </div>
     </div>

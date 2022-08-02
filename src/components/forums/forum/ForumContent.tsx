@@ -306,8 +306,7 @@ export function ForumContent(props: ForumContentProps) {
             body: "Connect to your wallet in order to create a forum",
           });
         }
-      }}
-    >
+      }}>
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -379,16 +378,14 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={accessToken?.length === 0}
-                onClick={() => addAccessToken()}
-              >
+                onClick={() => addAccessToken()}>
                 Save
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddAccessToken(false)}
-              >
+                onClick={() => setShowAddAccessToken(false)}>
                 Cancel
               </button>
             }
@@ -443,16 +440,14 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={title.length === 0}
-                onClick={() => createTopic()}
-              >
+                onClick={() => createTopic()}>
                 Create
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}
-              >
+                onClick={() => setShowNewTopicModal(false)}>
                 Cancel
               </button>
             }
@@ -497,8 +492,7 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddModerators(false)}
-              >
+                onClick={() => setShowAddModerators(false)}>
                 Cancel
               </button>
             }
@@ -543,44 +537,41 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddOwners(false)}
-              >
+                onClick={() => setShowAddOwners(false)}>
                 Cancel
               </button>
             }
           />
         )}
         {forumHeader}
-        <PermissionsGate
-          scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
-        >
-          <div className="moderatorToolsContainer">
-            <div>Moderator tools: </div>
-            <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+        {connected && (
+          <PermissionsGate
+            scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
+            <div className="moderatorToolsContainer">
+              <div>Moderator tools: </div>
+              <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowAddOwners(true)}>
+                  Manage owners
+                </button>
+              </PermissionsGate>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddOwners(true)}
-              >
-                Manage owners
+                onClick={() => setShowAddModerators(true)}>
+                Manage moderators
               </button>
-            </PermissionsGate>
-            <button
-              className="moderatorTool"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowAddModerators(true)}
-            >
-              Manage moderators
-            </button>
-            <button
-              className="moderatorTool"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowAddAccessToken(true)}
-            >
-              Manage forum access
-            </button>
-          </div>
-        </PermissionsGate>
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddAccessToken(true)}>
+                Manage forum access
+              </button>
+            </div>
+          </PermissionsGate>
+        )}
         {!_.isNil(forum.collectionId) && (
           <TopicList
             loading={loadingTopics}

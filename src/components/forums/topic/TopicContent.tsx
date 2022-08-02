@@ -20,20 +20,24 @@ import { usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
+import { selectReplies } from '../../../utils/posts';
+import { ForumData } from '../../../utils/hooks';
 
 interface TopicContentProps {
   forum: DispatchForum;
+  forumData: ForumData;
   topic: ForumPost;
-  posts: ForumPost[];
-  collectionId: web3.PublicKey;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { collectionId, forum, topic, posts, userRole, updateVotes } = props;
+  const { forum, forumData, userRole, updateVotes, topic } = props;
+  const replies = useMemo(() => {
+    return selectReplies(forumData.posts, topic);
+  }, [forumData])
   const { buildForumPath } = usePath();
-  const forumPath = buildForumPath(collectionId.toBase58());
+  const forumPath = buildForumPath(forumData.info.collectionId.toBase58());
   const permission = forum.permission;
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -100,7 +104,7 @@ export function TopicContent(props: TopicContentProps) {
       setDeletingTopic(true);
       const tx = await forum.deleteForumPost(
         topic,
-        collectionId,
+        forumData.info.collectionId,
         userRole === UserRoleType.Moderator
       );
       setModalInfo({
@@ -144,13 +148,13 @@ export function TopicContent(props: TopicContentProps) {
           <div className="image">
             <MessageSquare />
           </div>
-          {`${posts.length} comments`}
+          {`${replies.length} comments`}
         </div>
         <PermissionsGate scopes={[SCOPES.canVote]}>
           <div className="actionDivider" />
           <Votes
-            onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
-            onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
+            onDownVotePost={() => forum.voteDownForumPost(topic, forumData.info.collectionId)}
+            onUpVotePost={() => forum.voteUpForumPost(topic, forumData.info.collectionId)}
             post={topic}
             updateVotes={(upVoted) => updateVotes(upVoted)}
           />
@@ -271,7 +275,7 @@ export function TopicContent(props: TopicContentProps) {
         <PermissionsGate scopes={[SCOPES.canCreatePost]}>
           <CreatePost
             topicId={topic.postId}
-            collectionId={collectionId}
+            collectionId={forumData.info.collectionId}
             createForumPost={forum.createForumPost}
             onReload={() => {}}
           />
@@ -284,8 +288,8 @@ export function TopicContent(props: TopicContentProps) {
       />
       <PostList
         forum={forum}
-        collectionId={collectionId}
-        posts={posts}
+        collectionId={forumData.info.collectionId}
+        posts={replies}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);
           setNotificationContent(

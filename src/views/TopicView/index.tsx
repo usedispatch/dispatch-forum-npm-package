@@ -1,8 +1,9 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback } from "react";
+import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
+import { useForumData } from '../../utils/hooks';
 
 import { Chevron } from "../../assets";
 import {
@@ -33,16 +34,31 @@ export const TopicView = (props: Props) => {
   const role = useRole();
   const { isNotEmpty, permission } = forum;
   const { collectionId, topicId } = props;
+  const collectionPublicKey = useMemo(() => {
+    // TODO show modal if this fails
+    return new web3.PublicKey(collectionId);
+  }, [collectionId]);
 
-  const [collectionPublicKey, setCollectionPublicKey] = useState<web3.PublicKey | null>(null);
+  const { forumData, update } = useForumData(collectionPublicKey, forum);
 
-  const [topic, setTopic] = useState<Loading<ForumPost>>(
-    { state: 'initial' }
-  );
+  const topic: Loading<ForumPost> = useMemo(() => {
+    if (forumData.state === 'success') {
+      const post = forumData.value.posts.find(({ isTopic, postId }) => {
+        return isTopic && postId === topicId
+      });
+      if (post) {
+        return {
+          state: 'success',
+          value: post
+        }
+      } else {
+          return { state: 'notFound' };
+        }
+    } else {
+      return forumData;
+    }
+  }, [forumData, topicId]);
 
-  const [posts, setPosts] = useState<Loading<ForumPost[]>>(
-    { state: 'initial' }
-  );
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -53,50 +69,6 @@ export const TopicView = (props: Props) => {
 
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
-  const [parent, setParent] = useState<Loading<string | undefined>>(
-    { state: 'initial' }
-  );
-
-  useEffect(() => {
-    try {
-      const collectionIdKey = new web3.PublicKey(collectionId);
-      setCollectionPublicKey(collectionIdKey);
-    } catch {
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "Invalid Public Key",
-      });
-    }
-  }, []);
-
-  const refresh = async () => {
-    setParent({ state: 'pending' });
-    setTopic({ state: 'pending' });
-    try {
-      const [desc, res, ps] = await Promise.all([
-        // TODO consider gracefully handling null instead of
-        // using nonnull asserts
-        forum.getDescription(collectionPublicKey!),
-        forum.getTopicData(topicId, collectionPublicKey!),
-        forum.getPostsForForum(collectionPublicKey!)
-      ]);
-      setParent({ state: 'success', value: desc?.title });
-      setTopic({ state: 'success', value: res });
-      setPosts({ state: 'success', value: ps! });
-    } catch (error: any) {
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The topic could not be loaded",
-        collapsible: { header: "Error", content: error.message },
-      });
-
-      setTopic({ state: 'failed' });
-      setParent({ state: 'failed' });
-    }
-  };
 
   const updateVotes = (upVoted: boolean) => {
     if (topic.state === 'success' && topic.value) {
@@ -112,13 +84,8 @@ export const TopicView = (props: Props) => {
   };
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(topicId) && !_.isNil(collectionPublicKey)) {
-      refresh();
-    } else {
-      // Consider having special 'not found' Loading state?
-      setTopic({ state: 'failed' });
-    }
-  }, [isNotEmpty, topicId, collectionPublicKey, forum]);
+    update();
+  }, []);
 
   useEffect(() => {
     if (
@@ -165,21 +132,19 @@ export const TopicView = (props: Props) => {
                   <div className="topicViewLoading">
                     <Spinner />
                   </div>
-                ) : topic.state === 'success' &&
-                  parent.state === 'success' &&
-                  posts.state === 'success'
+                ) : forumData.state === 'success' &&
+                    topic.state === 'success'
                   ? (
                   <>
                     <Breadcrumb
                       navigateTo={forumPath}
-                      parent={parent.value!}
-                      current={topic.value.data.subj!}
+                      parent={forumData.value.info.title}
+                      current={topic.value!.data.subj!}
                     />
                     <TopicContent
-                      topic={topic.value}
-                      posts={posts.value}
+                      forumData={forumData.value}
                       forum={forum}
-                      collectionId={collectionPublicKey!}
+                      topic={topic.value}
                       userRole={role.role}
                       updateVotes={(upVoted) => updateVotes(upVoted)}
                     />

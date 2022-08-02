@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+# [0.2.0] 2022-08-02
+
+- forum: Add NFT and SOL gifting functionality ([#47](https://github.com/usedispatch/dispatch-forum-npm-package/pull/47)) ([#44](https://github.com/usedispatch/dispatch-forum-npm-package/pull/44))
+
 # [0.1.4] 2022-07-29
 
 - client: Update token check for gating

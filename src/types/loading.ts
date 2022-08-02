@@ -14,5 +14,8 @@ export interface Success<T> {
 
 export interface Initial { state: 'initial'; }
 export interface Pending { state: 'pending'; }
-export interface Failed { state: 'failed'; }
+export interface Failed {
+  state: 'failed';
+  error?: any;
+}
 export interface NotFound { state: 'notFound'; }

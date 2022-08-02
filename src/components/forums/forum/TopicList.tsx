@@ -14,16 +14,17 @@ import { Spinner } from "../../common";
 
 import { useForum, usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
-import { selectReplies } from '../../../utils/posts';
+import { selectReplies, selectTopics } from '../../../utils/posts';
+import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
-  topics: ForumPost[];
-  posts: ForumPost[];
-  collectionId: web3.PublicKey;
+  forumData: ForumData
 }
 
-export function TopicList(props: TopicListProps) {
-  const { topics, posts, collectionId } = props;
+export function TopicList({ forumData }: TopicListProps) {
+  const topics = useMemo(() => {
+    return selectTopics(forumData.posts);
+  }, [forumData]);
 
   return (
     <div className="topicListContainer">
@@ -48,8 +49,7 @@ export function TopicList(props: TopicListProps) {
                 <RowContent
                   key={index}
                   topic={topic}
-                  posts={posts}
-                  collectionId={collectionId}
+                  forumData={forumData}
                 />
               ))}
           </tbody>
@@ -64,16 +64,17 @@ export function TopicList(props: TopicListProps) {
 
 interface RowContentProps {
   topic: ForumPost;
-  posts: ForumPost[];
-  collectionId: web3.PublicKey;
+  forumData: ForumData;
 }
 
 function RowContent(props: RowContentProps) {
-  const { collectionId, topic, posts } = props;
+  const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
-  const topicPath = buildTopicPath(collectionId.toBase58(), topic.postId);
+  const topicPath = buildTopicPath(forumData.info.collectionId.toBase58(), topic.postId);
 
-  const replies = selectReplies(posts, topic);
+  const replies = useMemo(() => {
+    return selectReplies(forumData.posts, topic);
+  }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {
     if (posts.length > 0) {

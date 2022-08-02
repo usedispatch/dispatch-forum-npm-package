@@ -22,7 +22,8 @@ import { selectTopics } from '../../utils/posts';
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
-import { Loading } from 'types/loading';
+import { Loading } from '../../types/loading';
+import { useForumData } from '../../utils/hooks';
 
 interface ForumViewProps {
   collectionId: string;
@@ -67,18 +68,8 @@ export const ForumView = (props: ForumViewProps) => {
   const collectionId = props.collectionId;
 
   const mount = useRef(false);
-  const [forumInfo, setForumInfo] = useState<Loading<ForumInfo>>({ state: 'initial' });
-  const [posts, setPosts] = useState<Loading<ForumPost[]>>({ state: 'initial' });
-  const topics: Loading<ForumPost[]> = useMemo(() => {
-    if (posts.state === 'success') {
-      return {
-        state: 'success',
-        value: selectTopics(posts.value)
-      };
-    } else {
-      return posts;
-    }
-  }, [posts]);
+  const [collectionPublicKey, setCollectionPublicKey] = useState<web3.PublicKey | null>(null);
+  const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
   // Title and description for editing
   const [title, setTitle] = useState('');
@@ -94,49 +85,7 @@ export const ForumView = (props: ForumViewProps) => {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const [collectionPublicKey, setCollectionPublicKey] = useState<web3.PublicKey | null>(null);
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
-
-  const refresh = async () => {
-    setForumInfo({ state: 'pending' });
-    setPosts({ state: 'pending' });
-    try {
-      const [res, desc, mods] = await Promise.all([
-        forumObject.getForumForCollection(collectionPublicKey!),
-        forumObject.getDescription(collectionPublicKey!),
-        forumObject.getModerators(collectionPublicKey!)
-      ]);
-
-      if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods) && mount.current) {
-        setForumInfo({
-          state: 'success',
-          value: {
-            collectionId: collectionPublicKey!,
-            owners: publicKey ? [publicKey] : [],
-            moderators: mods!,
-            title: desc!.title,
-            description: desc!.desc,
-          }
-        });
-        // Refresh posts and topics
-        const posts = await forumObject.getPostsForForum(collectionPublicKey!);
-        setPosts({ state: 'success', value: posts! });
-      } else {
-        setForumInfo({ state: 'notFound' });
-        setPosts({ state: 'notFound' });
-      }
-    } catch (error: any) {
-      setForumInfo({ state: 'failed' });
-      setPosts({ state: 'failed' });
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The forum for the collection ${croppedCollectionID} could not be fetched.`,
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  };
-
 
   useEffect(() => {
     mount.current = true;
@@ -157,7 +106,6 @@ export const ForumView = (props: ForumViewProps) => {
         collapsible: { header: "Error", content: message },
       });
     }
-    refresh();
     return () => {
       mount.current = false;
     };
@@ -213,7 +161,6 @@ export const ForumView = (props: ForumViewProps) => {
           });
         }
 
-        refresh();
         setShowNewForumModal(false);
         setModalInfo({
           title: `Success!`,
@@ -248,10 +195,10 @@ export const ForumView = (props: ForumViewProps) => {
   };
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(forumInfo) && forumObject.wallet.publicKey) {
+    if( isNotEmpty && forumData.state === 'success' && forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
-  }, [forumInfo, isNotEmpty, publicKey]);
+  }, [forumData, isNotEmpty, publicKey]);
 
   const createForumButton = (
     <div className="createForumButtonContainer">
@@ -388,38 +335,34 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {forumInfo.state === 'success' && (
+            {forumData.state === 'success' && (
               <div
                 className={`forumViewTitle ${
                   !permission.readAndWrite ? "alert" : ""
                 }`}>
-                {forumInfo.value.title}
+                {forumData.value.info.title}
               </div>
             )}
             <main>
               <div className="forumViewContentBox">
                 <div>
                   {(() => {
-                    if (forumInfo.state === 'pending' && posts.state === 'pending') {
+                    if (forumData.state === 'pending') {
                       return (
                         <div className="forumLoading">
                           <Spinner />
                         </div>
                       );
-                    } else if (forumInfo.state === 'success' && posts.state === 'success' && topics.state === 'success') {
+                    } else if (forumData.state === 'success') {
                       return (
                         <ForumContent
-                          forumInfo={forumInfo.value} 
                           forumObject={forumObject}
-                          posts={posts.value}
-                          topics={topics.value}
-                          title={forumInfo.value.title}
-                          description={forumInfo.value.description}
+                          forumData={forumData.value}
                         />
                       );
-                    } else if (forumInfo.state === 'notFound' ) {
+                    } else if (forumData.state === 'notFound' ) {
                       return emptyView;
-                    } else {
+                    } else if (forumData.state === 'failed') {
                       return disconnectedView
                     }
                   })()}

@@ -26,25 +26,20 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { selectTopics } from '../../../utils/posts';
+import { ForumData } from '../../../utils/hooks';
 
 interface ForumContentProps {
-  forumInfo: ForumInfo;
   forumObject: DispatchForum;
-  // The topics and posts making up the forum
-  topics: ForumPost[];
-  posts: ForumPost[];
-  title: string;
-  description: string;
+  forumData: ForumData;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forumObject, topics, posts } = props;
-  const forum = props.forumInfo;
+  const { forumData, forumObject } = props;
   const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
-  const [title, setTitle] = useState(props.title);
-  const [description, setDescription] = useState(props.title);
+  const [title, setTitle] = useState(forumData.info.title);
+  const [description, setDescription] = useState(forumData.info.description);
   const [currentMods, setCurrentMods] = useState<string[]>([]);
   const [currentOwners, setCurrentOwners] = useState<string[]>([]);
 
@@ -76,7 +71,7 @@ export function ForumContent(props: ForumContentProps) {
       const moderatorId = newPublicKey(newModerator);
       const tx = await forumObject.addModerator(
         moderatorId,
-        forum.collectionId
+        forumData.info.collectionId
       );
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
@@ -113,7 +108,7 @@ export function ForumContent(props: ForumContentProps) {
       const ownerId = newPublicKey(newOwner);
       const tx = await forumObject.addOwner(
         ownerId,
-        forum.collectionId
+        forumData.info.collectionId
       );
       setCurrentOwners(currentOwners.concat(newOwner));
       setNewOwner("");
@@ -148,7 +143,7 @@ export function ForumContent(props: ForumContentProps) {
     setAddingAccessToken(true);
     try {
       const tx = await forumObject.setForumPostRestriction(
-        forum.collectionId,
+        forumData.info.collectionId,
         {
           nftOwnership: {
             collectionId: newPublicKey(accessToken!),
@@ -195,7 +190,7 @@ export function ForumContent(props: ForumContentProps) {
       const token = accessToken ? newPublicKey(accessToken) : undefined;
       const tx = await forumObject.createTopic(
         p,
-        forum.collectionId,
+        forumData.info.collectionId,
         token ? { nftOwnership: { collectionId: token } } : undefined
       );
       if (!_.isNil(tx)) {
@@ -264,7 +259,7 @@ export function ForumContent(props: ForumContentProps) {
   const forumHeader = (
     <div className="forumContentHeader">
       <div className="box">
-        <div className="description">{forum.description}</div>
+        <div className="description">{forumData.info.description}</div>
         <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
           {createTopicButton}
         </PermissionsGate>
@@ -524,11 +519,9 @@ export function ForumContent(props: ForumContentProps) {
             </button>
           </div>
         </PermissionsGate>
-        {!_.isNil(forum.collectionId) && (
+        {!_.isNil(forumData.info.collectionId) && (
           <TopicList
-            topics={topics}
-            posts={posts}
-            collectionId={forum.collectionId}
+            forumData={forumData}
           />
         )}
       </div>

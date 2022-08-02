@@ -1,8 +1,9 @@
 
 
 export type Loading<T>
-  = Success<T>
+  = Initial
   | Pending
+  | Success<T>
   | Failed;
 
 export interface Success<T> {
@@ -10,10 +11,6 @@ export interface Success<T> {
   value: T;
 };
 
-export interface Pending {
-  state: 'pending';
-}
-
-export interface Failed {
-  state: 'Failed';
-}
+export interface Initial { state: 'initial'; }
+export interface Pending { state: 'pending'; }
+export interface Failed { state: 'failed'; }

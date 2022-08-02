@@ -26,19 +26,22 @@ export function useForumData(
   async function fetchState(): Promise<Loading<ForumData>> {
     if (collectionId === null) { return { state: 'initial' }; }
     try {
-      const [desc, moderators, posts] = await Promise.all([
+      const [desc, moderators, owners, posts] = await Promise.all([
+        // TODO implement this as one function call
         forum.getDescription(collectionId),
         forum.getModerators(collectionId),
+        forum.getOwners(collectionId),
         forum.getPostsForForum(collectionId)
       ]);
 
-      if (desc && moderators && posts) {
+      if (desc && moderators && owners && posts) {
+        console.log(moderators, owners);
         return {
           state: 'success',
           value: {
             info: {
               collectionId,
-              owners: forum.wallet.publicKey ? [forum.wallet.publicKey] : [],
+              owners,
               moderators,
               title: desc.title,
               description: desc.desc

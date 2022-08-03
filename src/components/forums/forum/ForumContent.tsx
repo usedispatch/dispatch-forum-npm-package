@@ -39,8 +39,8 @@ export function ForumContent(props: ForumContentProps) {
   const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
-  const [title, setTitle] = useState(forumData.info.title);
-  const [description, setDescription] = useState(forumData.info.description);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [currentMods, setCurrentMods] = useState<string[]>(
     forumData.info.moderators.map(pkey => pkey.toBase58())
   );

@@ -71,6 +71,7 @@ export const ForumView = (props: ForumViewProps) => {
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
+  const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 
   const collectionId = props.collectionId;
   const collectionPublicKey = useMemo(() => {
@@ -107,8 +108,6 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [accessToken, setAccessToken] = useState<string>();
-
-  const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 
   const onCreateForumClick = () => {
     if (isNotEmpty) {
@@ -196,7 +195,8 @@ export const ForumView = (props: ForumViewProps) => {
 
   useEffect(() => {
     update();
-  }, []);
+    // Update every time wallet or cluster is changed
+  }, [forumObject.wallet, forumObject.cluster]);
 
 
   useEffect(() => {

@@ -22,6 +22,7 @@ export function PostList(props: PostListProps) {
   const { forumData, forum, userRole, onDeletePost, topic, update } = props;
   const posts = useMemo(() => {
     const posts = selectReplies(forumData.posts, topic);
+    // TODO(andrew) refactor this sort into a helper function
     return posts.sort((left, right) => {
       const leftVotes = left.upVotes - left.downVotes;
       const rightVotes = right.upVotes - right.downVotes;

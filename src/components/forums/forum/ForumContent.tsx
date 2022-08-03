@@ -499,23 +499,16 @@ export function ForumContent(props: ForumContentProps) {
                 onClick={() => setShowAddModerators(true)}>
                 Manage moderators
               </button>
-            </PermissionsGate>
-            <button
-              className="moderatorTool"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowAddModerators(true)}
-            >
-              Manage moderators
-            </button>
-            <button
-              className="moderatorTool"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowAddAccessToken(true)}
-            >
-              Manage forum access
-            </button>
-          </div>
-        </PermissionsGate>
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddAccessToken(true)}
+              >
+                Manage forum access
+              </button>
+            </div>
+          </PermissionsGate>
+        )}
         {!_.isNil(forumData.info.collectionId) && (
           <TopicList
             forumData={forumData}

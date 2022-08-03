@@ -75,7 +75,6 @@ export const ForumView = (props: ForumViewProps) => {
   const collectionId = props.collectionId;
   const collectionPublicKey = useMemo(() => {
     try {
-      // TODO show modal if this fails
       const pubkey = new web3.PublicKey(collectionId);
 
       // TODO make croppedCollectionID a useMemo() call as well?

@@ -24,7 +24,7 @@ export function useForumData(
   }, [data, collectionId]);
 
   async function fetchState(): Promise<Loading<ForumData>> {
-    if (collectionId === null) { return { state: 'initial' }; }
+    if (collectionId === null) { return { state: 'notFound' }; }
     try {
       const [desc, moderators, owners, posts] = await Promise.all([
         // TODO implement this as one function call

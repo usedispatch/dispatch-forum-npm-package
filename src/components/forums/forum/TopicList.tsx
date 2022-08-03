@@ -23,7 +23,12 @@ interface TopicListProps {
 
 export function TopicList({ forumData }: TopicListProps) {
   const topics = useMemo(() => {
-    return selectTopics(forumData.posts);
+    const topics = selectTopics(forumData.posts);
+    return topics.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
   }, [forumData]);
 
   return (

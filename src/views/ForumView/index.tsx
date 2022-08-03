@@ -77,7 +77,8 @@ export const ForumView = (props: ForumViewProps) => {
     try {
       const pubkey = new web3.PublicKey(collectionId);
 
-      // TODO make croppedCollectionID a useMemo() call as well?
+      // TODO(andrew) make croppedCollectionID a useMemo() call as well?
+      // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d
       setCroppedCollectionId(
         `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`
       );

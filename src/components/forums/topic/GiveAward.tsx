@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost, WalletInterface } from "@usedispatch/client";
@@ -181,7 +182,7 @@ export function GiveAward(props: GiveAwardProps) {
 
   return (
     <div className="awardContainer">
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="give-award-info"
           visible
@@ -216,7 +217,7 @@ export function GiveAward(props: GiveAwardProps) {
           ) : (
             <button
               className="confirmAndAwardButton"
-              disabled={_.isNil(selectedNFT)}
+              disabled={isNil(selectedNFT)}
               onClick={() => transferNFT()}
             >
               Confirm and award

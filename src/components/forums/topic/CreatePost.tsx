@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 
@@ -87,7 +88,7 @@ export function CreatePost(props: CreatePostProps) {
 
   return (
     <>
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="create-topic-info"
           visible

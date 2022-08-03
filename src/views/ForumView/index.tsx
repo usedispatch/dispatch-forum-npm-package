@@ -1,5 +1,6 @@
 import "./../../style.css";
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import { useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
@@ -114,7 +115,7 @@ export const ForumView = (props: ForumViewProps) => {
         Forum.getModerators(collectionPublicKey),
       ]);
       setLoading(false);
-      if (!_.isNil(res) && !_.isNil(desc) && !_.isNil(mods) && mount.current) {
+      if (!isNil(res) && !isNil(desc) && !isNil(mods) && mount.current) {
         setForum({
           collectionId: collectionPublicKey,
           owners: publicKey ? [publicKey] : [],
@@ -178,8 +179,8 @@ export const ForumView = (props: ForumViewProps) => {
 
       const res = await Forum.createForum(forum);
 
-      if (!_.isNil(res?.forum)) {
-        if (!_.isNil(tokenAccess)) {
+      if (!isNil(res?.forum)) {
+        if (!isNil(tokenAccess)) {
           await Forum.setForumPostRestriction(collectionPublicKey, {
             nftOwnership: {
               collectionId: tokenAccess
@@ -224,8 +225,8 @@ export const ForumView = (props: ForumViewProps) => {
   useEffect(() => {
     if (
       isNotEmpty &&
-      !_.isNil(publicKey) &&
-      !_.isNil(collectionPublicKey) &&
+      !isNil(publicKey) &&
+      !isNil(collectionPublicKey) &&
       mount.current
     ) {
       setLoading(true);
@@ -237,7 +238,7 @@ export const ForumView = (props: ForumViewProps) => {
   }, [Forum, isNotEmpty, publicKey, collectionId, mount.current]);
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(forum) && Forum.wallet.publicKey) {
+    if (isNotEmpty && !isNil(forum) && Forum.wallet.publicKey) {
       getUserRole(Forum, collectionPublicKey, Role);
     }
   }, [forum, isNotEmpty, publicKey]);
@@ -288,7 +289,7 @@ export const ForumView = (props: ForumViewProps) => {
   return (
     <div className="dsp-">
       <div className="forumView">
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="create-forum-info"
             visible
@@ -377,7 +378,7 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {!_.isNil(forum) && (
+            {!isNil(forum) && (
               <div
                 className={`forumViewTitle ${
                   !permission.readAndWrite ? "alert" : ""
@@ -393,7 +394,7 @@ export const ForumView = (props: ForumViewProps) => {
                       <Spinner />
                     </div>
                   ) : isNotEmpty ? (
-                    !_.isNil(forum) ? (
+                    !isNil(forum) ? (
                       <ForumContent forum={forum} />
                     ) : (
                       emptyView

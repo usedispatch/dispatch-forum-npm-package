@@ -1,4 +1,3 @@
-import _, { min } from "lodash";
 import {
   DispatchConnection,
   Forum,

@@ -1,6 +1,8 @@
 const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 
 module.exports = {
   entry: './src/index.ts',
@@ -47,7 +49,8 @@ module.exports = {
     new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
+    new BundleAnalyzerPlugin(),
   ],
   externals: {
     react: 'react',

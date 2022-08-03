@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import { useState, ReactNode, useEffect } from "react";
 import { ForumPost } from "@usedispatch/client";
 
@@ -125,7 +126,7 @@ export function Votes(props: VotesProps) {
 
   return (
     <>
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="vote-info"
           visible

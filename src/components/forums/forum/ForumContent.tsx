@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import {
   useState,
   useEffect,
@@ -68,7 +69,7 @@ export function ForumContent(props: ForumContentProps) {
   const getModerators = useCallback(async () => {
     try {
       const mods = await DispatchForumObject.getModerators(forum.collectionId);
-      if (!_.isNil(mods)) {
+      if (!isNil(mods)) {
         setCurrentMods(mods.map((m) => m.toBase58()));
       }
     } catch (error: any) {
@@ -86,7 +87,7 @@ export function ForumContent(props: ForumContentProps) {
       const fetchedOwners = await DispatchForumObject.getOwners(
         forum.collectionId
       );
-      if (!_.isNil(fetchedOwners)) {
+      if (!isNil(fetchedOwners)) {
         setCurrentOwners(fetchedOwners.map((m) => m.toBase58()));
       }
     } catch (error) {
@@ -251,7 +252,7 @@ export function ForumContent(props: ForumContentProps) {
         forum.collectionId,
         token ? { nftOwnership: { collectionId: token } } : undefined
       );
-      if (!_.isNil(tx)) {
+      if (!isNil(tx)) {
         getTopicsForForum();
         setCreatingNewTopic(false);
         setModalInfo({
@@ -338,7 +339,7 @@ export function ForumContent(props: ForumContentProps) {
   return (
     <div className="dsp- ">
       <div className="forumContent">
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="create-topic-info"
             visible
@@ -353,7 +354,7 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
-        {showAddAccessToken && _.isNil(modalInfo) && (
+        {showAddAccessToken && isNil(modalInfo) && (
           <PopUpModal
             id="add-access-token"
             visible
@@ -391,7 +392,7 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
-        {showNewTopicModal && _.isNil(modalInfo) && (
+        {showNewTopicModal && isNil(modalInfo) && (
           <PopUpModal
             id="create-topic"
             visible
@@ -453,7 +454,7 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
-        {_.isNil(modalInfo) && showAddModerators && (
+        {isNil(modalInfo) && showAddModerators && (
           <PopUpModal
             id="add-moderators"
             visible
@@ -498,7 +499,7 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
-        {_.isNil(modalInfo) && showAddOwners && (
+        {isNil(modalInfo) && showAddOwners && (
           <PopUpModal
             id="add-moderators"
             visible
@@ -572,7 +573,7 @@ export function ForumContent(props: ForumContentProps) {
             </div>
           </PermissionsGate>
         )}
-        {!_.isNil(forum.collectionId) && (
+        {!isNil(forum.collectionId) && (
           <TopicList
             loading={loadingTopics}
             topics={topics}

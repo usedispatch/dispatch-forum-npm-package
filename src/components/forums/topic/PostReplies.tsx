@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";

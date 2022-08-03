@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import {isNil, isNull} from "utils/misc";
+
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
@@ -162,7 +163,7 @@ export function PostContent(props: PostContentProps) {
   };
 
   useEffect(() => {
-    if (!_.isNil(post) && !_.isNil(collectionId)) {
+    if (!isNil(post) && !isNil(collectionId)) {
       getReplies();
     } else {
       setLoading(false);
@@ -181,7 +182,7 @@ export function PostContent(props: PostContentProps) {
   return (
     <>
       <div className="postContentContainer">
-        {_.isNull(modalInfo) && showDeleteConfirmation && (
+        {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
             visible
@@ -210,7 +211,7 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
-        {!_.isNull(modalInfo) && (
+        {!isNull(modalInfo) && (
           <PopUpModal
             id="post-info"
             visible

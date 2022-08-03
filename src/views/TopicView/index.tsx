@@ -1,5 +1,6 @@
 import "./../../style.css";
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import { useState, useEffect, ReactNode, useCallback } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
@@ -93,7 +94,7 @@ export const TopicView = (props: Props) => {
   };
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(topicId) && !_.isNil(collectionPublicKey)) {
+    if (isNotEmpty && !isNil(topicId) && !isNil(collectionPublicKey)) {
       getTopicData();
     } else {
       setLoading(false);
@@ -102,8 +103,8 @@ export const TopicView = (props: Props) => {
 
   useEffect(() => {
     if (
-      !_.isNil(collectionPublicKey) &&
-      !_.isNil(topic) &&
+      !isNil(collectionPublicKey) &&
+      !isNil(topic) &&
       Forum.wallet.publicKey
     ) {
       getUserRole(Forum, collectionPublicKey, Role, topic);
@@ -119,7 +120,7 @@ export const TopicView = (props: Props) => {
   return (
     <div className="dsp- ">
       <div className="topicView">
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="topic-info"
             visible

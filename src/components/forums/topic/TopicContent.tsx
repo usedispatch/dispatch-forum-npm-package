@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import {isNil} from "utils/misc";
+
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
@@ -215,7 +216,7 @@ export function TopicContent(props: TopicContentProps) {
 
   return (
     <>
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="topic-info"
           visible
@@ -233,7 +234,7 @@ export function TopicContent(props: TopicContentProps) {
           }
         />
       )}
-      {showAddAccessToken && _.isNil(modalInfo) && (
+      {showAddAccessToken && isNil(modalInfo) && (
         <PopUpModal
           id="add-access-token"
           visible

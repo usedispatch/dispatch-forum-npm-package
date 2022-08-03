@@ -14,7 +14,7 @@ import { Spinner } from "../../common";
 
 import { useForum, usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
-import { selectReplies, selectTopics } from '../../../utils/posts';
+import { selectRepliesFromPosts, selectTopics } from '../../../utils/posts';
 import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
@@ -79,7 +79,7 @@ function RowContent(props: RowContentProps) {
   const topicPath = buildTopicPath(forumData.info.collectionId.toBase58(), topic.postId);
 
   const replies = useMemo(() => {
-    return selectReplies(forumData.posts, topic);
+    return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {

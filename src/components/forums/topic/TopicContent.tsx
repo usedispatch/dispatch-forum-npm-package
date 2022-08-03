@@ -20,7 +20,7 @@ import { usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
-import { selectReplies } from '../../../utils/posts';
+import { selectRepliesFromPosts } from '../../../utils/posts';
 import { ForumData } from '../../../utils/hooks';
 
 interface TopicContentProps {
@@ -35,7 +35,7 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { forum, forumData, userRole, update, updateVotes, topic } = props;
   const replies = useMemo(() => {
-    return selectReplies(forumData.posts, topic);
+    return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData])
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(forumData.info.collectionId.toBase58());

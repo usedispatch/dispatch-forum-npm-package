@@ -21,7 +21,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData } from '../../../utils/hooks';
 import {
-  selectReplies
+  selectRepliesFromPosts
 } from '../../../utils/posts';
 import { GiveAward } from "./GiveAward";
 
@@ -65,7 +65,7 @@ export function PostContent(props: PostContentProps) {
   const post = useMemo(() => props.post, [props.post]);
 
   const replies = useMemo(() => {
-    const replies = selectReplies(forumData.posts, post);
+    const replies = selectRepliesFromPosts(forumData.posts, post);
     // TODO(andrew) refactor this sort into a helper function
     return replies.sort((left, right) => {
       const leftVotes = left.upVotes - left.downVotes;

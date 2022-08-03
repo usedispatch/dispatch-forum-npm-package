@@ -7,7 +7,7 @@ import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/permissions";
 import { ForumData } from '../../../utils/hooks';
-import { selectReplies } from '../../../utils/posts';
+import { selectRepliesFromPosts } from '../../../utils/posts';
 
 interface PostListProps {
   forum: DispatchForum;
@@ -21,7 +21,7 @@ interface PostListProps {
 export function PostList(props: PostListProps) {
   const { forumData, forum, userRole, onDeletePost, topic, update } = props;
   const posts = useMemo(() => {
-    const posts = selectReplies(forumData.posts, topic);
+    const posts = selectRepliesFromPosts(forumData.posts, topic);
     // TODO(andrew) refactor this sort into a helper function
     return posts.sort((left, right) => {
       const leftVotes = left.upVotes - left.downVotes;

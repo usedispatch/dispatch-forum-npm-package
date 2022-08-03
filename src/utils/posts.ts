@@ -11,7 +11,7 @@ export function selectTopics(
 /*
  * Given a set of posts, return the ones that are replies
  */
-export function selectReplies(
+export function selectRepliesFromPosts(
   posts: ForumPost[],
   to: ForumPost
 ): ForumPost[] {

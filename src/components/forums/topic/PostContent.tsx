@@ -64,7 +64,14 @@ export function PostContent(props: PostContentProps) {
 
   const post = useMemo(() => props.post, [props.post]);
 
-  const replies: ForumPost[] = selectReplies(forumData.posts, post);
+  const replies = useMemo(() => {
+    const replies = selectReplies(forumData.posts, post);
+    return replies.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
+  }, [forumData, post]);
 
   const updateVotes = (upVoted: boolean) => {
     if (upVoted) {

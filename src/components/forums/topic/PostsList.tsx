@@ -21,7 +21,12 @@ interface PostListProps {
 export function PostList(props: PostListProps) {
   const { forumData, forum, userRole, onDeletePost, topic, update } = props;
   const posts = useMemo(() => {
-    return selectReplies(forumData.posts, topic)
+    const posts = selectReplies(forumData.posts, topic);
+    return posts.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
   }, [forumData]);
 
   const emptyList = (

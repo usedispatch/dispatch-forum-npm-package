@@ -27,7 +27,7 @@ export function useForumData(
     if (collectionId === null) { return { state: 'notFound' }; }
     try {
       const [desc, moderators, owners, posts] = await Promise.all([
-        // TODO implement this as one function call
+        // TODO(andrew) implement this with one API call
         forum.getDescription(collectionId),
         forum.getModerators(collectionId),
         forum.getOwners(collectionId),

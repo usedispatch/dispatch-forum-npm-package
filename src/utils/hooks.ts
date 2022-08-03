@@ -35,7 +35,6 @@ export function useForumData(
       ]);
 
       if (desc && moderators && owners && posts) {
-        console.log(moderators, owners);
         return {
           state: 'success',
           value: {

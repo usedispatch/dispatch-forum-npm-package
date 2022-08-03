@@ -65,10 +65,36 @@ export const ForumView = (props: ForumViewProps) => {
   const { isNotEmpty, wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
+  const [modalInfo, setModalInfo] = useState<{
+    title: string | ReactNode;
+    type: MessageType;
+    body?: string | ReactNode;
+    collapsible?: CollapsibleProps;
+  } | null>(null);
+
   const collectionId = props.collectionId;
   const collectionPublicKey = useMemo(() => {
-    // TODO show modal if this fails
-    return newPublicKey(collectionId);
+    try {
+      // TODO show modal if this fails
+      const pubkey = new web3.PublicKey(collectionId);
+
+      // TODO make croppedCollectionID a useMemo() call as well?
+      setCroppedCollectionId(
+        `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`
+      );
+
+      return pubkey;
+    } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "Invalid Collection ID Public Key",
+        collapsible: { header: "Error", content: message },
+      });
+      return null;
+    }
   }, [collectionId]);
 
   const mount = useRef(false);
@@ -81,12 +107,6 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [accessToken, setAccessToken] = useState<string>();
-  const [modalInfo, setModalInfo] = useState<{
-    title: string | ReactNode;
-    type: MessageType;
-    body?: string | ReactNode;
-    collapsible?: CollapsibleProps;
-  } | null>(null);
 
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
 

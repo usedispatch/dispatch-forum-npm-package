@@ -53,8 +53,6 @@
     "@project-serum/anchor": "^0.24.2",
     "@solana/spl-token": "^0.2.0",
     "@usedispatch/client": "^0.10.5",
-    "lodash": "^4.17.21",
-    "lodash.orderby": "^4.6.0"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

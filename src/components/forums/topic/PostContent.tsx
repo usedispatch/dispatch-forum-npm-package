@@ -66,6 +66,7 @@ export function PostContent(props: PostContentProps) {
 
   const replies = useMemo(() => {
     const replies = selectReplies(forumData.posts, post);
+    // TODO(andrew) refactor this sort into a helper function
     return replies.sort((left, right) => {
       const leftVotes = left.upVotes - left.downVotes;
       const rightVotes = right.upVotes - right.downVotes;

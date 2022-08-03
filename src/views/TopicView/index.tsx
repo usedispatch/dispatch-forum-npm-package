@@ -44,7 +44,7 @@ export const TopicView = (props: Props) => {
   const topic: Loading<ForumPost> = useMemo(() => {
     if (forumData.state === 'success') {
       const post = forumData.value.posts.find(({ isTopic, postId }) => {
-        return isTopic && postId === topicId
+        return isTopic && postId === topicId;
       });
       if (post) {
         return {

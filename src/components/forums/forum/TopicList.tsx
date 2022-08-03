@@ -24,6 +24,7 @@ interface TopicListProps {
 export function TopicList({ forumData }: TopicListProps) {
   const topics = useMemo(() => {
     const topics = selectTopics(forumData.posts);
+    // TODO(andrew) refactor this sort into a helper function
     return topics.sort((left, right) => {
       const leftVotes = left.upVotes - left.downVotes;
       const rightVotes = right.upVotes - right.downVotes;

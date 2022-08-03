@@ -88,8 +88,6 @@ export function PostContent(props: PostContentProps) {
       const tx = await forum.replyToForumPost(post, forumData.info.collectionId, {
         body: reply,
       });
-      // TODO add a reply here
-      // getReplies();
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");

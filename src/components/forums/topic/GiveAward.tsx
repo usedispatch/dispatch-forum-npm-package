@@ -190,7 +190,6 @@ export function GiveAward(props: GiveAwardProps) {
       setLoadingNFT(true);
       const nfts = await Forum.getNFTMetadataForCurrentUser();
       setNFTs(nfts);
-      console.log(nfts);
       setLoadingNFT(false);
     } catch (error: any) {
       onError(error);

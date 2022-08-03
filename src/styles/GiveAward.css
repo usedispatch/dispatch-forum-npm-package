@@ -111,16 +111,17 @@
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: space-between;
         align-items: flex-end;
         align-content: flex-start;
         gap: 15%;
+        grid-row-gap: 20px;
 
         overflow-x: overlay;
 
         .giftContainer {
           cursor: pointer;
           padding: 8px;
+          width: 64px;
         }
 
         .selectedNFT {

@@ -1,4 +1,4 @@
-import {isNil} from "utils/misc";
+import {isNil} from "../../../utils/misc";
 
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";

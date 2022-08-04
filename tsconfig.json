@@ -18,8 +18,8 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
     "sourceMap": true,
+    "strictNullChecks": false
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/custom.d.ts"],
   "exclude": ["node_modules"]
 }
-

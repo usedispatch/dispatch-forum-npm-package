@@ -1,4 +1,4 @@
-import {isNil} from "utils/misc";
+import {isNil} from "../../../utils/misc";
 
 import { useState, ReactNode, useEffect } from "react";
 import { ForumPost } from "@usedispatch/client";

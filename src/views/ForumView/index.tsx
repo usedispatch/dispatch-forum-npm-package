@@ -1,5 +1,5 @@
 import "./../../style.css";
-import {isNil} from "utils/misc";
+import {isNil} from "../../utils/misc";
 
 import { useState, useEffect, ReactNode, useCallback, useRef } from "react";
 import { ForumInfo } from "@usedispatch/client";

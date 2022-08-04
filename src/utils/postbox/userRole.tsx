@@ -1,6 +1,6 @@
 import { web3 } from "@project-serum/anchor";
 import { ForumPost } from "@usedispatch/client";
-import {isUndefined} from "utils/misc";
+import {isUndefined} from "../../utils/misc";
 
 import { DispatchForum } from "./postboxWrapper";
 import { UserRoleType } from "../../utils/permissions";

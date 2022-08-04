@@ -1,4 +1,4 @@
-import {isNil} from "utils/misc";
+import {isNil} from "../utils/misc";
 
 
 const postboxErrorCode = {

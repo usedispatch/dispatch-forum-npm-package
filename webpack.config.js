@@ -50,7 +50,7 @@ module.exports = {
         Buffer: ['buffer', 'Buffer'],
     }),
     new MiniCssExtractPlugin(),
-    new BundleAnalyzerPlugin(),
+    // new BundleAnalyzerPlugin(),
   ],
   externals: {
     react: 'react',

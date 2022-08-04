@@ -1,6 +1,13 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, useMemo, ReactNode, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
 import { ForumInfo, ForumPost } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -17,13 +24,13 @@ import {
   ForumContent,
   PoweredByDispatch,
 } from "../../components/forums";
-import { selectTopics } from '../../utils/posts';
+import { selectTopics } from "../../utils/posts";
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
-import { Loading } from '../../types/loading';
-import { useForumData } from '../../utils/hooks';
+import { Loading } from "../../types/loading";
+import { useForumData } from "../../utils/hooks";
 
 interface ForumViewProps {
   collectionId: string;
@@ -102,8 +109,8 @@ export const ForumView = (props: ForumViewProps) => {
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
   // Title and description for editing
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
@@ -154,8 +161,8 @@ export const ForumView = (props: ForumViewProps) => {
         if (!_.isNil(tokenAccess)) {
           await forumObject.setForumPostRestriction(collectionPublicKey!, {
             nftOwnership: {
-              collectionId: tokenAccess
-            }
+              collectionId: tokenAccess,
+            },
           });
         }
 
@@ -198,9 +205,12 @@ export const ForumView = (props: ForumViewProps) => {
     // Update every time wallet or cluster is changed
   }, [forumObject.wallet, forumObject.cluster]);
 
-
   useEffect(() => {
-    if( isNotEmpty && forumData.state === 'success' && forumObject.wallet.publicKey) {
+    if (
+      isNotEmpty &&
+      forumData.state === "success" &&
+      forumObject.wallet.publicKey
+    ) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
   }, [forumData, isNotEmpty, publicKey]);
@@ -221,7 +231,8 @@ export const ForumView = (props: ForumViewProps) => {
               body: "Connect to your wallet in order to create a forum",
             });
           }
-        }}>
+        }}
+      >
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -324,14 +335,16 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}>
+                onClick={() => onCreateForumClick()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}>
+                onClick={() => setShowNewForumModal(false)}
+              >
                 Cancel
               </div>
             }
@@ -340,26 +353,34 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {forumData.state === 'success' && (
+            {forumData.state === "success" && (
               <div
                 className={`forumViewTitle ${
                   !permission.readAndWrite ? "alert" : ""
-                }`}>
+                }`}
+              >
                 {forumData.value.info.title}
+                <title>{forumData.value.info.title} Forum</title>
+                <meta
+                  name="description"
+                  content={forumData.value.info.description}
+                />
               </div>
             )}
             <main>
               <div className="forumViewContentBox">
                 <div>
                   {(() => {
-                    if (forumData.state === 'initial' ||
-                        forumData.state === 'pending') {
+                    if (
+                      forumData.state === "initial" ||
+                      forumData.state === "pending"
+                    ) {
                       return (
                         <div className="forumLoading">
                           <Spinner />
                         </div>
                       );
-                    } else if (forumData.state === 'success') {
+                    } else if (forumData.state === "success") {
                       return (
                         <ForumContent
                           forumObject={forumObject}
@@ -367,10 +388,10 @@ export const ForumView = (props: ForumViewProps) => {
                           update={update}
                         />
                       );
-                    } else if (forumData.state === 'notFound' ) {
+                    } else if (forumData.state === "notFound") {
                       return emptyView;
-                    } else if (forumData.state === 'failed') {
-                      return disconnectedView
+                    } else if (forumData.state === "failed") {
+                      return disconnectedView;
                     }
                   })()}
                 </div>

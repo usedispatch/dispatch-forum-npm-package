@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
-import { useForumData } from '../../utils/hooks';
+import { useForumData } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
 import {
@@ -18,9 +18,7 @@ import {
   PoweredByDispatch,
   TopicContent,
 } from "../../components/forums";
-import {
-  Loading
-} from '../../types/loading';
+import { Loading } from "../../types/loading";
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -42,23 +40,22 @@ export const TopicView = (props: Props) => {
   const { forumData, update } = useForumData(collectionPublicKey, forum);
 
   const topic: Loading<ForumPost> = useMemo(() => {
-    if (forumData.state === 'success') {
+    if (forumData.state === "success") {
       const post = forumData.value.posts.find(({ isTopic, postId }) => {
         return isTopic && postId === topicId;
       });
       if (post) {
         return {
-          state: 'success',
-          value: post
-        }
+          state: "success",
+          value: post,
+        };
       } else {
-          return { state: 'notFound' };
-        }
+        return { state: "notFound" };
+      }
     } else {
       return forumData;
     }
   }, [forumData, topicId]);
-
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -71,7 +68,7 @@ export const TopicView = (props: Props) => {
   const forumPath = buildForumPath(collectionId);
 
   const updateVotes = (upVoted: boolean) => {
-    if (topic.state === 'success' && topic.value) {
+    if (topic.state === "success" && topic.value) {
       const { value } = topic;
       if (upVoted) {
         value.upVotes += 1;
@@ -93,7 +90,7 @@ export const TopicView = (props: Props) => {
       !_.isNil(collectionPublicKey) &&
       !_.isNil(topic) &&
       forum.wallet.publicKey &&
-      topic.state === 'success' &&
+      topic.state === "success" &&
       topic.value
     ) {
       getUserRole(forum, collectionPublicKey, role, topic.value);
@@ -129,14 +126,18 @@ export const TopicView = (props: Props) => {
           <div className="topicViewContent">
             <main>
               <div>
-                {topic.state === 'pending' ? (
+                {topic.state === "pending" ? (
                   <div className="topicViewLoading">
                     <Spinner />
                   </div>
-                ) : forumData.state === 'success' &&
-                    topic.state === 'success'
-                  ? (
+                ) : forumData.state === "success" &&
+                  topic.state === "success" ? (
                   <>
+                    <title>{topic.value!.data.subj!}</title>
+                    <meta
+                      name="description"
+                      content={forumData.value.info.title}
+                    />
                     <Breadcrumb
                       navigateTo={forumPath}
                       parent={forumData.value.info.title}

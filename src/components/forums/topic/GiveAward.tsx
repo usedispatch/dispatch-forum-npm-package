@@ -3,10 +3,12 @@ import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost, WalletInterface } from "@usedispatch/client";
 
+
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
+  Spinner,
   TransactionLink,
 } from "../../common";
 
@@ -42,8 +44,19 @@ export function GiveAward(props: GiveAwardProps) {
 
   const [selectedType, setSelectedType] = useState<AwardType>(); // TODO (Ana): include both types later
   const [selectedAmount, setSelectedAmount] = useState(0);
-  const [selectedNFT, setSelectedNFT] = useState<string>();
-  const [nfts, setNFTs] = useState<string[]>([]); // [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const [loadingNFT, setLoadingNFT] = useState(false);
+  const [selectedNFT, setSelectedNFT] = useState<{
+    mint: string;
+    name: string;
+    uri: string;
+  }>();
+  const [nfts, setNFTs] = useState<
+    {
+      mint: string;
+      name: string;
+      uri: string;
+    }[]
+  >([]);
 
   const attachAward = async () => {
     setLoading(true);
@@ -80,6 +93,7 @@ export function GiveAward(props: GiveAwardProps) {
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT!,
+        selectedNFT?.mint!,
         // @ts-ignore
         w.sendTransaction
       );
@@ -125,23 +139,26 @@ export function GiveAward(props: GiveAwardProps) {
               />
             </div>
           )}
-          {selectedType === AwardType.NFT && nfts && (
-            <div className="giftsContainer">
-              <div className="giftsGrid">
-                {nfts.map((value, index) => (
-                  <div
-                    key={index}
-                    className={`giftContainer ${
-                      value === selectedNFT ? "selectedNFT" : ""
-                    }`}
-                    onClick={() => setSelectedNFT(value)}
-                  >
-                    <div>{value}</div>
-                  </div>
-                ))}
+          {selectedType === AwardType.NFT &&
+            (loadingNFT ? (
+              <Spinner />
+            ) : (
+              <div className="giftsContainer">
+                <div className="giftsGrid">
+                  {nfts.map((nft, index) => (
+                    <div
+                      key={index}
+                      className={`giftContainer ${
+                        nft.mint === selectedNFT?.mint ? "selectedNFT" : ""
+                      }`}
+                      onClick={() => setSelectedNFT(nft)}>
+                      <img src={nft.uri} />
+                      <div className="giftName">{nft.name}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            ))}
         </>
       ) : (
         <div>
@@ -152,15 +169,13 @@ export function GiveAward(props: GiveAwardProps) {
               onClick={() => {
                 setSelectedType(AwardType.NFT);
                 getNFTsForCurrentUser();
-              }}
-            >
+              }}>
               <Plus />
               NFT
             </button>
             <button
               className="solType"
-              onClick={() => setSelectedType(AwardType.SOL)}
-            >
+              onClick={() => setSelectedType(AwardType.SOL)}>
               <SolanaLogo color="white" />
               SOL
             </button>
@@ -172,8 +187,10 @@ export function GiveAward(props: GiveAwardProps) {
 
   const getNFTsForCurrentUser = async () => {
     try {
-      const nfts = await Forum.getNFTsForCurrentUser();
-      setNFTs(nfts.map((n) => n.toBase58()));
+      setLoadingNFT(true);
+      const nfts = await Forum.getNFTMetadataForCurrentUser();
+      setNFTs(nfts);
+      setLoadingNFT(false);
     } catch (error: any) {
       onError(error);
     }
@@ -209,16 +226,14 @@ export function GiveAward(props: GiveAwardProps) {
             <button
               className="attachButton"
               disabled={selectedAmount === 0}
-              onClick={() => attachAward()}
-            >
+              onClick={() => attachAward()}>
               Attach
             </button>
           ) : (
             <button
               className="confirmAndAwardButton"
               disabled={_.isNil(selectedNFT)}
-              onClick={() => transferNFT()}
-            >
+              onClick={() => transferNFT()}>
               Confirm and award
             </button>
           ))

@@ -6,7 +6,9 @@ import {
   ForumPost,
   WalletInterface,
   PostRestriction,
-  getMintsForOwner  
+  getMintsForOwner,
+  getMetadataForOwner,
+  getMetadataForMints
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -126,9 +128,11 @@ export interface IForum {
 
   canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
 
-  getNFTsForCurrentUser(): Promise<web3.PublicKey[]>
+  getNFTsForCurrentUser(): Promise<web3.PublicKey[]>;
 
-  transferNFTs(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>
+  getNFTMetadataForCurrentUser: () => Promise<{mint: string, name: string; uri: string}[]>;
+
+  transferNFTs(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>;
 }
 
 export class DispatchForum implements IForum {
@@ -582,6 +586,26 @@ export class DispatchForum implements IForum {
     try {
       const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
       return mintsForOwner;
+    } catch (error) {
+        throw(parseError(error))
+    }
+  }
+
+  getNFTMetadataForCurrentUser = async () => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
+      const result = metadataForOwner.map(md => ({mint: md.mint.toBase58(), name: md.data.name.replaceAll('\u0000', ''), uri: md.data.uri}));
+
+      await Promise.all(result.map(async (r)=> {
+        const fetchedURI = await fetch(r.uri);
+        const parsed = await fetchedURI.json()
+        r.uri = parsed?.image as string 
+      }))
+
+      return result
     } catch (error) {
         throw(parseError(error))
     }

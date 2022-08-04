@@ -119,6 +119,7 @@ export function TopicContent(props: TopicContentProps) {
         ),
         okPath: forumPath,
       });
+      update();
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);
       return tx;

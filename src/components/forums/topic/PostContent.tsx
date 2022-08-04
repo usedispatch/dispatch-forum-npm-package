@@ -130,6 +130,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.success,
         body: `The post was deleted`,
       });
+      update();
       setShowDeleteConfirmation(false);
       setDeleting(false);
     } catch (error: any) {

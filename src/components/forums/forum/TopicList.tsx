@@ -14,15 +14,23 @@ import { Spinner } from "../../common";
 
 import { useForum, usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
+import { selectRepliesFromPosts, selectTopics } from '../../../utils/posts';
+import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
-  loading: boolean;
-  topics: ForumPost[];
-  collectionId: web3.PublicKey;
+  forumData: ForumData
 }
 
-export function TopicList(props: TopicListProps) {
-  const { topics, collectionId, loading } = props;
+export function TopicList({ forumData }: TopicListProps) {
+  const topics = useMemo(() => {
+    const topics = selectTopics(forumData.posts);
+    // TODO(andrew) refactor this sort into a helper function
+    return topics.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
+  }, [forumData]);
 
   return (
     <div className="topicListContainer">
@@ -43,24 +51,17 @@ export function TopicList(props: TopicListProps) {
             </tr>
           </thead>
           <tbody>
-            {!loading &&
-              topics.map((topic, index) => (
+            {topics.map((topic, index) => (
                 <RowContent
                   key={index}
                   topic={topic}
-                  collectionId={collectionId}
+                  forumData={forumData}
                 />
               ))}
           </tbody>
         </table>
-        {loading ? (
-          <div className="topicListSpinner">
-            <Spinner />
-          </div>
-        ) : (
-          topics.length === 0 && (
-            <div className="emptyTopicList">No topics yet</div>
-          )
+        {topics.length === 0 && (
+          <div className="emptyTopicList">No topics yet</div>
         )}
       </div>
     </div>
@@ -69,43 +70,17 @@ export function TopicList(props: TopicListProps) {
 
 interface RowContentProps {
   topic: ForumPost;
-  collectionId: web3.PublicKey;
+  forumData: ForumData;
 }
 
 function RowContent(props: RowContentProps) {
-  const { collectionId, topic } = props;
-  const DispatchForumObject = useForum();
+  const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
-  const topicPath = buildTopicPath(collectionId.toBase58(), topic.postId);
-  const mount = useRef(false);
-  const [messages, setMessages] = useState<ForumPost[] | undefined>(undefined);
-  const [loading, setLoading] = useState(true);
+  const topicPath = buildTopicPath(forumData.info.collectionId.toBase58(), topic.postId);
 
-  const getMessages = async () => {
-    try {
-      const data = await DispatchForumObject.getTopicMessages(
-        topic.postId,
-        collectionId
-      );
-      if (mount.current) {
-        setMessages(data ?? []);
-      }
-      setLoading(false);
-    } catch (error) {
-      const message = JSON.stringify(error);
-      console.log(error);
-      setMessages(undefined);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    mount.current = true;
-    getMessages();
-    return () => {
-      mount.current = false;
-    };
-  }, [topic.postId, collectionId]);
+  const replies = useMemo(() => {
+    return selectRepliesFromPosts(forumData.posts, topic);
+  }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {
     if (posts.length > 0) {
@@ -149,15 +124,6 @@ function RowContent(props: RowContentProps) {
     }
   }, []);
 
-  const spinner = useMemo(
-    () => (
-      <div className="rowSpinner">
-        <Spinner />
-      </div>
-    ),
-    []
-  );
-
   return (
     <tr className="row ">
       <th>
@@ -167,17 +133,17 @@ function RowContent(props: RowContentProps) {
       </th>
       <td>
         <Link className="rowIconReplies" href={topicPath}>
-          {loading || !messages ? spinner : icons(messages)}
+          {icons(replies)}
         </Link>
       </td>
       <td>
         <Link className="rowAmountReplies" href={topicPath}>
-          {loading || !messages ? spinner : messages.length}
+          {replies.length}
         </Link>
       </td>
       <td>
         <Link className="rowDate" href={topicPath}>
-          {loading || !messages ? spinner : activtyDate(messages)}
+          {activtyDate(replies)}
         </Link>
       </td>
     </tr>

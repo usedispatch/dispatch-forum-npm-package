@@ -13,6 +13,7 @@ import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { Success } from "../../../assets";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { useForumData } from "../../../utils/hooks";
 
 interface CreatePostProps {
   topicId: number;
@@ -26,11 +27,12 @@ interface CreatePostProps {
     topicId: number,
     collectionId: web3.PublicKey
   ) => Promise<string | undefined>;
+  update: () => Promise<void>;
   onReload: () => void;
 }
 
 export function CreatePost(props: CreatePostProps) {
-  const { createForumPost, collectionId, topicId, onReload } = props;
+  const { createForumPost, collectionId, topicId, onReload, update } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -57,6 +59,7 @@ export function CreatePost(props: CreatePostProps) {
 
     try {
       const tx = await createForumPost(post, topicId, collectionId);
+      update();
       setLoading(false);
       setIsNotificationHidden(false);
       setNotificationContent(

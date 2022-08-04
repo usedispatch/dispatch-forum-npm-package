@@ -1,23 +1,34 @@
 import * as web3 from "@solana/web3.js";
+import { useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 
 import { Spinner } from "../../common";
 import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { useMemo } from "react";
-
 import { UserRoleType } from "../../../utils/permissions";
+import { ForumData } from '../../../utils/hooks';
+import { selectRepliesFromPosts } from '../../../utils/posts';
+
 interface PostListProps {
   forum: DispatchForum;
-  collectionId: web3.PublicKey;
-  posts: ForumPost[];
-  loading: boolean;
+  forumData: ForumData;
   userRole: UserRoleType;
+  update: () => Promise<void>;
+  topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostList(props: PostListProps) {
-  const { collectionId, forum, loading, userRole, onDeletePost } = props;
+  const { forumData, forum, userRole, onDeletePost, topic, update } = props;
+  const posts = useMemo(() => {
+    const posts = selectRepliesFromPosts(forumData.posts, topic);
+    // TODO(andrew) refactor this sort into a helper function
+    return posts.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
+  }, [forumData]);
 
   const emptyList = (
     <div className="emptyList">
@@ -25,35 +36,25 @@ export function PostList(props: PostListProps) {
     </div>
   );
 
-  const posts = useMemo(
-    () => props.posts.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
-    [props.posts]
-  );
-
   return (
     <div className="postListContainer">
-      {loading ? (
-        <div className="postListSpinnerContainer">
-          <Spinner />
-        </div>
-      ) : posts.length === 0 ? (
-        emptyList
-      ) : (
+      {posts.length === 0 ?
+        emptyList :
         posts.map((post) => {
 
           return (
             <div key={`post_${post.postId}`}>
               <PostContent
                 forum={forum}
-                collectionId={collectionId}
+                forumData={forumData}
                 post={post}
                 onDeletePost={onDeletePost}
+                update={update}
                 userRole={userRole}
               />
             </div>
           );
-        })
-      )}
+        })}
     </div>
   );
 }

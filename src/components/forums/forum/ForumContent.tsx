@@ -25,28 +25,32 @@ import { TopicList } from "..";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
-import { useForum } from "../../../contexts/DispatchProvider";
+import { selectTopics } from '../../../utils/posts';
+import { ForumData } from '../../../utils/hooks';
 
 interface ForumContentProps {
-  forum: ForumInfo;
-  forumObject?: DispatchForum;
+  forumObject: DispatchForum;
+  forumData: ForumData;
+  update: () => Promise<void>;
 }
 
 export function ForumContent(props: ForumContentProps) {
-  const { forum } = props;
-  const DispatchForumObject = useForum();
-  const { isNotEmpty: connected, permission } = DispatchForumObject;
+  const { forumData, forumObject, update } = props;
+  const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
-  const [loadingTopics, setLoadingTopics] = useState(true);
-  const [topics, setTopics] = useState<ForumPost[]>([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [currentMods, setCurrentMods] = useState<string[]>(
+    forumData.info.moderators.map(pkey => pkey.toBase58())
+  );
+  const [currentOwners, setCurrentOwners] = useState<string[]>(
+    forumData.info.owners.map(pkey => pkey.toBase58())
+  );
+
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
 
-  const [currentMods, setCurrentMods] = useState<string[]>([]);
-  const [currentOwners, setCurrentOwners] = useState<string[]>([]);
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [showAddOwners, setShowAddOwners] = useState(false);
   const [newModerator, setNewModerator] = useState<string>("");
@@ -65,66 +69,14 @@ export function ForumContent(props: ForumContentProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const getModerators = useCallback(async () => {
-    try {
-      const mods = await DispatchForumObject.getModerators(forum.collectionId);
-      if (!_.isNil(mods)) {
-        setCurrentMods(mods.map((m) => m.toBase58()));
-      }
-    } catch (error: any) {
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The moderators could not be determined",
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  }, [DispatchForumObject]);
-
-  const getOwners = useCallback(async () => {
-    try {
-      const fetchedOwners = await DispatchForumObject.getOwners(
-        forum.collectionId
-      );
-      if (!_.isNil(fetchedOwners)) {
-        setCurrentOwners(fetchedOwners.map((m) => m.toBase58()));
-      }
-    } catch (error) {
-      const message = JSON.stringify(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The owners could not be determined",
-        collapsible: { header: "Error", content: message },
-      });
-    }
-  }, [DispatchForumObject]);
-
-  const getForumRestriction = useCallback(async () => {
-    try {
-      const restriction = await DispatchForumObject.getForumPostRestriction(
-        forum.collectionId
-      );
-      if (!_.isNil(restriction)) {
-        setAccessToken(restriction.nftOwnership?.collectionId.toBase58());
-      }
-    } catch (error: any) {
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The restriction could not be determined",
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  }, [DispatchForumObject]);
-
+  // Begin mutating operations
   const addModerators = async () => {
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
-      const tx = await DispatchForumObject.addModerator(
+      const tx = await forumObject.addModerator(
         moderatorId,
-        forum.collectionId
+        forumData.info.collectionId
       );
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
@@ -159,9 +111,9 @@ export function ForumContent(props: ForumContentProps) {
     setAddingNewOwner(true);
     try {
       const ownerId = newPublicKey(newOwner);
-      const tx = await DispatchForumObject.addOwner(
+      const tx = await forumObject.addOwner(
         ownerId,
-        forum.collectionId
+        forumData.info.collectionId
       );
       setCurrentOwners(currentOwners.concat(newOwner));
       setNewOwner("");
@@ -195,8 +147,8 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const tx = await DispatchForumObject.setForumPostRestriction(
-        forum.collectionId,
+      const tx = await forumObject.setForumPostRestriction(
+        forumData.info.collectionId,
         {
           nftOwnership: {
             collectionId: newPublicKey(accessToken!),
@@ -231,29 +183,6 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
-  const getTopicsForForum = async () => {
-    try {
-      setLoadingTopics(true);
-      const topics = await DispatchForumObject.getTopicsForForum(
-        forum.collectionId
-      );
-      if (mount.current) {
-        setTopics(topics ?? []);
-        setLoadingTopics(false);
-      }
-    } catch (error: any) {
-      setLoadingTopics(false);
-      console.log(error);
-
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The topics for the forum could not be loaded`,
-        collapsible: { header: "Error", content: error.message },
-      });
-    }
-  };
-
   const createTopic = async () => {
     const p = {
       subj: title,
@@ -263,13 +192,12 @@ export function ForumContent(props: ForumContentProps) {
     setCreatingNewTopic(true);
     try {
       const token = accessToken ? newPublicKey(accessToken) : undefined;
-      const tx = await DispatchForumObject.createTopic(
+      const tx = await forumObject.createTopic(
         p,
-        forum.collectionId,
+        forumData.info.collectionId,
         token ? { nftOwnership: { collectionId: token } } : undefined
       );
       if (!_.isNil(tx)) {
-        getTopicsForForum();
         setCreatingNewTopic(false);
         setModalInfo({
           body: (
@@ -285,6 +213,7 @@ export function ForumContent(props: ForumContentProps) {
         setDescription("");
         setAccessToken(undefined);
         setShowNewTopicModal(false);
+        update();
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -334,24 +263,13 @@ export function ForumContent(props: ForumContentProps) {
   const forumHeader = (
     <div className="forumContentHeader">
       <div className="box">
-        <div className="description">{forum.description}</div>
+        <div className="description">{forumData.info.description}</div>
         <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
           {createTopicButton}
         </PermissionsGate>
       </div>
     </div>
   );
-
-  useEffect(() => {
-    mount.current = true;
-    getTopicsForForum();
-    getModerators();
-    getOwners();
-    getForumRestriction();
-    return () => {
-      mount.current = false;
-    };
-  }, [forum]);
 
   return (
     <div className="dsp- ">
@@ -584,17 +502,16 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}>
+                onClick={() => setShowAddAccessToken(true)}
+              >
                 Manage forum access
               </button>
             </div>
           </PermissionsGate>
         )}
-        {!_.isNil(forum.collectionId) && (
+        {!_.isNil(forumData.info.collectionId) && (
           <TopicList
-            loading={loadingTopics}
-            topics={topics}
-            collectionId={forum.collectionId}
+            forumData={forumData}
           />
         )}
       </div>

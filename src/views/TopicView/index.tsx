@@ -1,8 +1,9 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback } from "react";
+import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
+import { useForumData } from '../../utils/hooks';
 
 import { Chevron } from "../../assets";
 import {
@@ -17,6 +18,9 @@ import {
   PoweredByDispatch,
   TopicContent,
 } from "../../components/forums";
+import {
+  Loading
+} from '../../types/loading';
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -26,15 +30,35 @@ interface Props {
 }
 
 export const TopicView = (props: Props) => {
-  const Forum = useForum();
-  const Role = useRole();
-  const { isNotEmpty, permission } = Forum;
+  const forum = useForum();
+  const role = useRole();
+  const { isNotEmpty, permission } = forum;
   const { collectionId, topicId } = props;
+  const collectionPublicKey = useMemo(() => {
+    // TODO show modal if this fails
+    return new web3.PublicKey(collectionId);
+  }, [collectionId]);
 
-  const [collectionPublicKey, setCollectionPublicKey] = useState<any>();
+  const { forumData, update } = useForumData(collectionPublicKey, forum);
 
-  const [loading, setLoading] = useState(true);
-  const [topic, setTopic] = useState<ForumPost | null | undefined>();
+  const topic: Loading<ForumPost> = useMemo(() => {
+    if (forumData.state === 'success') {
+      const post = forumData.value.posts.find(({ isTopic, postId }) => {
+        return isTopic && postId === topicId;
+      });
+      if (post) {
+        return {
+          state: 'success',
+          value: post
+        }
+      } else {
+          return { state: 'notFound' };
+        }
+    } else {
+      return forumData;
+    }
+  }, [forumData, topicId]);
+
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -45,70 +69,36 @@ export const TopicView = (props: Props) => {
 
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
-  const [parent, setParent] = useState<string | undefined>();
-
-  useEffect(() => {
-    try {
-      const collectionIdKey = new web3.PublicKey(collectionId);
-      setCollectionPublicKey(collectionIdKey);
-    } catch {
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "Invalid Public Key",
-      });
-    }
-  }, []);
-
-  const getTopicData = async () => {
-    setLoading(true);
-    try {
-      const [desc, res] = await Promise.all([
-        Forum.getDescription(collectionPublicKey),
-        Forum.getTopicData(topicId, collectionPublicKey),
-      ]);
-      setParent(desc?.title);
-      setTopic(res);
-      setLoading(false);
-    } catch (error: any) {
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: "The topic could not be loaded",
-        collapsible: { header: "Error", content: error.message },
-      });
-
-      setLoading(false);
-      setTopic(null);
-    }
-  };
 
   const updateVotes = (upVoted: boolean) => {
-    if (upVoted) {
-      topic!.upVotes = topic!.upVotes + 1;
+    if (topic.state === 'success' && topic.value) {
+      const { value } = topic;
+      if (upVoted) {
+        value.upVotes += 1;
+      } else {
+        value.downVotes += 1;
+      }
     } else {
-      topic!.downVotes = topic!.downVotes + 1;
+      // If necessary, handle behavior if topic isn't loaded here
     }
   };
 
   useEffect(() => {
-    if (isNotEmpty && !_.isNil(topicId) && !_.isNil(collectionPublicKey)) {
-      getTopicData();
-    } else {
-      setLoading(false);
-    }
-  }, [isNotEmpty, topicId, collectionPublicKey, Forum]);
+    update();
+    // Update every time wallet or cluster is changed
+  }, [forum.wallet, forum.cluster]);
 
   useEffect(() => {
     if (
       !_.isNil(collectionPublicKey) &&
       !_.isNil(topic) &&
-      Forum.wallet.publicKey
+      forum.wallet.publicKey &&
+      topic.state === 'success' &&
+      topic.value
     ) {
-      getUserRole(Forum, collectionPublicKey, Role, topic);
+      getUserRole(forum, collectionPublicKey, role, topic.value);
     }
-  }, [collectionPublicKey, topic, Forum.wallet.publicKey]);
+  }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
   const disconnectedView = (
     <div className="disconnectedTopicView">
@@ -139,22 +129,25 @@ export const TopicView = (props: Props) => {
           <div className="topicViewContent">
             <main>
               <div>
-                {loading ? (
+                {topic.state === 'pending' ? (
                   <div className="topicViewLoading">
                     <Spinner />
                   </div>
-                ) : topic ? (
+                ) : forumData.state === 'success' &&
+                    topic.state === 'success'
+                  ? (
                   <>
                     <Breadcrumb
                       navigateTo={forumPath}
-                      parent={parent!}
-                      current={topic?.data.subj!}
+                      parent={forumData.value.info.title}
+                      current={topic.value!.data.subj!}
                     />
                     <TopicContent
-                      topic={topic}
-                      forum={Forum}
-                      collectionId={collectionPublicKey}
-                      userRole={Role.role}
+                      forumData={forumData.value}
+                      forum={forum}
+                      topic={topic.value}
+                      userRole={role.role}
+                      update={update}
                       updateVotes={(upVoted) => updateVotes(upVoted)}
                     />
                   </>

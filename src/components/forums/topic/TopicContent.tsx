@@ -16,29 +16,30 @@ import { CreatePost, PostList } from "..";
 import { Notification, Votes } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { useForum, usePath } from "../../../contexts/DispatchProvider";
+import { usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
+import { selectRepliesFromPosts } from '../../../utils/posts';
+import { ForumData } from '../../../utils/hooks';
 
 interface TopicContentProps {
   forum: DispatchForum;
+  forumData: ForumData;
+  update: () => Promise<void>;
   topic: ForumPost;
-  collectionId: web3.PublicKey;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { collectionId, forum, topic, userRole, updateVotes } = props;
+  const { forum, forumData, userRole, update, updateVotes, topic } = props;
+  const replies = useMemo(() => {
+    return selectRepliesFromPosts(forumData.posts, topic);
+  }, [forumData])
   const { buildForumPath } = usePath();
-  const forumPath = buildForumPath(collectionId.toBase58());
+  const forumPath = buildForumPath(forumData.info.collectionId.toBase58());
   const permission = forum.permission;
-  const Forum = useForum();
-  const userPubKey = Forum.wallet.publicKey;
-
-  const [loadingMessages, setLoadingMessages] = useState(true);
-  const [posts, setPosts] = useState<ForumPost[]>([]);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
@@ -59,25 +60,6 @@ export function TopicContent(props: TopicContentProps) {
     collapsible?: CollapsibleProps;
     okPath?: string;
   } | null>(null);
-
-  const getMessages = async () => {
-    setLoadingMessages(true);
-    try {
-      const data = await forum.getTopicMessages(topic.postId, collectionId);
-      setPosts(data ?? []);
-      setLoadingMessages(false);
-    } catch (error: any) {
-      setPosts([]);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The messages could not be loaded`,
-        collapsible: { header: "Error", content: error.message },
-      });
-      setLoadingMessages(false);
-    }
-  };
 
   // TODO (Ana): add corresponding function when its available
   /*const addAccessToken = async () => {
@@ -123,7 +105,7 @@ export function TopicContent(props: TopicContentProps) {
       setDeletingTopic(true);
       const tx = await forum.deleteForumPost(
         topic,
-        collectionId,
+        forumData.info.collectionId,
         userRole === UserRoleType.Moderator
       );
       setModalInfo({
@@ -137,6 +119,7 @@ export function TopicContent(props: TopicContentProps) {
         ),
         okPath: forumPath,
       });
+      update();
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);
       return tx;
@@ -160,10 +143,6 @@ export function TopicContent(props: TopicContentProps) {
     }
   };
 
-  useEffect(() => {
-    getMessages();
-  }, [topic, collectionId]);
-
   const data = (
     <>
       <div className="data">
@@ -171,13 +150,13 @@ export function TopicContent(props: TopicContentProps) {
           <div className="image">
             <MessageSquare />
           </div>
-          {`${posts.length} comments`}
+          {`${replies.length} comments`}
         </div>
         <PermissionsGate scopes={[SCOPES.canVote]}>
           <div className="actionDivider" />
           <Votes
-            onDownVotePost={() => forum.voteDownForumPost(topic, collectionId)}
-            onUpVotePost={() => forum.voteUpForumPost(topic, collectionId)}
+            onDownVotePost={() => forum.voteDownForumPost(topic, forumData.info.collectionId)}
+            onUpVotePost={() => forum.voteUpForumPost(topic, forumData.info.collectionId)}
             post={topic}
             updateVotes={(upVoted) => updateVotes(upVoted)}
           />
@@ -298,9 +277,13 @@ export function TopicContent(props: TopicContentProps) {
         <PermissionsGate scopes={[SCOPES.canCreatePost]}>
           <CreatePost
             topicId={topic.postId}
-            collectionId={collectionId}
-            createForumPost={forum.createForumPost}
-            onReload={() => getMessages()}
+            collectionId={forumData.info.collectionId}
+            createForumPost={async ({ subj, body, meta, }, topicId, collectionId) => {
+              const signature = forum.createForumPost({ subj, body, meta }, topicId, collectionId);
+              return signature;
+            }}
+            update={update}
+            onReload={() => {}}
           />
         </PermissionsGate>
       </div>
@@ -311,9 +294,9 @@ export function TopicContent(props: TopicContentProps) {
       />
       <PostList
         forum={forum}
-        collectionId={collectionId}
-        posts={posts}
-        loading={loadingMessages}
+        forumData={forumData}
+        update={update}
+        topic={topic}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);
           setNotificationContent(
@@ -323,11 +306,7 @@ export function TopicContent(props: TopicContentProps) {
               <TransactionLink transaction={tx} />
             </>
           );
-          setTimeout(
-            () => setIsNotificationHidden(true),
-            NOTIFICATION_BANNER_TIMEOUT
-          );
-          await getMessages();
+          // TODO refresh here
         }}
         userRole={userRole}
       />

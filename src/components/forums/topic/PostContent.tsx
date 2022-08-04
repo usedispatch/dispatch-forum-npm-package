@@ -19,23 +19,25 @@ import { Votes, Notification } from "../../../components/forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { ForumData } from '../../../utils/hooks';
+import {
+  selectRepliesFromPosts
+} from '../../../utils/posts';
 import { GiveAward } from "./GiveAward";
 
 interface PostContentProps {
   forum: DispatchForum;
-  collectionId: web3.PublicKey;
+  forumData: ForumData;
   post: ForumPost;
   userRole: UserRoleType;
+  update: () => Promise<void>;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { collectionId, forum, userRole, onDeletePost } = props;
+  const { forumData, forum, userRole, onDeletePost, update } = props;
 
   const permission = forum.permission;
-
-  const [loading, setLoading] = useState(true);
-  const [replies, setReplies] = useState<ForumPost[]>([]);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
@@ -62,6 +64,16 @@ export function PostContent(props: PostContentProps) {
 
   const post = useMemo(() => props.post, [props.post]);
 
+  const replies = useMemo(() => {
+    const replies = selectRepliesFromPosts(forumData.posts, post);
+    // TODO(andrew) refactor this sort into a helper function
+    return replies.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
+  }, [forumData, post]);
+
   const updateVotes = (upVoted: boolean) => {
     if (upVoted) {
       post.upVotes = post.upVotes + 1;
@@ -70,32 +82,12 @@ export function PostContent(props: PostContentProps) {
     }
   };
 
-  const getReplies = async () => {
-    setLoading(true);
-    try {
-      const data = await forum.getReplies(post, collectionId);
-      setReplies(data ?? []);
-      setLoading(false);
-    } catch (error: any) {
-      setReplies([]);
-      console.log(error);
-      setModalInfo({
-        title: "Something went wrong!",
-        type: MessageType.error,
-        body: `The replies could not be loaded`,
-        collapsible: { header: "Error", content: error.message },
-      });
-      setLoading(false);
-    }
-  };
-
   const onReplyToPost = async () => {
     setSendingReply(true);
     try {
-      const tx = await forum.replyToForumPost(post, collectionId, {
+      const tx = await forum.replyToForumPost(post, forumData.info.collectionId, {
         body: reply,
       });
-      getReplies();
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
@@ -107,6 +99,7 @@ export function PostContent(props: PostContentProps) {
           <TransactionLink transaction={tx!} />
         </>
       );
+      update();
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
@@ -128,7 +121,7 @@ export function PostContent(props: PostContentProps) {
     try {
       const tx = await forum.deleteForumPost(
         postToDelete,
-        collectionId,
+        forumData.info.collectionId,
         userRole === UserRoleType.Moderator
       );
       onDeletePost(tx);
@@ -137,6 +130,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.success,
         body: `The post was deleted`,
       });
+      update();
       setShowDeleteConfirmation(false);
       setDeleting(false);
     } catch (error: any) {
@@ -160,14 +154,6 @@ export function PostContent(props: PostContentProps) {
       setModalInfo(modalInfoError);
     }
   };
-
-  useEffect(() => {
-    if (!_.isNil(post) && !_.isNil(collectionId)) {
-      getReplies();
-    } else {
-      setLoading(false);
-    }
-  }, [post, collectionId]);
 
   const postedAt = `${post.data.ts.toLocaleDateString(undefined, {
     year: "numeric",
@@ -227,7 +213,7 @@ export function PostContent(props: PostContentProps) {
         {showGiveAward && postToAward && (
           <GiveAward
             post={postToAward}
-            collectionId={collectionId}
+            collectionId={forumData.info.collectionId}
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
               setShowGiveAward(false);
@@ -254,10 +240,7 @@ export function PostContent(props: PostContentProps) {
           content={notificationContent}
           onClose={() => setIsNotificationHidden(true)}
         />
-        {loading ? (
-          <Spinner />
-        ) : (
-          <>
+        {<>
             <div className="postHeader">
               <div className="posterId">
                 <div className="icon">
@@ -275,9 +258,9 @@ export function PostContent(props: PostContentProps) {
                 <Votes
                   post={post}
                   onDownVotePost={() =>
-                    forum.voteDownForumPost(post, collectionId)
+                    forum.voteDownForumPost(post, forumData.info.collectionId)
                   }
-                  onUpVotePost={() => forum.voteUpForumPost(post, collectionId)}
+                  onUpVotePost={() => forum.voteUpForumPost(post, forumData.info.collectionId)}
                   updateVotes={(upVoted) => updateVotes(upVoted)}
                 />
               </PermissionsGate>
@@ -326,10 +309,10 @@ export function PostContent(props: PostContentProps) {
                     setShowDeleteConfirmation(true);
                   }}
                   onDownVotePost={(reply) =>
-                    forum.voteDownForumPost(reply, collectionId)
+                    forum.voteDownForumPost(reply, forumData.info.collectionId)
                   }
                   onUpVotePost={(reply) =>
-                    forum.voteUpForumPost(reply, collectionId)
+                    forum.voteUpForumPost(reply, forumData.info.collectionId)
                   }
                   onReplyClick={() => setShowReplyBox(true)}
                   onAwardReply={(reply) => {
@@ -364,8 +347,7 @@ export function PostContent(props: PostContentProps) {
                   </form>
                 ))}
             </div>
-          </>
-        )}
+          </>}
       </div>
     </>
   );

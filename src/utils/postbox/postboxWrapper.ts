@@ -346,6 +346,23 @@ export class DispatchForum implements IForum {
     }
   };
 
+  getPostsForForum = async (
+    collectionId: web3.PublicKey
+  ): Promise<ForumPost[] | undefined> => {
+    const { wallet, connection } = this;
+
+    try {
+      const forum = new Forum(new DispatchConnection(connection, wallet, {cluster: this.cluster}), collectionId);
+      if (await forum.exists()) {
+        const posts = await forum.getPostsForForum();
+
+        return posts;
+      }
+    } catch (error) {
+      throw(parseError(error))
+    }
+  }
+
   canCreateTopic = async(
     collectionId: web3.PublicKey
   ): Promise<boolean> => {

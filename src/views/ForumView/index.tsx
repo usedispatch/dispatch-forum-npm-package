@@ -372,6 +372,8 @@ export const ForumView = (props: ForumViewProps) => {
                     } else if (forumData.state === 'onChainAccountNotFound' ) {
                       return emptyView;
                     } else if (forumData.state === 'dispatchClientError') {
+                      // TODO(andrew) better, more detailed error
+                      // view here
                       return disconnectedView
                     }
                   })()}

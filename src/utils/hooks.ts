@@ -113,16 +113,30 @@ export function useForumData(
         resolvedDescription &&
         resolvedPosts
       ) {
-        return {
-          state: 'success',
-          value: {
-            collectionId,
-            owners: resolvedOwners,
-            moderators: resolvedModerators,
-            description: resolvedDescription,
-            posts: resolvedPosts
-          }
-        };
+        // If all resolved information is not defined, the forum
+        // must not be defined.
+        // TODO(andrew) better logic for actually determining if
+        // the forum is defined? Ideally we would want to check
+        // if the forum account exists
+        if (
+          resolvedOwners.state === 'onChainAccountNotFound' &&
+          resolvedModerators.state === 'onChainAccountNotFound' &&
+          resolvedDescription.state === 'onChainAccountNotFound' &&
+          resolvedPosts.state === 'onChainAccountNotFound'
+        ) {
+          return { state: 'onChainAccountNotFound' };
+        } else {
+          return {
+            state: 'success',
+            value: {
+              collectionId,
+              owners: resolvedOwners,
+              moderators: resolvedModerators,
+              description: resolvedDescription,
+              posts: resolvedPosts
+            }
+          };
+        }
       } else {
         return { state: 'pending' };
       }

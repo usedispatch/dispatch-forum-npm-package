@@ -15,8 +15,8 @@ import * as web3 from "@solana/web3.js";
 import { 
   getAssociatedTokenAddress,
   createAssociatedTokenAccountInstruction,
-createTransferCheckedInstruction,
-getAccount
+  createTransferCheckedInstruction,
+  getAccount
 } from "@solana/spl-token";
 
 import { parseError } from "../parseErrors";

@@ -28,6 +28,7 @@ module.exports = {
             stream: require.resolve('stream-browserify'),
             path: require.resolve('path-browserify'),
             zlib: require.resolve('browserify-zlib'),
+            assert: require.resolve('assert'),
         },
         symlinks: false
   },

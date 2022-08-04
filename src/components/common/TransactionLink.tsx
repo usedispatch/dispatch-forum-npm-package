@@ -1,4 +1,4 @@
-import { useClusterAndSetter } from "../../contexts/ClusterProvider";
+import { useForum } from "../../contexts/DispatchProvider";
 
 interface TransactionLinkProps {
   transaction: string;
@@ -7,7 +7,7 @@ interface TransactionLinkProps {
 export const TransactionLink = (props: TransactionLinkProps) => {
   const { transaction } = props;
 
-  const { cluster } = useClusterAndSetter();
+  const { cluster } = useForum();
 
   const firstFour = transaction.substring(0, 4);
   const lastFour = transaction.substring(props.transaction.length - 4);
@@ -18,7 +18,8 @@ export const TransactionLink = (props: TransactionLinkProps) => {
       <a
         href={`https://solscan.io/tx/${transaction}?cluster=${cluster}`}
         className="transactionLink"
-        target="_blank">
+        target="_blank"
+      >
         {displayText}
       </a>
     </div>

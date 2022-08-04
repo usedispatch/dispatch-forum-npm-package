@@ -22,14 +22,19 @@ interface TopicListProps {
 }
 
 export function TopicList({ forumData }: TopicListProps) {
-  const topics = useMemo(() => {
-    const topics = selectTopics(forumData.posts);
-    // TODO(andrew) refactor this sort into a helper function
-    return topics.sort((left, right) => {
-      const leftVotes = left.upVotes - left.downVotes;
-      const rightVotes = right.upVotes - right.downVotes;
-      return rightVotes - leftVotes;
-    });
+  const topics: ForumPost[] = useMemo(() => {
+    if (forumData.posts.state === 'success') {
+      const topics = selectTopics(forumData.posts.value);
+      // TODO(andrew) refactor this sort into a helper function
+      return topics.sort((left, right) => {
+        const leftVotes = left.upVotes - left.downVotes;
+        const rightVotes = right.upVotes - right.downVotes;
+        return rightVotes - leftVotes;
+      });
+    } else {
+      // TODO(andrew) show some sort of error here
+      return [];
+    }
   }, [forumData]);
 
   return (
@@ -76,10 +81,15 @@ interface RowContentProps {
 function RowContent(props: RowContentProps) {
   const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
-  const topicPath = buildTopicPath(forumData.info.collectionId.toBase58(), topic.postId);
+  const topicPath = buildTopicPath(forumData.collectionId.toBase58(), topic.postId);
 
-  const replies = useMemo(() => {
-    return selectRepliesFromPosts(forumData.posts, topic);
+  const replies: ForumPost[] = useMemo(() => {
+    if (forumData.posts.state === 'success') {
+      return selectRepliesFromPosts(forumData.posts.value, topic);
+    } else {
+      // TODO(andrew) show an error here
+      return [];
+    }
   }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {

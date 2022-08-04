@@ -35,10 +35,15 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { forum, forumData, userRole, update, updateVotes, topic } = props;
   const replies = useMemo(() => {
-    return selectRepliesFromPosts(forumData.posts, topic);
+    if (forumData.posts.state === 'success') {
+      return selectRepliesFromPosts(forumData.posts.value, topic);
+    } else {
+      // TODO(andrew) log errors here
+      return [];
+    }
   }, [forumData])
   const { buildForumPath } = usePath();
-  const forumPath = buildForumPath(forumData.info.collectionId.toBase58());
+  const forumPath = buildForumPath(forumData.collectionId.toBase58());
   const permission = forum.permission;
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -105,7 +110,7 @@ export function TopicContent(props: TopicContentProps) {
       setDeletingTopic(true);
       const tx = await forum.deleteForumPost(
         topic,
-        forumData.info.collectionId,
+        forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
       setModalInfo({
@@ -155,8 +160,8 @@ export function TopicContent(props: TopicContentProps) {
         <PermissionsGate scopes={[SCOPES.canVote]}>
           <div className="actionDivider" />
           <Votes
-            onDownVotePost={() => forum.voteDownForumPost(topic, forumData.info.collectionId)}
-            onUpVotePost={() => forum.voteUpForumPost(topic, forumData.info.collectionId)}
+            onDownVotePost={() => forum.voteDownForumPost(topic, forumData.collectionId)}
+            onUpVotePost={() => forum.voteUpForumPost(topic, forumData.collectionId)}
             post={topic}
             updateVotes={(upVoted) => updateVotes(upVoted)}
           />
@@ -277,7 +282,7 @@ export function TopicContent(props: TopicContentProps) {
         <PermissionsGate scopes={[SCOPES.canCreatePost]}>
           <CreatePost
             topicId={topic.postId}
-            collectionId={forumData.info.collectionId}
+            collectionId={forumData.collectionId}
             createForumPost={async ({ subj, body, meta, }, topicId, collectionId) => {
               const signature = forum.createForumPost({ subj, body, meta }, topicId, collectionId);
               return signature;

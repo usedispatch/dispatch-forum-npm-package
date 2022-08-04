@@ -21,13 +21,18 @@ interface PostListProps {
 export function PostList(props: PostListProps) {
   const { forumData, forum, userRole, onDeletePost, topic, update } = props;
   const posts = useMemo(() => {
-    const posts = selectRepliesFromPosts(forumData.posts, topic);
-    // TODO(andrew) refactor this sort into a helper function
-    return posts.sort((left, right) => {
-      const leftVotes = left.upVotes - left.downVotes;
-      const rightVotes = right.upVotes - right.downVotes;
-      return rightVotes - leftVotes;
-    });
+    if (forumData.posts.state === 'success' ) {
+      const posts = selectRepliesFromPosts(forumData.posts.value, topic);
+      // TODO(andrew) refactor this sort into a helper function
+      return posts.sort((left, right) => {
+        const leftVotes = left.upVotes - left.downVotes;
+        const rightVotes = right.upVotes - right.downVotes;
+        return rightVotes - leftVotes;
+      });
+    } else {
+      // TODO(andrew) log error here
+      return [];
+    }
   }, [forumData]);
 
   const emptyList = (

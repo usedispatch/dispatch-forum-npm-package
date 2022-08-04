@@ -42,20 +42,24 @@ export const TopicView = (props: Props) => {
   const { forumData, update } = useForumData(collectionPublicKey, forum);
 
   const topic: Loading<ForumPost> = useMemo(() => {
-    if (forumData.state === 'success') {
-      const post = forumData.value.posts.find(({ isTopic, postId }) => {
+    if (forumData.state === 'success' && forumData.value.posts.state === 'success') {
+      const post = forumData.value.posts.value.find(({ isTopic, postId }) => {
         return isTopic && postId === topicId;
       });
       if (post) {
         return {
           state: 'success',
           value: post
-        }
+        };
       } else {
-          return { state: 'notFound' };
-        }
+        return { state: 'onChainAccountNotFound' };
+      }
     } else {
-      return forumData;
+      if (forumData.state === 'success' ) {
+        return { state: 'pending' };
+      } else {
+        return { state: forumData.state };
+      }
     }
   }, [forumData, topicId]);
 
@@ -134,12 +138,13 @@ export const TopicView = (props: Props) => {
                     <Spinner />
                   </div>
                 ) : forumData.state === 'success' &&
+                    forumData.value.description.state === 'success' &&
                     topic.state === 'success'
                   ? (
                   <>
                     <Breadcrumb
                       navigateTo={forumPath}
-                      parent={forumData.value.info.title}
+                      parent={forumData.value.description.value.title}
                       current={topic.value!.data.subj!}
                     />
                     <TopicContent

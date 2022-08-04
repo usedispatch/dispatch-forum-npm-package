@@ -340,14 +340,16 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {forumData.state === 'success' && (
+            {forumData.state === 'success' &&
+              forumData.value.description.state === 'success' &&
+              (
               <div
                 className={`forumViewTitle ${
                   !permission.readAndWrite ? "alert" : ""
                 }`}>
-                {forumData.value.info.title}
+                {forumData.value.description.value.title}
               </div>
-            )}
+              ) /* TODO(andrew) what to render here if title isn't loaded */}
             <main>
               <div className="forumViewContentBox">
                 <div>
@@ -367,9 +369,9 @@ export const ForumView = (props: ForumViewProps) => {
                           update={update}
                         />
                       );
-                    } else if (forumData.state === 'notFound' ) {
+                    } else if (forumData.state === 'onChainAccountNotFound' ) {
                       return emptyView;
-                    } else if (forumData.state === 'failed') {
+                    } else if (forumData.state === 'dispatchClientError') {
                       return disconnectedView
                     }
                   })()}

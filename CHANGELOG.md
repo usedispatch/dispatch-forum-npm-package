@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+# [0.2.1] 2022-08-04
+
+- forum: Performance improvements ([#53](https://github.com/usedispatch/dispatch-forum-npm-package/pull/49))
+- forum: Package downsizing ([#53](https://github.com/usedispatch/dispatch-forum-npm-package/pull/49))
+- forum: NFT Gifting UI Update ([#54](https://github.com/usedispatch/dispatch-forum-npm-package/pull/54))
+
 # [0.2.0] 2022-08-02
 
 - forum: Add NFT and SOL gifting functionality ([#47](https://github.com/usedispatch/dispatch-forum-npm-package/pull/47)) ([#44](https://github.com/usedispatch/dispatch-forum-npm-package/pull/44))

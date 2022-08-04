@@ -150,10 +150,8 @@ export function GiveAward(props: GiveAwardProps) {
                         nft.mint === selectedNFT?.mint ? "selectedNFT" : ""
                       }`}
                       onClick={() => setSelectedNFT(nft)}>
-                      <div>
-                        <img src={nft.uri} />
-                        {nft.name}
-                      </div>
+                      <img src={nft.uri} />
+                      <div className="giftName">{nft.name}</div>
                     </div>
                   ))}
                 </div>

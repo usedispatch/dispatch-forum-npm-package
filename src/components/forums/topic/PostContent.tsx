@@ -252,10 +252,10 @@ export function PostContent(props: PostContentProps) {
               <Votes
                 post={post}
                 onDownVotePost={() =>
-                  forum.voteDownForumPost(post, forumData.info.collectionId)
+                  forum.voteDownForumPost(post, forumData.collectionId)
                 }
                 onUpVotePost={() =>
-                  forum.voteUpForumPost(post, forumData.info.collectionId)
+                  forum.voteUpForumPost(post, forumData.collectionId)
                 }
                 updateVotes={(upVoted) => updateVotes(upVoted)}
               />
@@ -320,10 +320,10 @@ export function PostContent(props: PostContentProps) {
                   setShowDeleteConfirmation(true);
                 }}
                 onDownVotePost={(reply) =>
-                  forum.voteDownForumPost(reply, forumData.info.collectionId)
+                  forum.voteDownForumPost(reply, forumData.collectionId)
                 }
                 onUpVotePost={(reply) =>
-                  forum.voteUpForumPost(reply, forumData.info.collectionId)
+                  forum.voteUpForumPost(reply, forumData.collectionId)
                 }
                 onReplyClick={() => setShowReplyBox(true)}
                 onAwardReply={(reply) => {

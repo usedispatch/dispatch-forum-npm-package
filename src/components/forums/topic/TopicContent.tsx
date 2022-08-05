@@ -225,7 +225,7 @@ export function TopicContent(props: TopicContentProps) {
       {showGiveAward && (
         <GiveAward
           post={topic}
-          collectionId={forumData.info.collectionId}
+          collectionId={forumData.collectionId}
           onCancel={() => setShowGiveAward(false)}
           onSuccess={(notificationContent) => {
             setShowGiveAward(false);
@@ -255,10 +255,10 @@ export function TopicContent(props: TopicContentProps) {
           <PermissionsGate scopes={[SCOPES.canVote]}>
             <Votes
               onDownVotePost={() =>
-                forum.voteDownForumPost(topic, forumData.info.collectionId)
+                forum.voteDownForumPost(topic, forumData.collectionId)
               }
               onUpVotePost={() =>
-                forum.voteUpForumPost(topic, forumData.info.collectionId)
+                forum.voteUpForumPost(topic, forumData.collectionId)
               }
               post={topic}
               updateVotes={(upVoted) => updateVotes(upVoted)}
@@ -313,7 +313,7 @@ export function TopicContent(props: TopicContentProps) {
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
               topicId={topic.postId}
-              collectionId={forumData.info.collectionId}
+              collectionId={forumData.collectionId}
               createForumPost={async (
                 { subj, body, meta },
                 topicId,

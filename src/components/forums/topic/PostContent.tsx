@@ -23,6 +23,7 @@ import { ForumData } from '../../../utils/hooks';
 import {
   selectRepliesFromPosts
 } from '../../../utils/posts';
+import { isSuccess, success } from '../../../utils/loading';
 import { GiveAward } from "./GiveAward";
 
 interface PostContentProps {
@@ -65,8 +66,8 @@ export function PostContent(props: PostContentProps) {
   const post = useMemo(() => props.post, [props.post]);
 
   const replies = useMemo(() => {
-    if (forumData.posts.state === 'success') {
-      const replies = selectRepliesFromPosts(forumData.posts.value, post);
+    if (isSuccess(forumData.posts)) {
+      const replies = selectRepliesFromPosts(forumData.posts, post);
       // TODO(andrew) refactor this sort into a helper function
       return replies.sort((left, right) => {
         const leftVotes = left.upVotes - left.downVotes;

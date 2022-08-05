@@ -15,6 +15,7 @@ import { Spinner } from "../../common";
 import { useForum, usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
 import { selectRepliesFromPosts, selectTopics } from '../../../utils/posts';
+import { success, isSuccess } from '../../../utils/loading';
 import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
@@ -23,8 +24,8 @@ interface TopicListProps {
 
 export function TopicList({ forumData }: TopicListProps) {
   const topics: ForumPost[] = useMemo(() => {
-    if (forumData.posts.state === 'success') {
-      const topics = selectTopics(forumData.posts.value);
+    if (isSuccess(forumData.posts)) {
+      const topics = selectTopics(forumData.posts);
       // TODO(andrew) refactor this sort into a helper function
       return topics.sort((left, right) => {
         const leftVotes = left.upVotes - left.downVotes;
@@ -85,7 +86,7 @@ function RowContent(props: RowContentProps) {
 
   const replies: ForumPost[] = useMemo(() => {
     if (forumData.posts.state === 'success') {
-      return selectRepliesFromPosts(forumData.posts.value, topic);
+      return selectRepliesFromPosts(forumData.posts, topic);
     } else {
       // TODO(andrew) show an error here
       return [];

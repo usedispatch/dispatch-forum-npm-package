@@ -23,6 +23,7 @@ import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
 import { Loading } from '../../types/loading';
+import { isSuccess } from '../../utils/loading';
 import { useForumData } from '../../utils/hooks';
 
 interface ForumViewProps {
@@ -340,14 +341,14 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {forumData.state === 'success' &&
-              forumData.value.description.state === 'success' &&
+            {isSuccess(forumData) &&
+              isSuccess(forumData.description) &&
               (
               <div
                 className={`forumViewTitle ${
                   !permission.readAndWrite ? "alert" : ""
                 }`}>
-                {forumData.value.description.value.title}
+                {forumData.description.title}
               </div>
               ) /* TODO(andrew) what to render here if title isn't loaded */}
             <main>
@@ -365,7 +366,7 @@ export const ForumView = (props: ForumViewProps) => {
                       return (
                         <ForumContent
                           forumObject={forumObject}
-                          forumData={forumData.value}
+                          forumData={forumData}
                           update={update}
                         />
                       );

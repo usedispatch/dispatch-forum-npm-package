@@ -10,10 +10,7 @@ export type LoadingResult<T>
   | DispatchClientError
   | OnChainAccountNotFound;
 
-export interface Success<T> {
-  state: 'success';
-  value: T;
-};
+export type Success<T> = T & { state: 'success' };
 
 // The initial state when the page is loaded and before any data
 // has been fetched

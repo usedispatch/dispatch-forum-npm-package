@@ -26,6 +26,7 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { selectTopics } from '../../../utils/posts';
+import { isSuccess } from '../../../utils/loading';
 import { ForumData } from '../../../utils/hooks';
 
 interface ForumContentProps {
@@ -42,8 +43,8 @@ export function ForumContent(props: ForumContentProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [currentMods, setCurrentMods] = useState<string[]>(() => {
-    if (forumData.moderators.state === 'success') {
-      return forumData.moderators.value.map(pkey => pkey.toBase58())
+    if (isSuccess(forumData.moderators)) {
+      return forumData.moderators.map(pkey => pkey.toBase58())
     } else {
       // TODO(andrew) show error here for missing mods
       return [];
@@ -51,7 +52,7 @@ export function ForumContent(props: ForumContentProps) {
   });
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (forumData.owners.state === 'success') {
-      return forumData.owners.value.map(pkey => pkey.toBase58())
+      return forumData.owners.map(pkey => pkey.toBase58())
     } else {
       // TODO(andrew) show error here for missing owners
       return [];
@@ -275,7 +276,7 @@ export function ForumContent(props: ForumContentProps) {
       <div className="box">
         <div className="description">{
           forumData.description.state === 'success' ?
-          forumData.description.value.desc :
+          forumData.description.desc :
           // TODO(andrew) show an error message here
           'Error, description could not be loaded'
         }</div>

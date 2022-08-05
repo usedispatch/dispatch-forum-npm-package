@@ -21,6 +21,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from '../../../utils/posts';
+import { isSuccess } from '../../../utils/loading';
 import { ForumData } from '../../../utils/hooks';
 
 interface TopicContentProps {
@@ -35,8 +36,8 @@ interface TopicContentProps {
 export function TopicContent(props: TopicContentProps) {
   const { forum, forumData, userRole, update, updateVotes, topic } = props;
   const replies = useMemo(() => {
-    if (forumData.posts.state === 'success') {
-      return selectRepliesFromPosts(forumData.posts.value, topic);
+    if (isSuccess(forumData.posts)) {
+      return selectRepliesFromPosts(forumData.posts, topic);
     } else {
       // TODO(andrew) log errors here
       return [];

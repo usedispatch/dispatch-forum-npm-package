@@ -2,7 +2,11 @@ import { useMemo, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
 import { ForumInfo, ForumPost } from '@usedispatch/client';
 import { Loading, LoadingResult } from '../types/loading';
-import { resolved } from '../utils/loading';
+import {
+  isResolved,
+  success,
+  isNotFound
+} from '../utils/loading';
 import { DispatchForum } from './postbox/postboxWrapper';
 
 // TODO(andrew) move this to DispatchForum.getDescription()
@@ -37,7 +41,7 @@ export function useForumData(
       try {
         const fetchData = await forum.getOwners(collectionId);
         if (fetchData) {
-          setOwners({ state: 'success', value: fetchData });
+          setOwners(success(fetchData));
         } else {
           setOwners({ state: 'onChainAccountNotFound' });
         }
@@ -54,7 +58,7 @@ export function useForumData(
       try {
         const fetchData = await forum.getModerators(collectionId);
         if (fetchData) {
-          setModerators({ state: 'success', value: fetchData });
+          setModerators(success(fetchData));
         } else {
           setModerators({ state: 'onChainAccountNotFound' });
         }
@@ -71,7 +75,7 @@ export function useForumData(
       try {
         const fetchData = await forum.getDescription(collectionId);
         if (fetchData) {
-          setDescription({ state: 'success', value: fetchData });
+          setDescription(success(fetchData));
         } else {
           setDescription({ state: 'onChainAccountNotFound' });
         }
@@ -88,7 +92,7 @@ export function useForumData(
       try {
         const fetchData = await forum.getPostsForForum(collectionId);
         if (fetchData) {
-          setPosts({ state: 'success', value: fetchData });
+          setPosts(success(fetchData));
         } else {
           setPosts({ state: 'onChainAccountNotFound' });
         }
@@ -103,15 +107,11 @@ export function useForumData(
   const forumData: Loading<ForumData> = useMemo(() => {
     console.log('re-rendering forum data');
     if (collectionId) {
-      const resolvedOwners = resolved(owners);
-      const resolvedModerators = resolved(moderators);
-      const resolvedDescription = resolved(description);
-      const resolvedPosts = resolved(posts);
       if (
-        resolvedOwners &&
-        resolvedModerators &&
-        resolvedDescription &&
-        resolvedPosts
+        isResolved(owners) &&
+        isResolved(moderators) &&
+        isResolved(description) &&
+        isResolved(posts)
       ) {
         // If all resolved information is not defined, the forum
         // must not be defined.
@@ -119,22 +119,20 @@ export function useForumData(
         // the forum is defined? Ideally we would want to check
         // if the forum account exists
         if (
-          resolvedOwners.state === 'onChainAccountNotFound' &&
-          resolvedModerators.state === 'onChainAccountNotFound' &&
-          resolvedDescription.state === 'onChainAccountNotFound' &&
-          resolvedPosts.state === 'onChainAccountNotFound'
+          isNotFound(owners) &&
+          isNotFound(moderators) &&
+          isNotFound(description) &&
+          isNotFound(posts)
         ) {
           return { state: 'onChainAccountNotFound' };
         } else {
           return {
             state: 'success',
-            value: {
-              collectionId,
-              owners: resolvedOwners,
-              moderators: resolvedModerators,
-              description: resolvedDescription,
-              posts: resolvedPosts
-            }
+            collectionId,
+            owners,
+            moderators,
+            description,
+            posts
           };
         }
       } else {

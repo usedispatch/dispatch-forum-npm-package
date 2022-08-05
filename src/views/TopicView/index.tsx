@@ -21,6 +21,10 @@ import {
 import {
   Loading
 } from '../../types/loading';
+import {
+  isSuccess,
+  success
+} from '../../utils/loading';
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -42,20 +46,20 @@ export const TopicView = (props: Props) => {
   const { forumData, update } = useForumData(collectionPublicKey, forum);
 
   const topic: Loading<ForumPost> = useMemo(() => {
-    if (forumData.state === 'success' && forumData.value.posts.state === 'success') {
-      const post = forumData.value.posts.value.find(({ isTopic, postId }) => {
+    if (
+      isSuccess(forumData) &&
+      isSuccess(forumData.posts)
+    ) {
+      const post = forumData.posts.find(({ isTopic, postId }) => {
         return isTopic && postId === topicId;
       });
       if (post) {
-        return {
-          state: 'success',
-          value: post
-        };
+        return success(post);
       } else {
         return { state: 'onChainAccountNotFound' };
       }
     } else {
-      if (forumData.state === 'success' ) {
+      if (isSuccess(forumData)) {
         return { state: 'pending' };
       } else {
         return { state: forumData.state };
@@ -75,12 +79,11 @@ export const TopicView = (props: Props) => {
   const forumPath = buildForumPath(collectionId);
 
   const updateVotes = (upVoted: boolean) => {
-    if (topic.state === 'success' && topic.value) {
-      const { value } = topic;
+    if (isSuccess(topic)) {
       if (upVoted) {
-        value.upVotes += 1;
+        topic.upVotes += 1;
       } else {
-        value.downVotes += 1;
+        topic.downVotes += 1;
       }
     } else {
       // If necessary, handle behavior if topic isn't loaded here
@@ -97,10 +100,9 @@ export const TopicView = (props: Props) => {
       !_.isNil(collectionPublicKey) &&
       !_.isNil(topic) &&
       forum.wallet.publicKey &&
-      topic.state === 'success' &&
-      topic.value
+      isSuccess(topic)
     ) {
-      getUserRole(forum, collectionPublicKey, role, topic.value);
+      getUserRole(forum, collectionPublicKey, role, topic);
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
@@ -137,20 +139,20 @@ export const TopicView = (props: Props) => {
                   <div className="topicViewLoading">
                     <Spinner />
                   </div>
-                ) : forumData.state === 'success' &&
-                    forumData.value.description.state === 'success' &&
+                ) : isSuccess(forumData) &&
+                    isSuccess(forumData.description) &&
                     topic.state === 'success'
                   ? (
                   <>
                     <Breadcrumb
                       navigateTo={forumPath}
-                      parent={forumData.value.description.value.title}
-                      current={topic.value!.data.subj!}
+                      parent={forumData.description.title}
+                      current={topic.data.subj!}
                     />
                     <TopicContent
-                      forumData={forumData.value}
+                      forumData={forumData}
                       forum={forum}
-                      topic={topic.value}
+                      topic={topic}
                       userRole={role.role}
                       update={update}
                       updateVotes={(upVoted) => updateVotes(upVoted)}

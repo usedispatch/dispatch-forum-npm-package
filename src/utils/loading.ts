@@ -1,17 +1,47 @@
-import { Loading, LoadingResult } from '../types/loading';
+import {
+  Loading,
+  LoadingResult,
+  Success,
+  OnChainAccountNotFound
+} from '../types/loading';
 
 /**
- * Return the same object as a Result iff the given loading
- * object has either succeeded or failed. If not, return null
+ * Create a new Success type from a given value
  */
-export function resolved<T>(loading: Loading<T>): LoadingResult<T> | null {
+export function success<T>(t: T): Success<T> {
+  return { state: 'success', ... t };
+}
+
+/**
+ * Return whether a given Loading value is a success or not, and
+ * narrow its type
+ */
+export function isSuccess<T>(value: Loading<T>): value is Success<T> {
+  return value.state === 'success';
+}
+
+/**
+ * Return whether a given Loading value is a "not found" result
+ * or not, and narrow its type
+ */
+export function isNotFound<T>(value: Loading<T>): value is OnChainAccountNotFound {
+  return value.state === 'onChainAccountNotFound';
+}
+
+/**
+ * Return whether the given object is resolved-- that is whether
+ * it has entered its final state, whether success, error, or not
+ * found. If the object is in the initial or pending state, it
+ * still has time to go, so return false
+ */
+export function isResolved<T>(value: Loading<T>): value is LoadingResult<T> {
   if (
-    loading.state === 'success' ||
-    loading.state === 'dispatchClientError' ||
-    loading.state === 'onChainAccountNotFound'
+    value.state === 'success' ||
+    value.state === 'dispatchClientError' ||
+    value.state === 'onChainAccountNotFound'
   ) {
-    return loading;
+    return true;
   } else {
-    return null;
+    return false;
   }
 }

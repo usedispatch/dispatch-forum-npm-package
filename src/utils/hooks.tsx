@@ -170,7 +170,7 @@ export function useModal() {
   // Enqueue one or more modals to show. Modals are shown in FIFO
   // order
   function showModals(modalsToAdd: ModalInfo[]) {
-    setModalInfoList(modalInfoList.concat(...modalsToAdd));
+    setModalInfoList(modalInfoList.concat(modalsToAdd));
   }
 
   function showModal(modalToAdd: ModalInfo) {

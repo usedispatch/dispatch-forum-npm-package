@@ -89,30 +89,30 @@ export const TopicView = (props: Props) => {
     }
     if (isSuccess(forumData)) {
       if (isDispatchClientError(forumData.moderators)) {
-        const message = JSON.stringify(forumData.moderators.error.message || {});
+        const message = JSON.stringify(forumData.moderators.error || {});
         showModal({
           type: MessageType.error,
-          title: 'Error',
+          title: 'Error loading moderators',
           collapsible: { header: 'Error', content: message }
         });
       }
     }
     if (isSuccess(forumData)) {
       if (isDispatchClientError(forumData.description)) {
-        const message = JSON.stringify(forumData.description.error.message || {});
+        const message = JSON.stringify(forumData.description.error || {});
         showModal({
           type: MessageType.error,
-          title: 'Error',
+          title: 'Error loading description',
           collapsible: { header: 'Error', content: message }
         });
       }
     }
     if (isSuccess(forumData)) {
       if (isDispatchClientError(forumData.posts)) {
-        const message = JSON.stringify(forumData.posts.error.message || {});
+        const message = JSON.stringify(forumData.posts.error || {});
         showModal({
           type: MessageType.error,
-          title: 'Error',
+          title: 'Error loading posts',
           collapsible: { header: 'Error', content: message }
         });
       }

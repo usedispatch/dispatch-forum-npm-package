@@ -112,8 +112,8 @@ export const TopicView = (props: Props) => {
 
   useEffect(() => {
     update();
-    // Update every time wallet or cluster is changed
-  }, [forum.wallet, forum.cluster]);
+    // Update every time the cluster is changed
+  }, [forum.cluster]);
 
   useEffect(() => {
     if (

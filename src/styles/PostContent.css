@@ -86,141 +86,154 @@
     }
   }
 
-  .postHeader {
+  .postContentBox {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding-bottom: 16px;
+    gap: 16px;
+    width: 100%;
 
-    .posterId {
+    .votePostContent {
+      flex-direction: column;
+      width: 30px;
+    }
+  }
+
+  .box {
+    width: 100%;
+
+    .postHeader {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-bottom: 16px;
+
+      .posterId {
+        display: flex;
+        align-items: center;
+      }
+
+      .icon {
+        height: 28px;
+        width: 28px;
+        margin-right: 4px;
+      }
+
+      .walletId {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4a279c;
+      }
+
+      .postedAt {
+        font-size: 12px;
+        font-weight: 300;
+        color: #86878e;
+      }
     }
 
-    .icon {
-      height: 28px;
-      width: 28px;
-      margin-right: 4px;
-    }
-
-    .walletId {
+    .postBody {
+      color: #414149;
       font-size: 14px;
-      font-weight: 600;
-      color: #4a279c;
+
+      margin-bottom: 12px;
     }
 
-    .postedAt {
-      font-size: 12px;
-      font-weight: 300;
-      color: #86878e;
-    }
-  }
-
-  .postBody {
-    color: #414149;
-    font-size: 14px;
-
-    margin-bottom: 12px;
-  }
-
-  .actionsContainer {
-    display: flex;
-    align-items: center;
-
-    .deleteButton {
-      border: 1px solid #3f1d96;
-      border-radius: 9999px;
+    .actionsContainer {
       display: flex;
       align-items: center;
-      width: 32px;
-      height: 24px;
-      max-height: 24px;
-      padding: 8px;
+      justify-content: space-between;
 
-      svg {
-        path {
-          fill: #3f1d96;
+      padding: 0 20px;
+
+      .deleteButton {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+
+        font-size: 14px;
+        font-weight: 600;
+        color: #86878e;
+
+        svg {
+          width: 16px;
+          height: 16px;
+
+          path {
+            fill: #86878e;
+          }
+        }
+
+        &:disabled {
+          cursor: not-allowed;
         }
       }
 
-      &:disabled {
-        border-color: #7c7b7c;
-        color: #7c7b7c;
-        cursor: not-allowed;
+      .right {
+        display: flex;
+        align-items: center;
 
-        svg path {
-          fill: #7c7b7c;
+        font-size: 14px;
+        color: #3f1d96;
+
+        .replyButton {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          height: 24px;
+          max-height: 24px;
+          padding: 8px;
+
+          font-weight: 600;
+
+          svg {
+            height: 12px;
+            width: 12px;
+
+            path {
+              fill: #3f1d96;
+            }
+          }
+
+          &:disabled {
+            cursor: not-allowed;
+          }
+        }
+
+        .awardButton {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 8px;
+
+          font-weight: 600;
+
+          &:disabled {
+            cursor: not-allowed;
+          }
+        }
+
+        .actionDivider {
+          width: 1px;
+          height: 22px;
+          margin: 0 10px;
+
+          background: #cac9cb;
         }
       }
-    }
-
-    .replyButton {
-      border: 1px solid #3f1d96;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      height: 24px;
-      max-height: 24px;
-      padding: 8px;
-
-      color: #3f1d96;
-      font-size: 12px;
-
-      &:disabled {
-        border-color: #7c7b7c;
-        color: #7c7b7c;
-        cursor: not-allowed;
-
-        svg path {
-          fill: #7c7b7c;
-        }
-      }
-    }
-
-    .awardButton {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      height: 24px;
-      width: 28px;
-      padding: 8px;
-      margin-left: 10px;
-      border: 1px solid #3f1d96;
-      border-radius: 9999px;
-
-      color: #3f1d96;
-      font-size: 12px;
-
-      &:disabled {
-        border-color: #7c7b7c;
-        color: #7c7b7c;
-        cursor: not-allowed;
-
-        svg path {
-          fill: #7c7b7c;
-        }
-      }
-    }
-
-    .actionDivider {
-      width: 1px;
-      height: 22px;
-      margin: 0 10px;
-
-      background: #6e59b1;
     }
   }
 
   .repliesSection {
     margin-top: 16px;
-    margin-left: 12px;
-    padding-top: 2px;
+    margin-left: 46px; /* votePostContent.width + gap */
     border-left-width: 1px;
-    border-color: #b8b9dc;
+    border-color: #cac9cb;
 
     .repliesBox {
       padding-left: 24px;
+      padding-top: 20px;
     }
 
     .replyForm {

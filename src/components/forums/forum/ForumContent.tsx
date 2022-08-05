@@ -515,8 +515,7 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
+                onClick={() => setShowAddAccessToken(true)}>
                 Manage forum access
               </button>
             </div>

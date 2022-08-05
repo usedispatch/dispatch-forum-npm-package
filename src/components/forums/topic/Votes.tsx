@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import { useState, ReactNode, useEffect } from "react";
 import { ForumPost } from "@usedispatch/client";
 
-import { DownVote, UpVote } from "../../../assets";
+import { Success, Vote } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -154,10 +154,10 @@ export function Votes(props: VotesProps) {
         />
         <div className="votePostContent">
           <button
-            className="votePostButton"
+            className="votePostButton upVote"
             disabled={alreadyVoted || !permission.readAndWrite}
             onClick={upVotePost}>
-            <UpVote />
+            <Vote isUpVote />
           </button>
           {loading ? (
             <div className="spinnerContainer">
@@ -167,10 +167,10 @@ export function Votes(props: VotesProps) {
             <div className="currentVotes">{post.upVotes - post.downVotes}</div>
           )}
           <button
-            className="votePostButton"
+            className="votePostButton downVote"
             disabled={alreadyVoted || !permission.readAndWrite}
             onClick={downVotePost}>
-            <DownVote />
+            <Vote />
           </button>
         </div>
       </div>

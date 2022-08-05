@@ -3,7 +3,7 @@ import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, Trash } from "../../../assets";
+import { Award, Trash, Reply } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -244,116 +244,121 @@ export function PostContent(props: PostContentProps) {
           type={notificationContent?.type}
           onClose={() => setIsNotificationHidden(true)}
         />
-        {
-          <>
-            <div className="postHeader">
-              <div className="posterId">
-                <div className="icon">
-                  <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
+        <>
+          <div className="postContentBox">
+            <PermissionsGate
+              scopes={[SCOPES.canDeletePost]}
+              posterKey={post.poster}>
+              <Votes
+                post={post}
+                onDownVotePost={() =>
+                  forum.voteDownForumPost(post, forumData.collectionId)
+                }
+                onUpVotePost={() =>
+                  forum.voteUpForumPost(post, forumData.collectionId)
+                }
+                updateVotes={(upVoted) => updateVotes(upVoted)}
+              />
+            </PermissionsGate>
+            <div className="box">
+              <div className="postHeader">
+                <div className="posterId">
+                  <div className="icon">
+                    <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
+                  </div>
+                  <div className="walletId">{post.poster.toBase58()}</div>
                 </div>
-                <div className="walletId">{post.poster.toBase58()}</div>
+                <div className="postedAt">Posted at: {postedAt}</div>
               </div>
-              <div className="postedAt">Posted at: {postedAt}</div>
-            </div>
-            <div className="postBody">{post?.data.body}</div>
-            <div className="actionsContainer">
-              <PermissionsGate
-                scopes={[SCOPES.canDeletePost]}
-                posterKey={post.poster}>
-                <Votes
-                  post={post}
-                  onDownVotePost={() =>
-                    forum.voteDownForumPost(post, forumData.collectionId)
-                  }
-                  onUpVotePost={() => forum.voteUpForumPost(post, forumData.collectionId)}
-                  updateVotes={(upVoted) => updateVotes(upVoted)}
-                />
-              </PermissionsGate>
-              <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                <div className="actionDivider" />
-                <button
-                  className="replyButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowReplyBox(true)}>
-                  Reply
-                </button>
-                <button
-                  className="awardButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => {
-                    setPostToAward(post);
-                    setShowGiveAward(true);
-                  }}>
-                  <Award />
-                </button>
-              </PermissionsGate>
-              <PermissionsGate
-                scopes={[SCOPES.canDeletePost]}
-                posterKey={post.poster}>
-                <div className="actionDivider" />
-                <button
-                  className="deleteButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => {
-                    setPostToDelete(props.post);
-                    setShowDeleteConfirmation(true);
-                  }}>
-                  <Trash />
-                </button>
-              </PermissionsGate>
-            </div>
-            <div
-              className="repliesSection"
-              hidden={replies.length === 0 && !showReplyBox}>
-              <div className="repliesBox">
-                <PostReplies
-                  replies={replies}
-                  userRole={userRole}
-                  onDeletePost={async (postToDelete) => {
-                    setPostToDelete(postToDelete);
-                    setShowDeleteConfirmation(true);
-                  }}
-                  onDownVotePost={(reply) =>
-                    forum.voteDownForumPost(reply, forumData.collectionId)
-                  }
-                  onUpVotePost={(reply) =>
-                    forum.voteUpForumPost(reply, forumData.collectionId)
-                  }
-                  onReplyClick={() => setShowReplyBox(true)}
-                  onAwardReply={(reply) => {
-                    setPostToAward(reply);
-                    setShowGiveAward(true);
-                  }}
-                />
+              <div className="postBody">{post?.data.body}</div>
+              <div className="actionsContainer">
+                <PermissionsGate
+                  scopes={[SCOPES.canDeletePost]}
+                  posterKey={post.poster}>
+                  <button
+                    className="deleteButton"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => {
+                      setPostToDelete(props.post);
+                      setShowDeleteConfirmation(true);
+                    }}>
+                    delete <Trash />
+                  </button>
+                </PermissionsGate>
+                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                  <div className="right">
+                    <button
+                      className="awardButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => {
+                        setPostToAward(post);
+                        setShowGiveAward(true);
+                      }}>
+                      Gift Award <Award />
+                    </button>
+                    <div className="actionDivider" />
+                    <button
+                      className="replyButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowReplyBox(true)}>
+                      Reply <Reply />
+                    </button>
+                  </div>
+                </PermissionsGate>
               </div>
-              {showReplyBox &&
-                (sendingReply ? (
-                  <Spinner />
-                ) : (
-                  <form onSubmit={onReplyToPost} className="replyForm">
-                    <textarea
-                      placeholder="Type your reply here"
-                      className="replyTextArea"
-                      maxLength={800}
-                      value={reply}
-                      required
-                      onChange={(e) => setReply(e.target.value)}
-                    />
-                    <div className="buttonsContainer">
-                      <button
-                        className="cancelReplyButton"
-                        onClick={() => setShowReplyBox(false)}>
-                        Cancel
-                      </button>
-                      <button className="postReplyButton" type="submit">
-                        Reply
-                      </button>
-                    </div>
-                  </form>
-                ))}
             </div>
-          </>
-        }
+          </div>
+          <div
+            className="repliesSection"
+            hidden={replies.length === 0 && !showReplyBox}>
+            <div className="repliesBox">
+              <PostReplies
+                replies={replies}
+                userRole={userRole}
+                onDeletePost={async (postToDelete) => {
+                  setPostToDelete(postToDelete);
+                  setShowDeleteConfirmation(true);
+                }}
+                onDownVotePost={(reply) =>
+                  forum.voteDownForumPost(reply, forumData.collectionId)
+                }
+                onUpVotePost={(reply) =>
+                  forum.voteUpForumPost(reply, forumData.collectionId)
+                }
+                onReplyClick={() => setShowReplyBox(true)}
+                onAwardReply={(reply) => {
+                  setPostToAward(reply);
+                  setShowGiveAward(true);
+                }}
+              />
+            </div>
+            {showReplyBox &&
+              (sendingReply ? (
+                <Spinner />
+              ) : (
+                <form onSubmit={onReplyToPost} className="replyForm">
+                  <textarea
+                    placeholder="Type your reply here"
+                    className="replyTextArea"
+                    maxLength={800}
+                    value={reply}
+                    required
+                    onChange={(e) => setReply(e.target.value)}
+                  />
+                  <div className="buttonsContainer">
+                    <button
+                      className="cancelReplyButton"
+                      onClick={() => setShowReplyBox(false)}>
+                      Cancel
+                    </button>
+                    <button className="postReplyButton" type="submit">
+                      Reply
+                    </button>
+                  </div>
+                </form>
+              ))}
+          </div>
+        </>
       </div>
     </>
   );

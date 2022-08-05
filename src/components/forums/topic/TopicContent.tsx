@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { MessageSquare, Trash } from "../../../assets";
+import { Award, MessageSquare, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -11,15 +11,16 @@ import {
   PermissionsGate,
   TransactionLink,
 } from "../../common";
-import { CreatePost, PostList, Notification, Votes } from "..";
+import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
+
 import { usePath } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { UserRoleType, SCOPES } from "../../../utils/permissions";
+import { UserRoleType } from "../../../utils/permissions";
+import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
-
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
@@ -50,6 +51,8 @@ export function TopicContent(props: TopicContentProps) {
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
   const [addingAccessToken, setAddingAccessToken] = useState(false);
+
+  const [showGiveAward, setShowGiveAward] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -140,56 +143,6 @@ export function TopicContent(props: TopicContentProps) {
       }
     }
   };
-
-  const data = (
-    <>
-      <div className="data">
-        <div className="commentsContainer">
-          <div className="image">
-            <MessageSquare />
-          </div>
-          {`${replies.length} comments`}
-        </div>
-        <PermissionsGate scopes={[SCOPES.canVote]}>
-          <div className="actionDivider" />
-          <Votes
-            onDownVotePost={() => forum.voteDownForumPost(topic, forumData.collectionId)}
-            onUpVotePost={() => forum.voteUpForumPost(topic, forumData.collectionId)}
-            post={topic}
-            updateVotes={(upVoted) => updateVotes(upVoted)}
-          />
-        </PermissionsGate>
-        <PermissionsGate
-          scopes={[SCOPES.canDeleteTopic]}
-          posterKey={topic.poster}>
-          <div className="actionDivider" />
-          <div className="moderatorToolsContainer">
-            <div>Moderator tools: </div>
-            <button
-              className="moderatorTool"
-              disabled={!permission.readAndWrite}
-              onClick={() => setShowDeleteConfirmation(true)}>
-              <div className="delete">
-                <Trash />
-              </div>
-              delete topic
-            </button>
-            {/* TODO (Ana): waiting for endpoint to be implemented
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}>
-                <div className="lock">
-                  <Lock />
-                </div>
-                manage post access
-              </button> */}
-          </div>
-        </PermissionsGate>
-      </div>
-    </>
-  );
-
   return (
     <>
       {!_.isNil(modalInfo) && (
@@ -269,21 +222,115 @@ export function TopicContent(props: TopicContentProps) {
           }
         />
       )}
+      {showGiveAward && (
+        <GiveAward
+          post={topic}
+          collectionId={forumData.collectionId}
+          onCancel={() => setShowGiveAward(false)}
+          onSuccess={(notificationContent) => {
+            setShowGiveAward(false);
+            setIsNotificationHidden(false);
+            setNotificationContent({
+              content: notificationContent,
+              type: MessageType.success,
+            });
+            setTimeout(
+              () => setIsNotificationHidden(true),
+              NOTIFICATION_BANNER_TIMEOUT
+            );
+          }}
+          onError={(error) => {
+            setShowGiveAward(false);
+            setModalInfo({
+              title: "Something went wrong!",
+              type: MessageType.error,
+              body: `The award could not be given.`,
+              collapsible: { header: "Error", content: error?.message },
+            });
+          }}
+        />
+      )}
       <div className="topicContentBox">
-        <TopicHeader topic={topic} />
-        {data}
-        <PermissionsGate scopes={[SCOPES.canCreatePost]}>
-          <CreatePost
-            topicId={topic.postId}
-            collectionId={forumData.collectionId}
-            createForumPost={async ({ subj, body, meta, }, topicId, collectionId) => {
-              const signature = forum.createForumPost({ subj, body, meta }, topicId, collectionId);
-              return signature;
-            }}
-            update={update}
-            onReload={() => {}}
-          />
-        </PermissionsGate>
+        <div className="activityInfo">
+          <PermissionsGate scopes={[SCOPES.canVote]}>
+            <Votes
+              onDownVotePost={() =>
+                forum.voteDownForumPost(topic, forumData.collectionId)
+              }
+              onUpVotePost={() =>
+                forum.voteUpForumPost(topic, forumData.collectionId)
+              }
+              post={topic}
+              updateVotes={(upVoted) => updateVotes(upVoted)}
+            />
+          </PermissionsGate>
+          <div className="commentsContainer">
+            <div className="image">
+              <MessageSquare />
+            </div>
+            {replies.length}
+          </div>
+        </div>
+        <div className="headerAndActions">
+          <TopicHeader topic={topic} />
+          <div className="moderatorToolsContainer">
+            <PermissionsGate
+              scopes={[SCOPES.canDeleteTopic]}
+              posterKey={topic.poster}>
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowDeleteConfirmation(true)}>
+                <div className="delete">
+                  <Trash />
+                </div>
+                delete topic
+              </button>
+              {/* TODO (Ana): waiting for endpoint to be implemented
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddAccessToken(true)}>
+                <div className="lock">
+                  <Lock />
+                </div>
+                manage post access
+              </button> */}
+            </PermissionsGate>
+            <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+              <>
+                <div className="actionDivider" />
+                <button
+                  className="awardButton"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowGiveAward(true)}>
+                  Gift Award
+                  <Award />
+                </button>
+              </>
+            </PermissionsGate>
+          </div>
+          <PermissionsGate scopes={[SCOPES.canCreatePost]}>
+            <CreatePost
+              topicId={topic.postId}
+              collectionId={forumData.collectionId}
+              createForumPost={async (
+                { subj, body, meta },
+                topicId,
+                collectionId
+              ) => {
+                const signature = forum.createForumPost(
+                  { subj, body, meta },
+                  topicId,
+                  collectionId
+                );
+                return signature;
+              }}
+              update={update}
+              onReload={() => {}}
+            />
+          </PermissionsGate>
+        </div>
       </div>
       <Notification
         hidden={isNotificationHidden}
@@ -340,16 +387,17 @@ function TopicHeader(props: TopicHeaderProps) {
   return (
     <div className="topicHeader">
       <div className="topicTitle">
-        <div className="left">
-          <div className="subj">{topic?.data.subj ?? "subject"}</div>
-          <div className="poster">
+        <div className="posted">
+          <div className="postedBy">
+            By
             <div className="icon">
               <Jdenticon value={topic?.poster.toBase58()} alt="posterID" />
             </div>
             <div className="posterId">{topic?.poster.toBase58()}</div>
           </div>
+          <div className="postedAt">Posted at: {postedAt}</div>
         </div>
-        <div className="postedAt">Posted at: {postedAt}</div>
+        <div className="subj">{topic?.data.subj ?? "subject"}</div>
       </div>
       <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
     </div>

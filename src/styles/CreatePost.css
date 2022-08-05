@@ -2,9 +2,8 @@
   .createPostContainer {
     height: auto;
     width: 100%;
-    margin-bottom: 16px;
-    padding-top: 32px;
-    border-top: 1px solid #b8b9dc;
+    padding-top: 16px;
+    border-top: 1px solid #cac9cb;
 
     .spinnerContainer {
       padding: 40px 0 60px;
@@ -32,7 +31,7 @@
     width: 100%;
     padding: 8px 16px;
 
-    border-color: #4a279c;
+    border-color: #cac9cb;
     border-width: 1px;
     border-radius: 16px;
 
@@ -52,7 +51,6 @@
     display: flex;
     justify-content: flex-end;
     padding-top: 16px;
-    padding-bottom: 32px;
   }
 
   .createPostButton {

@@ -207,6 +207,9 @@ export const ForumView = (props: ForumViewProps) => {
   };
 
   useEffect(() => {
+    // TODO(andrew) only run update when the wallet object is
+    // truly loaded
+    // Pending https://www.notion.so/usedispatch/Clean-up-pending-Wallet-object-after-merging-the-Gifting-SOL-PR-6b58388f5fd94958b5862a2e2d542f00
     update();
     // Update every time wallet or cluster is changed
   }, [forumObject.wallet, forumObject.cluster]);

@@ -206,7 +206,14 @@ export const ForumView = (props: ForumViewProps) => {
 
 
   useEffect(() => {
-    if( isNotEmpty && isSuccess(forumData) && forumObject.wallet.publicKey) {
+    if(
+      isNotEmpty &&
+      isSuccess(forumData) &&
+      // Whether the description loaded properly is used as a
+      // proxy for whether the forum exists
+      // TODO(andrew) find a better way to verify existence
+      isSuccess(forumData.description) &&
+      forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
   }, [forumData, isNotEmpty, publicKey]);
@@ -346,27 +353,39 @@ export const ForumView = (props: ForumViewProps) => {
               <div className="forumViewContentBox">
                 <div>
                   {(() => {
-                    if (isInitial(forumData) ||
-                        isPending(forumData)) {
+                    if (isSuccess(forumData)) {
+                      if (
+                        isSuccess(forumData.description) &&
+                        isSuccess(forumData.posts) &&
+                        isSuccess(forumData.moderators) &&
+                        isSuccess(forumData.owners)
+                      ) {
+                        return (
+                          <ForumContent
+                            forumObject={forumObject}
+                            forumData={forumData}
+                            update={update}
+                          />
+                        );
+                      } else {
+                        // TODO(andrew) better, more detailed
+                        // error view here
+                        return disconnectedView;
+                      }
+                    } else if (
+                      isInitial(forumData) ||
+                      isPending(forumData)) {
                       return (
                         <div className="forumLoading">
                           <Spinner />
                         </div>
                       );
-                    } else if (isSuccess(forumData)) {
-                      return (
-                        <ForumContent
-                          forumObject={forumObject}
-                          forumData={forumData}
-                          update={update}
-                        />
-                      );
-                    } else if (isNotFound(forumData)) {
+                    } else if(isNotFound(forumData)) {
                       return emptyView;
-                    } else if (isDispatchClientError(forumData)) {
+                    } else {
                       // TODO(andrew) better, more detailed error
                       // view here
-                      return disconnectedView
+                      return disconnectedView;
                     }
                   })()}
                 </div>

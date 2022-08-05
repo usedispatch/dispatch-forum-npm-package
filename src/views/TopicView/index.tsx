@@ -22,7 +22,8 @@ import {
   TopicContent,
 } from "../../components/forums";
 import {
-  Loading
+  Loading,
+  DispatchClientError
 } from '../../types/loading';
 import {
   isSuccess,
@@ -43,7 +44,7 @@ export const TopicView = (props: Props) => {
   const forum = useForum();
   const role = useRole();
   const { isNotEmpty, permission } = forum;
-  const { modal, showModal } = useModal();
+  const { modal, showModal, setModals } = useModal();
   const { collectionId, topicId } = props;
   const collectionPublicKey = useMemo(() => {
     // TODO show modal if this fails
@@ -78,44 +79,24 @@ export const TopicView = (props: Props) => {
     // When forumData is updated, find all errors associated with
     // it and show them in the modal
     if (isSuccess(forumData)) {
-      if (isDispatchClientError(forumData.owners)) {
-        const message = JSON.stringify(forumData.owners.error.message || {});
-        showModal({
+      // Filter out all loading components that failed
+      const errors = [
+        forumData.owners,
+        forumData.moderators,
+        forumData.description,
+        forumData.posts
+      ].filter(loading =>
+        isDispatchClientError(loading)
+      ) as DispatchClientError[];
+
+      setModals(errors.map(({ error }) => {
+        const message = JSON.stringify(error || {});
+        return {
           type: MessageType.error,
-          title: 'Error loading owners',
+          title: `Error loading ${error?.name || 'data'}`,
           collapsible: { header: 'Error', content: message }
-        });
-      }
-    }
-    if (isSuccess(forumData)) {
-      if (isDispatchClientError(forumData.moderators)) {
-        const message = JSON.stringify(forumData.moderators.error || {});
-        showModal({
-          type: MessageType.error,
-          title: 'Error loading moderators',
-          collapsible: { header: 'Error', content: message }
-        });
-      }
-    }
-    if (isSuccess(forumData)) {
-      if (isDispatchClientError(forumData.description)) {
-        const message = JSON.stringify(forumData.description.error || {});
-        showModal({
-          type: MessageType.error,
-          title: 'Error loading description description',
-          collapsible: { header: 'Error', content: message }
-        });
-      }
-    }
-    if (isSuccess(forumData)) {
-      if (isDispatchClientError(forumData.posts)) {
-        const message = JSON.stringify(forumData.posts.error || {});
-        showModal({
-          type: MessageType.error,
-          title: 'Error loading posts',
-          collapsible: { header: 'Error', content: message }
-        });
-      }
+        };
+      }));
     }
   }, [forumData]);
 

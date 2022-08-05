@@ -37,7 +37,7 @@ export function isDispatchClientError<T>(value: Loading<T>): value is DispatchCl
 export function isNotFound<T>(value: Loading<T>): value is OnChainAccountNotFound {
   return (
     'loadingState' in value &&
-    value.loadingState === 'dispatchClientError'
+    value.loadingState === 'onChainAccountNotFound'
   );
 }
 

@@ -213,6 +213,7 @@ export function useModal() {
     close,
     // functions to show a current modal or modals
     showModal,
-    showModals
-  }
+    showModals,
+    setModals: setModalInfoList
+  };
 }

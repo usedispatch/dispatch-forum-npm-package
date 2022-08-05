@@ -17,7 +17,7 @@
     "jsx": "react-jsx",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
-    "sourceMap": true,
+    // "sourceMap": true,
     "strictNullChecks": false
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/custom.d.ts"],

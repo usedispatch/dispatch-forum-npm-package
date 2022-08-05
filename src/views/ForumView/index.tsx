@@ -1,6 +1,13 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, useMemo, ReactNode, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useMemo,
+  ReactNode,
+  useCallback,
+  useRef,
+} from "react";
 import { ForumInfo, ForumPost } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -17,7 +24,7 @@ import {
   ForumContent,
   PoweredByDispatch,
 } from "../../components/forums";
-import { selectTopics } from '../../utils/posts';
+import { selectTopics } from "../../utils/posts";
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
@@ -108,8 +115,8 @@ export const ForumView = (props: ForumViewProps) => {
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
   // Title and description for editing
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
@@ -160,8 +167,8 @@ export const ForumView = (props: ForumViewProps) => {
         if (!_.isNil(tokenAccess)) {
           await forumObject.setForumPostRestriction(collectionPublicKey!, {
             nftOwnership: {
-              collectionId: tokenAccess
-            }
+              collectionId: tokenAccess,
+            },
           });
         }
 
@@ -204,7 +211,6 @@ export const ForumView = (props: ForumViewProps) => {
     // Update every time wallet or cluster is changed
   }, [forumObject.wallet, forumObject.cluster]);
 
-
   useEffect(() => {
     if(
       isNotEmpty &&
@@ -230,7 +236,8 @@ export const ForumView = (props: ForumViewProps) => {
               body: "Connect to your wallet in order to create a forum",
             });
           }
-        }}>
+        }}
+      >
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -319,14 +326,16 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}>
+                onClick={() => onCreateForumClick()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}>
+                onClick={() => setShowNewForumModal(false)}
+              >
                 Cancel
               </div>
             }
@@ -335,6 +344,7 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
+
             {isSuccess(forumData) &&
               (
               <div
@@ -342,6 +352,11 @@ export const ForumView = (props: ForumViewProps) => {
                   !permission.readAndWrite ? "alert" : ""
                 }`}>
                 {forumData.description.title}
+                <title>{forumData.description.title} Forum</title>
+                <meta
+                  name="description"
+                  content={forumData.description.desc}
+                />
               </div>
               ) /* TODO(andrew) what to render here if title isn't loaded */}
             <main>

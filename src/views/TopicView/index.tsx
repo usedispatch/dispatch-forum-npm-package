@@ -7,6 +7,7 @@ import {
   useForumData,
   useModal
 } from '../../utils/hooks';
+import { useForumData } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
 import {
@@ -32,6 +33,7 @@ import {
   onChainAccountNotFound,
   pending
 } from '../../utils/loading';
+import { Loading } from "../../types/loading";
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -95,7 +97,6 @@ export const TopicView = (props: Props) => {
     }
   }, [forumData]);
 
-
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
 
@@ -150,6 +151,11 @@ export const TopicView = (props: Props) => {
                     isSuccess(topic)
                   ? (
                   <>
+                    <title>{topic.value!.data.subj!}</title>
+                    <meta
+                      name="description"
+                      content={forumData.value.info.title}
+                    />
                     <Breadcrumb
                       navigateTo={forumPath}
                       parent={forumData.description.title}

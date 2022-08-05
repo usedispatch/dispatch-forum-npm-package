@@ -9,7 +9,7 @@
     max-width: 1280px;
     width: 60%;
     margin: 0 auto 8px;
-    padding: 12px 20px;
+    padding: 18px 20px;
     transition: height 0.5s ease-out;
     background: white;
     text-transform: none;
@@ -22,17 +22,18 @@
     left: 0;
     z-index: 999;
 
-    svg {
-      height: 12px;
-      width: 12px;
-    }
-
     .closeContainer {
       display: flex;
       align-items: flex-start;
       justify-content: center;
 
       cursor: pointer;
+      height: min-content;
+
+      svg {
+        height: 12px;
+        width: 12px;
+      }
     }
 
     &.isHidden {
@@ -41,6 +42,22 @@
       overflow: hidden;
       padding: 0;
       margin: 0;
+    }
+
+    &.info {
+      background: #bdddf4;
+    }
+
+    &.success {
+      background: #e8ffe0;
+    }
+
+    &.warning {
+      background: #fff8ed;
+    }
+
+    &.error {
+      background: #ffd0c6;
     }
   }
 
@@ -54,8 +71,8 @@
     overflow-y: overlay;
 
     svg {
-      height: 18px;
-      width: 18px;
+      height: 24px;
+      width: 24px;
       margin-right: 6px;
     }
 

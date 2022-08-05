@@ -11,9 +11,7 @@ import {
 } from "../../common";
 import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
-import { Success } from "../../../assets";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { useForumData } from "../../../utils/hooks";
 
 interface CreatePostProps {
   topicId: number;
@@ -38,9 +36,10 @@ export function CreatePost(props: CreatePostProps) {
 
   const [loading, setLoading] = useState(false);
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const [notificationContent, setNotificationContent] = useState<
-    string | ReactNode
-  >("");
+  const [notificationContent, setNotificationContent] = useState<{
+    content: string | ReactNode;
+    type: MessageType;
+  }>();
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -62,13 +61,15 @@ export function CreatePost(props: CreatePostProps) {
       update();
       setLoading(false);
       setIsNotificationHidden(false);
-      setNotificationContent(
-        <>
-          <Success />
-          Post created successfully.
-          <TransactionLink transaction={tx!} />
-        </>
-      );
+      setNotificationContent({
+        content: (
+          <>
+            Post created successfully.
+            <TransactionLink transaction={tx!} />
+          </>
+        ),
+        type: MessageType.success,
+      });
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
@@ -107,7 +108,8 @@ export function CreatePost(props: CreatePostProps) {
       )}
       <Notification
         hidden={isNotificationHidden}
-        content={notificationContent}
+        content={notificationContent?.content}
+        type={notificationContent?.type}
         onClose={() => setIsNotificationHidden(true)}
       />
       <div className="createPostContainer">

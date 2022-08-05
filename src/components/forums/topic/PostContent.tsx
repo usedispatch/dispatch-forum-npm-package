@@ -1,10 +1,9 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, Success, Trash } from "../../../assets";
+import { Award, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -14,16 +13,14 @@ import {
   TransactionLink,
 } from "./../../common";
 import { PostReplies } from "../topic/PostReplies";
+import { GiveAward } from "./GiveAward";
 import { Votes, Notification } from "../../../components/forums";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData } from '../../../utils/hooks';
-import {
-  selectRepliesFromPosts
-} from '../../../utils/posts';
-import { GiveAward } from "./GiveAward";
+import { ForumData } from "../../../utils/hooks";
+import { selectRepliesFromPosts } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -51,9 +48,10 @@ export function PostContent(props: PostContentProps) {
   const [postToAward, setPostToAward] = useState<ForumPost>();
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const [notificationContent, setNotificationContent] = useState<
-    string | ReactNode
-  >("");
+  const [notificationContent, setNotificationContent] = useState<{
+    content: string | ReactNode;
+    type: MessageType;
+  }>();
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -92,13 +90,15 @@ export function PostContent(props: PostContentProps) {
       setShowReplyBox(false);
       setReply("");
       setIsNotificationHidden(false);
-      setNotificationContent(
-        <>
-          <Success />
-          Replied successfully.
-          <TransactionLink transaction={tx!} />
-        </>
-      );
+      setNotificationContent({
+        content: (
+          <>
+            Replied successfully.
+            <TransactionLink transaction={tx!} />
+          </>
+        ),
+        type: MessageType.success,
+      });
       update();
       setTimeout(
         () => setIsNotificationHidden(true),
@@ -218,7 +218,10 @@ export function PostContent(props: PostContentProps) {
             onSuccess={(notificationContent) => {
               setShowGiveAward(false);
               setIsNotificationHidden(false);
-              setNotificationContent(notificationContent);
+              setNotificationContent({
+                content: notificationContent,
+                type: MessageType.success,
+              });
               setTimeout(
                 () => setIsNotificationHidden(true),
                 NOTIFICATION_BANNER_TIMEOUT
@@ -237,10 +240,12 @@ export function PostContent(props: PostContentProps) {
         )}
         <Notification
           hidden={isNotificationHidden}
-          content={notificationContent}
+          content={notificationContent?.content}
+          type={notificationContent?.type}
           onClose={() => setIsNotificationHidden(true)}
         />
-        {<>
+        {
+          <>
             <div className="postHeader">
               <div className="posterId">
                 <div className="icon">
@@ -347,7 +352,8 @@ export function PostContent(props: PostContentProps) {
                   </form>
                 ))}
             </div>
-          </>}
+          </>
+        }
       </div>
     </>
   );

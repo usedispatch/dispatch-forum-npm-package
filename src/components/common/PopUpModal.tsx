@@ -7,13 +7,13 @@ import { CollapsibleProps, Collapsible } from "./Collapsible";
 import { Spinner } from "./Spinner";
 
 export enum MessageType {
-  success,
-  warning,
-  error,
-  info,
+  success = "success",
+  warning = "warning",
+  error = "error",
+  info = "info",
 }
 
-function getMessageTypeIcon(type?: MessageType): ReactNode {
+export function getMessageTypeIcon(type?: MessageType): ReactNode {
   let result: ReactNode;
 
   switch (type) {

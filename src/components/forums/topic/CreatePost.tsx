@@ -12,7 +12,6 @@ import {
 import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { useForumData } from "../../../utils/hooks";
 
 interface CreatePostProps {
   topicId: number;

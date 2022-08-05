@@ -109,7 +109,6 @@ export function useForumData(
   }
 
   const forumData: Loading<ForumData> = useMemo(() => {
-    console.log('re-rendering forum data');
     if (collectionId) {
       if (
         isResolved(owners) &&
@@ -147,7 +146,6 @@ export function useForumData(
   }, [owners, moderators, description, posts, collectionId]);
 
   async function update() {
-    console.log('updating');
     await Promise.all([
       updateOwners(),
       updateModerators(),

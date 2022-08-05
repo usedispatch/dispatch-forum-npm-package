@@ -15,7 +15,6 @@ import { Spinner } from "../../common";
 import { useForum, usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
 import { selectRepliesFromPosts, selectTopics } from '../../../utils/posts';
-import { isSuccess } from '../../../utils/loading';
 import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
@@ -24,18 +23,13 @@ interface TopicListProps {
 
 export function TopicList({ forumData }: TopicListProps) {
   const topics: ForumPost[] = useMemo(() => {
-    if (isSuccess(forumData.posts)) {
-      const topics = selectTopics(forumData.posts);
-      // TODO(andrew) refactor this sort into a helper function
-      return topics.sort((left, right) => {
-        const leftVotes = left.upVotes - left.downVotes;
-        const rightVotes = right.upVotes - right.downVotes;
-        return rightVotes - leftVotes;
-      });
-    } else {
-      // TODO(andrew) show some sort of error here
-      return [];
-    }
+    const topics = selectTopics(forumData.posts);
+    // TODO(andrew) refactor this sort into a helper function
+    return topics.sort((left, right) => {
+      const leftVotes = left.upVotes - left.downVotes;
+      const rightVotes = right.upVotes - right.downVotes;
+      return rightVotes - leftVotes;
+    });
   }, [forumData]);
 
   return (
@@ -85,12 +79,7 @@ function RowContent(props: RowContentProps) {
   const topicPath = buildTopicPath(forumData.collectionId.toBase58(), topic.postId);
 
   const replies: ForumPost[] = useMemo(() => {
-    if (isSuccess(forumData.posts)) {
-      return selectRepliesFromPosts(forumData.posts, topic);
-    } else {
-      // TODO(andrew) show an error here
-      return [];
-    }
+    return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {

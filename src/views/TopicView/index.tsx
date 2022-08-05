@@ -54,10 +54,7 @@ export const TopicView = (props: Props) => {
   const { forumData, update } = useForumData(collectionPublicKey, forum);
 
   const topic: Loading<ForumPost> = useMemo(() => {
-    if (
-      isSuccess(forumData) &&
-      isSuccess(forumData.posts)
-    ) {
+    if (isSuccess(forumData)) {
       const post = forumData.posts.find(({ isTopic, postId }) => {
         return isTopic && postId === topicId;
       });
@@ -67,7 +64,7 @@ export const TopicView = (props: Props) => {
         return onChainAccountNotFound();
       }
     } else {
-      if (isSuccess(forumData)) {
+      if (isPending(forumData)) {
         return pending();
       } else {
         return { loadingState: forumData.loadingState };
@@ -82,9 +79,7 @@ export const TopicView = (props: Props) => {
       // Filter out all loading components that failed
       const errors = [
         forumData.owners,
-        forumData.moderators,
-        forumData.description,
-        forumData.posts
+        forumData.moderators
       ].filter(loading =>
         isDispatchClientError(loading)
       ) as DispatchClientError[];
@@ -152,7 +147,6 @@ export const TopicView = (props: Props) => {
                     <Spinner />
                   </div>
                 ) : isSuccess(forumData) &&
-                    isSuccess(forumData.description) &&
                     isSuccess(topic)
                   ? (
                   <>

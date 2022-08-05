@@ -9,7 +9,9 @@ import {
   initial,
   pending,
   onChainAccountNotFound,
-  dispatchClientError
+  dispatchClientError,
+  isSuccess,
+  isDispatchClientError
 } from '../utils/loading';
 import { DispatchForum } from './postbox/postboxWrapper';
 
@@ -24,8 +26,8 @@ export interface ForumData {
   collectionId: PublicKey;
   owners: LoadingResult<PublicKey[]>;
   moderators: LoadingResult<PublicKey[]>;
-  description: LoadingResult<Description>;
-  posts: LoadingResult<ForumPost[]>;
+  description: Description;
+  posts: ForumPost[];
 }
 
 // This hook returns all the necessary forum data and a function
@@ -37,123 +39,114 @@ export function useForumData(
   forumData: Loading<ForumData>
   update: () => Promise<void>;
 } {
+  const [forumData, setForumData] = useState<Loading<ForumData>>(
+    initial()
+  );
 
-  const [owners, setOwners] = useState<Loading<PublicKey[]>>(initial());
   // TODO(andrew) make this more generic
-  async function updateOwners() {
+  async function fetchOwners(): Promise<LoadingResult<PublicKey[]>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getOwners(collectionId);
         if (fetchData) {
-          setOwners(fetchData);
+          return fetchData;
         } else {
-          setOwners(onChainAccountNotFound());
+          return onChainAccountNotFound();
         }
       } catch (error) {
-        setOwners(dispatchClientError(error));
+        return dispatchClientError(error);
       }
     } else {
-      setOwners(onChainAccountNotFound())
+      return onChainAccountNotFound();
     }
   }
-  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
-  async function updateModerators() {
+  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getModerators(collectionId);
         if (fetchData) {
-          setModerators(fetchData);
+          return fetchData;
         } else {
-          setModerators(onChainAccountNotFound());
+          return onChainAccountNotFound();
         }
       } catch (error) {
-        setModerators(dispatchClientError(error));
+        return dispatchClientError(error);
       }
     } else {
-      setModerators(onChainAccountNotFound())
+      return onChainAccountNotFound();
     }
   }
-  const [description, setDescription] = useState<Loading<Description>>(initial());
-  async function updateDescription() {
+  async function fetchDescription(): Promise<LoadingResult<Description>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getDescription(collectionId);
         if (fetchData) {
-          setDescription(fetchData);
+          return fetchData;
         } else {
-          setDescription(onChainAccountNotFound());
+          return onChainAccountNotFound();
         }
       } catch (error) {
-        setDescription(dispatchClientError(error));
+        return dispatchClientError(error);
       }
     } else {
-      setDescription(onChainAccountNotFound())
+      return onChainAccountNotFound();
     }
   }
-  const [posts, setPosts] = useState<Loading<ForumPost[]>>(initial());
-  async function updatePosts() {
+  async function fetchPosts(): Promise<LoadingResult<ForumPost[]>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId);
         if (fetchData) {
-          setPosts(fetchData);
+          return fetchData;
         } else {
-          setPosts(onChainAccountNotFound());
+          return onChainAccountNotFound();
         }
       } catch (error) {
-        setPosts(dispatchClientError(error));
+        return dispatchClientError(error);
       }
     } else {
-      setPosts(onChainAccountNotFound())
+      return onChainAccountNotFound();
     }
   }
 
-  const forumData: Loading<ForumData> = useMemo(() => {
+  async function update() {
     if (collectionId) {
-      if (
-        isResolved(owners) &&
-        isResolved(moderators) &&
-        isResolved(description) &&
-        isResolved(posts)
-      ) {
-        // If all resolved information is not defined, the forum
-        // must not be defined.
-        // TODO(andrew) better logic for actually determining if
-        // the forum is defined? Ideally we would want to check
-        // if the forum account exists
-        if (
-          isNotFound(owners) &&
-          isNotFound(moderators) &&
-          isNotFound(description) &&
-          isNotFound(posts)
+      // Wait for the forum to exist first...
+      if (await forum.exists(collectionId)) {
+        // Now fetch all related data
+        const [owners, moderators, description, posts] = await Promise.all([
+          fetchOwners(),
+          fetchModerators(),
+          fetchDescription(),
+          fetchPosts()
+        ]);
+
+        if(
+          isSuccess(description) &&
+          isSuccess(posts)
         ) {
-          return onChainAccountNotFound();
-        } else {
-          return {
+          // If owners and moderators were successfully fetched, then
+          // just set them and go
+          setForumData({
             collectionId,
             owners,
             moderators,
             description,
             posts
-          };
+          });
+        } else {
+          // We already confirmed the forum existed, so assume
+          // there was a failure in loading
+          setForumData(dispatchClientError());
         }
       } else {
-        return pending();
+        setForumData(onChainAccountNotFound());
       }
     } else {
-      return initial();
+      // TODO(andrew) make collectionId nonnull
+      setForumData(onChainAccountNotFound());
     }
-  }, [owners, moderators, description, posts, collectionId]);
-
-  async function update() {
-    await Promise.all([
-      updateOwners(),
-      updateModerators(),
-      updateDescription(),
-      updatePosts()
-    ]);
   }
-
   return { forumData, update };
 }
 
@@ -187,19 +180,19 @@ export function useModal() {
     if (modalInfoList.length > 0) {
       const modalInfo = modalInfoList[0];
       return (
-          <PopUpModal
-            id="create-forum-info"
-            visible
-            title={modalInfo.title}
-            messageType={modalInfo.type}
-            body={modalInfo.body}
-            collapsible={modalInfo.collapsible}
-            okButton={
-              <a className="okInfoButton" onClick={close}>
-                OK
-              </a>
-            }
-          />
+        <PopUpModal
+          id="create-forum-info"
+          visible
+          title={modalInfo.title}
+          messageType={modalInfo.type}
+          body={modalInfo.body}
+          collapsible={modalInfo.collapsible}
+          okButton={
+            <a className="okInfoButton" onClick={close}>
+              OK
+            </a>
+          }
+        />
       );
     } else {
       return null;

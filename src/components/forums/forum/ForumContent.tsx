@@ -276,10 +276,7 @@ export function ForumContent(props: ForumContentProps) {
     <div className="forumContentHeader">
       <div className="box">
         <div className="description">{
-          isSuccess(forumData.description) ?
-          forumData.description.desc :
-          // TODO(andrew) show an error message here
-          'Error, description could not be loaded'
+          forumData.description.desc
         }</div>
         <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
           {createTopicButton}

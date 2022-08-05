@@ -209,10 +209,6 @@ export const ForumView = (props: ForumViewProps) => {
     if(
       isNotEmpty &&
       isSuccess(forumData) &&
-      // Whether the description loaded properly is used as a
-      // proxy for whether the forum exists
-      // TODO(andrew) find a better way to verify existence
-      isSuccess(forumData.description) &&
       forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
@@ -340,7 +336,6 @@ export const ForumView = (props: ForumViewProps) => {
         <div className="forumViewContainer">
           <div className="forumViewContent">
             {isSuccess(forumData) &&
-              isSuccess(forumData.description) &&
               (
               <div
                 className={`forumViewTitle ${
@@ -354,24 +349,13 @@ export const ForumView = (props: ForumViewProps) => {
                 <div>
                   {(() => {
                     if (isSuccess(forumData)) {
-                      if (
-                        isSuccess(forumData.description) &&
-                        isSuccess(forumData.posts) &&
-                        isSuccess(forumData.moderators) &&
-                        isSuccess(forumData.owners)
-                      ) {
-                        return (
-                          <ForumContent
-                            forumObject={forumObject}
-                            forumData={forumData}
-                            update={update}
-                          />
-                        );
-                      } else {
-                        // TODO(andrew) better, more detailed
-                        // error view here
-                        return disconnectedView;
-                      }
+                      return (
+                        <ForumContent
+                          forumObject={forumObject}
+                          forumData={forumData}
+                          update={update}
+                        />
+                      );
                     } else if (
                       isInitial(forumData) ||
                       isPending(forumData)) {

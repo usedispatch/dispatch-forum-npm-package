@@ -24,7 +24,10 @@ import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
 import { Loading } from '../../types/loading';
 import { isSuccess } from '../../utils/loading';
-import { useForumData } from '../../utils/hooks';
+import {
+  useForumData,
+  useModal
+} from '../../utils/hooks';
 
 interface ForumViewProps {
   collectionId: string;
@@ -66,13 +69,9 @@ export const ForumView = (props: ForumViewProps) => {
   const { isNotEmpty, wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
-  const [modalInfo, setModalInfo] = useState<{
-    title: string | ReactNode;
-    type: MessageType;
-    body?: string | ReactNode;
-    collapsible?: CollapsibleProps;
-  } | null>(null);
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
+
+  const { modal, showModal } = useModal();
 
   const collectionId = props.collectionId;
   const collectionPublicKey = useMemo(() => {
@@ -89,7 +88,7 @@ export const ForumView = (props: ForumViewProps) => {
     } catch (error) {
       const message = JSON.stringify(error);
       console.log(error);
-      setModalInfo({
+      showModal({
         title: "Something went wrong!",
         type: MessageType.error,
         body: "Invalid Collection ID Public Key",
@@ -114,7 +113,7 @@ export const ForumView = (props: ForumViewProps) => {
     if (isNotEmpty) {
       createForum();
     } else {
-      setModalInfo({
+      showModal({
         title: "Something went wrong",
         type: MessageType.warning,
         body: "Connect to your wallet in order to create a forum",
@@ -127,7 +126,7 @@ export const ForumView = (props: ForumViewProps) => {
 
     try {
       if (!wallet) {
-        setModalInfo({
+        showModal({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
@@ -161,7 +160,7 @@ export const ForumView = (props: ForumViewProps) => {
         }
 
         setShowNewForumModal(false);
-        setModalInfo({
+        showModal({
           title: `Success!`,
           body: (
             <div className="successBody">
@@ -182,7 +181,7 @@ export const ForumView = (props: ForumViewProps) => {
         setShowNewForumModal(true);
       } else {
         setShowNewForumModal(false);
-        setModalInfo({
+        showModal({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
@@ -216,7 +215,7 @@ export const ForumView = (props: ForumViewProps) => {
           if (isNotEmpty) {
             setShowNewForumModal(true);
           } else {
-            setModalInfo({
+            showModal({
               title: "Something went wrong",
               type: MessageType.warning,
               body: "Connect to your wallet in order to create a forum",
@@ -252,21 +251,7 @@ export const ForumView = (props: ForumViewProps) => {
   return (
     <div className="dsp-">
       <div className="forumView">
-        {!_.isNil(modalInfo) && (
-          <PopUpModal
-            id="create-forum-info"
-            visible
-            title={modalInfo.title}
-            messageType={modalInfo.type}
-            body={modalInfo.body}
-            collapsible={modalInfo.collapsible}
-            okButton={
-              <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-                OK
-              </a>
-            }
-          />
-        )}
+        {modal}
         {showNewForumModal && (
           <PopUpModal
             id="create-forum"

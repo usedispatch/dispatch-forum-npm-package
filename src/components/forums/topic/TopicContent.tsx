@@ -1,10 +1,9 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Lock, MessageSquare, Success, Trash } from "../../../assets";
+import { MessageSquare, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -12,16 +11,14 @@ import {
   PermissionsGate,
   TransactionLink,
 } from "../../common";
-import { CreatePost, PostList } from "..";
-import { Notification, Votes } from "..";
+import { CreatePost, PostList, Notification, Votes } from "..";
+import { usePath } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { usePath } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { UserRoleType } from "../../../utils/permissions";
-import { SCOPES } from "../../../utils/permissions";
-import { selectRepliesFromPosts } from '../../../utils/posts';
-import { ForumData } from '../../../utils/hooks';
+import { UserRoleType, SCOPES } from "../../../utils/permissions";
+import { selectRepliesFromPosts } from "../../../utils/posts";
+import { ForumData } from "../../../utils/hooks";
 
 interface TopicContentProps {
   forum: DispatchForum;
@@ -36,7 +33,7 @@ export function TopicContent(props: TopicContentProps) {
   const { forum, forumData, userRole, update, updateVotes, topic } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
-  }, [forumData])
+  }, [forumData]);
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(forumData.info.collectionId.toBase58());
   const permission = forum.permission;
@@ -45,9 +42,10 @@ export function TopicContent(props: TopicContentProps) {
   const [deletingTopic, setDeletingTopic] = useState(false);
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const [notificationContent, setNotificationContent] = useState<
-    string | ReactNode
-  >("");
+  const [notificationContent, setNotificationContent] = useState<{
+    content: string | ReactNode;
+    type: MessageType;
+  }>();
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>();
@@ -155,8 +153,12 @@ export function TopicContent(props: TopicContentProps) {
         <PermissionsGate scopes={[SCOPES.canVote]}>
           <div className="actionDivider" />
           <Votes
-            onDownVotePost={() => forum.voteDownForumPost(topic, forumData.info.collectionId)}
-            onUpVotePost={() => forum.voteUpForumPost(topic, forumData.info.collectionId)}
+            onDownVotePost={() =>
+              forum.voteDownForumPost(topic, forumData.info.collectionId)
+            }
+            onUpVotePost={() =>
+              forum.voteUpForumPost(topic, forumData.info.collectionId)
+            }
             post={topic}
             updateVotes={(upVoted) => updateVotes(upVoted)}
           />
@@ -278,8 +280,16 @@ export function TopicContent(props: TopicContentProps) {
           <CreatePost
             topicId={topic.postId}
             collectionId={forumData.info.collectionId}
-            createForumPost={async ({ subj, body, meta, }, topicId, collectionId) => {
-              const signature = forum.createForumPost({ subj, body, meta }, topicId, collectionId);
+            createForumPost={async (
+              { subj, body, meta },
+              topicId,
+              collectionId
+            ) => {
+              const signature = forum.createForumPost(
+                { subj, body, meta },
+                topicId,
+                collectionId
+              );
               return signature;
             }}
             update={update}
@@ -289,7 +299,8 @@ export function TopicContent(props: TopicContentProps) {
       </div>
       <Notification
         hidden={isNotificationHidden}
-        content={notificationContent}
+        content={notificationContent?.content}
+        type={notificationContent?.type}
         onClose={() => setIsNotificationHidden(true)}
       />
       <PostList
@@ -299,12 +310,18 @@ export function TopicContent(props: TopicContentProps) {
         topic={topic}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);
-          setNotificationContent(
-            <>
-              <Success />
-              Post deleted successfully.
-              <TransactionLink transaction={tx} />
-            </>
+          setNotificationContent({
+            content: (
+              <>
+                Post deleted successfully.
+                <TransactionLink transaction={tx} />
+              </>
+            ),
+            type: MessageType.success,
+          });
+          setTimeout(
+            () => setIsNotificationHidden(true),
+            NOTIFICATION_BANNER_TIMEOUT
           );
           // TODO refresh here
         }}

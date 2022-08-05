@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import { useState, ReactNode, useEffect } from "react";
 import { ForumPost } from "@usedispatch/client";
 
-import { DownVote, UpVote, Success } from "../../../assets";
+import { DownVote, UpVote } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -27,9 +27,10 @@ export function Votes(props: VotesProps) {
   const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const [notificationContent, setNotificationContent] = useState<
-    string | ReactNode
-  >("");
+  const [notificationContent, setNotificationContent] = useState<{
+    content: string | ReactNode;
+    type: MessageType;
+  }>();
 
   const [loading, setLoading] = useState(false);
   const [alreadyVoted, setAlreadyVoted] = useState(false);
@@ -50,13 +51,15 @@ export function Votes(props: VotesProps) {
       setAlreadyVoted(true);
       setLoading(false);
       setIsNotificationHidden(false);
-      setNotificationContent(
-        <>
-          <Success />
-          Up voted successfully.
-          <TransactionLink transaction={tx} />
-        </>
-      );
+      setNotificationContent({
+        content: (
+          <>
+            Up voted successfully.
+            <TransactionLink transaction={tx} />
+          </>
+        ),
+        type: MessageType.success,
+      });
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
@@ -90,13 +93,15 @@ export function Votes(props: VotesProps) {
       updateVotes(false);
       setAlreadyVoted(true);
       setIsNotificationHidden(false);
-      setNotificationContent(
-        <>
-          <Success />
-          Down voted successfully.
-          <TransactionLink transaction={tx} />
-        </>
-      );
+      setNotificationContent({
+        content: (
+          <>
+            Down voted successfully.
+            <TransactionLink transaction={tx} />
+          </>
+        ),
+        type: MessageType.success,
+      });
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
@@ -143,7 +148,8 @@ export function Votes(props: VotesProps) {
       <div className="votePostContainer">
         <Notification
           hidden={isNotificationHidden}
-          content={notificationContent}
+          content={notificationContent?.content}
+          type={notificationContent?.type}
           onClose={() => setIsNotificationHidden(true)}
         />
         <div className="votePostContent">

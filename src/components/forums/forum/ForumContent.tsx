@@ -52,7 +52,7 @@ export function ForumContent(props: ForumContentProps) {
     }
   });
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
-    if (forumData.owners.state === 'success') {
+    if (isSuccess(forumData.owners)) {
       return forumData.owners.map(pkey => pkey.toBase58())
     } else {
       // TODO(andrew) show error here for missing owners
@@ -276,7 +276,7 @@ export function ForumContent(props: ForumContentProps) {
     <div className="forumContentHeader">
       <div className="box">
         <div className="description">{
-          forumData.description.state === 'success' ?
+          isSuccess(forumData.description) ?
           forumData.description.desc :
           // TODO(andrew) show an error message here
           'Error, description could not be loaded'

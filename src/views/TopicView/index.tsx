@@ -26,8 +26,10 @@ import {
 } from '../../types/loading';
 import {
   isSuccess,
-  isError,
-  success
+  isPending,
+  isDispatchClientError,
+  onChainAccountNotFound,
+  pending
 } from '../../utils/loading';
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
@@ -59,15 +61,15 @@ export const TopicView = (props: Props) => {
         return isTopic && postId === topicId;
       });
       if (post) {
-        return success(post);
+        return post;
       } else {
-        return { state: 'onChainAccountNotFound' };
+        return onChainAccountNotFound();
       }
     } else {
       if (isSuccess(forumData)) {
-        return { state: 'pending' };
+        return pending();
       } else {
-        return { state: forumData.state };
+        return { loadingState: forumData.loadingState };
       }
     }
   }, [forumData, topicId]);
@@ -76,7 +78,7 @@ export const TopicView = (props: Props) => {
     // When forumData is updated, find all errors associated with
     // it and show them in the modal
     if (isSuccess(forumData)) {
-      if (isError(forumData.owners)) {
+      if (isDispatchClientError(forumData.owners)) {
         const message = JSON.stringify(forumData.owners.error.message || {});
         showModal({
           type: MessageType.error,
@@ -86,7 +88,7 @@ export const TopicView = (props: Props) => {
       }
     }
     if (isSuccess(forumData)) {
-      if (isError(forumData.moderators)) {
+      if (isDispatchClientError(forumData.moderators)) {
         const message = JSON.stringify(forumData.moderators.error.message || {});
         showModal({
           type: MessageType.error,
@@ -96,7 +98,7 @@ export const TopicView = (props: Props) => {
       }
     }
     if (isSuccess(forumData)) {
-      if (isError(forumData.description)) {
+      if (isDispatchClientError(forumData.description)) {
         const message = JSON.stringify(forumData.description.error.message || {});
         showModal({
           type: MessageType.error,
@@ -106,7 +108,7 @@ export const TopicView = (props: Props) => {
       }
     }
     if (isSuccess(forumData)) {
-      if (isError(forumData.posts)) {
+      if (isDispatchClientError(forumData.posts)) {
         const message = JSON.stringify(forumData.posts.error.message || {});
         showModal({
           type: MessageType.error,
@@ -164,13 +166,13 @@ export const TopicView = (props: Props) => {
           <div className="topicViewContent">
             <main>
               <div>
-                {topic.state === 'pending' ? (
+                {isPending(topic) ? (
                   <div className="topicViewLoading">
                     <Spinner />
                   </div>
                 ) : isSuccess(forumData) &&
                     isSuccess(forumData.description) &&
-                    topic.state === 'success'
+                    isSuccess(topic)
                   ? (
                   <>
                     <Breadcrumb

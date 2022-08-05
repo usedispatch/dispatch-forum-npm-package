@@ -5,8 +5,11 @@ import { Loading, LoadingResult } from '../types/loading';
 import { CollapsibleProps, MessageType, PopUpModal } from '../components/common';
 import {
   isResolved,
-  success,
-  isNotFound
+  isNotFound,
+  initial,
+  pending,
+  onChainAccountNotFound,
+  dispatchClientError
 } from '../utils/loading';
 import { DispatchForum } from './postbox/postboxWrapper';
 
@@ -35,73 +38,73 @@ export function useForumData(
   update: () => Promise<void>;
 } {
 
-  const [owners, setOwners] = useState<Loading<PublicKey[]>>({ state: 'initial' });
+  const [owners, setOwners] = useState<Loading<PublicKey[]>>(initial());
   // TODO(andrew) make this more generic
   async function updateOwners() {
     if (collectionId) {
       try {
         const fetchData = await forum.getOwners(collectionId);
         if (fetchData) {
-          setOwners(success(fetchData));
+          setOwners(fetchData);
         } else {
-          setOwners({ state: 'onChainAccountNotFound' });
+          setOwners(onChainAccountNotFound());
         }
       } catch (error) {
-        setOwners({ state: 'dispatchClientError', error });
+        setOwners(dispatchClientError(error));
       }
     } else {
-      setOwners({ state: 'onChainAccountNotFound' })
+      setOwners(onChainAccountNotFound())
     }
   }
-  const [moderators, setModerators] = useState<Loading<PublicKey[]>>({ state: 'initial' });
+  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
   async function updateModerators() {
     if (collectionId) {
       try {
         const fetchData = await forum.getModerators(collectionId);
         if (fetchData) {
-          setModerators(success(fetchData));
+          setModerators(fetchData);
         } else {
-          setModerators({ state: 'onChainAccountNotFound' });
+          setModerators(onChainAccountNotFound());
         }
       } catch (error) {
-        setModerators({ state: 'dispatchClientError', error });
+        setModerators(dispatchClientError(error));
       }
     } else {
-      setModerators({ state: 'onChainAccountNotFound' })
+      setModerators(onChainAccountNotFound())
     }
   }
-  const [description, setDescription] = useState<Loading<Description>>({ state: 'initial' });
+  const [description, setDescription] = useState<Loading<Description>>(initial());
   async function updateDescription() {
     if (collectionId) {
       try {
         const fetchData = await forum.getDescription(collectionId);
         if (fetchData) {
-          setDescription(success(fetchData));
+          setDescription(fetchData);
         } else {
-          setDescription({ state: 'onChainAccountNotFound' });
+          setDescription(onChainAccountNotFound());
         }
       } catch (error) {
-        setDescription({ state: 'dispatchClientError', error });
+        setDescription(dispatchClientError(error));
       }
     } else {
-      setDescription({ state: 'onChainAccountNotFound' })
+      setDescription(onChainAccountNotFound())
     }
   }
-  const [posts, setPosts] = useState<Loading<ForumPost[]>>({ state: 'initial' });
+  const [posts, setPosts] = useState<Loading<ForumPost[]>>(initial());
   async function updatePosts() {
     if (collectionId) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId);
         if (fetchData) {
-          setPosts(success(fetchData));
+          setPosts(fetchData);
         } else {
-          setPosts({ state: 'onChainAccountNotFound' });
+          setPosts(onChainAccountNotFound());
         }
       } catch (error) {
-        setPosts({ state: 'dispatchClientError', error });
+        setPosts(dispatchClientError(error));
       }
     } else {
-      setPosts({ state: 'onChainAccountNotFound' })
+      setPosts(onChainAccountNotFound())
     }
   }
 
@@ -125,10 +128,9 @@ export function useForumData(
           isNotFound(description) &&
           isNotFound(posts)
         ) {
-          return { state: 'onChainAccountNotFound' };
+          return onChainAccountNotFound();
         } else {
           return {
-            state: 'success',
             collectionId,
             owners,
             moderators,
@@ -137,10 +139,10 @@ export function useForumData(
           };
         }
       } else {
-        return { state: 'pending' };
+        return pending();
       }
     } else {
-      return { state: 'initial' }
+      return initial();
     }
   }, [owners, moderators, description, posts, collectionId]);
 

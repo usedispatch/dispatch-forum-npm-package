@@ -23,7 +23,13 @@ import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
 import { Loading } from '../../types/loading';
-import { isSuccess } from '../../utils/loading';
+import {
+  isSuccess,
+  isInitial,
+  isPending,
+  isNotFound,
+  isDispatchClientError
+} from '../../utils/loading';
 import {
   useForumData,
   useModal
@@ -200,7 +206,7 @@ export const ForumView = (props: ForumViewProps) => {
 
 
   useEffect(() => {
-    if( isNotEmpty && forumData.state === 'success' && forumObject.wallet.publicKey) {
+    if( isNotEmpty && isSuccess(forumData) && forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
   }, [forumData, isNotEmpty, publicKey]);
@@ -340,14 +346,14 @@ export const ForumView = (props: ForumViewProps) => {
               <div className="forumViewContentBox">
                 <div>
                   {(() => {
-                    if (forumData.state === 'initial' ||
-                        forumData.state === 'pending') {
+                    if (isInitial(forumData) ||
+                        isPending(forumData)) {
                       return (
                         <div className="forumLoading">
                           <Spinner />
                         </div>
                       );
-                    } else if (forumData.state === 'success') {
+                    } else if (isSuccess(forumData)) {
                       return (
                         <ForumContent
                           forumObject={forumObject}
@@ -355,9 +361,9 @@ export const ForumView = (props: ForumViewProps) => {
                           update={update}
                         />
                       );
-                    } else if (forumData.state === 'onChainAccountNotFound' ) {
+                    } else if (isNotFound(forumData)) {
                       return emptyView;
-                    } else if (forumData.state === 'dispatchClientError') {
+                    } else if (isDispatchClientError(forumData)) {
                       // TODO(andrew) better, more detailed error
                       // view here
                       return disconnectedView

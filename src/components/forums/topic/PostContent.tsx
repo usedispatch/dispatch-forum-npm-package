@@ -23,7 +23,7 @@ import { ForumData } from '../../../utils/hooks';
 import {
   selectRepliesFromPosts
 } from '../../../utils/posts';
-import { isSuccess, success } from '../../../utils/loading';
+import { isSuccess } from '../../../utils/loading';
 import { GiveAward } from "./GiveAward";
 
 interface PostContentProps {

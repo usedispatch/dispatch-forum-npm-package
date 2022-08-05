@@ -15,7 +15,7 @@ import { Spinner } from "../../common";
 import { useForum, usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
 import { selectRepliesFromPosts, selectTopics } from '../../../utils/posts';
-import { success, isSuccess } from '../../../utils/loading';
+import { isSuccess } from '../../../utils/loading';
 import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
@@ -85,7 +85,7 @@ function RowContent(props: RowContentProps) {
   const topicPath = buildTopicPath(forumData.collectionId.toBase58(), topic.postId);
 
   const replies: ForumPost[] = useMemo(() => {
-    if (forumData.posts.state === 'success') {
+    if (isSuccess(forumData.posts)) {
       return selectRepliesFromPosts(forumData.posts, topic);
     } else {
       // TODO(andrew) show an error here

@@ -83,13 +83,9 @@ export function PostContent(props: PostContentProps) {
   const onReplyToPost = async () => {
     setSendingReply(true);
     try {
-      const tx = await forum.replyToForumPost(
-        post,
-        forumData.info.collectionId,
-        {
-          body: reply,
-        }
-      );
+      const tx = await forum.replyToForumPost(post, forumData.collectionId, {
+        body: reply,
+      });
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
@@ -125,7 +121,7 @@ export function PostContent(props: PostContentProps) {
     try {
       const tx = await forum.deleteForumPost(
         postToDelete,
-        forumData.info.collectionId,
+        forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
       onDeletePost(tx);
@@ -217,7 +213,7 @@ export function PostContent(props: PostContentProps) {
         {showGiveAward && postToAward && (
           <GiveAward
             post={postToAward}
-            collectionId={forumData.info.collectionId}
+            collectionId={forumData.collectionId}
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
               setShowGiveAward(false);
@@ -267,11 +263,9 @@ export function PostContent(props: PostContentProps) {
                 <Votes
                   post={post}
                   onDownVotePost={() =>
-                    forum.voteDownForumPost(post, forumData.info.collectionId)
+                    forum.voteDownForumPost(post, forumData.collectionId)
                   }
-                  onUpVotePost={() =>
-                    forum.voteUpForumPost(post, forumData.info.collectionId)
-                  }
+                  onUpVotePost={() => forum.voteUpForumPost(post, forumData.collectionId)}
                   updateVotes={(upVoted) => updateVotes(upVoted)}
                 />
               </PermissionsGate>
@@ -320,10 +314,10 @@ export function PostContent(props: PostContentProps) {
                     setShowDeleteConfirmation(true);
                   }}
                   onDownVotePost={(reply) =>
-                    forum.voteDownForumPost(reply, forumData.info.collectionId)
+                    forum.voteDownForumPost(reply, forumData.collectionId)
                   }
                   onUpVotePost={(reply) =>
-                    forum.voteUpForumPost(reply, forumData.info.collectionId)
+                    forum.voteUpForumPost(reply, forumData.collectionId)
                   }
                   onReplyClick={() => setShowReplyBox(true)}
                   onAwardReply={(reply) => {

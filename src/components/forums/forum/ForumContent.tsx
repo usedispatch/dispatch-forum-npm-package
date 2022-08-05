@@ -26,6 +26,7 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { selectTopics } from '../../../utils/posts';
+import { isSuccess } from '../../../utils/loading';
 import { ForumData } from '../../../utils/hooks';
 
 interface ForumContentProps {
@@ -41,12 +42,22 @@ export function ForumContent(props: ForumContentProps) {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [currentMods, setCurrentMods] = useState<string[]>(
-    forumData.info.moderators.map(pkey => pkey.toBase58())
-  );
-  const [currentOwners, setCurrentOwners] = useState<string[]>(
-    forumData.info.owners.map(pkey => pkey.toBase58())
-  );
+  const [currentMods, setCurrentMods] = useState<string[]>(() => {
+    if (isSuccess(forumData.moderators)) {
+      return forumData.moderators.map(pkey => pkey.toBase58())
+    } else {
+      // TODO(andrew) show error here for missing mods
+      return [];
+    }
+  });
+  const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
+    if (isSuccess(forumData.owners)) {
+      return forumData.owners.map(pkey => pkey.toBase58())
+    } else {
+      // TODO(andrew) show error here for missing owners
+      return [];
+    }
+  });
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
@@ -76,7 +87,7 @@ export function ForumContent(props: ForumContentProps) {
       const moderatorId = newPublicKey(newModerator);
       const tx = await forumObject.addModerator(
         moderatorId,
-        forumData.info.collectionId
+        forumData.collectionId
       );
       setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
@@ -113,7 +124,7 @@ export function ForumContent(props: ForumContentProps) {
       const ownerId = newPublicKey(newOwner);
       const tx = await forumObject.addOwner(
         ownerId,
-        forumData.info.collectionId
+        forumData.collectionId
       );
       setCurrentOwners(currentOwners.concat(newOwner));
       setNewOwner("");
@@ -148,7 +159,7 @@ export function ForumContent(props: ForumContentProps) {
     setAddingAccessToken(true);
     try {
       const tx = await forumObject.setForumPostRestriction(
-        forumData.info.collectionId,
+        forumData.collectionId,
         {
           nftOwnership: {
             collectionId: newPublicKey(accessToken!),
@@ -194,7 +205,7 @@ export function ForumContent(props: ForumContentProps) {
       const token = accessToken ? newPublicKey(accessToken) : undefined;
       const tx = await forumObject.createTopic(
         p,
-        forumData.info.collectionId,
+        forumData.collectionId,
         token ? { nftOwnership: { collectionId: token } } : undefined
       );
       if (!_.isNil(tx)) {
@@ -263,7 +274,9 @@ export function ForumContent(props: ForumContentProps) {
   const forumHeader = (
     <div className="forumContentHeader">
       <div className="box">
-        <div className="description">{forumData.info.description}</div>
+        <div className="description">{
+          forumData.description.desc
+        }</div>
         <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
           {createTopicButton}
         </PermissionsGate>
@@ -509,7 +522,7 @@ export function ForumContent(props: ForumContentProps) {
             </div>
           </PermissionsGate>
         )}
-        {!_.isNil(forumData.info.collectionId) && (
+        {!_.isNil(forumData.collectionId) && (
           <TopicList
             forumData={forumData}
           />

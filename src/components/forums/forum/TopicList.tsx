@@ -22,7 +22,7 @@ interface TopicListProps {
 }
 
 export function TopicList({ forumData }: TopicListProps) {
-  const topics = useMemo(() => {
+  const topics: ForumPost[] = useMemo(() => {
     const topics = selectTopics(forumData.posts);
     // TODO(andrew) refactor this sort into a helper function
     return topics.sort((left, right) => {
@@ -76,9 +76,9 @@ interface RowContentProps {
 function RowContent(props: RowContentProps) {
   const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
-  const topicPath = buildTopicPath(forumData.info.collectionId.toBase58(), topic.postId);
+  const topicPath = buildTopicPath(forumData.collectionId.toBase58(), topic.postId);
 
-  const replies = useMemo(() => {
+  const replies: ForumPost[] = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
 

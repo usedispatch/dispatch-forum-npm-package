@@ -4,7 +4,10 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: './src/index.ts',
-  devtool: 'inline-source-map',
+
+  // No sourcemaps for production
+  // devtool: 'inline-source-map',
+
   mode:'production',
   module: {
     rules: [
@@ -47,7 +50,8 @@ module.exports = {
     new webpack.ProvidePlugin({
         Buffer: ['buffer', 'Buffer'],
     }),
-    new MiniCssExtractPlugin()
+    new MiniCssExtractPlugin(),
+    
   ],
   externals: {
     react: 'react',

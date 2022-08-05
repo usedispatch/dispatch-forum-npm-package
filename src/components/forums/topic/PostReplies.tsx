@@ -3,7 +3,7 @@ import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, Trash } from "../../../assets";
+import { Award, Reply, Trash } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Votes } from "./Votes";
@@ -78,7 +78,7 @@ export function PostReplies(props: PostRepliesProps) {
                   </div>
                   <div className="walletId">{reply.poster.toBase58()}</div>
                 </div>
-                <div className="postedAt">Posted at: {postedAt(reply)}</div>
+                <div className="postedAt">{postedAt(reply)}</div>
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
@@ -89,31 +89,35 @@ export function PostReplies(props: PostRepliesProps) {
                     onDownVotePost={() => onDownVotePost(reply)}
                     post={reply}
                   />
-                  <div className="actionDivider" />
-                  <button
-                    className="replyButton"
-                    onClick={onReplyClick}
-                    disabled={!permission.readAndWrite}>
-                    Reply
-                  </button>
-                  <button
-                    className="awardButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => onAwardReply(reply)}>
-                    <Award />
-                  </button>
                 </PermissionsGate>
-                <PermissionsGate
-                  scopes={[SCOPES.canDeleteReply]}
-                  posterKey={reply.poster}>
-                  <div className="actionDivider" />
-                  <button
-                    className="deleteButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => onDeletePost(reply)}>
-                    <Trash />
-                  </button>
-                </PermissionsGate>
+                <div className="rightBox">
+                  <PermissionsGate
+                    scopes={[SCOPES.canDeleteReply]}
+                    posterKey={reply.poster}>
+                    <button
+                      className="deleteButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => onDeletePost(reply)}>
+                      <Trash />
+                    </button>
+                    <div className="actionDivider" />
+                  </PermissionsGate>
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <button
+                      className="awardButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => onAwardReply(reply)}>
+                      Gift Award <Award />
+                    </button>
+                    <div className="actionDivider" />
+                    <button
+                      className="replyButton"
+                      onClick={onReplyClick}
+                      disabled={!permission.readAndWrite}>
+                      Reply <Reply />
+                    </button>
+                  </PermissionsGate>
+                </div>
               </div>
             </div>
           </div>

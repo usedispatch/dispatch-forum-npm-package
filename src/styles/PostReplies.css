@@ -52,80 +52,83 @@
   .replyActionsContainer {
     display: flex;
     align-items: center;
-    text-transform: capitalize;
+    justify-content: space-between;
 
-    .deleteButton {
-      border: 1px solid #3f1d96;
-      border-radius: 9999px;
+    font-size: 14px;
+
+    .rightBox {
       display: flex;
-      align-items: center;
-      width: 32px;
-      height: 24px;
-      max-height: 24px;
-      padding: 8px;
 
-      svg {
-        path {
-          fill: #3f1d96;
+      .deleteButton {
+        display: flex;
+        align-items: center;
+        min-height: 24px;
+        width: auto;
+
+        font-weight: 600;
+
+        svg {
+          height: 16px;
+          width: 16px;
+
+          path {
+            fill: #3f1d96;
+          }
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+
+          svg path {
+            fill: #7c7b7c;
+          }
         }
       }
 
-      &:disabled {
-        border-color: #7c7b7c;
-        color: #7c7b7c;
-        cursor: not-allowed;
+      .replyButton {
+        display: flex;
+        align-items: center;
+        gap: 8px;
 
-        svg path {
-          fill: #7c7b7c;
+        height: 24px;
+        max-height: 24px;
+
+        color: #3f1d96;
+        font-weight: 600;
+
+        svg {
+          height: 12px;
+          width: 12px;
+
+          path {
+            fill: #3f1d96;
+          }
+        }
+
+        &:disabled {
+          cursor: not-allowed;
+
+          svg path {
+            fill: #7c7b7c;
+          }
         }
       }
-    }
 
-    .replyButton {
-      border: 1px solid #3f1d96;
-      border-radius: 9999px;
-      display: flex;
-      align-items: center;
-      height: 24px;
-      max-height: 24px;
-      padding: 8px;
+      .awardButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
 
-      color: #3f1d96;
-      font-size: 12px;
+        color: #3f1d96;
+        font-weight: 600;
 
-      &:disabled {
-        border-color: #7c7b7c;
-        color: #7c7b7c;
-        cursor: not-allowed;
+        &:disabled {
+          cursor: not-allowed;
 
-        svg path {
-          fill: #7c7b7c;
-        }
-      }
-    }
-
-    .awardButton {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      height: 24px;
-      width: 28px;
-      padding: 8px;
-      margin-left: 10px;
-      border: 1px solid #3f1d96;
-      border-radius: 9999px;
-
-      color: #3f1d96;
-      font-size: 12px;
-
-      &:disabled {
-        border-color: #7c7b7c;
-        color: #7c7b7c;
-        cursor: not-allowed;
-
-        svg path {
-          fill: #7c7b7c;
+          svg path {
+            fill: #7c7b7c;
+          }
         }
       }
     }
@@ -135,7 +138,7 @@
       height: 22px;
       margin: 0 10px;
 
-      background: #6e59b1;
+      background: #cac9cb;
     }
   }
 }

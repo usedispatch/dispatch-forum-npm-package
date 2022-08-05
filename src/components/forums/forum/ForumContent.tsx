@@ -25,8 +25,8 @@ import { TopicList } from "..";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
-import { selectTopics } from '../../../utils/posts';
-import { ForumData } from '../../../utils/hooks';
+import { selectTopics } from "../../../utils/posts";
+import { ForumData } from "../../../utils/hooks";
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -39,13 +39,13 @@ export function ForumContent(props: ForumContentProps) {
   const { isNotEmpty: connected, permission } = forumObject;
   const mount = useRef(false);
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [currentMods, setCurrentMods] = useState<string[]>(
-    forumData.info.moderators.map(pkey => pkey.toBase58())
+    forumData.info.moderators.map((pkey) => pkey.toBase58())
   );
   const [currentOwners, setCurrentOwners] = useState<string[]>(
-    forumData.info.owners.map(pkey => pkey.toBase58())
+    forumData.info.owners.map((pkey) => pkey.toBase58())
   );
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
@@ -502,17 +502,14 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
+                onClick={() => setShowAddAccessToken(true)}>
                 Manage forum access
               </button>
             </div>
           </PermissionsGate>
         )}
         {!_.isNil(forumData.info.collectionId) && (
-          <TopicList
-            forumData={forumData}
-          />
+          <TopicList forumData={forumData} />
         )}
       </div>
     </div>

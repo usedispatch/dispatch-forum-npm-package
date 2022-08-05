@@ -6,6 +6,7 @@ import {
   useContext,
   useRef,
 } from "react";
+import { maxBy } from 'lodash';
 import Jdenticon from "react-jdenticon";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
@@ -22,7 +23,7 @@ interface TopicListProps {
 }
 
 export function TopicList({ forumData }: TopicListProps) {
-  const topics = useMemo(() => {
+  const topics: ForumPost[] = useMemo(() => {
     const topics = selectTopics(forumData.posts);
     // TODO(andrew) refactor this sort into a helper function
     return topics.sort((left, right) => {
@@ -76,17 +77,20 @@ interface RowContentProps {
 function RowContent(props: RowContentProps) {
   const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
-  const topicPath = buildTopicPath(forumData.info.collectionId.toBase58(), topic.postId);
+  const topicPath = buildTopicPath(forumData.collectionId.toBase58(), topic.postId);
 
-  const replies = useMemo(() => {
+  const replies: ForumPost[] = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {
-    if (posts.length > 0) {
-      const date = new Date(posts.slice(-1)[0].data.ts);
+    const dates = posts.map(({ data }) => data.ts);
+    const mostRecentDate = maxBy(dates, (date) =>
+      date.getTime()
+    );
+    if (mostRecentDate) {
       const format = (
-        date.getFullYear() !== new Date().getFullYear()
+        mostRecentDate.getFullYear() !== new Date().getFullYear()
           ? {
               year: "numeric",
               month: "short",
@@ -99,7 +103,7 @@ function RowContent(props: RowContentProps) {
             }
       ) as Intl.DateTimeFormatOptions;
 
-      return date.toLocaleDateString(undefined, { ...format });
+      return mostRecentDate.toLocaleDateString(undefined, { ...format });
     } else {
       return "-";
     }

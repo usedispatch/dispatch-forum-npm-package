@@ -2,9 +2,14 @@
 
 ## [Unreleased]
 
+# [0.2.2] 2022-08-05
+
+- forum: Page Loading Improvements ([#58](https://github.com/usedispatch/dispatch-forum-npm-package/pull/58))
+- forum: Add Page metadata tags ([#57](https://github.com/usedispatch/dispatch-forum-npm-package/pull/57))
+
 # [0.2.1] 2022-08-04
 
-- forum: Performance improvements ([#53](https://github.com/usedispatch/dispatch-forum-npm-package/pull/49))
+- forum: Performance improvements ([#49](https://github.com/usedispatch/dispatch-forum-npm-package/pull/49))
 - forum: Package downsizing ([#53](https://github.com/usedispatch/dispatch-forum-npm-package/pull/49))
 - forum: NFT Gifting UI Update ([#54](https://github.com/usedispatch/dispatch-forum-npm-package/pull/54))
 

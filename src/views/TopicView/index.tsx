@@ -3,7 +3,10 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
-import { useForumData } from "../../utils/hooks";
+import {
+  useForumData,
+  useModal
+} from '../../utils/hooks';
 
 import { Chevron } from "../../assets";
 import {
@@ -18,7 +21,17 @@ import {
   PoweredByDispatch,
   TopicContent,
 } from "../../components/forums";
-import { Loading } from "../../types/loading";
+import {
+  Loading,
+  DispatchClientError
+} from '../../types/loading';
+import {
+  isSuccess,
+  isPending,
+  isDispatchClientError,
+  onChainAccountNotFound,
+  pending
+} from '../../utils/loading';
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -31,6 +44,7 @@ export const TopicView = (props: Props) => {
   const forum = useForum();
   const role = useRole();
   const { isNotEmpty, permission } = forum;
+  const { modal, showModal, setModals } = useModal();
   const { collectionId, topicId } = props;
   const collectionPublicKey = useMemo(() => {
     // TODO show modal if this fails
@@ -40,40 +54,56 @@ export const TopicView = (props: Props) => {
   const { forumData, update } = useForumData(collectionPublicKey, forum);
 
   const topic: Loading<ForumPost> = useMemo(() => {
-    if (forumData.state === "success") {
-      const post = forumData.value.posts.find(({ isTopic, postId }) => {
+    if (isSuccess(forumData)) {
+      const post = forumData.posts.find(({ isTopic, postId }) => {
         return isTopic && postId === topicId;
       });
       if (post) {
-        return {
-          state: "success",
-          value: post,
-        };
+        return post;
       } else {
-        return { state: "notFound" };
+        return onChainAccountNotFound();
       }
     } else {
-      return forumData;
+      if (isPending(forumData)) {
+        return pending();
+      } else {
+        return { loadingState: forumData.loadingState };
+      }
     }
   }, [forumData, topicId]);
 
-  const [modalInfo, setModalInfo] = useState<{
-    title: string | ReactNode;
-    type: MessageType;
-    body?: string;
-    collapsible?: CollapsibleProps;
-  } | null>(null);
+  useEffect(() => {
+    // When forumData is updated, find all errors associated with
+    // it and show them in the modal
+    if (isSuccess(forumData)) {
+      // Filter out all loading components that failed
+      const errors = [
+        forumData.owners,
+        forumData.moderators
+      ].filter(loading =>
+        isDispatchClientError(loading)
+      ) as DispatchClientError[];
+
+      setModals(errors.map(({ error }) => {
+        const message = JSON.stringify(error || {});
+        return {
+          type: MessageType.error,
+          title: `Error loading ${error?.name || 'data'}`,
+          collapsible: { header: 'Error', content: message }
+        };
+      }));
+    }
+  }, [forumData]);
 
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
 
   const updateVotes = (upVoted: boolean) => {
-    if (topic.state === "success" && topic.value) {
-      const { value } = topic;
+    if (isSuccess(topic)) {
       if (upVoted) {
-        value.upVotes += 1;
+        topic.upVotes += 1;
       } else {
-        value.downVotes += 1;
+        topic.downVotes += 1;
       }
     } else {
       // If necessary, handle behavior if topic isn't loaded here
@@ -82,18 +112,17 @@ export const TopicView = (props: Props) => {
 
   useEffect(() => {
     update();
-    // Update every time wallet or cluster is changed
-  }, [forum.wallet, forum.cluster]);
+    // Update every time the cluster is changed
+  }, [forum.cluster]);
 
   useEffect(() => {
     if (
       !_.isNil(collectionPublicKey) &&
       !_.isNil(topic) &&
       forum.wallet.publicKey &&
-      topic.state === "success" &&
-      topic.value
+      isSuccess(topic)
     ) {
-      getUserRole(forum, collectionPublicKey, role, topic.value);
+      getUserRole(forum, collectionPublicKey, role, topic);
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
@@ -106,47 +135,34 @@ export const TopicView = (props: Props) => {
   return (
     <div className="dsp- ">
       <div className="topicView">
-        {!_.isNil(modalInfo) && (
-          <PopUpModal
-            id="topic-info"
-            visible
-            title={modalInfo.title}
-            messageType={modalInfo.type}
-            body={modalInfo.body}
-            collapsible={modalInfo.collapsible}
-            okButton={
-              <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-                OK
-              </a>
-            }
-          />
-        )}
+        {modal}
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="topicViewContainer">
           <div className="topicViewContent">
             <main>
               <div>
-                {topic.state === "pending" ? (
+                {isPending(topic) ? (
                   <div className="topicViewLoading">
                     <Spinner />
                   </div>
-                ) : forumData.state === "success" &&
-                  topic.state === "success" ? (
+                ) : isSuccess(forumData) &&
+                    isSuccess(topic)
+                  ? (
                   <>
-                    <title>{topic.value!.data.subj!}</title>
+                    <title>{topic.data.subj!}</title>
                     <meta
                       name="description"
-                      content={forumData.value.info.title}
+                      content={forumData.description.title}
                     />
                     <Breadcrumb
                       navigateTo={forumPath}
-                      parent={forumData.value.info.title}
-                      current={topic.value!.data.subj!}
+                      parent={forumData.description.title}
+                      current={topic.data.subj!}
                     />
                     <TopicContent
-                      forumData={forumData.value}
+                      forumData={forumData}
                       forum={forum}
-                      topic={topic.value}
+                      topic={topic}
                       userRole={role.role}
                       update={update}
                       updateVotes={(upVoted) => updateVotes(upVoted)}

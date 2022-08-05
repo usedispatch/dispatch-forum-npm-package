@@ -41,6 +41,9 @@ export interface IForum {
 
   isModerator(collectionId: web3.PublicKey): Promise<boolean>
 
+  // Return whether the given forum exists or not
+  exists(collectionPublicKey: web3.PublicKey): Promise<boolean>;
+
   // Create a postbox for a given collection ID
   createForum(
     forumInfo: ForumInfo
@@ -158,6 +161,16 @@ export class DispatchForum implements IForum {
       };
       this.permission = { readAndWrite: false };
     }
+  }
+
+  exists = async (collectionPublicKey: web3.PublicKey) => {
+    const { connection, wallet, cluster } = this;
+    const forum = new Forum(
+      new DispatchConnection(connection, wallet, { cluster }),
+      collectionPublicKey
+    );
+
+    return forum.exists();
   }
 
   createForum = async (forumInfo: ForumInfo) => {

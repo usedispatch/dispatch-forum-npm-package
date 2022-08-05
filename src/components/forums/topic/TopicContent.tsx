@@ -36,7 +36,7 @@ export function TopicContent(props: TopicContentProps) {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
   const { buildForumPath } = usePath();
-  const forumPath = buildForumPath(forumData.info.collectionId.toBase58());
+  const forumPath = buildForumPath(forumData.collectionId.toBase58());
   const permission = forum.permission;
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -106,7 +106,7 @@ export function TopicContent(props: TopicContentProps) {
       setDeletingTopic(true);
       const tx = await forum.deleteForumPost(
         topic,
-        forumData.info.collectionId,
+        forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
       setModalInfo({
@@ -143,7 +143,6 @@ export function TopicContent(props: TopicContentProps) {
       }
     }
   };
-
   return (
     <>
       {!_.isNil(modalInfo) && (

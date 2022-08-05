@@ -3,7 +3,10 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
-import { useForumData } from '../../utils/hooks';
+import {
+  useForumData,
+  useModal
+} from '../../utils/hooks';
 
 import { Chevron } from "../../assets";
 import {
@@ -23,6 +26,7 @@ import {
 } from '../../types/loading';
 import {
   isSuccess,
+  isError,
   success
 } from '../../utils/loading';
 
@@ -37,6 +41,7 @@ export const TopicView = (props: Props) => {
   const forum = useForum();
   const role = useRole();
   const { isNotEmpty, permission } = forum;
+  const { modal, showModal } = useModal();
   const { collectionId, topicId } = props;
   const collectionPublicKey = useMemo(() => {
     // TODO show modal if this fails
@@ -67,13 +72,51 @@ export const TopicView = (props: Props) => {
     }
   }, [forumData, topicId]);
 
+  useEffect(() => {
+    // When forumData is updated, find all errors associated with
+    // it and show them in the modal
+    if (isSuccess(forumData)) {
+      if (isError(forumData.owners)) {
+        const message = JSON.stringify(forumData.owners.error.message || {});
+        showModal({
+          type: MessageType.error,
+          title: 'Error',
+          collapsible: { header: 'Error', content: message }
+        });
+      }
+    }
+    if (isSuccess(forumData)) {
+      if (isError(forumData.moderators)) {
+        const message = JSON.stringify(forumData.moderators.error.message || {});
+        showModal({
+          type: MessageType.error,
+          title: 'Error',
+          collapsible: { header: 'Error', content: message }
+        });
+      }
+    }
+    if (isSuccess(forumData)) {
+      if (isError(forumData.description)) {
+        const message = JSON.stringify(forumData.description.error.message || {});
+        showModal({
+          type: MessageType.error,
+          title: 'Error',
+          collapsible: { header: 'Error', content: message }
+        });
+      }
+    }
+    if (isSuccess(forumData)) {
+      if (isError(forumData.posts)) {
+        const message = JSON.stringify(forumData.posts.error.message || {});
+        showModal({
+          type: MessageType.error,
+          title: 'Error',
+          collapsible: { header: 'Error', content: message }
+        });
+      }
+    }
+  }, [forumData]);
 
-  const [modalInfo, setModalInfo] = useState<{
-    title: string | ReactNode;
-    type: MessageType;
-    body?: string;
-    collapsible?: CollapsibleProps;
-  } | null>(null);
 
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
@@ -115,21 +158,7 @@ export const TopicView = (props: Props) => {
   return (
     <div className="dsp- ">
       <div className="topicView">
-        {!_.isNil(modalInfo) && (
-          <PopUpModal
-            id="topic-info"
-            visible
-            title={modalInfo.title}
-            messageType={modalInfo.type}
-            body={modalInfo.body}
-            collapsible={modalInfo.collapsible}
-            okButton={
-              <a className="okInfoButton" onClick={() => setModalInfo(null)}>
-                OK
-              </a>
-            }
-          />
-        )}
+        {modal}
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="topicViewContainer">
           <div className="topicViewContent">

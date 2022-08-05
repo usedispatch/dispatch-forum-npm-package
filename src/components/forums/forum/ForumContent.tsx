@@ -44,6 +44,7 @@ export function ForumContent(props: ForumContentProps) {
   const [description, setDescription] = useState('');
   const [currentMods, setCurrentMods] = useState<string[]>(() => {
     if (isSuccess(forumData.moderators)) {
+      console.log(forumData, forumData.moderators);
       return forumData.moderators.map(pkey => pkey.toBase58())
     } else {
       // TODO(andrew) show error here for missing mods

@@ -2,14 +2,22 @@ import {
   Loading,
   LoadingResult,
   Success,
-  OnChainAccountNotFound
+  OnChainAccountNotFound,
+  DispatchClientError
 } from '../types/loading';
 
 /**
  * Create a new Success type from a given value
  */
 export function success<T>(t: T): Success<T> {
-  return { state: 'success', ... t };
+  if (t instanceof Array) {
+    const copy = Array.from(t) as unknown;
+    const result = copy as Success<T>;
+    result.state = 'success';
+    return result;
+  } else {
+    return { state: 'success', ... t };
+  }
 }
 
 /**
@@ -18,6 +26,14 @@ export function success<T>(t: T): Success<T> {
  */
 export function isSuccess<T>(value: Loading<T>): value is Success<T> {
   return value.state === 'success';
+}
+
+/**
+ * Return whether a given Loading value is a success or not, and
+ * narrow its type
+ */
+export function isError<T>(value: Loading<T>): value is DispatchClientError {
+  return value.state === 'dispatchClientError';
 }
 
 /**

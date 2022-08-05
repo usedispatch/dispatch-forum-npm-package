@@ -5,7 +5,7 @@ export function ConnectionAlert(props: any) {
     <div className="alertContainer">
       <Info />
       <div className="alertText">
-        Please connect your wallet to participate!
+        Connect your wallet to join the forum and be able to participate.
       </div>
     </div>
   );

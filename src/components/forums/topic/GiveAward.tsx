@@ -12,7 +12,7 @@ import {
   TransactionLink,
 } from "../../common";
 
-import { Success, SolanaLogo, Plus } from "../../../assets";
+import { SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 enum AwardType {
@@ -71,7 +71,6 @@ export function GiveAward(props: GiveAwardProps) {
       setLoading(false);
       onSuccess(
         <>
-          <Success />
           Award attached successfully.
           <TransactionLink transaction={tx} />
         </>
@@ -101,7 +100,6 @@ export function GiveAward(props: GiveAwardProps) {
       setLoading(false);
       onSuccess(
         <>
-          <Success />
           NFT transferred successfully.
           <TransactionLink transaction={tx} />
         </>

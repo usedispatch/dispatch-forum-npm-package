@@ -82,7 +82,7 @@ export const TopicView = (props: Props) => {
         const message = JSON.stringify(forumData.owners.error.message || {});
         showModal({
           type: MessageType.error,
-          title: 'Error',
+          title: 'Error loading owners',
           collapsible: { header: 'Error', content: message }
         });
       }
@@ -102,7 +102,7 @@ export const TopicView = (props: Props) => {
         const message = JSON.stringify(forumData.description.error || {});
         showModal({
           type: MessageType.error,
-          title: 'Error loading description',
+          title: 'Error loading description description',
           collapsible: { header: 'Error', content: message }
         });
       }

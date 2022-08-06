@@ -27,6 +27,7 @@ import {
 } from '../../types/loading';
 import {
   isSuccess,
+  isInitial,
   isPending,
   isDispatchClientError,
   onChainAccountNotFound,
@@ -141,36 +142,46 @@ export const TopicView = (props: Props) => {
           <div className="topicViewContent">
             <main>
               <div>
-                {isPending(topic) ? (
-                  <div className="topicViewLoading">
-                    <Spinner />
-                  </div>
-                ) : isSuccess(forumData) &&
+                {(() => {
+                  if (
+                    isInitial(topic) ||
+                    isPending(topic)
+                  ) {
+                    return (
+                      <div className="topicViewLoading">
+                        <Spinner />
+                      </div>
+                    );
+                  } else if (
+                    isSuccess(forumData) &&
                     isSuccess(topic)
-                  ? (
-                  <>
-                    <title>{topic.data.subj!}</title>
-                    <meta
-                      name="description"
-                      content={forumData.description.title}
-                    />
-                    <Breadcrumb
-                      navigateTo={forumPath}
-                      parent={forumData.description.title}
-                      current={topic.data.subj!}
-                    />
-                    <TopicContent
-                      forumData={forumData}
-                      forum={forum}
-                      topic={topic}
-                      userRole={role.role}
-                      update={update}
-                      updateVotes={(upVoted) => updateVotes(upVoted)}
-                    />
-                  </>
-                ) : (
-                  disconnectedView
-                )}
+                  ) {
+                    return (
+                      <>
+                        <title>{topic.data.subj!}</title>
+                        <meta
+                          name="description"
+                          content={forumData.description.title}
+                        />
+                        <Breadcrumb
+                          navigateTo={forumPath}
+                          parent={forumData.description.title}
+                          current={topic.data.subj!}
+                        />
+                        <TopicContent
+                          forumData={forumData}
+                          forum={forum}
+                          topic={topic}
+                          userRole={role.role}
+                          update={update}
+                          updateVotes={(upVoted) => updateVotes(upVoted)}
+                        />
+                      </>
+                    );
+                  } else {
+                    return disconnectedView;
+                  }
+                })()}
               </div>
             </main>
           </div>

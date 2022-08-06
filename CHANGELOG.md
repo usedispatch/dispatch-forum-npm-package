@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
-# [0.2.2] 2022-08-05
+# [0.2.3] 2022-08-05.1
+
+- forum: Topic UI Changes ([#59](https://github.com/usedispatch/dispatch-forum-npm-package/pull/59))
+
+# [0.2.2] 2022-08-05.0
 
 - forum: Page Loading Improvements ([#58](https://github.com/usedispatch/dispatch-forum-npm-package/pull/58))
 - forum: Add Page metadata tags ([#57](https://github.com/usedispatch/dispatch-forum-npm-package/pull/57))

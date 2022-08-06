@@ -18,3 +18,12 @@ export function selectRepliesFromPosts(
   return posts.filter(({ replyTo }) => replyTo && replyTo.equals(to.address))
 }
 
+export function sortByVotes(
+  posts: ForumPost[],
+): ForumPost[] {
+  return posts.sort((left, right) => {
+    const leftVotes = left.upVotes - left.downVotes;
+    const rightVotes = right.upVotes - right.downVotes;
+    return rightVotes - leftVotes;
+  });
+}

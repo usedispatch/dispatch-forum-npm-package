@@ -20,7 +20,10 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData } from "../../../utils/hooks";
-import { selectRepliesFromPosts } from "../../../utils/posts";
+import {
+  selectRepliesFromPosts,
+  sortByVotes
+} from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -64,12 +67,7 @@ export function PostContent(props: PostContentProps) {
 
   const replies = useMemo(() => {
     const replies = selectRepliesFromPosts(forumData.posts, post);
-    // TODO(andrew) refactor this sort into a helper function
-    return replies.sort((left, right) => {
-      const leftVotes = left.upVotes - left.downVotes;
-      const rightVotes = right.upVotes - right.downVotes;
-      return rightVotes - leftVotes;
-    });
+    return sortByVotes(replies);
   }, [forumData, post]);
 
   const updateVotes = (upVoted: boolean) => {

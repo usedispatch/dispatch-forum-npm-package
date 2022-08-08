@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+# [0.2.4] 2022-08-08
+
+- forum: Performance improvements & Bug Fixes ([#66](https://github.com/usedispatch/dispatch-forum-npm-package/pull/66))([#71](https://github.com/usedispatch/dispatch-forum-npm-package/pull/71))
+- forum: Add multiple Collections ([#70](https://github.com/usedispatch/dispatch-forum-npm-package/pull/70))
+- forum: Update Create Forum Function as a single transaction ([#69](https://github.com/usedispatch/dispatch-forum-npm-package/pull/69))
+
 # [0.2.3] 2022-08-05.1
 
 - forum: Topic UI Changes ([#59](https://github.com/usedispatch/dispatch-forum-npm-package/pull/59))

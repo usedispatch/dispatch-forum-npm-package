@@ -16,10 +16,8 @@ import { useRole } from "../../../contexts/DispatchProvider";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { selectTopics } from "../../../utils/posts";
 import { isSuccess } from "../../../utils/loading";
 import { ForumData } from "../../../utils/hooks";
-import { web3 } from "@project-serum/anchor";
 import { PostRestriction } from "@usedispatch/client";
 
 interface ForumContentProps {
@@ -150,14 +148,13 @@ export function ForumContent(props: ForumContentProps) {
     try {
       const tokenCSV = accessToken.replace(/\s+/g, "");
       const csvList = tokenCSV.split(",");
-      const restrictionList = csvList?.map((token) => {
+      const restrictionList = csvList.map((token) => {
         return {
           nftOwnership: {
             collectionId: newPublicKey(token),
           },
         } as PostRestriction;
       });
-      console.log(restrictionList);
 
       const tx = await forumObject.setForumPostRestriction(
         forumData.collectionId,

@@ -287,7 +287,7 @@ export function TopicContent(props: TopicContentProps) {
                 <div className="delete">
                   <Trash />
                 </div>
-                delete topic
+                Delete Topic
               </button>
               {/* TODO (Ana): waiting for endpoint to be implemented
               <button

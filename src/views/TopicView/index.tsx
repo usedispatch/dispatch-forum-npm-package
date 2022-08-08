@@ -44,7 +44,7 @@ interface Props {
 export const TopicView = (props: Props) => {
   const forum = useForum();
   const role = useRole();
-  const { isNotEmpty, permission } = forum;
+  const { permission } = forum;
   const { modal, showModal, setModals } = useModal();
   const { collectionId, topicId } = props;
   const collectionPublicKey: web3.PublicKey | null = useMemo(() => {

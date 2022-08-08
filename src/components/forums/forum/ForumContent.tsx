@@ -30,8 +30,8 @@ interface ForumContentProps {
 
 export function ForumContent(props: ForumContentProps) {
   const { forumData, forumObject, update } = props;
-  const { isNotEmpty: connected, permission } = forumObject;
   const { role } = useRole();
+  const { permission } = forumObject;
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -251,15 +251,7 @@ export function ForumContent(props: ForumContentProps) {
       type="button"
       disabled={!permission.readAndWrite}
       onClick={() => {
-        if (connected) {
-          setShowNewTopicModal(true);
-        } else {
-          setModalInfo({
-            title: "Something went wrong",
-            type: MessageType.warning,
-            body: "Connect to your wallet in order to create a forum",
-          });
-        }
+        setShowNewTopicModal(true);
       }}
     >
       <div className="buttonImageContainer">
@@ -497,7 +489,7 @@ export function ForumContent(props: ForumContentProps) {
           />
         )}
         {forumHeader}
-        {connected && role === UserRoleType.Owner && (
+        {role === UserRoleType.Owner && (
           <PermissionsGate
             scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
           >

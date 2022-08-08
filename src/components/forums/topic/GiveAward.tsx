@@ -86,8 +86,6 @@ export function GiveAward(props: GiveAwardProps) {
     setLoading(true);
 
     try {
-      // TODO (Ana - Andrew): change this ugly line -- "Update wallet interface to support WalletContextState" on Notion
-
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT?.mint!,
@@ -257,8 +255,6 @@ async function transferSOL(props: TransferSOLProps) {
     })
   );
 
-  // TODO (Ana - Andrew): change this ugly line
   const s = await wallet.sendTransaction(tx, connection);
-
   return s;
 }

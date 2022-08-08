@@ -141,14 +141,12 @@ export interface IForum {
 export class DispatchForum implements IForum {
   public wallet: WalletInterface;
   public connection: web3.Connection;
-  public isNotEmpty: boolean;
   public permission: Permission;
   public cluster: web3.Cluster;
 
   constructor(wallet: WalletInterface, conn: web3.Connection, cluster: web3.Cluster) {
     this.connection = conn;
     this.wallet = wallet;
-    this.isNotEmpty = true;
     this.cluster = cluster;
 
     if (wallet.publicKey && conn) {
@@ -224,7 +222,12 @@ export class DispatchForum implements IForum {
   }
 
   // Get the description of the forum: title and blurb
-  getDescription = async (collectionId: web3.PublicKey): Promise<{
+  getDescription = async (
+    collectionId: web3.PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false
+  ): Promise<{
     title: string;
     desc: string;
   } | undefined> => {
@@ -238,7 +241,7 @@ export class DispatchForum implements IForum {
           collectionId
         );
 
-        if ((await forum.exists())) {
+        if (assumeExists || await forum.exists()) {
           const desc = await forum.getDescription();
           return desc;
         }
@@ -287,7 +290,12 @@ export class DispatchForum implements IForum {
     }
   }
 
-  getModerators = async (collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined> => {
+  getModerators = async (
+    collectionId: web3.PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false
+  ): Promise<web3.PublicKey[] | undefined> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -297,7 +305,7 @@ export class DispatchForum implements IForum {
         collectionId
       );
 
-      if (await forumAsOwner.exists()) {
+      if (assumeExists || await forumAsOwner.exists()) {
         const tx = await forumAsOwner.getModerators();
         return tx;
       }
@@ -306,7 +314,12 @@ export class DispatchForum implements IForum {
     }
   }
 
-  getOwners = async (collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined> => {
+  getOwners = async (
+    collectionId: web3.PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false
+  ): Promise<web3.PublicKey[] | undefined> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -316,7 +329,7 @@ export class DispatchForum implements IForum {
         collectionId
       );
 
-      if (await forumAsOwner.exists()) {
+      if (assumeExists || await forumAsOwner.exists()) {
         const tx = await forumAsOwner.getOwners();
         return tx;
       }
@@ -361,13 +374,16 @@ export class DispatchForum implements IForum {
   };
 
   getPostsForForum = async (
-    collectionId: web3.PublicKey
+    collectionId: web3.PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false
   ): Promise<ForumPost[] | undefined> => {
     const { wallet, connection } = this;
 
     try {
       const forum = new Forum(new DispatchConnection(connection, wallet, {cluster: this.cluster}), collectionId);
-      if (await forum.exists()) {
+      if (assumeExists || await forum.exists()) {
         const posts = await forum.getPostsForForum();
 
         return posts;

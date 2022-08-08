@@ -4,7 +4,7 @@ import {
   Forum,
   ForumInfo,
   ForumPost,
-  WalletInterface,
+  WalletAdapterInterface,
   PostRestriction,
   getMintsForOwner,
   getMetadataForOwner,
@@ -139,12 +139,12 @@ export interface IForum {
 }
 
 export class DispatchForum implements IForum {
-  public wallet: WalletInterface;
+  public wallet: WalletAdapterInterface;
   public connection: web3.Connection;
   public permission: Permission;
   public cluster: web3.Cluster;
 
-  constructor(wallet: WalletInterface, conn: web3.Connection, cluster: web3.Cluster) {
+  constructor(wallet: WalletAdapterInterface, conn: web3.Connection, cluster: web3.Cluster) {
     this.connection = conn;
     this.wallet = wallet;
     this.cluster = cluster;
@@ -152,10 +152,14 @@ export class DispatchForum implements IForum {
     if (wallet.publicKey && conn) {
       this.permission = { readAndWrite: true };
     } else {
+      // TODO(andrew) properly type this to an optional wallet to
+      // account for possibly missing wallets, instead of having
+      // this noop dummy wallet
       this.wallet = {
         publicKey: new web3.PublicKey('11111111111111111111111111111111'),
         signAllTransactions: () => {return Promise.resolve([])},
-        signTransaction: () => {return Promise.resolve(new web3.Transaction())}
+        signTransaction: () => {return Promise.resolve(new web3.Transaction())},
+        sendTransaction: () => {return Promise.resolve('');}
       };
       this.permission = { readAndWrite: false };
     }

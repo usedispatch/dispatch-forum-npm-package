@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
-import { ForumPost, WalletInterface } from "@usedispatch/client";
+import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
 
 
 import {
@@ -86,15 +86,10 @@ export function GiveAward(props: GiveAwardProps) {
     setLoading(true);
 
     try {
-      // TODO (Ana - Andrew): change this ugly line -- "Update wallet interface to support WalletContextState" on Notion
-      let w = Forum.wallet; //as WalletContextState;
-
       const tx = await Forum.transferNFTs(
         post.poster,
-        selectedNFT!,
         selectedNFT?.mint!,
-        // @ts-ignore
-        w.sendTransaction
+        Forum.wallet.sendTransaction
       );
 
       setLoading(false);
@@ -242,7 +237,7 @@ export function GiveAward(props: GiveAwardProps) {
 }
 
 interface TransferSOLProps {
-  wallet: WalletInterface;
+  wallet: WalletAdapterInterface;
   posterId: web3.PublicKey;
   collectionId: web3.PublicKey;
   amount: number;
@@ -260,11 +255,6 @@ async function transferSOL(props: TransferSOLProps) {
     })
   );
 
-  // TODO (Ana - Andrew): change this ugly line
-  let w = wallet; //as WalletContextState;
-  // @ts-ignore
-
-  const s = await w.sendTransaction(tx, connection);
-
+  const s = await wallet.sendTransaction(tx, connection);
   return s;
 }

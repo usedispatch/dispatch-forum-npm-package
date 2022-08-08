@@ -173,6 +173,12 @@ export const ForumView = (props: ForumViewProps) => {
           ),
           type: MessageType.success,
         });
+
+        if (res?.txs) {
+          Promise.all(res.txs.map(tx =>
+            forumObject.connection.confirmTransaction(tx)
+          )).then(() => update());
+        }
       }
     } catch (e: any) {
       if (e.error.code === 4001) {

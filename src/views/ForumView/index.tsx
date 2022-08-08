@@ -165,11 +165,13 @@ export const ForumView = (props: ForumViewProps) => {
 
       if (!_.isNil(res?.forum)) {
         if (!_.isNil(tokenAccess)) {
-          await forumObject.setForumPostRestriction(collectionPublicKey!, {
+          const tx = await forumObject.setForumPostRestriction(collectionPublicKey!, {
             nftOwnership: {
               collectionId: tokenAccess,
             },
           });
+          forumObject.connection.confirmTransaction(tx)
+            .then(() => update());
         }
 
         setShowNewForumModal(false);
@@ -187,7 +189,6 @@ export const ForumView = (props: ForumViewProps) => {
           ),
           type: MessageType.success,
         });
-        update();
       }
     } catch (e: any) {
       if (e.error.code === 4001) {

@@ -120,7 +120,10 @@ export function TopicContent(props: TopicContentProps) {
         ),
         okPath: forumPath,
       });
-      update();
+      if (tx) {
+        forum.connection.confirmTransaction(tx)
+          .then(() => update());
+      }
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);
       return tx;

@@ -193,6 +193,7 @@ export class DispatchForum implements IForum {
             moderators: forumInfo.moderators,
             title: forumInfo.title,
             description: forumInfo.description,
+            postRestriction: forumInfo.postRestriction
           });
           await Promise.all(txs.map((t) => conn.confirmTransaction(t)));
         }

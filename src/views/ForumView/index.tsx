@@ -8,7 +8,7 @@ import {
   useCallback,
   useRef,
 } from "react";
-import { ForumInfo, ForumPost } from "@usedispatch/client";
+import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
 import { Plus } from "../../assets";
@@ -29,18 +29,15 @@ import { selectTopics } from "../../utils/posts";
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
-import { Loading } from '../../types/loading';
+import { Loading } from "../../types/loading";
 import {
   isSuccess,
   isInitial,
   isPending,
   isNotFound,
-  isDispatchClientError
-} from '../../utils/loading';
-import {
-  useForumData,
-  useModal
-} from '../../utils/hooks';
+  isDispatchClientError,
+} from "../../utils/loading";
+import { useForumData, useModal } from "../../utils/hooks";
 
 interface ForumViewProps {
   collectionId: string;
@@ -145,7 +142,12 @@ export const ForumView = (props: ForumViewProps) => {
           body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
         });
       }
-
+      const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
+      const restriction = {
+        nftOwnership: {
+          collectionId: tokenAccess,
+        },
+      } as PostRestriction;
       const moderators =
         newModerator.length > 0
           ? [publicKey, newPublicKey(newModerator)]
@@ -157,20 +159,19 @@ export const ForumView = (props: ForumViewProps) => {
         title: title,
         description: description,
         collectionId: collectionPublicKey,
+        postRestriction: restriction,
       } as ForumInfo;
-
-      const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
 
       const res = await forumObject.createForum(forum);
 
       if (!_.isNil(res?.forum)) {
-        if (!_.isNil(tokenAccess)) {
-          await forumObject.setForumPostRestriction(collectionPublicKey!, {
-            nftOwnership: {
-              collectionId: tokenAccess,
-            },
-          });
-        }
+        // if (!_.isNil(tokenAccess)) {
+        //   await forumObject.setForumPostRestriction(collectionPublicKey!, {
+        //     nftOwnership: {
+        //       collectionId: tokenAccess,
+        //     },
+        //   });
+        // }
 
         setShowNewForumModal(false);
         showModal({
@@ -212,10 +213,7 @@ export const ForumView = (props: ForumViewProps) => {
   }, [forumObject.cluster]);
 
   useEffect(() => {
-    if(
-      isNotEmpty &&
-      isSuccess(forumData) &&
-      forumObject.wallet.publicKey) {
+    if (isNotEmpty && isSuccess(forumData) && forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
   }, [forumData, isNotEmpty, publicKey]);
@@ -344,21 +342,22 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-
-            {isSuccess(forumData) &&
-              (
-              <div
-                className={`forumViewTitle ${
-                  !permission.readAndWrite ? "alert" : ""
-                }`}>
-                {forumData.description.title}
-                <title>{forumData.description.title} Forum</title>
-                <meta
-                  name="description"
-                  content={forumData.description.desc}
-                />
-              </div>
-              ) /* TODO(andrew) what to render here if title isn't loaded */}
+            {
+              isSuccess(forumData) && (
+                <div
+                  className={`forumViewTitle ${
+                    !permission.readAndWrite ? "alert" : ""
+                  }`}
+                >
+                  {forumData.description.title}
+                  <title>{forumData.description.title} Forum</title>
+                  <meta
+                    name="description"
+                    content={forumData.description.desc}
+                  />
+                </div>
+              ) /* TODO(andrew) what to render here if title isn't loaded */
+            }
             <main>
               <div className="forumViewContentBox">
                 <div>
@@ -371,15 +370,13 @@ export const ForumView = (props: ForumViewProps) => {
                           update={update}
                         />
                       );
-                    } else if (
-                      isInitial(forumData) ||
-                      isPending(forumData)) {
+                    } else if (isInitial(forumData) || isPending(forumData)) {
                       return (
                         <div className="forumLoading">
                           <Spinner />
                         </div>
                       );
-                    } else if(isNotFound(forumData)) {
+                    } else if (isNotFound(forumData)) {
                       return emptyView;
                     } else {
                       // TODO(andrew) better, more detailed error

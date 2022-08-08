@@ -47,9 +47,17 @@ export const TopicView = (props: Props) => {
   const { isNotEmpty, permission } = forum;
   const { modal, showModal, setModals } = useModal();
   const { collectionId, topicId } = props;
-  const collectionPublicKey = useMemo(() => {
-    // TODO show modal if this fails
-    return new web3.PublicKey(collectionId);
+  const collectionPublicKey: web3.PublicKey | null = useMemo(() => {
+    try {
+      // TODO show modal if this fails
+      return new web3.PublicKey(collectionId);
+    } catch (error) {
+      showModal({
+        type: MessageType.error,
+        title: 'Invalid Collection ID'
+      });
+      return null;
+    }
   }, [collectionId]);
 
   const { forumData, update } = useForumData(collectionPublicKey, forum);
@@ -127,6 +135,12 @@ export const TopicView = (props: Props) => {
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
+  const invalidPublicKeyView = (
+    <div className="disconnectedTopicView">
+      {`${collectionId} is not a valid Collection ID`}
+    </div>
+  );
+
   const disconnectedView = (
     <div className="disconnectedTopicView">
       {`The topic with id ${topicId} does not exist`}
@@ -144,6 +158,7 @@ export const TopicView = (props: Props) => {
               <div>
                 {(() => {
                   if (
+                    collectionPublicKey &&
                     isInitial(topic) ||
                     isPending(topic)
                   ) {
@@ -153,6 +168,7 @@ export const TopicView = (props: Props) => {
                       </div>
                     );
                   } else if (
+                    collectionPublicKey &&
                     isSuccess(forumData) &&
                     isSuccess(topic)
                   ) {
@@ -178,7 +194,11 @@ export const TopicView = (props: Props) => {
                         />
                       </>
                     );
+                  } else if (_.isNull(collectionPublicKey)) {
+                    return invalidPublicKeyView;
                   } else {
+                    // TODO(andrew) more sophisticated error
+                    // handling here
                     return disconnectedView;
                   }
                 })()}

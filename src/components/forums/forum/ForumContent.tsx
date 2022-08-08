@@ -1,16 +1,6 @@
 import * as _ from "lodash";
-import {
-  useState,
-  useEffect,
-  ReactNode,
-  useContext,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import { useState, ReactNode } from "react";
 import Jdenticon from "react-jdenticon";
-
-import { ForumInfo, ForumPost } from "@usedispatch/client";
 
 import { Plus } from "../../../assets";
 import {
@@ -21,13 +11,14 @@ import {
   TransactionLink,
 } from "../../common";
 import { TopicList } from "..";
+import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { SCOPES } from "../../../utils/permissions";
-import { selectTopics } from '../../../utils/posts';
-import { isSuccess } from '../../../utils/loading';
-import { ForumData } from '../../../utils/hooks';
+import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { selectTopics } from "../../../utils/posts";
+import { isSuccess } from "../../../utils/loading";
+import { ForumData } from "../../../utils/hooks";
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -38,13 +29,13 @@ interface ForumContentProps {
 export function ForumContent(props: ForumContentProps) {
   const { forumData, forumObject, update } = props;
   const { isNotEmpty: connected, permission } = forumObject;
-  const mount = useRef(false);
+  const { role } = useRole();
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [currentMods, setCurrentMods] = useState<string[]>(() => {
     if (isSuccess(forumData.moderators)) {
-      return forumData.moderators.map(pkey => pkey.toBase58())
+      return forumData.moderators.map((pkey) => pkey.toBase58());
     } else {
       // TODO(andrew) show error here for missing mods
       return [];
@@ -52,7 +43,7 @@ export function ForumContent(props: ForumContentProps) {
   });
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (isSuccess(forumData.owners)) {
-      return forumData.owners.map(pkey => pkey.toBase58())
+      return forumData.owners.map((pkey) => pkey.toBase58());
     } else {
       // TODO(andrew) show error here for missing owners
       return [];
@@ -122,10 +113,7 @@ export function ForumContent(props: ForumContentProps) {
     setAddingNewOwner(true);
     try {
       const ownerId = newPublicKey(newOwner);
-      const tx = await forumObject.addOwner(
-        ownerId,
-        forumData.collectionId
-      );
+      const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
       setCurrentOwners(currentOwners.concat(newOwner));
       setNewOwner("");
       setShowAddOwners(false);
@@ -224,7 +212,8 @@ export function ForumContent(props: ForumContentProps) {
         setDescription("");
         setAccessToken(undefined);
         setShowNewTopicModal(false);
-        update();
+        forumObject.connection.confirmTransaction(tx)
+          .then(() => update());
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -274,9 +263,7 @@ export function ForumContent(props: ForumContentProps) {
   const forumHeader = (
     <div className="forumContentHeader">
       <div className="box">
-        <div className="description">{
-          forumData.description.desc
-        }</div>
+        <div className="description">{forumData.description.desc}</div>
         <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
           {createTopicButton}
         </PermissionsGate>
@@ -493,7 +480,7 @@ export function ForumContent(props: ForumContentProps) {
           />
         )}
         {forumHeader}
-        {connected && (
+        {connected && role === UserRoleType.Owner && (
           <PermissionsGate
             scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
             <div className="moderatorToolsContainer">
@@ -522,9 +509,7 @@ export function ForumContent(props: ForumContentProps) {
           </PermissionsGate>
         )}
         {!_.isNil(forumData.collectionId) && (
-          <TopicList
-            forumData={forumData}
-          />
+          <TopicList forumData={forumData} />
         )}
       </div>
     </div>

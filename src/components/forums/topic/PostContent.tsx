@@ -97,7 +97,10 @@ export function PostContent(props: PostContentProps) {
         ),
         type: MessageType.success,
       });
-      update();
+      if (tx) {
+        forum.connection.confirmTransaction(tx)
+          .then(() => update());
+      }
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
@@ -128,7 +131,10 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.success,
         body: `The post was deleted`,
       });
-      update();
+      if (tx) {
+        forum.connection.confirmTransaction(tx)
+          .then(() => update());
+      }
       setShowDeleteConfirmation(false);
       setDeleting(false);
     } catch (error: any) {

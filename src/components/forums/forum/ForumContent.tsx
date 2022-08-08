@@ -19,6 +19,8 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { selectTopics } from "../../../utils/posts";
 import { isSuccess } from "../../../utils/loading";
 import { ForumData } from "../../../utils/hooks";
+import { web3 } from "@project-serum/anchor";
+import { PostRestriction } from "@usedispatch/client";
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -61,7 +63,7 @@ export function ForumContent(props: ForumContentProps) {
   const [addingNewOwner, setAddingNewOwner] = useState(false);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
-  const [accessToken, setAccessToken] = useState<string>();
+  const [accessToken, setAccessToken] = useState<string>("");
   const [addingAccessToken, setAddingAccessToken] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
@@ -146,13 +148,20 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
+      const tokenCSV = accessToken.replace(/\s+/g, "");
+      const csvList = tokenCSV.split(",");
+      const restrictionList = csvList?.map((token) => {
+        return {
+          nftOwnership: {
+            collectionId: newPublicKey(token),
+          },
+        } as PostRestriction;
+      });
+      console.log(restrictionList);
+
       const tx = await forumObject.setForumPostRestriction(
         forumData.collectionId,
-        {
-          nftOwnership: {
-            collectionId: newPublicKey(accessToken!),
-          },
-        }
+        restrictionList
       );
 
       setShowAddAccessToken(false);
@@ -210,10 +219,9 @@ export function ForumContent(props: ForumContentProps) {
         });
         setTitle("");
         setDescription("");
-        setAccessToken(undefined);
+        setAccessToken("");
         setShowNewTopicModal(false);
-        forumObject.connection.confirmTransaction(tx)
-          .then(() => update());
+        forumObject.connection.confirmTransaction(tx).then(() => update());
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -252,7 +260,8 @@ export function ForumContent(props: ForumContentProps) {
             body: "Connect to your wallet in order to create a forum",
           });
         }
-      }}>
+      }}
+    >
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -314,14 +323,16 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={accessToken?.length === 0}
-                onClick={() => addAccessToken()}>
+                onClick={() => addAccessToken()}
+              >
                 Save
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddAccessToken(false)}>
+                onClick={() => setShowAddAccessToken(false)}
+              >
                 Cancel
               </button>
             }
@@ -376,14 +387,16 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={title.length === 0}
-                onClick={() => createTopic()}>
+                onClick={() => createTopic()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}>
+                onClick={() => setShowNewTopicModal(false)}
+              >
                 Cancel
               </button>
             }
@@ -428,7 +441,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddModerators(false)}>
+                onClick={() => setShowAddModerators(false)}
+              >
                 Cancel
               </button>
             }
@@ -473,7 +487,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddOwners(false)}>
+                onClick={() => setShowAddOwners(false)}
+              >
                 Cancel
               </button>
             }
@@ -482,27 +497,31 @@ export function ForumContent(props: ForumContentProps) {
         {forumHeader}
         {connected && role === UserRoleType.Owner && (
           <PermissionsGate
-            scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
+            scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
+          >
             <div className="moderatorToolsContainer">
               <div>Moderator tools: </div>
               <PermissionsGate scopes={[SCOPES.canAddOwner]}>
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}>
+                  onClick={() => setShowAddOwners(true)}
+                >
                   Manage owners
                 </button>
               </PermissionsGate>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}>
+                onClick={() => setShowAddModerators(true)}
+              >
                 Manage moderators
               </button>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}>
+                onClick={() => setShowAddAccessToken(true)}
+              >
                 Manage forum access
               </button>
             </div>

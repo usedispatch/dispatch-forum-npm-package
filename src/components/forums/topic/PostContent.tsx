@@ -286,7 +286,7 @@ export function PostContent(props: PostContentProps) {
                       setPostToDelete(props.post);
                       setShowDeleteConfirmation(true);
                     }}>
-                    delete <Trash />
+                    <Trash />
                   </button>
                 </PermissionsGate>
                 <PermissionsGate scopes={[SCOPES.canCreateReply]}>

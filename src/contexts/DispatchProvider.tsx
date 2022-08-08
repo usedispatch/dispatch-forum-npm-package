@@ -1,5 +1,5 @@
 import { web3 } from "@project-serum/anchor";
-import { WalletInterface } from "@usedispatch/client";
+import { WalletAdapterInterface } from "@usedispatch/client";
 import {
   FC,
   ReactNode,
@@ -12,7 +12,7 @@ import { DispatchForum, MainForum } from "./../utils/postbox/postboxWrapper";
 import { UserRoleType } from "./../utils/permissions";
 import { DebugWarning } from "./../components/common/DebugWarning";
 export interface DispatchAppProps {
-  wallet: WalletInterface;
+  wallet: WalletAdapterInterface;
   connection: web3.Connection;
   cluster: web3.Cluster;
   children: ReactNode | ReactNode[];

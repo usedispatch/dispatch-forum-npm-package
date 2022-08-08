@@ -47,7 +47,7 @@ export function useForumData(
   async function fetchOwners(): Promise<LoadingResult<PublicKey[]>> {
     if (collectionId) {
       try {
-        const fetchData = await forum.getOwners(collectionId);
+        const fetchData = await forum.getOwners(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
@@ -63,7 +63,7 @@ export function useForumData(
   async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
     if (collectionId) {
       try {
-        const fetchData = await forum.getModerators(collectionId);
+        const fetchData = await forum.getModerators(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
@@ -79,7 +79,7 @@ export function useForumData(
   async function fetchDescription(): Promise<LoadingResult<Description>> {
     if (collectionId) {
       try {
-        const fetchData = await forum.getDescription(collectionId);
+        const fetchData = await forum.getDescription(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
@@ -95,7 +95,7 @@ export function useForumData(
   async function fetchPosts(): Promise<LoadingResult<ForumPost[]>> {
     if (collectionId) {
       try {
-        const fetchData = await forum.getPostsForForum(collectionId);
+        const fetchData = await forum.getPostsForForum(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {

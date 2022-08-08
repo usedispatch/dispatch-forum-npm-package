@@ -76,7 +76,7 @@ interface ForumViewProps {
 export const ForumView = (props: ForumViewProps) => {
   const forumObject = useForum();
   const Role = useRole();
-  const { isNotEmpty, wallet, permission } = forumObject;
+  const { wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
@@ -120,15 +120,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [accessToken, setAccessToken] = useState<string>();
 
   const onCreateForumClick = () => {
-    if (isNotEmpty) {
-      createForum();
-    } else {
-      showModal({
-        title: "Something went wrong",
-        type: MessageType.warning,
-        body: "Connect to your wallet in order to create a forum",
-      });
-    }
+    createForum();
   };
 
   const createForum = async () => {
@@ -205,10 +197,12 @@ export const ForumView = (props: ForumViewProps) => {
   }, [forumObject.cluster]);
 
   useEffect(() => {
-    if (isNotEmpty && isSuccess(forumData) && forumObject.wallet.publicKey) {
+    if(
+      isSuccess(forumData) &&
+      forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
-  }, [forumData, isNotEmpty, publicKey]);
+  }, [forumData, publicKey]);
 
   const createForumButton = (
     <div className="createForumButtonContainer">
@@ -217,15 +211,7 @@ export const ForumView = (props: ForumViewProps) => {
         className="okInfoButton"
         disabled={!permission.readAndWrite}
         onClick={() => {
-          if (isNotEmpty) {
-            setShowNewForumModal(true);
-          } else {
-            showModal({
-              title: "Something went wrong",
-              type: MessageType.warning,
-              body: "Connect to your wallet in order to create a forum",
-            });
-          }
+          setShowNewForumModal(true);
         }}
       >
         <div className="createForumIconContainer">

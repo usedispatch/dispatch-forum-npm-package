@@ -141,14 +141,12 @@ export interface IForum {
 export class DispatchForum implements IForum {
   public wallet: WalletInterface;
   public connection: web3.Connection;
-  public isNotEmpty: boolean;
   public permission: Permission;
   public cluster: web3.Cluster;
 
   constructor(wallet: WalletInterface, conn: web3.Connection, cluster: web3.Cluster) {
     this.connection = conn;
     this.wallet = wallet;
-    this.isNotEmpty = true;
     this.cluster = cluster;
 
     if (wallet.publicKey && conn) {

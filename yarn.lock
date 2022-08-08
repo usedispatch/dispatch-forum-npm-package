@@ -1494,10 +1494,10 @@
   dependencies:
     "@types/node" "*"
 
-"@usedispatch/client@^0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@usedispatch/client/-/client-0.11.1.tgz#703fe5701da4a0f65b69c9b0b041b481a9ed01d1"
-  integrity sha512-qYDL/tfO13DUThbuDJBNwMkM38hAVHjLgLeB8Cee/I2gWApk6SeWXxPLsQLlljGUmqsOeoz3bF83tRhKnmowAw==
+"@usedispatch/client@^0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@usedispatch/client/-/client-0.11.3.tgz#41bae840f57bf8e427852db420ab0348be7752fc"
+  integrity sha512-NVxZFLqI2tAxAiyNX5WsIx/DUWFHKfHzJzcNEMjNGMmsYm1B+ysZoo3jhpF7Ivj1sxLs/5KrttcMZyntiYWkew==
   dependencies:
     "@bonfida/spl-name-service" "^0.1.30"
     "@metaplex-foundation/mpl-token-metadata" "^2.2.2"

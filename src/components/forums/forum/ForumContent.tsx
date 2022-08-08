@@ -306,7 +306,9 @@ export function ForumContent(props: ForumContentProps) {
             body={
               <div className="">
                 You can enter one NFT Collection ID here such that only holders
-                of NFT's in the collection can participate in this forum.
+                of NFT's in the collection can participate in this forum. Add
+                multiple collections by entering multiple IDs separated by a
+                comma.
                 <input
                   type="text"
                   placeholder="NFT Collection ID"

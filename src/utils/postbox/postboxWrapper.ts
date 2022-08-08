@@ -140,7 +140,7 @@ export interface IForum {
 
 export class DispatchForum implements IForum {
   public wallet: WalletInterface;
-  private connection: web3.Connection;
+  public connection: web3.Connection;
   public isNotEmpty: boolean;
   public permission: Permission;
   public cluster: web3.Cluster;

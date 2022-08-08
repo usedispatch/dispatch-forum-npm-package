@@ -224,7 +224,8 @@ export function ForumContent(props: ForumContentProps) {
         setDescription("");
         setAccessToken(undefined);
         setShowNewTopicModal(false);
-        update();
+        forumObject.connection.confirmTransaction(tx)
+          .then(() => update());
       } else {
         setCreatingNewTopic(false);
         setModalInfo({

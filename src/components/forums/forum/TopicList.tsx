@@ -1,29 +1,19 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useContext,
-  useRef,
-} from "react";
-import { maxBy } from 'lodash';
+import { useCallback, useMemo } from "react";
+import { maxBy } from "lodash";
 import Jdenticon from "react-jdenticon";
-import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 
-import { Spinner } from "../../common";
-
-import { useForum, usePath } from "./../../../contexts/DispatchProvider";
+import { usePath } from "./../../../contexts/DispatchProvider";
 import { Link } from "./../../../components/common";
 import {
   selectRepliesFromPosts,
   selectTopics,
-  sortByVotes
-} from '../../../utils/posts';
-import { ForumData } from '../../../utils/hooks';
+  sortByVotes,
+} from "../../../utils/posts";
+import { ForumData } from "../../../utils/hooks";
 
 interface TopicListProps {
-  forumData: ForumData
+  forumData: ForumData;
 }
 
 export function TopicList({ forumData }: TopicListProps) {
@@ -41,7 +31,9 @@ export function TopicList({ forumData }: TopicListProps) {
               <th className="tableHeaderTitle">
                 <div className="tableHeaderText">Topic</div>
               </th>
-              <th className="tableHeaderTitle"></th>
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderText posters">Posters</div>
+              </th>
               <th className="tableHeaderTitle">
                 <div className="tableHeaderTextCenter">Replies</div>
               </th>
@@ -52,12 +44,8 @@ export function TopicList({ forumData }: TopicListProps) {
           </thead>
           <tbody>
             {topics.map((topic, index) => (
-                <RowContent
-                  key={index}
-                  topic={topic}
-                  forumData={forumData}
-                />
-              ))}
+              <RowContent key={index} topic={topic} forumData={forumData} />
+            ))}
           </tbody>
         </table>
         {topics.length === 0 && (
@@ -76,7 +64,10 @@ interface RowContentProps {
 function RowContent(props: RowContentProps) {
   const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
-  const topicPath = buildTopicPath(forumData.collectionId.toBase58(), topic.postId);
+  const topicPath = buildTopicPath(
+    forumData.collectionId.toBase58(),
+    topic.postId
+  );
 
   const replies: ForumPost[] = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
@@ -84,9 +75,7 @@ function RowContent(props: RowContentProps) {
 
   const activtyDate = useCallback((posts: ForumPost[]) => {
     const dates = posts.map(({ data }) => data.ts);
-    const mostRecentDate = maxBy(dates, (date) =>
-      date.getTime()
-    );
+    const mostRecentDate = maxBy(dates, (date) => date.getTime());
     if (mostRecentDate) {
       const format = (
         mostRecentDate.getFullYear() !== new Date().getFullYear()
@@ -123,29 +112,29 @@ function RowContent(props: RowContentProps) {
         </div>
       );
     } else {
-      return null;
+      return "-";
     }
   }, []);
 
   return (
     <tr className="row ">
-      <th>
-        <Link className="rowSubj" href={topicPath}>
-          {topic.data.subj}
+      <th className="rowSubj">
+        <Link className="" href={topicPath}>
+          <div className="textBox">{topic.data.subj}</div>
         </Link>
       </th>
-      <td>
-        <Link className="rowIconReplies" href={topicPath}>
+      <td className="rowIconReplies">
+        <Link className="" href={topicPath}>
           {icons(replies)}
         </Link>
       </td>
-      <td>
-        <Link className="rowAmountReplies" href={topicPath}>
+      <td className="rowAmountReplies">
+        <Link className="" href={topicPath}>
           {replies.length}
         </Link>
       </td>
-      <td>
-        <Link className="rowDate" href={topicPath}>
+      <td className="rowDate">
+        <Link className="" href={topicPath}>
           {activtyDate(replies)}
         </Link>
       </td>

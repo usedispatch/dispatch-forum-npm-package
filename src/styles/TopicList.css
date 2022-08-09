@@ -44,6 +44,14 @@
         font-size: 22px;
         text-align: left;
         text-transform: none;
+
+        &.posters {
+          font-size: 20px;
+
+          width: 280px;
+          max-width: 280px;
+          min-width: 280px;
+        }
       }
 
       .tableHeaderTextCenter {
@@ -51,6 +59,10 @@
         text-transform: none;
         font-weight: 400;
         font-size: 20px;
+
+        width: 120px;
+        max-width: 120px;
+        min-width: 120px;
       }
     }
   }
@@ -169,50 +181,49 @@
     }
 
     a {
-      display: flex;
-      align-items: center;
-      height: 100%;
-      white-space: nowrap;
       cursor: pointer;
     }
 
     .rowSubj {
       width: 100%;
-      font-weight: 600;
 
+      font-weight: 600;
       text-align: left;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      height: 4rem;
-      display:flex;
-      align-items: center;
-  }
+
+      .textBox {
+        max-width: 600px;
+        width: 600px;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
 
     .rowIconReplies {
-      width: 100%;
-      height: 4rem;
-      display:flex;
+      height: inherit;
+      width: 280px;
+      max-width: 280px;
+      min-width: 280px;
+
+      display: flex;
       align-items: center;
     }
 
     .rowAmountReplies {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      max-width: 120px;
+      width: 120px;
 
       color: #414149;
-      height: 4rem;
-      width: 100%;
+      text-align: center;
     }
 
     .rowDate {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      max-width: 120px;
+      width: 120px;
 
       color: #414149;
-      height: 4rem;
+      text-align: center;
     }
   }
 }

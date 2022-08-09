@@ -188,7 +188,11 @@ export function ForumContent(props: ForumContentProps) {
     } catch (error: any) {
       setAddingAccessToken(false);
       if (error.code !== 4001) {
-        setForumAccessToken("");
+        setForumAccessToken(
+          isSuccess(forumData.restriction)
+            ? forumData.restriction?.nftOwnership?.collectionId.toBase58() ?? ""
+            : ""
+        );
         setShowAddAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",

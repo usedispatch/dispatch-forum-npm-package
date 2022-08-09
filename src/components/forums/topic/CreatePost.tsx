@@ -36,6 +36,7 @@ export function CreatePost(props: CreatePostProps) {
 
   const [loading, setLoading] = useState(false);
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [bodySize, setBodySize] = useState(0);
   const [notificationContent, setNotificationContent] = useState<{
     content: string | ReactNode;
     type: MessageType;
@@ -55,12 +56,10 @@ export function CreatePost(props: CreatePostProps) {
     };
 
     const post = { body: target.post.value };
-
     try {
       const tx = await createForumPost(post, topicId, collectionId);
       if (tx) {
-        Forum.connection.confirmTransaction(tx)
-          .then(() => update());
+        Forum.connection.confirmTransaction(tx).then(() => update());
       }
       setLoading(false);
       setIsNotificationHidden(false);
@@ -129,15 +128,19 @@ export function CreatePost(props: CreatePostProps) {
                   placeholder="Type your comment here"
                   required
                   disabled={!permission.readAndWrite}
-                  maxLength={800}
+                  onChange={(event) => {
+                    setBodySize(new Buffer(event.target.value).byteLength);
+                  }}
                   name="post"
                 />
               </div>
+              <div>{bodySize}/800</div>
               <div className="buttonContainer">
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!permission.readAndWrite}>
+                  disabled={!permission.readAndWrite || bodySize > 800}
+                >
                   Post
                 </button>
               </div>

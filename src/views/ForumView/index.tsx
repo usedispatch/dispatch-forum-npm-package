@@ -151,10 +151,9 @@ export const ForumView = (props: ForumViewProps) => {
         title: title,
         description: description,
         collectionId: collectionPublicKey,
+        postRestriction: tokenAccess ? restriction : undefined,
       } as ForumInfo;
-      if (tokenAccess) {
-        forum.postRestriction = restriction;
-      }
+
       const res = await forumObject.createForum(forum);
 
       if (!_.isNil(res?.forum)) {
@@ -216,8 +215,7 @@ export const ForumView = (props: ForumViewProps) => {
         disabled={!permission.readAndWrite}
         onClick={() => {
           setShowNewForumModal(true);
-        }}
-      >
+        }}>
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -306,16 +304,14 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}
-              >
+                onClick={() => onCreateForumClick()}>
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}
-              >
+                onClick={() => setShowNewForumModal(false)}>
                 Cancel
               </div>
             }
@@ -329,8 +325,7 @@ export const ForumView = (props: ForumViewProps) => {
                 <div
                   className={`forumViewTitle ${
                     !permission.readAndWrite ? "alert" : ""
-                  }`}
-                >
+                  }`}>
                   {forumData.description.title}
                   <title>{forumData.description.title} Forum</title>
                   <meta

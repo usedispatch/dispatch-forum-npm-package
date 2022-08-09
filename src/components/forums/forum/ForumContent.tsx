@@ -62,6 +62,11 @@ export function ForumContent(props: ForumContentProps) {
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>("");
+  const [forumAccessToken, setForumAccessToken] = useState<string>(() => {
+    if (isSuccess(forumData.restriction)) {
+      return forumData.restriction?.nftOwnership?.collectionId.toBase58() ?? "";
+    } else return "";
+  });
   const [addingAccessToken, setAddingAccessToken] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
@@ -146,7 +151,7 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const tokenCSV = accessToken.replace(/\s+/g, "");
+      const tokenCSV = forumAccessToken.replace(/\s+/g, "");
       const csvList = tokenCSV.split(",");
       const restrictionList = csvList.map((token) => {
         if (token !== undefined && token !== "") {
@@ -183,7 +188,7 @@ export function ForumContent(props: ForumContentProps) {
     } catch (error: any) {
       setAddingAccessToken(false);
       if (error.code !== 4001) {
-        setAccessToken("");
+        setForumAccessToken("");
         setShowAddAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",
@@ -256,8 +261,7 @@ export function ForumContent(props: ForumContentProps) {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}
-    >
+      }}>
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -310,27 +314,41 @@ export function ForumContent(props: ForumContentProps) {
                   placeholder="NFT Collection ID"
                   className="newAccessToken"
                   name="accessToken"
-                  value={accessToken}
-                  onChange={(e) => setAccessToken(e.target.value)}
+                  value={forumAccessToken}
+                  onChange={(e) => setForumAccessToken(e.target.value)}
                 />
               </div>
             }
             loading={addingAccessToken}
-            onClose={() => setShowAddAccessToken(false)}
+            onClose={() => {
+              setShowAddAccessToken(false);
+              setForumAccessToken(
+                isSuccess(forumData.restriction)
+                  ? forumData.restriction?.nftOwnership?.collectionId.toBase58() ??
+                      ""
+                  : ""
+              );
+            }}
             okButton={
               <button
                 className="okButton"
-                disabled={accessToken?.length === 0}
-                onClick={() => addAccessToken()}
-              >
+                disabled={forumAccessToken?.length === 0}
+                onClick={() => addAccessToken()}>
                 Save
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddAccessToken(false)}
-              >
+                onClick={() => {
+                  setShowAddAccessToken(false);
+                  setForumAccessToken(
+                    isSuccess(forumData.restriction)
+                      ? forumData.restriction?.nftOwnership?.collectionId.toBase58() ??
+                          ""
+                      : ""
+                  );
+                }}>
                 Cancel
               </button>
             }
@@ -385,16 +403,14 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={title.length === 0}
-                onClick={() => createTopic()}
-              >
+                onClick={() => createTopic()}>
                 Create
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}
-              >
+                onClick={() => setShowNewTopicModal(false)}>
                 Cancel
               </button>
             }
@@ -439,8 +455,7 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddModerators(false)}
-              >
+                onClick={() => setShowAddModerators(false)}>
                 Cancel
               </button>
             }
@@ -448,7 +463,7 @@ export function ForumContent(props: ForumContentProps) {
         )}
         {_.isNil(modalInfo) && showAddOwners && (
           <PopUpModal
-            id="add-moderators"
+            id="add-owners"
             visible
             title={"Manage owners"}
             body={
@@ -485,8 +500,7 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddOwners(false)}
-              >
+                onClick={() => setShowAddOwners(false)}>
                 Cancel
               </button>
             }
@@ -495,31 +509,27 @@ export function ForumContent(props: ForumContentProps) {
         {forumHeader}
         {role === UserRoleType.Owner && (
           <PermissionsGate
-            scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
-          >
+            scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
             <div className="moderatorToolsContainer">
               <div>Moderator tools: </div>
               <PermissionsGate scopes={[SCOPES.canAddOwner]}>
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}
-                >
+                  onClick={() => setShowAddOwners(true)}>
                   Manage owners
                 </button>
               </PermissionsGate>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}
-              >
+                onClick={() => setShowAddModerators(true)}>
                 Manage moderators
               </button>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
+                onClick={() => setShowAddAccessToken(true)}>
                 Manage forum access
               </button>
             </div>

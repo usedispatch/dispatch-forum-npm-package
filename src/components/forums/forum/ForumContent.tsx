@@ -149,11 +149,18 @@ export function ForumContent(props: ForumContentProps) {
       const tokenCSV = accessToken.replace(/\s+/g, "");
       const csvList = tokenCSV.split(",");
       const restrictionList = csvList.map((token) => {
-        return {
-          nftOwnership: {
-            collectionId: newPublicKey(token),
-          },
-        } as PostRestriction;
+        if (token !== undefined && token !== "") {
+          return {
+            nftOwnership: {
+              collectionId: newPublicKey(token),
+            },
+          } as PostRestriction;
+        } else {
+          return {
+            tokenOwnership: undefined,
+            nftOwnership: undefined,
+          } as PostRestriction;
+        }
       });
 
       const tx = await forumObject.setForumPostRestriction(

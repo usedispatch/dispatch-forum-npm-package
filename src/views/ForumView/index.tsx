@@ -151,13 +151,13 @@ export const ForumView = (props: ForumViewProps) => {
         title: title,
         description: description,
         collectionId: collectionPublicKey,
-        postRestriction: restriction,
       } as ForumInfo;
-
+      if (tokenAccess) {
+        forum.postRestriction = restriction;
+      }
       const res = await forumObject.createForum(forum);
 
       if (!_.isNil(res?.forum)) {
-
         setShowNewForumModal(false);
         showModal({
           title: `Success!`,
@@ -175,9 +175,9 @@ export const ForumView = (props: ForumViewProps) => {
         });
 
         if (res?.txs) {
-          Promise.all(res.txs.map(tx =>
-            forumObject.connection.confirmTransaction(tx)
-          )).then(() => update());
+          Promise.all(
+            res.txs.map((tx) => forumObject.connection.confirmTransaction(tx))
+          ).then(() => update());
         }
       }
     } catch (e: any) {
@@ -203,9 +203,7 @@ export const ForumView = (props: ForumViewProps) => {
   }, [forumObject.cluster]);
 
   useEffect(() => {
-    if(
-      isSuccess(forumData) &&
-      forumObject.wallet.publicKey) {
+    if (isSuccess(forumData) && forumObject.wallet.publicKey) {
       getUserRole(forumObject, collectionPublicKey!, Role);
     }
   }, [forumData, publicKey]);

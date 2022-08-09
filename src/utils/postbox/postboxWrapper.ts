@@ -189,14 +189,20 @@ export class DispatchForum implements IForum {
 
         let txs = [] as string[];
         if (!(await forumAsOwner.exists())) {
-          txs = await forumAsOwner.createForum({
+          const forumInfoObject = {
             collectionId: collectionPublicKey,
             owners: [owner.publicKey],
             moderators: forumInfo.moderators,
             title: forumInfo.title,
             description: forumInfo.description,
             postRestriction: forumInfo.postRestriction
-          });
+          }
+
+          if (forumInfo.postRestriction?.nftOwnership !== undefined || forumInfo.postRestriction?.tokenOwnership !== null) {
+            forumInfoObject.postRestriction = forumInfo.postRestriction;
+          }
+
+          txs = await forumAsOwner.createForum(forumInfoObject);
           await Promise.all(txs.map((t) => conn.confirmTransaction(t)));
         }
 

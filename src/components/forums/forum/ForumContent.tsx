@@ -62,6 +62,24 @@ export function ForumContent(props: ForumContentProps) {
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>("");
+  const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
+    string[]
+  >(() => {
+    if (isSuccess(forumData.restriction)) {
+      return forumData.restriction?.nftOwnership
+        ? [forumData.restriction.nftOwnership.collectionId.toBase58()]
+        : forumData.restriction.nftListAnyOwnership
+        ? forumData.restriction.nftListAnyOwnership.collectionIds.map(
+            (pkey) => {
+              return pkey.toBase58();
+            }
+          )
+        : forumData.restriction.tokenOwnership
+        ? [forumData.restriction.tokenOwnership.mint.toBase58()]
+        : [];
+    } else return [];
+  });
+  const [newForumAccessToken, setNewForumAccessToken] = useState<string>("");
   const [addingAccessToken, setAddingAccessToken] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
@@ -146,22 +164,21 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const tokenCSV = accessToken.replace(/\s+/g, "");
+      const tokenCSV = newForumAccessToken.replace(/\s+/g, "");
       const csvList = tokenCSV.split(",");
-      const restrictionList = csvList.map((token) => {
-        if (token !== undefined && token !== "") {
-          return {
-            nftOwnership: {
-              collectionId: newPublicKey(token),
-            },
-          } as PostRestriction;
-        } else {
-          return {
-            tokenOwnership: undefined,
-            nftOwnership: undefined,
-          } as PostRestriction;
-        }
+      const currentIds = currentForumAccessToken.map((token) => {
+        return newPublicKey(token);
       });
+      const newIds = csvList.map((token) => {
+        return newPublicKey(token);
+      });
+      const accessCollectionIds = newIds.concat(currentIds);
+
+      const restrictionList = {
+        nftListAnyOwnership: {
+          collectionIds: accessCollectionIds,
+        },
+      } as PostRestriction;
 
       const tx = await forumObject.setForumPostRestriction(
         forumData.collectionId,
@@ -183,7 +200,11 @@ export function ForumContent(props: ForumContentProps) {
     } catch (error: any) {
       setAddingAccessToken(false);
       if (error.code !== 4001) {
-        setAccessToken("");
+        // setCurrentForumAccessToken(
+        //   isSuccess(forumData.restriction)
+        //     ? [forumData.restriction?.nftOwnership?.collectionId.toBase58()] ?? [""]
+        //     : [""]
+        // );
         setShowAddAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",
@@ -300,36 +321,45 @@ export function ForumContent(props: ForumContentProps) {
             visible
             title="Limit forum access"
             body={
-              <div className="">
+              <div className="addModeratorsBody">
+                <label className="addModeratorsLabel">
+                  Add new NFT Collection ID
+                </label>
                 You can enter one NFT Collection ID here such that only holders
-                of NFT's in the collection can participate in this forum. Add
-                multiple collections by entering multiple IDs separated by a
-                comma.
+                of NFT's in the collection can participate in this forum.
                 <input
                   type="text"
                   placeholder="NFT Collection ID"
                   className="newAccessToken"
                   name="accessToken"
-                  value={accessToken}
-                  onChange={(e) => setAccessToken(e.target.value)}
+                  value={newForumAccessToken}
+                  onChange={(e) => setNewForumAccessToken(e.target.value)}
                 />
+                <label className="addModeratorsLabel">
+                  Current NFT Collection ID
+                </label>
+                {currentForumAccessToken.map((token) => {
+                  return <div className="currentAccessToken">{token}</div>;
+                })}
               </div>
             }
             loading={addingAccessToken}
-            onClose={() => setShowAddAccessToken(false)}
+            onClose={() => {
+              setShowAddAccessToken(false);
+              setNewForumAccessToken("");
+            }}
             okButton={
-              <button
-                className="okButton"
-                disabled={accessToken?.length === 0}
-                onClick={() => addAccessToken()}
-              >
+              <button className="okButton" onClick={() => addAccessToken()}>
                 Save
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddAccessToken(false)}
+                onClick={() => {
+                  setShowAddAccessToken(false);
+                  setNewForumAccessToken("");
+                }}
               >
                 Cancel
               </button>
@@ -448,7 +478,7 @@ export function ForumContent(props: ForumContentProps) {
         )}
         {_.isNil(modalInfo) && showAddOwners && (
           <PopUpModal
-            id="add-moderators"
+            id="add-owners"
             visible
             title={"Manage owners"}
             body={

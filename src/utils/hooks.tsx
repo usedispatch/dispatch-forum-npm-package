@@ -1,8 +1,12 @@
-import { useMemo, useState, ReactNode } from 'react';
-import { PublicKey } from '@solana/web3.js';
-import { ForumInfo, ForumPost } from '@usedispatch/client';
-import { Loading, LoadingResult } from '../types/loading';
-import { CollapsibleProps, MessageType, PopUpModal } from '../components/common';
+import { useMemo, useState, ReactNode } from "react";
+import { PublicKey } from "@solana/web3.js";
+import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
+import { Loading, LoadingResult } from "../types/loading";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+} from "../components/common";
 import {
   isResolved,
   isNotFound,
@@ -11,9 +15,9 @@ import {
   onChainAccountNotFound,
   dispatchClientError,
   isSuccess,
-  isDispatchClientError
-} from '../utils/loading';
-import { DispatchForum } from './postbox/postboxWrapper';
+  isDispatchClientError,
+} from "../utils/loading";
+import { DispatchForum } from "./postbox/postboxWrapper";
 
 // TODO(andrew) move this to DispatchForum.getDescription()
 // so that function can be properly typed
@@ -28,6 +32,7 @@ export interface ForumData {
   moderators: LoadingResult<PublicKey[]>;
   description: Description;
   posts: ForumPost[];
+  restriction: LoadingResult<PostRestriction>;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -36,12 +41,10 @@ export function useForumData(
   collectionId: PublicKey | null,
   forum: DispatchForum
 ): {
-  forumData: Loading<ForumData>
+  forumData: Loading<ForumData>;
   update: () => Promise<void>;
 } {
-  const [forumData, setForumData] = useState<Loading<ForumData>>(
-    initial()
-  );
+  const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<LoadingResult<PublicKey[]>> {
@@ -109,22 +112,40 @@ export function useForumData(
     }
   }
 
+  async function fetchForumPostRestriction(): Promise<
+    LoadingResult<PostRestriction>
+  > {
+    if (collectionId) {
+      try {
+        const restriction = await forum.getForumPostRestriction(collectionId);
+        if (restriction) {
+          return restriction;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
   async function update() {
     if (collectionId) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, moderators, description, posts] = await Promise.all([
-          fetchOwners(),
-          fetchModerators(),
-          fetchDescription(),
-          fetchPosts()
-        ]);
+        const [owners, moderators, description, posts, restriction] =
+          await Promise.all([
+            fetchOwners(),
+            fetchModerators(),
+            fetchDescription(),
+            fetchPosts(),
+            fetchForumPostRestriction(),
+          ]);
 
-        if(
-          isSuccess(description) &&
-          isSuccess(posts)
-        ) {
+        if (isSuccess(description) && isSuccess(posts)) {
           // If owners and moderators were successfully fetched, then
           // just set them and go
           setForumData({
@@ -132,7 +153,8 @@ export function useForumData(
             owners,
             moderators,
             description,
-            posts
+            posts,
+            restriction,
           });
         } else {
           // We already confirmed the forum existed, so assume
@@ -155,7 +177,7 @@ export interface ModalInfo {
   type: MessageType;
   body?: string | ReactNode;
   collapsible?: CollapsibleProps;
-};
+}
 
 export function useModal() {
   const [modalInfoList, setModalInfoList] = useState<ModalInfo[]>([]);
@@ -207,6 +229,6 @@ export function useModal() {
     // functions to show a current modal or modals
     showModal,
     showModals,
-    setModals: setModalInfoList
+    setModals: setModalInfoList,
   };
 }

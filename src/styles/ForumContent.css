@@ -20,7 +20,7 @@
   .newAccessToken {
     width: 100%;
     padding: 12px;
-    margin-top: 16px;
+    margin: 16px 0 24px;
 
     font-size: 14px;
     border-width: 1px;
@@ -31,6 +31,16 @@
       outline: 2px solid transparent;
       outline-offset: 2px;
     }
+  }
+
+  .currentToken {
+    display: flex;
+    align-items: center;
+    margin: 0 0 8px 0;
+
+    font-size: 14px;
+    font-weight: 400;
+    color: #414149;
   }
 
   .createTopicButton {
@@ -157,7 +167,9 @@
     justify-content: justify-end;
     margin-bottom: 12px;
     width: 100%;
+
     font-family: Manrope, sans-serif;
+    font-size: 14px;
 
     ul {
       max-height: 260px;
@@ -167,6 +179,7 @@
 
   .addModeratorsLabel {
     margin-bottom: 8px;
+    font-size: 16px;
   }
 
   .addModeratorsInput {
@@ -191,10 +204,10 @@
   .currentModerators {
     display: flex;
     align-items: center;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin: 0 0 8px 0;
     font-size: 14px;
     font-weight: 400;
+    color: #414149;
   }
 
   .iconContainer {

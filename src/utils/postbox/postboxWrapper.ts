@@ -70,6 +70,11 @@ export interface IForum {
     desc: string;
   } | undefined>;
 
+  setDescription(collectionId: web3.PublicKey, desc: {
+    title: string;
+    desc: string;
+  }): Promise<string>;
+
   addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
 
   addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
@@ -273,6 +278,27 @@ export class DispatchForum implements IForum {
 
       }
     } catch (error) {      
+      throw(parseError(error))
+    }
+  }
+
+  
+  setDescription = async (collectionId: web3.PublicKey, desc: {
+    title: string;
+    desc: string;
+  }): Promise<string> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+
+      const tx = await forum.setDescription(desc);
+      return tx;
+    } catch (error) {
       throw(parseError(error))
     }
   }

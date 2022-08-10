@@ -15,6 +15,7 @@
 @import "./styles/Notification.css";
 
 /* Forum */
+@import "./styles/EditForum.css";
 @import "./styles/ForumContent.css";
 @import "./styles/TopicList.css";
 

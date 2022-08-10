@@ -2,6 +2,7 @@ export * from "./ConnectionAlert";
 export * from "./Notification";
 export * from "./PoweredByDispatch";
 
+export * from "./forum/EditForum";
 export * from "./forum/ForumContent";
 export * from "./forum/TopicList";
 

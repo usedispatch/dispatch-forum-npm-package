@@ -2,6 +2,7 @@ export * from "./Award";
 export * from "./Chevron";
 export * from "./Close";
 export * from "./DispatchLogo";
+export * from "./Edit";
 export * from "./Error";
 export * from "./ForumLogo";
 export * from "./InboxLogo";

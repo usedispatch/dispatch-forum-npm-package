@@ -38,6 +38,7 @@ import {
   isDispatchClientError,
 } from "../../utils/loading";
 import { useForumData, useModal } from "../../utils/hooks";
+import { pubkeysToRestriction } from "../../utils/restrictionListHelper";
 
 interface ForumViewProps {
   collectionId: string;
@@ -134,12 +135,14 @@ export const ForumView = (props: ForumViewProps) => {
           body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
         });
       }
-      const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
-      const restriction = {
-        nftOwnership: {
-          collectionId: tokenAccess,
-        },
-      } as PostRestriction;
+
+      // const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
+      // const restriction = {
+      //   nftOwnership: {
+      //     collectionId: tokenAccess,
+      //   },
+      // } as PostRestriction;
+
       const moderators =
         newModerator.length > 0
           ? [publicKey, newPublicKey(newModerator)]
@@ -151,7 +154,9 @@ export const ForumView = (props: ForumViewProps) => {
         title: title,
         description: description,
         collectionId: collectionPublicKey,
-        postRestriction: tokenAccess ? restriction : undefined,
+        postRestriction: accessToken
+          ? pubkeysToRestriction(accessToken)
+          : undefined,
       } as ForumInfo;
 
       const res = await forumObject.createForum(forum);
@@ -215,7 +220,8 @@ export const ForumView = (props: ForumViewProps) => {
         disabled={!permission.readAndWrite}
         onClick={() => {
           setShowNewForumModal(true);
-        }}>
+        }}
+      >
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -304,14 +310,16 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}>
+                onClick={() => onCreateForumClick()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}>
+                onClick={() => setShowNewForumModal(false)}
+              >
                 Cancel
               </div>
             }
@@ -325,7 +333,8 @@ export const ForumView = (props: ForumViewProps) => {
                 <div
                   className={`forumViewTitle ${
                     !permission.readAndWrite ? "alert" : ""
-                  }`}>
+                  }`}
+                >
                   {forumData.description.title}
                   <title>{forumData.description.title} Forum</title>
                   <meta

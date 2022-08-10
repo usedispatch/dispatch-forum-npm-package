@@ -262,14 +262,17 @@ export function ForumContent(props: ForumContentProps) {
 
     setCreatingNewTopic(true);
     try {
-      const token =
-        newTopic.accessToken.length > 0
-          ? newPublicKey(newTopic.accessToken)
-          : undefined;
       const tx = await forumObject.createTopic(
         p,
         forumData.collectionId,
-        token ? { nftOwnership: { collectionId: token } } : undefined
+        newTopic.accessToken !== ""
+          ? pubkeysToRestriction(
+              newTopic.accessToken,
+              isSuccess(forumData.restriction)
+                ? forumData.restriction
+                : undefined
+            )
+          : undefined
       );
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
@@ -304,6 +307,14 @@ export function ForumContent(props: ForumContentProps) {
           type: MessageType.error,
           body: `The topic could not be created`,
           collapsible: { header: "Error", content: error.message },
+        });
+      } else {
+        setShowNewTopicModal(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The topic could not be created`,
+          collapsible: { header: "Error", content: error },
         });
       }
     }

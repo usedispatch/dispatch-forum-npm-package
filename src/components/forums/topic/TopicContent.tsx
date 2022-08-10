@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Gift, MessageSquare, Trash } from "../../../assets";
+import { Lock, MessageSquare, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -22,7 +22,6 @@ import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
-
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
@@ -40,10 +39,15 @@ export function TopicContent(props: TopicContentProps) {
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(forumData.collectionId.toBase58());
   const permission = forum.permission;
-
+  // const test = ;
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
-
+  // const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
+  //   string[]
+  // >(() => {
+  //   restrictionListToString(topic.settings.filter((setting) =>  {if (setting.postRestriction) return setting.postRestriction})[0] as PostRestriction)
+  // }
+  // });
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
     content: string | ReactNode;
@@ -161,7 +165,8 @@ export function TopicContent(props: TopicContentProps) {
             <a
               className="okButton"
               href={modalInfo.okPath}
-              onClick={() => setModalInfo(null)}>
+              onClick={() => setModalInfo(null)}
+            >
               OK
             </a>
           }
@@ -185,6 +190,12 @@ export function TopicContent(props: TopicContentProps) {
                 value={accessToken}
                 onChange={(e) => setAccessToken(e.target.value)}
               />
+              {/* <label className="addModeratorsLabel">
+                Current NFT Collection ID
+              </label>
+              {currentForumAccessToken.map((token) => {
+                return <div className="currentAccessToken">{token}</div>;
+              })} */}
             </div>
           }
           loading={addingAccessToken}
@@ -197,7 +208,8 @@ export function TopicContent(props: TopicContentProps) {
           cancelButton={
             <button
               className="cancelDeleteTopicButton"
-              onClick={() => setShowAddAccessToken(false)}>
+              onClick={() => setShowAddAccessToken(false)}
+            >
               Cancel
             </button>
           }
@@ -220,7 +232,8 @@ export function TopicContent(props: TopicContentProps) {
           cancelButton={
             <div
               className="cancelDeleteTopicButton"
-              onClick={() => setShowDeleteConfirmation(false)}>
+              onClick={() => setShowDeleteConfirmation(false)}
+            >
               Cancel
             </div>
           }
@@ -281,11 +294,13 @@ export function TopicContent(props: TopicContentProps) {
             <div className="left">
               <PermissionsGate
                 scopes={[SCOPES.canDeleteTopic]}
-                posterKey={topic.poster}>
+                posterKey={topic.poster}
+              >
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowDeleteConfirmation(true)}>
+                  onClick={() => setShowDeleteConfirmation(true)}
+                >
                   <div className="delete">
                     <Trash />
                   </div>
@@ -299,23 +314,14 @@ export function TopicContent(props: TopicContentProps) {
                 update={() => update()}
               />
             </div>
-            {/* TODO (Ana): waiting for endpoint to be implemented
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}>
-                <div className="lock">
-                  <Lock />
-                </div>
-                manage post access
-              </button> */}
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>
                 <div className="actionDivider" />
                 <button
                   className="awardButton"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowGiveAward(true)}>
+                  onClick={() => setShowGiveAward(true)}
+                >
                   Gift Award
                   <Gift />
                 </button>

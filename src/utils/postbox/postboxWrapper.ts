@@ -695,6 +695,8 @@ export class DispatchForum implements IForum {
       await Promise.all(fetchableMetadata.map(async (r)=> {
         const fetchedURI = await fetch(r.uri);
         const parsed = await fetchedURI.json()
+        // TODO(andrew) handle the case where the fetched
+        // metadata does not have an image field
         r.uri = parsed?.image as string 
       }))
 

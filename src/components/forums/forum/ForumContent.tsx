@@ -544,11 +544,7 @@ export function ForumContent(props: ForumContentProps) {
                 Manage forum access
               </button>
             </PermissionsGate>
-            <EditForum
-              forumObject={forumObject}
-              forumData={forumData}
-              update={update}
-            />
+            <EditForum forumData={forumData} update={update} />
           </div>
         )}
         {!_.isNil(forumData.collectionId) && (

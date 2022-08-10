@@ -294,7 +294,6 @@ export function TopicContent(props: TopicContentProps) {
               <div className="actionDivider" />
               <EditPost
                 post={topic}
-                forumObject={forum}
                 forumData={forumData}
                 update={() => update()}
               />

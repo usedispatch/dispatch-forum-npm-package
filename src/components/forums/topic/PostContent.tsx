@@ -274,7 +274,6 @@ export function PostContent(props: PostContentProps) {
               <div className="actionsContainer">
                 <EditPost
                   post={post}
-                  forumObject={forum}
                   forumData={forumData}
                   update={() => update()}
                 />
@@ -320,8 +319,10 @@ export function PostContent(props: PostContentProps) {
             hidden={replies.length === 0 && !showReplyBox}>
             <div className="repliesBox">
               <PostReplies
+                forumData={forumData}
                 replies={replies}
                 userRole={userRole}
+                update={() => update()}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);

@@ -59,7 +59,7 @@
         border-width: 1px;
         border-radius: 6px;
 
-        &focus {
+        &:focus {
           outline: 2px solid transparent;
           outline-offset: 2px;
         }

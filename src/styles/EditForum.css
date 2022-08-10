@@ -26,18 +26,18 @@
       }
 
       &:disabled {
-        color: #7c7b7c;
         cursor: not-allowed;
-
-        svg path {
-          fill: #7c7b7c;
-        }
+        opacity: 0.65;
       }
 
       svg {
         height: 12px;
         width: 12px;
         margin-right: 6px;
+
+        path {
+          stroke: #454196;
+        }
       }
     }
 
@@ -64,7 +64,7 @@
         border-width: 1px;
         border-radius: 6px;
 
-        &focus {
+        &:focus {
           outline: 2px solid transparent;
           outline-offset: 2px;
         }

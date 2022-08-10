@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useMemo } from "react";
 
 import { Edit } from "../../../assets";
 import {
@@ -9,21 +9,18 @@ import {
   TransactionLink,
 } from "../../common";
 import { Notification } from "../Notification";
-import { useRole } from "../../../contexts/DispatchProvider";
+import { useForum } from "../../../contexts/DispatchProvider";
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/permissions";
 import { ForumData } from "../../../utils/hooks";
 
 interface EditForumProps {
-  forumObject: DispatchForum;
   forumData: ForumData;
   update: () => Promise<void>;
 }
 
 export function EditForum(props: EditForumProps) {
-  const { forumData, forumObject, update } = props;
-  const { role } = useRole();
+  const { forumData, update } = props;
+  const forumObject = useForum();
   const { permission } = forumObject;
 
   const [editForum, setEditForum] = useState<{
@@ -44,6 +41,10 @@ export function EditForum(props: EditForumProps) {
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
+
+  const isOwner = useMemo(async () => {
+    return forumObject.isModerator(forumData.collectionId);
+  }, [forumObject]);
 
   const editForumInfo = async () => {
     setEditForum({ ...editForum, loading: true });
@@ -77,7 +78,7 @@ export function EditForum(props: EditForumProps) {
     }
   };
 
-  if (role !== UserRoleType.Owner) {
+  if (!isOwner) {
     return null;
   }
 
@@ -126,10 +127,14 @@ export function EditForum(props: EditForumProps) {
               <button
                 className="okButton"
                 disabled={
-                  editForum.description?.length === 0 ||
-                  editForum.title?.length === 0
+                  !(
+                    editForum.description &&
+                    editForum.description.length > 0 &&
+                    editForum.title &&
+                    editForum.title.length > 0
+                  )
                 }
-                onClick={() => console.log("edit")}>
+                onClick={() => editForumInfo()}>
                 Save
               </button>
             }

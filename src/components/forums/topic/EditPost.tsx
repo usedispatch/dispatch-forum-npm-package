@@ -17,19 +17,19 @@ import { ForumData } from "../../../utils/hooks";
 
 interface EditPostProps {
   post: ForumPost;
-  forumObject: DispatchForum;
   forumData: ForumData;
   update: () => Promise<void>;
 }
 
 export function EditPost(props: EditPostProps) {
-  const { post, forumData, forumObject, update } = props;
-  const { wallet } = useForum();
-  const { permission } = forumObject;
+  const { post, forumData, update } = props;
+  const forumObject = useForum();
+  const { permission, wallet } = forumObject;
 
   const [editPost, setEditPost] = useState<{
     show: boolean;
     body?: string;
+    subj?: string;
     loading?: boolean;
   }>({ show: false, body: post.data.subj ?? "" });
 
@@ -50,7 +50,7 @@ export function EditPost(props: EditPostProps) {
     try {
       const tx = await forumObject.editForumPost(forumData.collectionId, post, {
         body: editPost.body!,
-        subj: post.data.subj,
+        subj: editPost.subj ?? post.data.subj,
         meta: post.data.meta,
       });
 
@@ -67,7 +67,7 @@ export function EditPost(props: EditPostProps) {
       await update();
     } catch (error: any) {
       setEditPost({ ...editPost, loading: false });
-      if (error.code !== 4001) {
+      if (error?.error?.code !== 4001) {
         setEditPost({ show: false });
         setModalInfo({
           title: "Something went wrong!",
@@ -90,9 +90,23 @@ export function EditPost(props: EditPostProps) {
           <PopUpModal
             id="edit-post"
             visible
-            title={post.isTopic ? "Edit topic description" : "Edit post"}
+            title={post.isTopic ? "Edit topic" : "Edit post"}
             body={
               <div className="editPostBody">
+                {post.isTopic && (
+                  <div>
+                    <label className="editPostLabel">Topic title</label>
+                    <input
+                      type="text"
+                      placeholder="New topic title"
+                      className="editPostInput"
+                      value={editPost.subj}
+                      onChange={(e) =>
+                        setEditPost({ ...editPost, subj: e.target.value })
+                      }
+                    />
+                  </div>
+                )}
                 <div>
                   <label className="editPostLabel">
                     {post.isTopic ? "Topic description" : "Post content"}
@@ -118,7 +132,11 @@ export function EditPost(props: EditPostProps) {
             okButton={
               <button
                 className="okButton"
-                disabled={!editPost.body || editPost.body.length === 0}
+                disabled={
+                  post.isTopic
+                    ? !editPost.subj || editPost.subj.length === 0
+                    : !editPost.body || editPost.body.length === 0
+                }
                 onClick={() => editPostInfo()}>
                 Save
               </button>
@@ -147,12 +165,6 @@ export function EditPost(props: EditPostProps) {
             }
           />
         )}
-        <Notification
-          hidden={isNotificationHidden}
-          content={notificationContent?.content}
-          type={notificationContent?.type}
-          onClose={() => setIsNotificationHidden(true)}
-        />
         <button
           className="editPostButton"
           disabled={!permission.readAndWrite}

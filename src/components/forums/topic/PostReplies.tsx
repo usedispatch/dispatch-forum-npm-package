@@ -4,15 +4,19 @@ import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
 import { Gift, Reply, Trash } from "../../../assets";
-import { useForum } from "../../../contexts/DispatchProvider";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { Votes } from "./Votes";
 import { PermissionsGate } from "../../../components/common";
+import { Votes } from "./Votes";
 import { EditPost } from "./EditPost";
 
+import { useForum } from "../../../contexts/DispatchProvider";
+import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { ForumData } from "../../../utils/hooks";
+
 interface PostRepliesProps {
+  forumData: ForumData;
   userRole: UserRoleType;
   replies: ForumPost[];
+  update: () => Promise<void>;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
@@ -22,11 +26,13 @@ interface PostRepliesProps {
 
 export function PostReplies(props: PostRepliesProps) {
   const {
+    forumData,
     onDeletePost,
     onReplyClick,
     onDownVotePost,
     onUpVotePost,
     onAwardReply,
+    update,
   } = props;
   const Forum = useForum();
   const permission = Forum.permission;
@@ -92,6 +98,12 @@ export function PostReplies(props: PostRepliesProps) {
                       post={reply}
                     />
                   </PermissionsGate>
+                  <div className="actionDivider" />
+                  <EditPost
+                    post={reply}
+                    forumData={forumData}
+                    update={() => update()}
+                  />
                 </div>
                 <div className="rightBox">
                   <PermissionsGate

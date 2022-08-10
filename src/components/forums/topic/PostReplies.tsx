@@ -1,13 +1,14 @@
 import * as _ from "lodash";
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, Reply, Trash } from "../../../assets";
+import { Gift, Reply, Trash } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Votes } from "./Votes";
 import { PermissionsGate } from "../../../components/common";
+import { EditPost } from "./EditPost";
 
 interface PostRepliesProps {
   userRole: UserRoleType;
@@ -82,14 +83,16 @@ export function PostReplies(props: PostRepliesProps) {
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
-                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <Votes
-                    updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                    onUpVotePost={() => onUpVotePost(reply)}
-                    onDownVotePost={() => onDownVotePost(reply)}
-                    post={reply}
-                  />
-                </PermissionsGate>
+                <div className="leftBox">
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <Votes
+                      updateVotes={(upVoted) => updateVotes(upVoted, reply)}
+                      onUpVotePost={() => onUpVotePost(reply)}
+                      onDownVotePost={() => onDownVotePost(reply)}
+                      post={reply}
+                    />
+                  </PermissionsGate>
+                </div>
                 <div className="rightBox">
                   <PermissionsGate
                     scopes={[SCOPES.canDeleteReply]}
@@ -107,7 +110,7 @@ export function PostReplies(props: PostRepliesProps) {
                       className="awardButton"
                       disabled={!permission.readAndWrite}
                       onClick={() => onAwardReply(reply)}>
-                      Gift Award <Award />
+                      Gift Award <Gift />
                     </button>
                     <div className="actionDivider" />
                     <button

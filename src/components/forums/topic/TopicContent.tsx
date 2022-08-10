@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, MessageSquare, Trash } from "../../../assets";
+import { Gift, MessageSquare, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -21,6 +21,7 @@ import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
+import { EditPost } from "./EditPost";
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
@@ -121,8 +122,7 @@ export function TopicContent(props: TopicContentProps) {
         okPath: forumPath,
       });
       if (tx) {
-        forum.connection.confirmTransaction(tx)
-          .then(() => update());
+        forum.connection.confirmTransaction(tx).then(() => update());
       }
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);
@@ -277,19 +277,29 @@ export function TopicContent(props: TopicContentProps) {
         <div className="headerAndActions">
           <TopicHeader topic={topic} />
           <div className="moderatorToolsContainer">
-            <PermissionsGate
-              scopes={[SCOPES.canDeleteTopic]}
-              posterKey={topic.poster}>
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowDeleteConfirmation(true)}>
-                <div className="delete">
-                  <Trash />
-                </div>
-                Delete Topic
-              </button>
-              {/* TODO (Ana): waiting for endpoint to be implemented
+            <div className="left">
+              <PermissionsGate
+                scopes={[SCOPES.canDeleteTopic]}
+                posterKey={topic.poster}>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowDeleteConfirmation(true)}>
+                  <div className="delete">
+                    <Trash />
+                  </div>
+                  Delete Topic
+                </button>
+              </PermissionsGate>
+              <div className="actionDivider" />
+              <EditPost
+                post={topic}
+                forumObject={forum}
+                forumData={forumData}
+                update={() => update()}
+              />
+            </div>
+            {/* TODO (Ana): waiting for endpoint to be implemented
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
@@ -299,7 +309,6 @@ export function TopicContent(props: TopicContentProps) {
                 </div>
                 manage post access
               </button> */}
-            </PermissionsGate>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>
                 <div className="actionDivider" />
@@ -308,7 +317,7 @@ export function TopicContent(props: TopicContentProps) {
                   disabled={!permission.readAndWrite}
                   onClick={() => setShowGiveAward(true)}>
                   Gift Award
-                  <Award />
+                  <Gift />
                 </button>
               </>
             </PermissionsGate>

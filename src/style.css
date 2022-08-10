@@ -21,6 +21,7 @@
 
 /* Topic */
 @import "./styles/CreatePost.css";
+@import "./styles/EditPost.css";
 @import "./styles/GiveAward.css";
 @import "./styles/PostContent.css";
 @import "./styles/PostReplies.css";

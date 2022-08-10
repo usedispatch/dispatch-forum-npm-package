@@ -132,7 +132,7 @@
 
     .postBody {
       color: #414149;
-      font-size: 14px;
+      font-size: 16px;
 
       margin-bottom: 12px;
     }
@@ -170,6 +170,7 @@
       .right {
         display: flex;
         align-items: center;
+        margin: 0 0 0 auto;
 
         font-size: 14px;
         color: #3f1d96;

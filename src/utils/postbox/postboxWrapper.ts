@@ -119,6 +119,12 @@ export interface IForum {
     collectionId: web3.PublicKey
   ): Promise<string | undefined>;
 
+  editForumPost(collectionId: web3.PublicKey, post: ForumPost, newPostData: {
+    subj?: string;
+    body: string;
+    meta?: any;
+  }): Promise<string>;
+
   // For a given topic, the messages
   getTopicMessages(topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined>;
 
@@ -543,6 +549,26 @@ export class DispatchForum implements IForum {
       throw(parseError(error))
     }
   };
+
+
+  editForumPost = async(collectionId: web3.PublicKey, post: ForumPost, newPostData: {
+    subj?: string;
+    body: string;
+    meta?: any;
+  }): Promise<string> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+      const tx = await forum.editForumPost(post, newPostData);
+      return tx
+    } catch (error) {   
+      throw(parseError(error))
+    }}
 
   getTopicMessages = async (topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined> => {
     const owner = this.wallet;

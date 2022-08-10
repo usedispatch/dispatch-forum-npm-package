@@ -43,7 +43,7 @@
   }
 
   .replyBody {
-    font-size: 14px;
+    font-size: 16px;
     color: #414149;
 
     margin-bottom: 20px;
@@ -55,6 +55,10 @@
     justify-content: space-between;
 
     font-size: 14px;
+
+    .leftBox {
+      display: flex;
+    }
 
     .rightBox {
       display: flex;
@@ -72,16 +76,13 @@
           width: 16px;
 
           path {
-            fill: #3f1d96;
+            fill: #86878e;
           }
         }
 
         &:disabled {
           cursor: not-allowed;
-
-          svg path {
-            fill: #7c7b7c;
-          }
+          opacity: 0.65;
         }
       }
 
@@ -107,10 +108,7 @@
 
         &:disabled {
           cursor: not-allowed;
-
-          svg path {
-            fill: #7c7b7c;
-          }
+          opacity: 0.65;
         }
       }
 
@@ -125,10 +123,7 @@
 
         &:disabled {
           cursor: not-allowed;
-
-          svg path {
-            fill: #7c7b7c;
-          }
+          opacity: 0.65;
         }
       }
     }

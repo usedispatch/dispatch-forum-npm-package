@@ -738,6 +738,7 @@ export class DispatchForum implements IForum {
           if (result.error) {
             console.error(result.error);
           }
+          return false;
         }
       }) as DisplayableToken[];
 

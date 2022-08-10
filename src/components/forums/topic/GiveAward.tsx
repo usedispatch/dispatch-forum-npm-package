@@ -14,6 +14,7 @@ import {
 
 import { SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
+import { DisplayableToken } from '../../../utils/postbox/postboxWrapper';
 
 enum AwardType {
   NFT = "NFT",
@@ -45,17 +46,9 @@ export function GiveAward(props: GiveAwardProps) {
   const [selectedType, setSelectedType] = useState<AwardType>(); // TODO (Ana): include both types later
   const [selectedAmount, setSelectedAmount] = useState(0);
   const [loadingNFT, setLoadingNFT] = useState(false);
-  const [selectedNFT, setSelectedNFT] = useState<{
-    mint: string;
-    name: string;
-    uri: string;
-  }>();
+  const [selectedNFT, setSelectedNFT] = useState<DisplayableToken>();
   const [nfts, setNFTs] = useState<
-    {
-      mint: string;
-      name: string;
-      uri: string;
-    }[]
+    DisplayableToken[]
   >([]);
 
   const attachAward = async () => {
@@ -145,7 +138,7 @@ export function GiveAward(props: GiveAwardProps) {
                         nft.mint === selectedNFT?.mint ? "selectedNFT" : ""
                       }`}
                       onClick={() => setSelectedNFT(nft)}>
-                      <img src={nft.uri} />
+                      <img src={nft.uri.toString()} />
                       <div className="giftName">{nft.name}</div>
                     </div>
                   ))}

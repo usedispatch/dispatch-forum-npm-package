@@ -20,11 +20,26 @@ import {
 } from "@solana/spl-token";
 
 import { parseError } from "../parseErrors";
+import { dispatchClientError, isSuccess } from '../../utils/loading';
+import { stringToURL } from '../../utils/url';
+import { DispatchClientError } from '../../types/loading';
 
 enum UserCategory {
   moderator,
   owner,
   poster,
+}
+
+/**
+ * A token that can be displayed in the UI
+ *
+ * TODO(andrew) move this type definition into the types
+ * directory under a suitable filename
+ */
+export interface DisplayableToken {
+  name: string;
+  mint: web3.PublicKey;
+  uri: URL;
 }
 
 interface Permission {
@@ -133,9 +148,9 @@ export interface IForum {
 
   getNFTsForCurrentUser(): Promise<web3.PublicKey[]>;
 
-  getNFTMetadataForCurrentUser: () => Promise<{mint: string, name: string; uri: string}[]>;
+  getNFTMetadataForCurrentUser: () => Promise<DisplayableToken[]>;
 
-  transferNFTs(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>;
+  transferNFTs(receiverId: web3.PublicKey, mint: web3.PublicKey, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>;
 }
 
 export class DispatchForum implements IForum {
@@ -656,63 +671,89 @@ export class DispatchForum implements IForum {
 
     try {
       const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
-      const result = metadataForOwner.map(({ mint, data }) => ({
-        mint: mint.toBase58(),
-        name: data.name.replaceAll('\x00', ''),
-        uri: data.uri.replaceAll('\x00', '')
-      }));
+      const displayableMetadataPromises: Promise<DisplayableToken | DispatchClientError>[] = metadataForOwner.map(async ({ mint, data }) => {
+        // Remove NUL bytes from name and URI
+        const name = data.name.replaceAll('\x00', '');
+        const uri = data.uri.replaceAll('\x00', '');
 
-      // Filter out only NFT's that have metadata with URI's that
-      // are valid https: URLs
-      const fetchableMetadata = result.filter(({ mint, uri }) => {
-        // Reject all empty strings. If a mint's metadata does
-        // not specify a URI, it will be an empty string, so we
-        // skip it.
-        if (uri === '') { return false; }
-        try {
-          console.log(uri);
-          const url = new URL(uri);
+        if (uri === '') {
+          return dispatchClientError({
+            message: `Cannot load metadata for token ${mint.toBase58()}. Field uri is empty`
+          });
+        }
+
+        const url = stringToURL(uri);
+        if (isSuccess(url)) {
           if (url.protocol === 'https:') {
-            // We only accept NFTs with HTTPS addresses, because HTTP
-            // addresses cause the website frontend to crash. See:
-            // https://www.notion.so/usedispatch/Bug-When-owning-an-NFT-with-an-insecure-asset-the-entire-Gifting-UI-crashes-ba91aa94c1234aaf974a60489dd7dd64
-
-            // TODO(andrew) is there any reason to accept http
-            // addresses, and if so, how should we change our
-            // website to accept them?
-            return true;
+            const fetchedURI = await fetch(url);
+            const parsed = await fetchedURI.json()
+            // Verify that the parsed object has a string image
+            if ('image' in parsed && typeof parsed.image === 'string') {
+              const imageURL = stringToURL(parsed.image);
+              if (isSuccess(imageURL)) {
+                if (imageURL.protocol === 'https:') {
+                  // This is, at long last, the end of the
+                  // success path. Return the expected object
+                  // here. Every other path should produce an
+                  // error.
+                  return {
+                    name,
+                    mint,
+                    uri: imageURL
+                  };
+                } else {
+                  return dispatchClientError({
+                    message: `Cannot use non HTTP-protocol ${parsed.image.protocol} in ${url} for token ${mint.toBase58()}`
+                  });
+                }
+              } else {
+                return dispatchClientError({
+                  message: `Image address ${parsed.image} is not a valid URL for mint ${mint.toBase58()}`
+                });
+              }
+            } else {
+              return dispatchClientError({
+                message: `Cannot parse fetched image metadata ${parsed} for token ${mint.toBase58()}. .image field is not found or not a string.`
+              });
+            }
           } else {
-            console.warn(`Not loading NFT ${mint} with non-https uri ${uri}`);
-            return false;
+            return dispatchClientError({
+              message: `Cannot use non HTTP-protocol ${url.protocol} in ${url} for token ${mint.toBase58()}`
+            });
           }
-        } catch (e) {
-          // If the uri wasn't even valid, then clearly skip this NFT
-          console.error(`NFT ${mint} has invalid URI ${uri}. URL parser threw error:`, e);
-          return false;
+        } else {
+          // If URL parsing failed, return the parsing error
+          return url;
         }
       });
 
-      await Promise.all(fetchableMetadata.map(async (r)=> {
-        const fetchedURI = await fetch(r.uri);
-        const parsed = await fetchedURI.json()
-        // TODO(andrew) handle the case where the fetched
-        // metadata does not have an image field
-        r.uri = parsed?.image as string 
-      }))
+      const results = await Promise.all(displayableMetadataPromises)
 
-      return fetchableMetadata;
+      const successes = results.filter(result => {
+        if (isSuccess(result)) {
+          // keep successes
+          return true;
+        } else {
+          // Report failures
+          if (result.error) {
+            console.error(result.error);
+          }
+        }
+      }) as DisplayableToken[];
+
+      // Return successes
+      return successes;
     } catch (error) {
         throw(parseError(error))
     }
   }
 
-  transferNFTs = async(receiverId: web3.PublicKey, mint: string, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
+  transferNFTs = async(receiverId: web3.PublicKey, mint: web3.PublicKey, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
-      const mintPubKey = new web3.PublicKey(mint);
-      let receiverAcc = await getAssociatedTokenAddress(mintPubKey, receiverId);
+      let receiverAcc = await getAssociatedTokenAddress(mint, receiverId);
       let txn = new web3.Transaction();
       try {
         await getAccount(conn, receiverAcc);
@@ -723,17 +764,17 @@ export class DispatchForum implements IForum {
             wallet.publicKey!, // payer
             receiverAcc, // ata
             receiverId, // owner
-            mintPubKey // mint
+            mint // mint
           )
         );
 
       }
-      const ownerAcc = await getAssociatedTokenAddress(mintPubKey, wallet.publicKey!);
+      const ownerAcc = await getAssociatedTokenAddress(mint, wallet.publicKey!);
 
       txn.add(
         createTransferCheckedInstruction(
           ownerAcc, // from (should be a token account)
-          mintPubKey, // mint
+          mint, // mint
           receiverAcc, // to (should be a token account)
           wallet.publicKey!, // from's owner
           //TODO[zfaizal2] : get amount and decimals from tokenAccount

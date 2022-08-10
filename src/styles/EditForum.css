@@ -1,5 +1,14 @@
 @layer components {
   .editForumContainer {
+    display: flex;
+
+    .actionDivider {
+      width: 1px;
+      margin: 0 10px;
+
+      background: #6e59b1;
+    }
+
     .successBody {
       display: flex;
       flex-direction: column;
@@ -28,7 +37,7 @@
       svg {
         height: 12px;
         width: 12px;
-        margin-right: 3px;
+        margin-right: 6px;
       }
     }
 

@@ -8,19 +8,20 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
+import { Notification } from "../Notification";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/permissions";
 import { ForumData } from "../../../utils/hooks";
 
-interface ForumContentProps {
+interface EditForumProps {
   forumObject: DispatchForum;
   forumData: ForumData;
   update: () => Promise<void>;
 }
 
-export function EditForum(props: ForumContentProps) {
+export function EditForum(props: EditForumProps) {
   const { forumData, forumObject, update } = props;
   const { role } = useRole();
   const { permission } = forumObject;
@@ -32,6 +33,11 @@ export function EditForum(props: ForumContentProps) {
     loading?: boolean;
   }>({ show: false });
 
+  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
+  const [notificationContent, setNotificationContent] = useState<{
+    content: string | ReactNode;
+    type: MessageType;
+  }>();
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -48,11 +54,10 @@ export function EditForum(props: ForumContentProps) {
       await update();
 
       setEditForum({ show: false });
-      setModalInfo({
-        title: "Success!",
+      setNotificationContent({
         type: MessageType.success,
-        body: (
-          <div className="successBody">
+        content: (
+          <div>
             <div>The forum was edited</div>
             <TransactionLink transaction={tx} />
           </div>
@@ -65,7 +70,7 @@ export function EditForum(props: ForumContentProps) {
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
-          body: `The access token could not be added`,
+          body: `The forum could not be edited`,
           collapsible: { header: "Error", content: error.message },
         });
       }
@@ -152,6 +157,13 @@ export function EditForum(props: ForumContentProps) {
             }
           />
         )}
+        <Notification
+          hidden={isNotificationHidden}
+          content={notificationContent?.content}
+          type={notificationContent?.type}
+          onClose={() => setIsNotificationHidden(true)}
+        />
+        <div className="actionDivider" />
         <button
           className="editForumButton"
           disabled={!permission.readAndWrite}

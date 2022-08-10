@@ -656,15 +656,49 @@ export class DispatchForum implements IForum {
 
     try {
       const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
-      const result = metadataForOwner.map(md => ({mint: md.mint.toBase58(), name: md.data.name.replaceAll('\u0000', ''), uri: md.data.uri}));
+      const result = metadataForOwner.map(({ mint, data }) => ({
+        mint: mint.toBase58(),
+        name: data.name.replaceAll('\x00', ''),
+        uri: data.uri.replaceAll('\x00', '')
+      }));
 
-      await Promise.all(result.map(async (r)=> {
+      // Filter out only NFT's that have metadata with URI's that
+      // are valid https: URLs
+      const fetchableMetadata = result.filter(({ mint, uri }) => {
+        // Reject all empty strings. If a mint's metadata does
+        // not specify a URI, it will be an empty string, so we
+        // skip it.
+        if (uri === '') { return false; }
+        try {
+          console.log(uri);
+          const url = new URL(uri);
+          if (url.protocol === 'https:') {
+            // We only accept NFTs with HTTPS addresses, because HTTP
+            // addresses cause the website frontend to crash. See:
+            // https://www.notion.so/usedispatch/Bug-When-owning-an-NFT-with-an-insecure-asset-the-entire-Gifting-UI-crashes-ba91aa94c1234aaf974a60489dd7dd64
+
+            // TODO(andrew) is there any reason to accept http
+            // addresses, and if so, how should we change our
+            // website to accept them?
+            return true;
+          } else {
+            console.warn(`Not loading NFT ${mint} with non-https uri ${uri}`);
+            return false;
+          }
+        } catch (e) {
+          // If the uri wasn't even valid, then clearly skip this NFT
+          console.error(`NFT ${mint} has invalid URI ${uri}. URL parser threw error:`, e);
+          return false;
+        }
+      });
+
+      await Promise.all(fetchableMetadata.map(async (r)=> {
         const fetchedURI = await fetch(r.uri);
         const parsed = await fetchedURI.json()
         r.uri = parsed?.image as string 
       }))
 
-      return result
+      return fetchableMetadata;
     } catch (error) {
         throw(parseError(error))
     }

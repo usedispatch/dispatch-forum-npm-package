@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
 
-import { Lock, MessageSquare, Trash, Gift } from "../../../assets";
+import { Gift, MessageSquare, Trash, Lock } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -22,7 +22,11 @@ import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
-import { restrictionListToString } from "utils/restrictionListHelper";
+import {
+  restrictionListToString,
+  pubkeysToRestriction,
+} from "../../../utils/restrictionListHelper";
+
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
@@ -320,18 +324,27 @@ export function TopicContent(props: TopicContentProps) {
                   </div>
                   Delete Topic
                 </button>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddAccessToken(true)}
-                >
-                  <div className="lock">
-                    <Lock />
-                  </div>
-                  manage post access
-                </button>
+                <div className="actionDivider" />
+                <EditPost
+                  post={topic}
+                  forumData={forumData}
+                  update={() => update()}
+                />
               </PermissionsGate>
             </div>
+            {/* TODO (Ana): waiting for endpoint to be implemented
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddAccessToken(true)}
+              >
+                <div className="lock">
+                  <Lock />
+                </div>
+                view post access
+              </button>
+            </div>*/}
+
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>
                 <div className="actionDivider" />

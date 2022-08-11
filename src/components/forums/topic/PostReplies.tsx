@@ -1,17 +1,22 @@
 import * as _ from "lodash";
-import { ReactNode, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, Reply, Trash } from "../../../assets";
+import { Gift, Reply, Trash } from "../../../assets";
+import { PermissionsGate } from "../../../components/common";
+import { Votes } from "./Votes";
+import { EditPost } from "./EditPost";
+
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { Votes } from "./Votes";
-import { PermissionsGate } from "../../../components/common";
+import { ForumData } from "../../../utils/hooks";
 
 interface PostRepliesProps {
+  forumData: ForumData;
   userRole: UserRoleType;
   replies: ForumPost[];
+  update: () => Promise<void>;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
@@ -21,11 +26,13 @@ interface PostRepliesProps {
 
 export function PostReplies(props: PostRepliesProps) {
   const {
+    forumData,
     onDeletePost,
     onReplyClick,
     onDownVotePost,
     onUpVotePost,
     onAwardReply,
+    update,
   } = props;
   const Forum = useForum();
   const permission = Forum.permission;
@@ -82,14 +89,22 @@ export function PostReplies(props: PostRepliesProps) {
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
-                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <Votes
-                    updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                    onUpVotePost={() => onUpVotePost(reply)}
-                    onDownVotePost={() => onDownVotePost(reply)}
+                <div className="leftBox">
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <Votes
+                      updateVotes={(upVoted) => updateVotes(upVoted, reply)}
+                      onUpVotePost={() => onUpVotePost(reply)}
+                      onDownVotePost={() => onDownVotePost(reply)}
+                      post={reply}
+                    />
+                  </PermissionsGate>
+                  <div className="actionDivider" />
+                  <EditPost
                     post={reply}
+                    forumData={forumData}
+                    update={() => update()}
                   />
-                </PermissionsGate>
+                </div>
                 <div className="rightBox">
                   <PermissionsGate
                     scopes={[SCOPES.canDeleteReply]}
@@ -107,7 +122,7 @@ export function PostReplies(props: PostRepliesProps) {
                       className="awardButton"
                       disabled={!permission.readAndWrite}
                       onClick={() => onAwardReply(reply)}>
-                      Gift Award <Award />
+                      Gift Award <Gift />
                     </button>
                     <div className="actionDivider" />
                     <button

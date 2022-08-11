@@ -119,8 +119,8 @@
 
       .walletId {
         font-size: 14px;
-        font-weight: 600;
-        color: #4a279c;
+        font-weight: 400;
+        color: #86878e;
       }
 
       .postedAt {
@@ -132,7 +132,7 @@
 
     .postBody {
       color: #414149;
-      font-size: 14px;
+      font-size: 16px;
 
       margin-bottom: 12px;
     }
@@ -170,6 +170,7 @@
       .right {
         display: flex;
         align-items: center;
+        margin: 0 0 0 auto;
 
         font-size: 14px;
         color: #3f1d96;

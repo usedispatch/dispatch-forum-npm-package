@@ -31,8 +31,8 @@
 
     .walletId {
       font-size: 14px;
-      font-weight: 600;
-      color: #4a279c;
+      font-weight: 400;
+      color: #86878e;
     }
 
     .postedAt {
@@ -43,7 +43,7 @@
   }
 
   .replyBody {
-    font-size: 14px;
+    font-size: 16px;
     color: #414149;
 
     margin-bottom: 20px;
@@ -55,6 +55,11 @@
     justify-content: space-between;
 
     font-size: 14px;
+
+    .leftBox {
+      display: flex;
+      align-items: center;
+    }
 
     .rightBox {
       display: flex;
@@ -72,16 +77,13 @@
           width: 16px;
 
           path {
-            fill: #3f1d96;
+            fill: #86878e;
           }
         }
 
         &:disabled {
           cursor: not-allowed;
-
-          svg path {
-            fill: #7c7b7c;
-          }
+          opacity: 0.65;
         }
       }
 
@@ -107,10 +109,7 @@
 
         &:disabled {
           cursor: not-allowed;
-
-          svg path {
-            fill: #7c7b7c;
-          }
+          opacity: 0.65;
         }
       }
 
@@ -125,10 +124,7 @@
 
         &:disabled {
           cursor: not-allowed;
-
-          svg path {
-            fill: #7c7b7c;
-          }
+          opacity: 0.65;
         }
       }
     }

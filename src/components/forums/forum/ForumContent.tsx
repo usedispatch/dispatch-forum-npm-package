@@ -10,6 +10,7 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
+import { EditForum } from "./EditForum";
 import { TopicList } from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
@@ -277,8 +278,7 @@ export function ForumContent(props: ForumContentProps) {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}
-    >
+      }}>
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -359,8 +359,7 @@ export function ForumContent(props: ForumContentProps) {
                 onClick={() => {
                   setShowAddAccessToken(false);
                   setNewForumAccessToken("");
-                }}
-              >
+                }}>
                 Cancel
               </button>
             }
@@ -415,16 +414,14 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={title.length === 0}
-                onClick={() => createTopic()}
-              >
+                onClick={() => createTopic()}>
                 Create
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}
-              >
+                onClick={() => setShowNewTopicModal(false)}>
                 Cancel
               </button>
             }
@@ -469,8 +466,7 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddModerators(false)}
-              >
+                onClick={() => setShowAddModerators(false)}>
                 Cancel
               </button>
             }
@@ -515,8 +511,7 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddOwners(false)}
-              >
+                onClick={() => setShowAddOwners(false)}>
                 Cancel
               </button>
             }
@@ -524,36 +519,33 @@ export function ForumContent(props: ForumContentProps) {
         )}
         {forumHeader}
         {role === UserRoleType.Owner && (
-          <PermissionsGate
-            scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
-          >
-            <div className="moderatorToolsContainer">
+          <div className="moderatorToolsContainer">
+            <PermissionsGate
+              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
               <div>Moderator tools: </div>
               <PermissionsGate scopes={[SCOPES.canAddOwner]}>
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}
-                >
+                  onClick={() => setShowAddOwners(true)}>
                   Manage owners
                 </button>
               </PermissionsGate>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}
-              >
+                onClick={() => setShowAddModerators(true)}>
                 Manage moderators
               </button>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
+                onClick={() => setShowAddAccessToken(true)}>
                 Manage forum access
               </button>
-            </div>
-          </PermissionsGate>
+            </PermissionsGate>
+            <EditForum forumData={forumData} update={update} />
+          </div>
         )}
         {!_.isNil(forumData.collectionId) && (
           <TopicList forumData={forumData} />

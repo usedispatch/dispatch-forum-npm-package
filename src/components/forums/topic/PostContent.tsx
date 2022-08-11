@@ -3,7 +3,7 @@ import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Award, Trash, Reply } from "../../../assets";
+import { Gift, Trash, Reply } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -12,18 +12,16 @@ import {
   Spinner,
   TransactionLink,
 } from "./../../common";
+import { Votes, Notification } from "../../../components/forums";
 import { PostReplies } from "../topic/PostReplies";
 import { GiveAward } from "./GiveAward";
-import { Votes, Notification } from "../../../components/forums";
+import { EditPost } from "./EditPost";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData } from "../../../utils/hooks";
-import {
-  selectRepliesFromPosts,
-  sortByVotes
-} from "../../../utils/posts";
+import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -98,8 +96,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.success,
       });
       if (tx) {
-        forum.connection.confirmTransaction(tx)
-          .then(() => update());
+        forum.connection.confirmTransaction(tx).then(() => update());
       }
       setTimeout(
         () => setIsNotificationHidden(true),
@@ -132,8 +129,7 @@ export function PostContent(props: PostContentProps) {
         body: `The post was deleted`,
       });
       if (tx) {
-        forum.connection.confirmTransaction(tx)
-          .then(() => update());
+        forum.connection.confirmTransaction(tx).then(() => update());
       }
       setShowDeleteConfirmation(false);
       setDeleting(false);
@@ -276,21 +272,27 @@ export function PostContent(props: PostContentProps) {
               </div>
               <div className="postBody">{post?.data.body}</div>
               <div className="actionsContainer">
-                <PermissionsGate
-                  scopes={[SCOPES.canDeletePost]}
-                  posterKey={post.poster}>
-                  <button
-                    className="deleteButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => {
-                      setPostToDelete(props.post);
-                      setShowDeleteConfirmation(true);
-                    }}>
-                    <Trash />
-                  </button>
-                </PermissionsGate>
+                <EditPost
+                  post={post}
+                  forumData={forumData}
+                  update={() => update()}
+                />
                 <PermissionsGate scopes={[SCOPES.canCreateReply]}>
                   <div className="right">
+                    <PermissionsGate
+                      scopes={[SCOPES.canDeletePost]}
+                      posterKey={post.poster}>
+                      <button
+                        className="deleteButton"
+                        disabled={!permission.readAndWrite}
+                        onClick={() => {
+                          setPostToDelete(props.post);
+                          setShowDeleteConfirmation(true);
+                        }}>
+                        <Trash />
+                      </button>
+                      <div className="actionDivider" />
+                    </PermissionsGate>
                     <button
                       className="awardButton"
                       disabled={!permission.readAndWrite}
@@ -298,7 +300,7 @@ export function PostContent(props: PostContentProps) {
                         setPostToAward(post);
                         setShowGiveAward(true);
                       }}>
-                      Gift Award <Award />
+                      Gift Award <Gift />
                     </button>
                     <div className="actionDivider" />
                     <button
@@ -317,8 +319,10 @@ export function PostContent(props: PostContentProps) {
             hidden={replies.length === 0 && !showReplyBox}>
             <div className="repliesBox">
               <PostReplies
+                forumData={forumData}
                 replies={replies}
                 userRole={userRole}
+                update={() => update()}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);

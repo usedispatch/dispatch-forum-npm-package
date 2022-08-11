@@ -168,11 +168,11 @@
         .subj {
           padding-top: 16px;
           font-weight: 600;
-          font-size: 16px;
+          font-size: 17px;
         }
 
         .topicBody {
-          font-size: 14px;
+          font-size: 16px;
           color: #414149;
         }
       }
@@ -186,6 +186,10 @@
         border: none;
         color: #414149;
         font-size: 14px;
+
+        .left {
+          display: flex;
+        }
 
         .moderatorTool {
           display: flex;
@@ -253,10 +257,7 @@
 
           &:disabled {
             cursor: not-allowed;
-
-            svg path {
-              fill: #7c7b7c;
-            }
+            opacity: 0.65;
           }
         }
 

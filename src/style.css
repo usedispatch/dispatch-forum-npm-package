@@ -15,11 +15,13 @@
 @import "./styles/Notification.css";
 
 /* Forum */
+@import "./styles/EditForum.css";
 @import "./styles/ForumContent.css";
 @import "./styles/TopicList.css";
 
 /* Topic */
 @import "./styles/CreatePost.css";
+@import "./styles/EditPost.css";
 @import "./styles/GiveAward.css";
 @import "./styles/PostContent.css";
 @import "./styles/PostReplies.css";

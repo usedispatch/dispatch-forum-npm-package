@@ -7,6 +7,6 @@ export const newPublicKey = (s: string) => {
     const d = bs58.decode(s);
     return new PublicKey(s);
   } catch (error) {
-    throw `The public key '${s}' is invalid`;
+    throw { message: `The public key '${s}' is invalid` };
   }
 };

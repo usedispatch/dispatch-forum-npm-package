@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
 
-import { Gift, MessageSquare, Trash, Lock } from "../../../assets";
+import { Lock, Gift, MessageSquare, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -49,7 +49,6 @@ export function TopicContent(props: TopicContentProps) {
   const restrictionSetting = topic.settings.find((setting) => {
     return setting.postRestriction;
   });
-  console.log(topic.settings);
   const postRestriction = restrictionSetting?.postRestriction
     ? restrictionSetting.postRestriction.postRestriction
     : ({} as PostRestriction);
@@ -332,7 +331,8 @@ export function TopicContent(props: TopicContentProps) {
                 />
               </PermissionsGate>
             </div>
-            {/* TODO (Ana): waiting for endpoint to be implemented
+            {/* {/* TODO (Ana): waiting for endpoint to be implemented */}
+            <div>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
@@ -343,8 +343,7 @@ export function TopicContent(props: TopicContentProps) {
                 </div>
                 view post access
               </button>
-            </div>*/}
-
+            </div>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>
                 <div className="actionDivider" />

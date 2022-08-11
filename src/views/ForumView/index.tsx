@@ -136,13 +136,6 @@ export const ForumView = (props: ForumViewProps) => {
         });
       }
 
-      // const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
-      // const restriction = {
-      //   nftOwnership: {
-      //     collectionId: tokenAccess,
-      //   },
-      // } as PostRestriction;
-
       const moderators =
         newModerator.length > 0
           ? [publicKey, newPublicKey(newModerator)]
@@ -185,7 +178,7 @@ export const ForumView = (props: ForumViewProps) => {
         }
       }
     } catch (e: any) {
-      if (e.error.code === 4001) {
+      if (e.error?.code === 4001) {
         setShowNewForumModal(true);
       } else {
         setShowNewForumModal(false);
@@ -296,7 +289,7 @@ export const ForumView = (props: ForumViewProps) => {
                 <>
                   <span className="createForumLabel">Limit forum access</span>
                   <input
-                    placeholder="Collection ID"
+                    placeholder="Add a comma separated list of collection IDs"
                     className="createForumInput lastInputField"
                     value={accessToken}
                     disabled={creatingNewForum}

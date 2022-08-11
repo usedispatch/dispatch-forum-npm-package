@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import Jdenticon from "react-jdenticon";
 import { PostRestriction } from "@usedispatch/client";
 
@@ -59,6 +59,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
+  const [keepGates, setKeepGates] = useState(true);
 
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [showAddOwners, setShowAddOwners] = useState(false);
@@ -66,13 +67,15 @@ export function ForumContent(props: ForumContentProps) {
   const [newOwner, setNewOwner] = useState<string>("");
   const [addingNewModerator, setAddingNewModerator] = useState(false);
   const [addingNewOwner, setAddingNewOwner] = useState(false);
-
+  const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
   const [removeAccessToken, setRemoveAccessToken] = useState<{
     show: boolean;
     removing: boolean;
     token?: string;
   }>({ show: false, removing: false });
+  const [showAddAccessToken, setShowAddAccessToken] = useState(false);
+  const [accessToken, setAccessToken] = useState<string>("");
   const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
     string[]
   >(() => {
@@ -89,6 +92,14 @@ export function ForumContent(props: ForumContentProps) {
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
+
+  useEffect(() => {
+    if (!keepGates && accessToken.length === 0) {
+      setUngatedNewTopic(true);
+    } else {
+      setUngatedNewTopic(false);
+    }
+  }, [accessToken, keepGates]);
 
   // Begin mutating operations
   const addModerators = async () => {
@@ -262,17 +273,29 @@ export function ForumContent(props: ForumContentProps) {
 
     setCreatingNewTopic(true);
     try {
+      let restriction;
+      console.log(keepGates);
+      // First case checks if existing gates are kept and new ones being added
+      // Second case removes existing gates and adds new ones
+      // Third case removes existing gates
+      // Final case keeps existing gates
+      if (keepGates && accessToken !== "") {
+        restriction = pubkeysToRestriction(
+          accessToken,
+          isSuccess(forumData.restriction) ? forumData.restriction : undefined
+        );
+      } else if (!keepGates && accessToken !== "") {
+        restriction = pubkeysToRestriction(accessToken);
+      } else if (!keepGates) {
+        restriction = { null: {} };
+      } else {
+        restriction = undefined;
+      }
+      console.log(restriction);
       const tx = await forumObject.createTopic(
         p,
         forumData.collectionId,
-        newTopic.accessToken !== ""
-          ? pubkeysToRestriction(
-              newTopic.accessToken,
-              isSuccess(forumData.restriction)
-                ? forumData.restriction
-                : undefined
-            )
-          : undefined
+        restriction
       );
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
@@ -507,10 +530,27 @@ export function ForumContent(props: ForumContentProps) {
                 </>
                 <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
                   <>
-                    <span className="createTopicLabel">Limit post access</span>
+                    {currentForumAccessToken.length > 0 && (
+                      <div className="gateCheckbox">
+                        <input
+                          type="checkbox"
+                          checked={keepGates}
+                          onChange={(e) => {
+                            setKeepGates(e.target.checked);
+                            console.log(keepGates);
+                          }}
+                        />
+                        <div className="createTopicLabel">
+                          Keep Existing Forum Gates on Topic
+                        </div>
+                      </div>
+                    )}
+                    <span className="createTopicLabel">
+                      Add post restrictions
+                    </span>
                     <input
                       type="text"
-                      placeholder="Token mint ID"
+                      placeholder="Add a comma separated list of NFT collection IDs"
                       className="newAccessToken"
                       name="accessToken"
                       value={newTopic.accessToken}
@@ -521,6 +561,12 @@ export function ForumContent(props: ForumContentProps) {
                         })
                       }
                     />
+                    {ungatedNewTopic && (
+                      <div className="warningTopicLabel">
+                        {" "}
+                        Warning: This topic is ungated and open to anyone.
+                      </div>
+                    )}
                   </>
                 </PermissionsGate>
               </div>
@@ -529,7 +575,7 @@ export function ForumContent(props: ForumContentProps) {
             okButton={
               <button
                 className="okButton"
-                disabled={newTopic.title.length === 0}
+                disabled={title.length === 0}
                 onClick={() => createTopic()}
               >
                 Create
@@ -663,7 +709,7 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowManageAccessToken(true)}
+                onClick={() => setShowAddAccessToken(true)}
               >
                 Manage forum access
               </button>

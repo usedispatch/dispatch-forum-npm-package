@@ -33,12 +33,6 @@
     }
   }
 
-  .noRestriction {
-    font-size: 14px;
-    font-weight: 400;
-    color: #86878e;
-  }
-
   .currentToken {
     display: flex;
     align-items: center;
@@ -50,7 +44,7 @@
     color: #414149;
 
     svg {
-      heigh: 16px;
+      height: 16px;
       width: 16px;
 
       path {

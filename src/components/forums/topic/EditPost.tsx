@@ -161,14 +161,16 @@ export function EditPost(props: EditPostProps) {
                     ? !editPost.subj || editPost.subj.length === 0
                     : !editPost.body || editPost.body.length === 0
                 }
-                onClick={() => editPostInfo()}>
+                onClick={() => editPostInfo()}
+              >
                 Save
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => resetToInitialValues()}>
+                onClick={() => resetToInitialValues()}
+              >
                 Cancel
               </button>
             }
@@ -192,9 +194,11 @@ export function EditPost(props: EditPostProps) {
         <button
           className="editPostButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditPost({ ...editPost, show: true })}>
+          onClick={() => setEditPost({ ...editPost, show: true })}
+        >
           <Edit /> Edit
         </button>
+        <div className="actionDivider" />
       </div>
     </div>
   );

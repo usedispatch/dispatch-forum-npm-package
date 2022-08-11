@@ -8,10 +8,11 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
-import { Notification } from "../Notification";
+import { Notification } from "../../forums";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface EditForumProps {
   forumData: ForumData;
@@ -25,16 +26,20 @@ export function EditForum(props: EditForumProps) {
 
   const [editForum, setEditForum] = useState<{
     show: boolean;
-    title?: string;
-    description?: string;
+    title: string;
+    description: string;
     loading?: boolean;
-  }>({ show: false });
+  }>({
+    show: false,
+    title: forumData.description.title,
+    description: forumData.description.desc,
+  });
 
-  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
-    content: string | ReactNode;
-    type: MessageType;
-  }>();
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -43,7 +48,7 @@ export function EditForum(props: EditForumProps) {
   } | null>(null);
 
   const isOwner = useMemo(async () => {
-    return forumObject.isModerator(forumData.collectionId);
+    return forumObject.isOwner(forumData.collectionId);
   }, [forumObject]);
 
   const editForumInfo = async () => {
@@ -52,22 +57,31 @@ export function EditForum(props: EditForumProps) {
       const desc = { title: editForum.title!, desc: editForum.description! };
 
       const tx = await forumObject.setDescription(forumData.collectionId, desc);
-      await update();
 
-      setEditForum({ show: false });
+      await update();
+      setEditForum({ show: false, title: desc.title, description: desc.desc });
       setNotificationContent({
+        isHidden: false,
         type: MessageType.success,
         content: (
-          <div>
-            <div>The forum was edited</div>
+          <>
+            The forum was edited.
             <TransactionLink transaction={tx} />
-          </div>
+          </>
         ),
       });
+      setTimeout(
+        () => setNotificationContent({ isHidden: true }),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
     } catch (error: any) {
       setEditForum({ ...editForum, loading: false });
       if (error.code !== 4001) {
-        setEditForum({ show: false });
+        setEditForum({
+          show: false,
+          title: forumData.description.title,
+          description: forumData.description.desc,
+        });
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
@@ -85,6 +99,12 @@ export function EditForum(props: EditForumProps) {
   return (
     <div className="dsp- ">
       <div className="editForumContainer">
+        <Notification
+          hidden={notificationContent.isHidden}
+          content={notificationContent?.content}
+          type={notificationContent?.type}
+          onClose={() => setNotificationContent({ isHidden: true })}
+        />
         {editForum.show && _.isNil(modalInfo) && (
           <PopUpModal
             id="edit-forum"
@@ -122,15 +142,19 @@ export function EditForum(props: EditForumProps) {
               </div>
             }
             loading={editForum.loading}
-            onClose={() => setEditForum({ show: false })}
+            onClose={() =>
+              setEditForum({
+                show: false,
+                title: forumData.description.title,
+                description: forumData.description.desc,
+              })
+            }
             okButton={
               <button
                 className="okButton"
                 disabled={
                   !(
-                    editForum.description &&
                     editForum.description.length > 0 &&
-                    editForum.title &&
                     editForum.title.length > 0
                   )
                 }
@@ -141,7 +165,13 @@ export function EditForum(props: EditForumProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setEditForum({ show: false })}>
+                onClick={() =>
+                  setEditForum({
+                    show: false,
+                    title: forumData.description.title,
+                    description: forumData.description.desc,
+                  })
+                }>
                 Cancel
               </button>
             }
@@ -162,17 +192,11 @@ export function EditForum(props: EditForumProps) {
             }
           />
         )}
-        <Notification
-          hidden={isNotificationHidden}
-          content={notificationContent?.content}
-          type={notificationContent?.type}
-          onClose={() => setIsNotificationHidden(true)}
-        />
         <div className="actionDivider" />
         <button
           className="editForumButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditForum({ show: true })}>
+          onClick={() => setEditForum({ ...editForum, show: true })}>
           <Edit /> Edit forum
         </button>
       </div>

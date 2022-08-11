@@ -12,6 +12,7 @@ import {
   TransactionLink,
 } from "../../common";
 import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
+import { EditPost } from "./EditPost";
 
 import { usePath } from "../../../contexts/DispatchProvider";
 
@@ -21,7 +22,7 @@ import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
-import { EditPost } from "./EditPost";
+
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;

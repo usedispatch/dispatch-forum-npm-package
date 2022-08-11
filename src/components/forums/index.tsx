@@ -7,6 +7,7 @@ export * from "./forum/ForumContent";
 export * from "./forum/TopicList";
 
 export * from "./topic/CreatePost";
+export * from "./topic/EditPost";
 export * from "./topic/GiveAward";
 export * from "./topic/PostContent";
 export * from "./topic/PostsList";

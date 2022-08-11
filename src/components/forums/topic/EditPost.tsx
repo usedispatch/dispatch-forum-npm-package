@@ -9,11 +9,12 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
-import { Notification } from "../Notification";
+import { Notification } from "../../forums";
+
 import { useForum } from "../../../contexts/DispatchProvider";
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { ForumData } from "../../../utils/hooks";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface EditPostProps {
   post: ForumPost;
@@ -28,16 +29,16 @@ export function EditPost(props: EditPostProps) {
 
   const [editPost, setEditPost] = useState<{
     show: boolean;
-    body?: string;
-    subj?: string;
+    body: string;
+    subj: string;
     loading?: boolean;
-  }>({ show: false, body: post.data.subj ?? "" });
+  }>({ show: false, body: post.data.body ?? "", subj: post.data.subj ?? "" });
 
-  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
-    content: string | ReactNode;
-    type: MessageType;
-  }>();
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -45,30 +46,47 @@ export function EditPost(props: EditPostProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
+  const resetToInitialValues = () =>
+    setEditPost({
+      show: false,
+      body: post.data.body ?? "",
+      subj: post.data.subj ?? "",
+    });
+
   const editPostInfo = async () => {
     setEditPost({ ...editPost, loading: true });
     try {
       const tx = await forumObject.editForumPost(forumData.collectionId, post, {
-        body: editPost.body!,
-        subj: editPost.subj ?? post.data.subj,
+        body: editPost.body,
+        subj: editPost.subj,
         meta: post.data.meta,
       });
 
-      setEditPost({ show: false, loading: false });
+      await update();
+      setEditPost({
+        show: false,
+        loading: false,
+        body: editPost.body,
+        subj: editPost.subj,
+      });
       setNotificationContent({
+        isHidden: false,
         type: MessageType.success,
         content: (
-          <div>
-            <div>{`The ${post.isTopic ? "topic" : "post"} was edited`}</div>
+          <>
+            The {` ${post.isTopic ? "topic" : "post"} `}was edited.
             <TransactionLink transaction={tx} />
-          </div>
+          </>
         ),
       });
-      await update();
+      setTimeout(
+        () => setNotificationContent({ isHidden: true }),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
     } catch (error: any) {
       setEditPost({ ...editPost, loading: false });
       if (error?.error?.code !== 4001) {
-        setEditPost({ show: false });
+        resetToInitialValues();
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
@@ -86,6 +104,12 @@ export function EditPost(props: EditPostProps) {
   return (
     <div className="dsp- ">
       <div className="editPostContainer">
+        <Notification
+          hidden={notificationContent.isHidden}
+          content={notificationContent?.content}
+          type={notificationContent?.type}
+          onClose={() => setNotificationContent({ isHidden: true })}
+        />
         {editPost.show && _.isNil(modalInfo) && (
           <PopUpModal
             id="edit-post"
@@ -128,7 +152,7 @@ export function EditPost(props: EditPostProps) {
               </div>
             }
             loading={editPost.loading}
-            onClose={() => setEditPost({ show: false })}
+            onClose={() => resetToInitialValues()}
             okButton={
               <button
                 className="okButton"
@@ -144,7 +168,7 @@ export function EditPost(props: EditPostProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setEditPost({ show: false })}>
+                onClick={() => resetToInitialValues()}>
                 Cancel
               </button>
             }
@@ -168,7 +192,7 @@ export function EditPost(props: EditPostProps) {
         <button
           className="editPostButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditPost({ show: true })}>
+          onClick={() => setEditPost({ ...editPost, show: true })}>
           <Edit /> Edit
         </button>
       </div>

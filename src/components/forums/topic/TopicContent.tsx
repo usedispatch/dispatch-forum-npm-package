@@ -330,19 +330,18 @@ export function TopicContent(props: TopicContentProps) {
                   update={() => update()}
                 />
               </PermissionsGate>
-            </div>
-            {/* {/* TODO (Ana): waiting for endpoint to be implemented */}
-            <div>
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
-                <div className="lock">
-                  <Lock />
-                </div>
-                view post access
-              </button>
+              <div>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowAddAccessToken(true)}
+                >
+                  <div className="lock">
+                    <Lock />
+                  </div>
+                  view post access
+                </button>
+              </div>
             </div>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>

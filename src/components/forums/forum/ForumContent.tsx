@@ -74,8 +74,6 @@ export function ForumContent(props: ForumContentProps) {
     removing: boolean;
     token?: string;
   }>({ show: false, removing: false });
-  const [showAddAccessToken, setShowAddAccessToken] = useState(false);
-  const [accessToken, setAccessToken] = useState<string>("");
   const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
     string[]
   >(() => {
@@ -94,12 +92,12 @@ export function ForumContent(props: ForumContentProps) {
   } | null>(null);
 
   useEffect(() => {
-    if (!keepGates && accessToken.length === 0) {
+    if (!keepGates && newTopic.accessToken.length === 0) {
       setUngatedNewTopic(true);
     } else {
       setUngatedNewTopic(false);
     }
-  }, [accessToken, keepGates]);
+  }, [newTopic.accessToken, keepGates]);
 
   // Begin mutating operations
   const addModerators = async () => {
@@ -274,24 +272,22 @@ export function ForumContent(props: ForumContentProps) {
     setCreatingNewTopic(true);
     try {
       let restriction;
-      console.log(keepGates);
       // First case checks if existing gates are kept and new ones being added
       // Second case removes existing gates and adds new ones
       // Third case removes existing gates
       // Final case keeps existing gates
-      if (keepGates && accessToken !== "") {
+      if (keepGates && newTopic.accessToken !== "") {
         restriction = pubkeysToRestriction(
-          accessToken,
+          newTopic.accessToken,
           isSuccess(forumData.restriction) ? forumData.restriction : undefined
         );
-      } else if (!keepGates && accessToken !== "") {
-        restriction = pubkeysToRestriction(accessToken);
+      } else if (!keepGates && newTopic.accessToken !== "") {
+        restriction = pubkeysToRestriction(newTopic.accessToken);
       } else if (!keepGates) {
         restriction = { null: {} };
       } else {
         restriction = undefined;
       }
-      console.log(restriction);
       const tx = await forumObject.createTopic(
         p,
         forumData.collectionId,
@@ -537,7 +533,6 @@ export function ForumContent(props: ForumContentProps) {
                           checked={keepGates}
                           onChange={(e) => {
                             setKeepGates(e.target.checked);
-                            console.log(keepGates);
                           }}
                         />
                         <div className="createTopicLabel">
@@ -575,7 +570,7 @@ export function ForumContent(props: ForumContentProps) {
             okButton={
               <button
                 className="okButton"
-                disabled={title.length === 0}
+                disabled={newTopic.title.length === 0}
                 onClick={() => createTopic()}
               >
                 Create
@@ -709,7 +704,7 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
+                onClick={() => setShowManageAccessToken(true)}
               >
                 Manage forum access
               </button>

@@ -33,6 +33,11 @@
     }
   }
 
+  .gateCheckbox {
+    display: flex;
+    padding-bottom: .5rem;
+  }
+
   .currentToken {
     display: flex;
     align-items: center;

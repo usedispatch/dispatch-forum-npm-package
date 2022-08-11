@@ -20,7 +20,10 @@ import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
 import { ForumData } from "../../../utils/hooks";
-
+import {
+  restrictionListToString,
+  pubkeysToRestriction,
+} from "../../../utils/restrictionListHelper";
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
@@ -74,17 +77,7 @@ export function ForumContent(props: ForumContentProps) {
     string[]
   >(() => {
     if (isSuccess(forumData.restriction)) {
-      return forumData.restriction?.nftOwnership
-        ? [forumData.restriction.nftOwnership.collectionId.toBase58()]
-        : forumData.restriction.nftListAnyOwnership
-        ? forumData.restriction.nftListAnyOwnership.collectionIds.map(
-            (pkey) => {
-              return pkey.toBase58();
-            }
-          )
-        : forumData.restriction.tokenOwnership
-        ? [forumData.restriction.tokenOwnership.mint.toBase58()]
-        : [];
+      return restrictionListToString(forumData.restriction);
     } else return [];
   });
   const [newForumAccessToken, setNewForumAccessToken] = useState<string>("");
@@ -169,41 +162,18 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
-  const processTokens = (
-    newToken: string,
-    currentTokens: string[]
-  ): PostRestriction => {
-    const tokenCSV = newToken.replace(/\s+/g, "");
-    const csvList = tokenCSV.split(",");
-
-    const currentIds = currentTokens.map((token) => {
-      return newPublicKey(token);
-    });
-    const newIds = csvList.map((token) => {
-      return newPublicKey(token);
-    });
-    const accessCollectionIds = newIds.concat(currentIds);
-
-    const result = {
-      nftListAnyOwnership: {
-        collectionIds: accessCollectionIds,
-      },
-    };
-
-    return result;
-  };
-
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const restrictionList = processTokens(
+      const restriction = pubkeysToRestriction(
         newForumAccessToken,
-        currentForumAccessToken
+        isSuccess(forumData.restriction) ? forumData.restriction : undefined
       );
+      const currentIds = restrictionListToString(restriction);
 
       const tx = await forumObject.setForumPostRestriction(
         forumData.collectionId,
-        restrictionList
+        restriction
       );
 
       setCurrentForumAccessToken(
@@ -222,14 +192,10 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
+      setCurrentForumAccessToken(currentIds);
     } catch (error: any) {
       setAddingAccessToken(false);
       if (error.code !== 4001) {
-        // setCurrentForumAccessToken(
-        //   isSuccess(forumData.restriction)
-        //     ? [forumData.restriction?.nftOwnership?.collectionId.toBase58()] ?? [""]
-        //     : [""]
-        // );
         setShowManageAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",
@@ -250,7 +216,7 @@ export function ForumContent(props: ForumContentProps) {
 
       let tx = "";
       if (filteredTokens.length > 0) {
-        const restrictionList = processTokens(filteredTokens.join(","), []);
+        const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
         tx = await forumObject.setForumPostRestriction(
           forumData.collectionId,
           restrictionList
@@ -350,7 +316,8 @@ export function ForumContent(props: ForumContentProps) {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}>
+      }}
+    >
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -427,7 +394,8 @@ export function ForumContent(props: ForumContentProps) {
                               show: true,
                               token,
                             });
-                          }}>
+                          }}
+                        >
                           <Trash />
                         </div>
                       </div>
@@ -452,7 +420,8 @@ export function ForumContent(props: ForumContentProps) {
                 onClick={() => {
                   setShowManageAccessToken(false);
                   setNewForumAccessToken("");
-                }}>
+                }}
+              >
                 Cancel
               </button>
             }
@@ -485,7 +454,8 @@ export function ForumContent(props: ForumContentProps) {
                 className="cancelButton"
                 onClick={() =>
                   setRemoveAccessToken({ show: false, removing: false })
-                }>
+                }
+              >
                 Cancel
               </button>
             }
@@ -549,14 +519,16 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={newTopic.title.length === 0}
-                onClick={() => createTopic()}>
+                onClick={() => createTopic()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}>
+                onClick={() => setShowNewTopicModal(false)}
+              >
                 Cancel
               </button>
             }
@@ -601,7 +573,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddModerators(false)}>
+                onClick={() => setShowAddModerators(false)}
+              >
                 Cancel
               </button>
             }
@@ -646,7 +619,8 @@ export function ForumContent(props: ForumContentProps) {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => setShowAddOwners(false)}>
+                onClick={() => setShowAddOwners(false)}
+              >
                 Cancel
               </button>
             }
@@ -656,26 +630,30 @@ export function ForumContent(props: ForumContentProps) {
         {role === UserRoleType.Owner && (
           <div className="moderatorToolsContainer">
             <PermissionsGate
-              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
+              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
+            >
               <div>Moderator tools: </div>
               <PermissionsGate scopes={[SCOPES.canAddOwner]}>
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}>
+                  onClick={() => setShowAddOwners(true)}
+                >
                   Manage owners
                 </button>
               </PermissionsGate>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}>
+                onClick={() => setShowAddModerators(true)}
+              >
                 Manage moderators
               </button>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowManageAccessToken(true)}>
+                onClick={() => setShowManageAccessToken(true)}
+              >
                 Manage forum access
               </button>
             </PermissionsGate>

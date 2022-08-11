@@ -1,9 +1,9 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import { ForumPost } from "@usedispatch/client";
+import { ForumPost, PostRestriction } from "@usedispatch/client";
 
-import { Lock, MessageSquare, Trash } from "../../../assets";
+import { Lock, MessageSquare, Trash, Gift } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -22,6 +22,7 @@ import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
+import { restrictionListToString } from "utils/restrictionListHelper";
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
@@ -36,18 +37,23 @@ export function TopicContent(props: TopicContentProps) {
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
+  process.env.REACT_APP_DEBUG_MODE === "true" &&
+    console.log(topic.address.toBase58());
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(forumData.collectionId.toBase58());
   const permission = forum.permission;
-  // const test = ;
+  const restrictionSetting = topic.settings.find((setting) => {
+    return setting.postRestriction;
+  });
+  console.log(topic.settings);
+  const postRestriction = restrictionSetting?.postRestriction
+    ? restrictionSetting.postRestriction.postRestriction
+    : ({} as PostRestriction);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
-  // const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
-  //   string[]
-  // >(() => {
-  //   restrictionListToString(topic.settings.filter((setting) =>  {if (setting.postRestriction) return setting.postRestriction})[0] as PostRestriction)
-  // }
-  // });
+  const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
+    string[]
+  >(() => restrictionListToString(postRestriction));
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
     content: string | ReactNode;
@@ -55,7 +61,7 @@ export function TopicContent(props: TopicContentProps) {
   }>();
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
-  const [accessToken, setAccessToken] = useState<string>();
+  const [accessToken, setAccessToken] = useState<string>("");
   const [addingAccessToken, setAddingAccessToken] = useState(false);
 
   const [showGiveAward, setShowGiveAward] = useState(false);
@@ -69,43 +75,45 @@ export function TopicContent(props: TopicContentProps) {
   } | null>(null);
 
   // TODO (Ana): add corresponding function when its available
-  /*const addAccessToken = async () => {
-    setAddingAccessToken(true);
-    try {
-      const token = newPublicKey(accessToken!);
+  // const addAccessToken = async () => {
+  //   setAddingAccessToken(true);
+  //   try {
+  //     const restriction = pubkeysToRestriction(accessToken, postRestriction);
+  //      TODO: Modify function below
+  //     const tx = await forum.setForumPostRestriction(
+  //       forumData.collectionId,
+  //       restriction
+  //     );
+  //     const currentIds = restrictionListToString(restriction);
 
-      const tx = await Forum.setForumPostRestriction(collectionId, {
-        tokenOwnership: { mint: token, amount: 1 },
-      });
-
-      setAccessToken("");
-      setShowAddAccessToken(false);
-      setAddingAccessToken(false);
-      setAccessToken(undefined);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: (
-          <div className="successBody">
-            <div>The access token was added</div>
-            <TransactionLink transaction={tx} />
-          </div>
-        ),
-      });
-    } catch (error: any) {
-      setAddingAccessToken(false);
-      if (error.code !== 4001) {
-        setAccessToken("");
-        setShowAddAccessToken(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be added`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
-        });
-      }
-    }
-  }; */
+  //     setAccessToken("");
+  //     setShowAddAccessToken(false);
+  //     setAddingAccessToken(false);
+  //     setModalInfo({
+  //       title: "Success!",
+  //       type: MessageType.success,
+  //       body: (
+  //         <div className="successBody">
+  //           <div>The access token was added</div>
+  //           <TransactionLink transaction={tx} />
+  //         </div>
+  //       ),
+  //     });
+  //     setCurrentForumAccessToken(currentIds);
+  //   } catch (error: any) {
+  //     setAddingAccessToken(false);
+  //     if (error.code !== 4001) {
+  //       setAccessToken("");
+  //       setShowAddAccessToken(false);
+  //       setModalInfo({
+  //         title: "Something went wrong!",
+  //         type: MessageType.error,
+  //         body: `The access token could not be added`,
+  //         collapsible: { header: "Error", content: JSON.stringify(error) },
+  //       });
+  //     }
+  //   }
+  // };
 
   const onDeleteTopic = async () => {
     try {
@@ -179,7 +187,8 @@ export function TopicContent(props: TopicContentProps) {
           title="Limit post access"
           body={
             <div className="">
-              You can enter one token mint ID here such that only holders of
+              {/* TODO: Add buttons when modifying topic settings is available
+               You can enter one token mint ID here such that only holders of
               this token can participate in this topic. This mint can be for any
               spl-token, eg SOL, NFTs, etc.
               <input
@@ -189,30 +198,35 @@ export function TopicContent(props: TopicContentProps) {
                 name="accessToken"
                 value={accessToken}
                 onChange={(e) => setAccessToken(e.target.value)}
-              />
-              {/* <label className="addModeratorsLabel">
-                Current NFT Collection ID
+              /> */}
+              <label className="addModeratorsLabel">
+                Current NFT Collection IDs
               </label>
               {currentForumAccessToken.map((token) => {
                 return <div className="currentAccessToken">{token}</div>;
-              })} */}
+              })}
             </div>
           }
           loading={addingAccessToken}
           onClose={() => setShowAddAccessToken(false)}
-          okButton={
-            <button className="okButton" disabled={accessToken?.length === 0}>
-              Save
-            </button>
-          }
-          cancelButton={
-            <button
-              className="cancelDeleteTopicButton"
-              onClick={() => setShowAddAccessToken(false)}
-            >
-              Cancel
-            </button>
-          }
+          // TODO: Add buttons when modifying topic settings is available
+          // okButton={
+          //   <button
+          //     className="okButton"
+          //     disabled={accessToken?.length === 0}
+          //     onClick={(e) => addAccessToken()}
+          //   >
+          //     Save
+          //   </button>
+          // }
+          // cancelButton={
+          //   <button
+          //     className="cancelDeleteTopicButton"
+          //     onClick={() => setShowAddAccessToken(false)}
+          //   >
+          //     Cancel
+          //   </button>
+          // }
         />
       )}
       {showDeleteConfirmation && (
@@ -291,7 +305,7 @@ export function TopicContent(props: TopicContentProps) {
         <div className="headerAndActions">
           <TopicHeader topic={topic} />
           <div className="moderatorToolsContainer">
-            <div className="left">
+            <div className="topicTools">
               <PermissionsGate
                 scopes={[SCOPES.canDeleteTopic]}
                 posterKey={topic.poster}
@@ -306,13 +320,17 @@ export function TopicContent(props: TopicContentProps) {
                   </div>
                   Delete Topic
                 </button>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowAddAccessToken(true)}
+                >
+                  <div className="lock">
+                    <Lock />
+                  </div>
+                  manage post access
+                </button>
               </PermissionsGate>
-              <div className="actionDivider" />
-              <EditPost
-                post={topic}
-                forumData={forumData}
-                update={() => update()}
-              />
             </div>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>

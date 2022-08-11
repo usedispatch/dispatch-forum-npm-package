@@ -8,6 +8,15 @@
     margin: auto;
   }
 
+  .topicTools {
+    display:flex;
+  }
+  
+  .currentAccessToken {
+    font-size: 14px;
+    margin: 1rem
+  }
+
   .acceptDeleteTopicButton {
     display: flex;
     align-items: center;
@@ -194,7 +203,7 @@
         .moderatorTool {
           display: flex;
           align-items: center;
-          margin: 0;
+          margin-left:1rem;
 
           background: transparent;
           color: #86878e;

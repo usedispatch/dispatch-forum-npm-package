@@ -134,6 +134,7 @@
 
           width: 100%;
           padding-bottom: 16px;
+          overflow-wrap: anywhere;
         }
 
         .posted {
@@ -167,6 +168,8 @@
 
         .subj {
           padding-top: 16px;
+
+          overflow-wrap: anywhere;
           font-weight: 600;
           font-size: 17px;
         }

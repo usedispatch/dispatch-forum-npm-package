@@ -45,6 +45,7 @@
   .replyBody {
     font-size: 16px;
     color: #414149;
+    overflow-wrap: anywhere;
 
     margin-bottom: 20px;
   }

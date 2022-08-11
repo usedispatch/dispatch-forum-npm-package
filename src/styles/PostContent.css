@@ -133,6 +133,7 @@
     .postBody {
       color: #414149;
       font-size: 16px;
+      overflow-wrap: anywhere;
 
       margin-bottom: 12px;
     }

@@ -234,14 +234,9 @@ export function ForumContent(props: ForumContentProps) {
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
         setModalInfo({
-          body: (
-            <div className="successBody">
-              <div>The new topic was created</div>
-              <TransactionLink transaction={tx} />
-            </div>
-          ),
+          body: <TransactionLink transaction={tx} />,
           type: MessageType.success,
-          title: "Success!",
+          title: "Topic created!",
         });
         setTitle("");
         setDescription("");

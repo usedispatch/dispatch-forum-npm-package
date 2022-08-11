@@ -289,7 +289,7 @@ export function TopicContent(props: TopicContentProps) {
                   <div className="delete">
                     <Trash />
                   </div>
-                  Delete Topic
+                  Delete
                 </button>
               </PermissionsGate>
               <div className="actionDivider" />

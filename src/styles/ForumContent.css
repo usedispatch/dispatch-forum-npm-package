@@ -33,14 +33,34 @@
     }
   }
 
+  .noRestriction {
+    font-size: 14px;
+    font-weight: 400;
+    color: #86878e;
+  }
+
   .currentToken {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     margin: 0 0 8px 0;
 
     font-size: 14px;
     font-weight: 400;
     color: #414149;
+
+    svg {
+      heigh: 16px;
+      width: 16px;
+
+      path {
+        fill: #3f1d96;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
 
   .createTopicButton {
@@ -180,6 +200,7 @@
   .addModeratorsLabel {
     margin-bottom: 8px;
     font-size: 16px;
+    font-weight: 500;
   }
 
   .addModeratorsInput {

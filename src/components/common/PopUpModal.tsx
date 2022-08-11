@@ -77,7 +77,8 @@ export const PopUpModal = (props: PopUpModalProps) => {
                 <label
                   htmlFor={props.id}
                   className="modalClose"
-                  onClick={props.onClose}>
+                  onClick={props.onClose}
+                >
                   <div className="closeIcon">
                     <Close />
                   </div>

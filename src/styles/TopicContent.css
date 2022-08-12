@@ -7,18 +7,19 @@
     padding-top: 24px;
     margin: auto;
   }
+
   .accountInfo {
     max-width: 15px;
-    padding-left: 5px; 
+    padding-left: 5px;
   }
 
   .topicTools {
-    display:flex;
+    display: flex;
   }
-  
+
   .currentAccessToken {
     font-size: 14px;
-    margin: 1rem
+    margin: 1rem;
   }
 
   .acceptDeleteTopicButton {
@@ -201,7 +202,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin:0;
+        margin: 0;
 
         padding: 0 18px 18px;
         border: none;
@@ -215,7 +216,7 @@
         .moderatorTool {
           display: flex;
           align-items: center;
-          margin: 0; 
+          margin: 0;
 
           background: transparent;
           color: #86878e;
@@ -228,10 +229,6 @@
           &:disabled {
             opacity: 0.75;
             cursor: not-allowed;
-
-            svg path {
-              opacity: 0.75;
-            }
           }
         }
 
@@ -239,6 +236,12 @@
           margin-right: 4px;
           height: 12px;
           width: 12px;
+
+          svg {
+            path {
+              stroke: #86878e;
+            }
+          }
         }
 
         .deleteButton {

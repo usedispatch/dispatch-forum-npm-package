@@ -76,7 +76,7 @@ export function PostReplies(props: PostRepliesProps) {
             {index > 0 && <div className="repliesDivider" />}
             <div className="replyContent">
               <div className="replyHeader">
-                <div className="posterI d">
+                <div className="posterId">
                   <div className="icon">
                     <Jdenticon
                       value={reply?.poster.toBase58()}
@@ -86,13 +86,12 @@ export function PostReplies(props: PostRepliesProps) {
                   <div className="walletId">{reply.poster.toBase58()}</div>
                 </div>
                 <div className="postedAt">
-                  {postedAt(reply)}{" "}
+                  {postedAt(reply)}
                   <div className="accountInfo">
                     <a
                       href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
                       className="transactionLink"
-                      target="_blank"
-                    >
+                      target="_blank">
                       <Info />
                     </a>
                   </div>
@@ -109,23 +108,21 @@ export function PostReplies(props: PostRepliesProps) {
                       post={reply}
                     />
                   </PermissionsGate>
-                  <div className="actionDivider" />
                   <EditPost
                     post={reply}
                     forumData={forumData}
                     update={() => update()}
+                    showDividers={{ leftDivider: true, rightDivider: false }}
                   />
                 </div>
                 <div className="rightBox">
                   <PermissionsGate
                     scopes={[SCOPES.canDeleteReply]}
-                    posterKey={reply.poster}
-                  >
+                    posterKey={reply.poster}>
                     <button
                       className="deleteButton"
                       disabled={!permission.readAndWrite}
-                      onClick={() => onDeletePost(reply)}
-                    >
+                      onClick={() => onDeletePost(reply)}>
                       <Trash />
                     </button>
                     <div className="actionDivider" />
@@ -134,16 +131,14 @@ export function PostReplies(props: PostRepliesProps) {
                     <button
                       className="awardButton"
                       disabled={!permission.readAndWrite}
-                      onClick={() => onAwardReply(reply)}
-                    >
+                      onClick={() => onAwardReply(reply)}>
                       <Gift /> Send Token
                     </button>
                     <div className="actionDivider" />
                     <button
                       className="replyButton"
                       onClick={onReplyClick}
-                      disabled={!permission.readAndWrite}
-                    >
+                      disabled={!permission.readAndWrite}>
                       Reply <Reply />
                     </button>
                   </PermissionsGate>

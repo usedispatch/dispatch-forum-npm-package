@@ -19,11 +19,12 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 interface EditPostProps {
   post: ForumPost;
   forumData: ForumData;
+  showDividers: { leftDivider: boolean; rightDivider: boolean };
   update: () => Promise<void>;
 }
 
 export function EditPost(props: EditPostProps) {
-  const { post, forumData, update } = props;
+  const { post, forumData, update, showDividers } = props;
   const forumObject = useForum();
   const { permission, wallet } = forumObject;
 
@@ -158,11 +159,10 @@ export function EditPost(props: EditPostProps) {
                 className="okButton"
                 disabled={
                   post.isTopic
-                    ? !editPost.subj || editPost.subj.length === 0
-                    : !editPost.body || editPost.body.length === 0
+                    ? editPost.subj.length === 0
+                    : editPost.body.length === 0
                 }
-                onClick={() => editPostInfo()}
-              >
+                onClick={() => editPostInfo()}>
                 Save
               </button>
             }
@@ -183,14 +183,14 @@ export function EditPost(props: EditPostProps) {
             }
           />
         )}
+        {showDividers.leftDivider && <div className="actionDivider" />}
         <button
           className="editPostButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditPost({ ...editPost, show: true })}
-        >
+          onClick={() => setEditPost({ ...editPost, show: true })}>
           <Edit /> Edit
         </button>
-        <div className="actionDivider" />
+        {showDividers.rightDivider && <div className="actionDivider" />}
       </div>
     </div>
   );

@@ -35,7 +35,13 @@
 
   .gateCheckbox {
     display: flex;
-    padding-bottom: .5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .noRestriction {
+    font-size: 14px;
+    font-weight: 400;
+    color: #86878e;
   }
 
   .currentToken {

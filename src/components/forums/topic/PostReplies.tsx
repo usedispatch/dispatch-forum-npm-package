@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Gift, Reply, Trash } from "../../../assets";
+import { Gift, Info, Reply, Trash } from "../../../assets";
 import { PermissionsGate } from "../../../components/common";
 import { Votes } from "./Votes";
 import { EditPost } from "./EditPost";
@@ -34,8 +34,8 @@ export function PostReplies(props: PostRepliesProps) {
     onAwardReply,
     update,
   } = props;
-  const Forum = useForum();
-  const permission = Forum.permission;
+  const forum = useForum();
+  const permission = forum.permission;
 
   const postedAt = (reply: ForumPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
@@ -76,7 +76,7 @@ export function PostReplies(props: PostRepliesProps) {
             {index > 0 && <div className="repliesDivider" />}
             <div className="replyContent">
               <div className="replyHeader">
-                <div className="posterId">
+                <div className="posterI d">
                   <div className="icon">
                     <Jdenticon
                       value={reply?.poster.toBase58()}
@@ -85,12 +85,23 @@ export function PostReplies(props: PostRepliesProps) {
                   </div>
                   <div className="walletId">{reply.poster.toBase58()}</div>
                 </div>
-                <div className="postedAt">{postedAt(reply)}</div>
+                <div className="postedAt">
+                  {postedAt(reply)}{" "}
+                  <div className="accountInfo">
+                    <a
+                      href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
+                      className="transactionLink"
+                      target="_blank"
+                    >
+                      <Info />
+                    </a>
+                  </div>
+                </div>
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
                 <div className="leftBox">
-                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                  <PermissionsGate scopes={[SCOPES.canVote]}>
                     <Votes
                       updateVotes={(upVoted) => updateVotes(upVoted, reply)}
                       onUpVotePost={() => onUpVotePost(reply)}
@@ -108,11 +119,13 @@ export function PostReplies(props: PostRepliesProps) {
                 <div className="rightBox">
                   <PermissionsGate
                     scopes={[SCOPES.canDeleteReply]}
-                    posterKey={reply.poster}>
+                    posterKey={reply.poster}
+                  >
                     <button
                       className="deleteButton"
                       disabled={!permission.readAndWrite}
-                      onClick={() => onDeletePost(reply)}>
+                      onClick={() => onDeletePost(reply)}
+                    >
                       <Trash />
                     </button>
                     <div className="actionDivider" />
@@ -121,14 +134,16 @@ export function PostReplies(props: PostRepliesProps) {
                     <button
                       className="awardButton"
                       disabled={!permission.readAndWrite}
-                      onClick={() => onAwardReply(reply)}>
-                      Gift Award <Gift />
+                      onClick={() => onAwardReply(reply)}
+                    >
+                      <Gift /> Send Token
                     </button>
                     <div className="actionDivider" />
                     <button
                       className="replyButton"
                       onClick={onReplyClick}
-                      disabled={!permission.readAndWrite}>
+                      disabled={!permission.readAndWrite}
+                    >
                       Reply <Reply />
                     </button>
                   </PermissionsGate>

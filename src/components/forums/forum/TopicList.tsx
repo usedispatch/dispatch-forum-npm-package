@@ -29,10 +29,10 @@ export function TopicList({ forumData }: TopicListProps) {
           <thead>
             <tr className="tableHeader">
               <th className="tableHeaderTitle">
-                <div className="tableHeaderText">Topic</div>
+                <div className="tableHeaderText">Topics</div>
               </th>
               <th className="tableHeaderTitle">
-                <div className="tableHeaderText posters">Posters</div>
+                <div className="tableHeaderText posters">Wallets</div>
               </th>
               <th className="tableHeaderTitle">
                 <div className="tableHeaderTextCenter">Replies</div>

@@ -29,6 +29,7 @@
     }
 
     .current {
+      overflow-wrap: anywhere;
     }
   }
 

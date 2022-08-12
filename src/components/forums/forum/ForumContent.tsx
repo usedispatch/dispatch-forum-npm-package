@@ -296,14 +296,9 @@ export function ForumContent(props: ForumContentProps) {
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
         setModalInfo({
-          body: (
-            <div className="successBody">
-              <div>The new topic was created</div>
-              <TransactionLink transaction={tx} />
-            </div>
-          ),
+          body: <TransactionLink transaction={tx} />,
           type: MessageType.success,
-          title: "Success!",
+          title: "Topic created!",
         });
         setNewTopic({ title: "", description: "", accessToken: "" });
         setShowNewTopicModal(false);
@@ -442,17 +437,6 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => {
-                  setShowManageAccessToken(false);
-                  setNewForumAccessToken("");
-                }}
-              >
-                Cancel
-              </button>
-            }
           />
         )}
         {removeAccessToken.show && _.isNil(modalInfo) && (
@@ -477,16 +461,6 @@ export function ForumContent(props: ForumContentProps) {
                 Remove
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() =>
-                  setRemoveAccessToken({ show: false, removing: false })
-                }
-              >
-                Cancel
-              </button>
-            }
           />
         )}
         {(() => {
@@ -503,7 +477,8 @@ export function ForumContent(props: ForumContentProps) {
                   okButton={
                     <button
                       className="okButton"
-                      onClick={() => setShowNewTopicModal(false)}>
+                      onClick={() => setShowNewTopicModal(false)}
+                    >
                       OK
                     </button>
                   }
@@ -532,20 +507,27 @@ export function ForumContent(props: ForumContentProps) {
                         />
                       </>
                       <>
-                        <span className="createTopicLabel">Topic Description</span>
+                        <span className="createTopicLabel">
+                          Topic Description
+                        </span>
                         <textarea
                           placeholder="Description"
                           className="createTopicTitleInput createTopicTextArea"
                           maxLength={800}
                           value={newTopic.description}
                           onChange={(e) =>
-                            setNewTopic({ ...newTopic, description: e.target.value })
+                            setNewTopic({
+                              ...newTopic,
+                              description: e.target.value,
+                            })
                           }
                         />
                       </>
                       <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
                         <>
-                          <span className="createTopicLabel">Limit post access</span>
+                          <span className="createTopicLabel">
+                            Limit post access
+                          </span>
                           <input
                             type="text"
                             placeholder="Token mint ID"
@@ -568,14 +550,16 @@ export function ForumContent(props: ForumContentProps) {
                     <button
                       className="okButton"
                       disabled={newTopic.title.length === 0}
-                      onClick={() => createTopic()}>
+                      onClick={() => createTopic()}
+                    >
                       Create
                     </button>
                   }
                   cancelButton={
                     <button
                       className="cancelButton"
-                      onClick={() => setShowNewTopicModal(false)}>
+                      onClick={() => setShowNewTopicModal(false)}
+                    >
                       Cancel
                     </button>
                   }
@@ -622,14 +606,7 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => setShowAddModerators(false)}
-              >
-                Cancel
-              </button>
-            }
+            onClose={() => setShowAddModerators(false)}
           />
         )}
         {_.isNil(modalInfo) && showAddOwners && (
@@ -668,14 +645,7 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => setShowAddOwners(false)}
-              >
-                Cancel
-              </button>
-            }
+            onClose={() => setShowAddOwners(false)}
           />
         )}
         {forumHeader}

@@ -7,6 +7,10 @@
     padding-top: 24px;
     margin: auto;
   }
+  .accountInfo {
+    max-width: 15px;
+    padding-left: 5px; 
+  }
 
   .topicTools {
     display:flex;
@@ -160,6 +164,10 @@
             align-items: center;
           }
 
+          .postedAt {
+            display: flex;
+          }
+
           .icon {
             display: flex;
             height: 16px;
@@ -176,6 +184,8 @@
 
         .subj {
           padding-top: 16px;
+
+          overflow-wrap: anywhere;
           font-weight: 600;
           font-size: 17px;
         }
@@ -183,6 +193,7 @@
         .topicBody {
           font-size: 16px;
           color: #414149;
+          overflow-wrap: anywhere;
         }
       }
 

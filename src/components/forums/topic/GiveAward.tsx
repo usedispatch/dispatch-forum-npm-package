@@ -3,7 +3,6 @@ import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
 
-
 import {
   CollapsibleProps,
   MessageType,
@@ -14,7 +13,7 @@ import {
 
 import { SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
-import { DisplayableToken } from '../../../utils/postbox/postboxWrapper';
+import { DisplayableToken } from "../../../utils/postbox/postboxWrapper";
 
 enum AwardType {
   NFT = "NFT",
@@ -47,9 +46,7 @@ export function GiveAward(props: GiveAwardProps) {
   const [selectedAmount, setSelectedAmount] = useState(0);
   const [loadingNFT, setLoadingNFT] = useState(false);
   const [selectedNFT, setSelectedNFT] = useState<DisplayableToken>();
-  const [nfts, setNFTs] = useState<
-    DisplayableToken[]
-  >([]);
+  const [nfts, setNFTs] = useState<DisplayableToken[]>([]);
 
   const attachAward = async () => {
     setLoading(true);
@@ -102,7 +99,7 @@ export function GiveAward(props: GiveAwardProps) {
   const title = selectedType
     ? selectedType === AwardType.SOL
       ? "How many SOL do you want to award?"
-      : "Awards"
+      : "Select NFT"
     : "Select type of award";
 
   const content = (
@@ -137,7 +134,8 @@ export function GiveAward(props: GiveAwardProps) {
                       className={`giftContainer ${
                         nft.mint === selectedNFT?.mint ? "selectedNFT" : ""
                       }`}
-                      onClick={() => setSelectedNFT(nft)}>
+                      onClick={() => setSelectedNFT(nft)}
+                    >
                       <img src={nft.uri.toString()} />
                       <div className="giftName">{nft.name}</div>
                     </div>
@@ -155,13 +153,15 @@ export function GiveAward(props: GiveAwardProps) {
               onClick={() => {
                 setSelectedType(AwardType.NFT);
                 getNFTsForCurrentUser();
-              }}>
+              }}
+            >
               <Plus />
               NFT
             </button>
             <button
               className="solType"
-              onClick={() => setSelectedType(AwardType.SOL)}>
+              onClick={() => setSelectedType(AwardType.SOL)}
+            >
               <SolanaLogo color="white" />
               SOL
             </button>
@@ -212,15 +212,17 @@ export function GiveAward(props: GiveAwardProps) {
             <button
               className="attachButton"
               disabled={selectedAmount === 0}
-              onClick={() => attachAward()}>
-              Attach
+              onClick={() => attachAward()}
+            >
+              Send
             </button>
           ) : (
             <button
               className="confirmAndAwardButton"
               disabled={_.isNil(selectedNFT)}
-              onClick={() => transferNFT()}>
-              Confirm and award
+              onClick={() => transferNFT()}
+            >
+              Send
             </button>
           ))
         }

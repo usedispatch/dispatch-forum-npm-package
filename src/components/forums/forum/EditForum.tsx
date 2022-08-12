@@ -158,23 +158,24 @@ export function EditForum(props: EditForumProps) {
                     editForum.title.length > 0
                   )
                 }
-                onClick={() => editForumInfo()}>
+                onClick={() => editForumInfo()}
+              >
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() =>
-                  setEditForum({
-                    show: false,
-                    title: forumData.description.title,
-                    description: forumData.description.desc,
-                  })
-                }>
-                Cancel
-              </button>
-            }
+            // cancelButton={
+            //   <button
+            //     className="cancelButton"
+            //     onClick={() =>
+            //       setEditForum({
+            //         show: false,
+            //         title: forumData.description.title,
+            //         description: forumData.description.desc,
+            //       })
+            //     }>
+            //     Cancel
+            //   </button>
+            // }
           />
         )}
         {!_.isNil(modalInfo) && (
@@ -196,7 +197,8 @@ export function EditForum(props: EditForumProps) {
         <button
           className="editForumButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditForum({ ...editForum, show: true })}>
+          onClick={() => setEditForum({ ...editForum, show: true })}
+        >
           <Edit /> Edit forum
         </button>
       </div>

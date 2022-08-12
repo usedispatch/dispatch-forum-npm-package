@@ -54,7 +54,7 @@ export function Votes(props: VotesProps) {
       setNotificationContent({
         content: (
           <>
-            Up voted successfully.
+            You voted!
             <TransactionLink transaction={tx} />
           </>
         ),
@@ -96,7 +96,7 @@ export function Votes(props: VotesProps) {
       setNotificationContent({
         content: (
           <>
-            Down voted successfully.
+            You voted!
             <TransactionLink transaction={tx} />
           </>
         ),

@@ -329,11 +329,6 @@ export const ForumView = (props: ForumViewProps) => {
                   }`}
                 >
                   {forumData.description.title}
-                  <title>{forumData.description.title} Forum</title>
-                  <meta
-                    name="description"
-                    content={forumData.description.desc}
-                  />
                 </div>
               ) /* TODO(andrew) what to render here if title isn't loaded */
             }

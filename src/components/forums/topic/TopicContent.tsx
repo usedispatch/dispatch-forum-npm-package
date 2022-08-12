@@ -3,7 +3,8 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
 
-import { Lock, Gift, MessageSquare, Trash } from "../../../assets";
+import { Gift, Info, MessageSquare, Trash, Lock } from "../../../assets";
+
 import {
   CollapsibleProps,
   MessageType,
@@ -246,14 +247,7 @@ export function TopicContent(props: TopicContentProps) {
               Confirm
             </a>
           }
-          cancelButton={
-            <div
-              className="cancelDeleteTopicButton"
-              onClick={() => setShowDeleteConfirmation(false)}
-            >
-              Cancel
-            </div>
-          }
+          onClose={() => setShowDeleteConfirmation(false)}
         />
       )}
       {showGiveAward && (
@@ -306,7 +300,7 @@ export function TopicContent(props: TopicContentProps) {
           </div>
         </div>
         <div className="headerAndActions">
-          <TopicHeader topic={topic} />
+          <TopicHeader topic={topic} forum={forum} />
           <div className="moderatorToolsContainer">
             <div className="topicTools">
               <PermissionsGate
@@ -321,7 +315,7 @@ export function TopicContent(props: TopicContentProps) {
                   <div className="delete">
                     <Trash />
                   </div>
-                  Delete Topic
+                  Delete
                 </button>
                 <div className="actionDivider" />
                 <EditPost
@@ -351,8 +345,8 @@ export function TopicContent(props: TopicContentProps) {
                   disabled={!permission.readAndWrite}
                   onClick={() => setShowGiveAward(true)}
                 >
-                  Gift Award
-                  <Gift />
+                  <Gift /> Send Token
+
                 </button>
               </>
             </PermissionsGate>
@@ -415,10 +409,11 @@ export function TopicContent(props: TopicContentProps) {
 
 interface TopicHeaderProps {
   topic: ForumPost;
+  forum: DispatchForum;
 }
 
 function TopicHeader(props: TopicHeaderProps) {
-  const { topic } = props;
+  const { topic, forum } = props;
 
   const postedAt = topic
     ? `${topic.data.ts.toLocaleDateString(undefined, {
@@ -442,7 +437,18 @@ function TopicHeader(props: TopicHeaderProps) {
             </div>
             <div className="posterId">{topic?.poster.toBase58()}</div>
           </div>
-          <div className="postedAt">Posted at: {postedAt}</div>
+          <div className="postedAt">
+            Posted at: {postedAt}
+            <div className="accountInfo">
+              <a
+                href={`https://solscan.io/account/${topic.address}?cluster=${forum.cluster}`}
+                className="transactionLink"
+                target="_blank"
+              >
+                <Info />
+              </a>
+            </div>
+          </div>{" "}
         </div>
         <div className="subj">{topic?.data.subj ?? "subject"}</div>
       </div>

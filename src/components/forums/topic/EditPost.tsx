@@ -166,14 +166,6 @@ export function EditPost(props: EditPostProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => resetToInitialValues()}
-              >
-                Cancel
-              </button>
-            }
           />
         )}
         {!_.isNil(modalInfo) && (

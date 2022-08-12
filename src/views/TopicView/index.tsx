@@ -3,10 +3,7 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
-import {
-  useForumData,
-  useModal
-} from '../../utils/hooks';
+import { useForumData, useModal } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
 import {
@@ -21,18 +18,15 @@ import {
   PoweredByDispatch,
   TopicContent,
 } from "../../components/forums";
-import {
-  Loading,
-  DispatchClientError
-} from '../../types/loading';
+import { Loading, DispatchClientError } from "../../types/loading";
 import {
   isSuccess,
   isInitial,
   isPending,
   isDispatchClientError,
   onChainAccountNotFound,
-  pending
-} from '../../utils/loading';
+  pending,
+} from "../../utils/loading";
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -54,7 +48,7 @@ export const TopicView = (props: Props) => {
     } catch (error) {
       showModal({
         type: MessageType.error,
-        title: 'Invalid Collection ID'
+        title: "Invalid Collection ID",
       });
       return null;
     }
@@ -86,21 +80,20 @@ export const TopicView = (props: Props) => {
     // it and show them in the modal
     if (isSuccess(forumData)) {
       // Filter out all loading components that failed
-      const errors = [
-        forumData.owners,
-        forumData.moderators
-      ].filter(loading =>
-        isDispatchClientError(loading)
+      const errors = [forumData.owners, forumData.moderators].filter(
+        (loading) => isDispatchClientError(loading)
       ) as DispatchClientError[];
 
-      setModals(errors.map(({ error }) => {
-        const message = JSON.stringify(error || {});
-        return {
-          type: MessageType.error,
-          title: `Error loading ${error?.name || 'data'}`,
-          collapsible: { header: 'Error', content: message }
-        };
-      }));
+      setModals(
+        errors.map(({ error }) => {
+          const message = JSON.stringify(error || {});
+          return {
+            type: MessageType.error,
+            title: `Error loading ${error?.name || "data"}`,
+            collapsible: { header: "Error", content: message },
+          };
+        })
+      );
     }
   }, [forumData]);
 
@@ -158,8 +151,7 @@ export const TopicView = (props: Props) => {
               <div>
                 {(() => {
                   if (
-                    collectionPublicKey &&
-                    isInitial(topic) ||
+                    (collectionPublicKey && isInitial(topic)) ||
                     isPending(topic)
                   ) {
                     return (
@@ -174,11 +166,6 @@ export const TopicView = (props: Props) => {
                   ) {
                     return (
                       <>
-                        <title>{topic.data.subj!}</title>
-                        <meta
-                          name="description"
-                          content={forumData.description.title}
-                        />
                         <Breadcrumb
                           navigateTo={forumPath}
                           parent={forumData.description.title}

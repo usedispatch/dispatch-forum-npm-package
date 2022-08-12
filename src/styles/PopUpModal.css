@@ -44,7 +44,9 @@
         border-radius: 16px;
         -ms-scroll-chaining: none;
         overscroll-behavior: contain;
-        top: 25%;
+
+        position: absolute;
+        top: 10%;
         width: 450px;
       }
     }

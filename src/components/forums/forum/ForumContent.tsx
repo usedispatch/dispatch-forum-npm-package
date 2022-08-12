@@ -273,7 +273,8 @@ export function ForumContent(props: ForumContentProps) {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}>
+      }}
+    >
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -348,16 +349,16 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => {
-                  setShowAddAccessToken(false);
-                  setNewForumAccessToken("");
-                }}>
-                Cancel
-              </button>
-            }
+            // cancelButton={
+            //   <button
+            //     className="cancelButton"
+            //     onClick={() => {
+            //       setShowAddAccessToken(false);
+            //       setNewForumAccessToken("");
+            //     }}>
+            //     Cancel
+            //   </button>
+            // }
           />
         )}
         {showNewTopicModal && _.isNil(modalInfo) && (
@@ -409,17 +410,22 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="okButton"
                 disabled={title.length === 0}
-                onClick={() => createTopic()}>
+                onClick={() => createTopic()}
+              >
                 Create
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}>
-                Cancel
-              </button>
-            }
+            onClose={() => {
+              setShowNewTopicModal(false);
+            }}
+            // cancelButton={
+            //   <button
+            //     className="cancelButton"
+            //     onClick={() => setShowNewTopicModal(false)}
+            //   >
+            //     Cancel
+            //   </button>
+            // }
           />
         )}
         {_.isNil(modalInfo) && showAddModerators && (
@@ -458,13 +464,14 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => setShowAddModerators(false)}>
-                Cancel
-              </button>
-            }
+            onClose={() => setShowAddModerators(false)}
+            // cancelButton={
+            //   <button
+            //     className="cancelButton"
+            //     onClick={() => setShowAddModerators(false)}>
+            //     Cancel
+            //   </button>
+            // }
           />
         )}
         {_.isNil(modalInfo) && showAddOwners && (
@@ -503,39 +510,45 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => setShowAddOwners(false)}>
-                Cancel
-              </button>
-            }
+            onClose={() => setShowAddOwners(false)}
+            // cancelButton={
+            //   <button
+            //     className="cancelButton"
+            //     onClick={() => setShowAddOwners(false)}
+            //   >
+            //     Cancel
+            //   </button>
+            // }
           />
         )}
         {forumHeader}
         {role === UserRoleType.Owner && (
           <div className="moderatorToolsContainer">
             <PermissionsGate
-              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
+              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
+            >
               <div>Moderator tools: </div>
               <PermissionsGate scopes={[SCOPES.canAddOwner]}>
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}>
+                  onClick={() => setShowAddOwners(true)}
+                >
                   Manage owners
                 </button>
               </PermissionsGate>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}>
+                onClick={() => setShowAddModerators(true)}
+              >
                 Manage moderators
               </button>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}>
+                onClick={() => setShowAddAccessToken(true)}
+              >
                 Manage forum access
               </button>
             </PermissionsGate>

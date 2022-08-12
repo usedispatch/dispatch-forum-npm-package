@@ -32,7 +32,7 @@ export function TopicList({ forumData }: TopicListProps) {
                 <div className="tableHeaderText">Topics</div>
               </th>
               <th className="tableHeaderTitle">
-                <div className="tableHeaderText posters">Posters</div>
+                <div className="tableHeaderText posters">Wallets</div>
               </th>
               <th className="tableHeaderTitle">
                 <div className="tableHeaderTextCenter">Replies</div>

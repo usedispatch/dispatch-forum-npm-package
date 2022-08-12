@@ -3,7 +3,7 @@ import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Gift, MessageSquare, Trash } from "../../../assets";
+import { Gift, Info, MessageSquare, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -161,7 +161,8 @@ export function TopicContent(props: TopicContentProps) {
             <a
               className="okButton"
               href={modalInfo.okPath}
-              onClick={() => setModalInfo(null)}>
+              onClick={() => setModalInfo(null)}
+            >
               OK
             </a>
           }
@@ -194,13 +195,14 @@ export function TopicContent(props: TopicContentProps) {
               Save
             </button>
           }
-          cancelButton={
-            <button
-              className="cancelDeleteTopicButton"
-              onClick={() => setShowAddAccessToken(false)}>
-              Cancel
-            </button>
-          }
+          // cancelButton={
+          //   <button
+          //     className="cancelDeleteTopicButton"
+          //     onClick={() => setShowAddAccessToken(false)}
+          //   >
+          //     Cancel
+          //   </button>
+          // }
         />
       )}
       {showDeleteConfirmation && (
@@ -217,13 +219,15 @@ export function TopicContent(props: TopicContentProps) {
               Confirm
             </a>
           }
-          cancelButton={
-            <div
-              className="cancelDeleteTopicButton"
-              onClick={() => setShowDeleteConfirmation(false)}>
-              Cancel
-            </div>
-          }
+          onClose={() => setShowDeleteConfirmation(false)}
+          // cancelButton={
+          //   <div
+          //     className="cancelDeleteTopicButton"
+          //     onClick={() => setShowDeleteConfirmation(false)}
+          //   >
+          //     Cancel
+          //   </div>
+          // }
         />
       )}
       {showGiveAward && (
@@ -276,16 +280,18 @@ export function TopicContent(props: TopicContentProps) {
           </div>
         </div>
         <div className="headerAndActions">
-          <TopicHeader topic={topic} />
+          <TopicHeader topic={topic} forum={forum} />
           <div className="moderatorToolsContainer">
             <div className="left">
               <PermissionsGate
                 scopes={[SCOPES.canDeleteTopic]}
-                posterKey={topic.poster}>
+                posterKey={topic.poster}
+              >
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowDeleteConfirmation(true)}>
+                  onClick={() => setShowDeleteConfirmation(true)}
+                >
                   <div className="delete">
                     <Trash />
                   </div>
@@ -315,9 +321,9 @@ export function TopicContent(props: TopicContentProps) {
                 <button
                   className="awardButton"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowGiveAward(true)}>
-                  Gift Award
-                  <Gift />
+                  onClick={() => setShowGiveAward(true)}
+                >
+                  <Gift /> Send Token
                 </button>
               </>
             </PermissionsGate>
@@ -380,10 +386,11 @@ export function TopicContent(props: TopicContentProps) {
 
 interface TopicHeaderProps {
   topic: ForumPost;
+  forum: DispatchForum;
 }
 
 function TopicHeader(props: TopicHeaderProps) {
-  const { topic } = props;
+  const { topic, forum } = props;
 
   const postedAt = topic
     ? `${topic.data.ts.toLocaleDateString(undefined, {
@@ -407,7 +414,18 @@ function TopicHeader(props: TopicHeaderProps) {
             </div>
             <div className="posterId">{topic?.poster.toBase58()}</div>
           </div>
-          <div className="postedAt">Posted at: {postedAt}</div>
+          <div className="postedAt">
+            Posted at: {postedAt}
+            <div className="accountInfo">
+              <a
+                href={`https://solscan.io/account/${topic.address}?cluster=${forum.cluster}`}
+                className="transactionLink"
+                target="_blank"
+              >
+                <Info />
+              </a>
+            </div>
+          </div>{" "}
         </div>
         <div className="subj">{topic?.data.subj ?? "subject"}</div>
       </div>

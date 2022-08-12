@@ -39,9 +39,13 @@
       font-size: 12px;
       font-weight: 300;
       color: #86878e;
+      display: flex;
     }
   }
-
+  .accountInfo {
+    max-width: 15px;
+    padding-left: 5px;
+  }
   .replyBody {
     font-size: 16px;
     color: #414149;

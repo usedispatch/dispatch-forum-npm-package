@@ -215,7 +215,8 @@ export const ForumView = (props: ForumViewProps) => {
         disabled={!permission.readAndWrite}
         onClick={() => {
           setShowNewForumModal(true);
-        }}>
+        }}
+      >
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -304,14 +305,16 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}>
+                onClick={() => onCreateForumClick()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}>
+                onClick={() => setShowNewForumModal(false)}
+              >
                 Cancel
               </div>
             }
@@ -325,13 +328,9 @@ export const ForumView = (props: ForumViewProps) => {
                 <div
                   className={`forumViewTitle ${
                     !permission.readAndWrite ? "alert" : ""
-                  }`}>
+                  }`}
+                >
                   {forumData.description.title}
-                  <title>{forumData.description.title} Forum</title>
-                  <meta
-                    name="description"
-                    content={forumData.description.desc}
-                  />
                 </div>
               ) /* TODO(andrew) what to render here if title isn't loaded */
             }

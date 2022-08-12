@@ -10,7 +10,7 @@
 
     .modalContainer {
       display: flex;
-      align-items: flex-end;
+      align-items: center;
       justify-content: center;
       opacity: 1;
       position: fixed;
@@ -29,10 +29,10 @@
       text-transform: none;
 
       .modalBox {
-        position: absolute;
         max-height: calc(100vh - 5em);
         background-color: white;
         padding: 24px;
+        justify-self: center;
 
         transition-property: background-color, border-color, color, fill, stroke,
           opacity, box-shadow, transform;

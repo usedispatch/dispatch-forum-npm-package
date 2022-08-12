@@ -3,7 +3,7 @@ import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Gift, Trash, Reply } from "../../../assets";
+import { Gift, Trash, Reply, Info } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -180,20 +180,23 @@ export function PostContent(props: PostContentProps) {
               !deleting && (
                 <a
                   className="acceptDeletePostButton"
-                  onClick={() => onDelete()}>
+                  onClick={() => onDelete()}
+                >
                   Confirm
                 </a>
               )
             }
-            cancelButton={
-              !deleting && (
-                <div
-                  className="cancelDeletePostButton"
-                  onClick={() => setShowDeleteConfirmation(false)}>
-                  Cancel
-                </div>
-              )
-            }
+            onClose={() => setShowDeleteConfirmation(false)}
+            // cancelButton={
+            //   !deleting && (
+            //     <div
+            //       className="cancelDeletePostButton"
+            //       onClick={() => setShowDeleteConfirmation(false)}
+            //     >
+            //       Cancel
+            //     </div>
+            //   )
+            // }
           />
         )}
         {!_.isNull(modalInfo) && (
@@ -246,9 +249,7 @@ export function PostContent(props: PostContentProps) {
         />
         <>
           <div className="postContentBox">
-            <PermissionsGate
-              scopes={[SCOPES.canDeletePost]}
-              posterKey={post.poster}>
+            <PermissionsGate scopes={[SCOPES.canVote]}>
               <Votes
                 post={post}
                 onDownVotePost={() =>
@@ -268,7 +269,18 @@ export function PostContent(props: PostContentProps) {
                   </div>
                   <div className="walletId">{post.poster.toBase58()}</div>
                 </div>
-                <div className="postedAt">Posted at: {postedAt}</div>
+                <div className="postedAt">
+                  Posted at: {postedAt}
+                  <div className="accountInfo">
+                    <a
+                      href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                      className="transactionLink"
+                      target="_blank"
+                    >
+                      <Info />
+                    </a>
+                  </div>
+                </div>
               </div>
               <div className="postBody">{post?.data.body}</div>
               <div className="actionsContainer">
@@ -281,14 +293,16 @@ export function PostContent(props: PostContentProps) {
                   <div className="right">
                     <PermissionsGate
                       scopes={[SCOPES.canDeletePost]}
-                      posterKey={post.poster}>
+                      posterKey={post.poster}
+                    >
                       <button
                         className="deleteButton"
                         disabled={!permission.readAndWrite}
                         onClick={() => {
                           setPostToDelete(props.post);
                           setShowDeleteConfirmation(true);
-                        }}>
+                        }}
+                      >
                         <Trash />
                       </button>
                       <div className="actionDivider" />
@@ -299,14 +313,16 @@ export function PostContent(props: PostContentProps) {
                       onClick={() => {
                         setPostToAward(post);
                         setShowGiveAward(true);
-                      }}>
-                      Gift Award <Gift />
+                      }}
+                    >
+                      <Gift /> Send Token
                     </button>
                     <div className="actionDivider" />
                     <button
                       className="replyButton"
                       disabled={!permission.readAndWrite}
-                      onClick={() => setShowReplyBox(true)}>
+                      onClick={() => setShowReplyBox(true)}
+                    >
                       Reply <Reply />
                     </button>
                   </div>
@@ -316,7 +332,8 @@ export function PostContent(props: PostContentProps) {
           </div>
           <div
             className="repliesSection"
-            hidden={replies.length === 0 && !showReplyBox}>
+            hidden={replies.length === 0 && !showReplyBox}
+          >
             <div className="repliesBox">
               <PostReplies
                 forumData={forumData}
@@ -356,7 +373,8 @@ export function PostContent(props: PostContentProps) {
                   <div className="buttonsContainer">
                     <button
                       className="cancelReplyButton"
-                      onClick={() => setShowReplyBox(false)}>
+                      onClick={() => setShowReplyBox(false)}
+                    >
                       Cancel
                     </button>
                     <button className="postReplyButton" type="submit">

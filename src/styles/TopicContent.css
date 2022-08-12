@@ -7,6 +7,10 @@
     padding-top: 24px;
     margin: auto;
   }
+  .accountInfo {
+    max-width: 15px;
+    padding-left: 5px; 
+  }
 
   .acceptDeleteTopicButton {
     display: flex;
@@ -149,6 +153,10 @@
           .postedBy {
             display: flex;
             align-items: center;
+          }
+
+          .postedAt {
+            display: flex;
           }
 
           .icon {

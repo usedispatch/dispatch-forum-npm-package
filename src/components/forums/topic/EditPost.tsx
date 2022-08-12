@@ -166,6 +166,7 @@ export function EditPost(props: EditPostProps) {
                 Save
               </button>
             }
+            onClose={() => resetToInitialValues()}
           />
         )}
         {!_.isNil(modalInfo) && (
@@ -190,6 +191,7 @@ export function EditPost(props: EditPostProps) {
         >
           <Edit /> Edit
         </button>
+        <div className="actionDivider" />
       </div>
     </div>
   );

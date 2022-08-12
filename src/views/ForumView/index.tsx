@@ -38,6 +38,7 @@ import {
   isDispatchClientError,
 } from "../../utils/loading";
 import { useForumData, useModal } from "../../utils/hooks";
+import { pubkeysToRestriction } from "../../utils/restrictionListHelper";
 
 interface ForumViewProps {
   collectionId: string;
@@ -134,12 +135,7 @@ export const ForumView = (props: ForumViewProps) => {
           body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
         });
       }
-      const tokenAccess = accessToken ? newPublicKey(accessToken) : undefined;
-      const restriction = {
-        nftOwnership: {
-          collectionId: tokenAccess,
-        },
-      } as PostRestriction;
+
       const moderators =
         newModerator.length > 0
           ? [publicKey, newPublicKey(newModerator)]
@@ -151,7 +147,9 @@ export const ForumView = (props: ForumViewProps) => {
         title: title,
         description: description,
         collectionId: collectionPublicKey,
-        postRestriction: tokenAccess ? restriction : undefined,
+        postRestriction: accessToken
+          ? pubkeysToRestriction(accessToken)
+          : undefined,
       } as ForumInfo;
 
       const res = await forumObject.createForum(forum);
@@ -180,7 +178,7 @@ export const ForumView = (props: ForumViewProps) => {
         }
       }
     } catch (e: any) {
-      if (e.error.code === 4001) {
+      if (e.error?.code === 4001) {
         setShowNewForumModal(true);
       } else {
         setShowNewForumModal(false);
@@ -291,7 +289,7 @@ export const ForumView = (props: ForumViewProps) => {
                 <>
                   <span className="createForumLabel">Limit forum access</span>
                   <input
-                    placeholder="Collection ID"
+                    placeholder="Add a comma separated list of collection IDs"
                     className="createForumInput lastInputField"
                     value={accessToken}
                     disabled={creatingNewForum}

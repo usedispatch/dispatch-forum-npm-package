@@ -151,6 +151,8 @@ export interface IForum {
 
   setForumPostRestriction(collectionId: web3.PublicKey, restriction: PostRestriction): Promise<string>;
 
+  deleteForumPostRestriction(collectionId: web3.PublicKey): Promise<string>;
+
   canCreateTopic(collectionId: web3.PublicKey): Promise<boolean>;
 
   canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
@@ -686,6 +688,23 @@ export class DispatchForum implements IForum {
       const tx = await forum.setForumPostRestrictionIx(restriction);
       
       return dispatchConn.sendTransaction(tx);
+    } catch (error) {          
+      throw(parseError(error))
+    }
+  };
+
+
+  deleteForumPostRestriction = async(collectionId: web3.PublicKey) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const dispatchConn = new DispatchConnection(conn, wallet, {cluster: this.cluster});
+      const forum = new Forum(dispatchConn, collectionId);
+
+      const tx = await forum.deleteForumPostRestriction();
+      
+      return tx;
     } catch (error) {          
       throw(parseError(error))
     }

@@ -144,8 +144,6 @@
       align-items: center;
       justify-content: space-between;
 
-      padding: 0 20px;
-
       .deleteButton {
         display: flex;
         align-items: center;
@@ -235,13 +233,12 @@
 
   .repliesSection {
     margin-top: 16px;
-    margin-left: 46px; /* votePostContent.width + gap */
+    margin-left: 0.5rem; /* votePostContent.width + gap */
     border-left-width: 1px;
     border-color: #cac9cb;
 
     .repliesBox {
       padding-left: 24px;
-      padding-top: 20px;
     }
 
     .replyForm {

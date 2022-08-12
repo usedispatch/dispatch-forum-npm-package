@@ -1,8 +1,9 @@
 import * as _ from "lodash";
-import { useState, ReactNode } from "react";
+import { useState, ReactNode, useEffect } from "react";
 import Jdenticon from "react-jdenticon";
+import { PostRestriction } from "@usedispatch/client";
 
-import { Plus } from "../../../assets";
+import { Plus, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -19,8 +20,10 @@ import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
 import { ForumData } from "../../../utils/hooks";
-import { PostRestriction } from "@usedispatch/client";
-
+import {
+  restrictionListToString,
+  pubkeysToRestriction,
+} from "../../../utils/restrictionListHelper";
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
@@ -32,8 +35,11 @@ export function ForumContent(props: ForumContentProps) {
   const { role } = useRole();
   const { permission } = forumObject;
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [newTopic, setNewTopic] = useState<{
+    title: string;
+    description: string;
+    accessToken: string;
+  }>({ title: "", description: "", accessToken: "" });
   const [currentMods, setCurrentMods] = useState<string[]>(() => {
     if (isSuccess(forumData.moderators)) {
       return forumData.moderators.map((pkey) => pkey.toBase58());
@@ -53,6 +59,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
+  const [keepGates, setKeepGates] = useState(true);
 
   const [showAddModerators, setShowAddModerators] = useState(false);
   const [showAddOwners, setShowAddOwners] = useState(false);
@@ -60,24 +67,18 @@ export function ForumContent(props: ForumContentProps) {
   const [newOwner, setNewOwner] = useState<string>("");
   const [addingNewModerator, setAddingNewModerator] = useState(false);
   const [addingNewOwner, setAddingNewOwner] = useState(false);
-
-  const [showAddAccessToken, setShowAddAccessToken] = useState(false);
-  const [accessToken, setAccessToken] = useState<string>("");
+  const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
+  const [showManageAccessToken, setShowManageAccessToken] = useState(false);
+  const [removeAccessToken, setRemoveAccessToken] = useState<{
+    show: boolean;
+    removing: boolean;
+    token?: string;
+  }>({ show: false, removing: false });
   const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
     string[]
   >(() => {
     if (isSuccess(forumData.restriction)) {
-      return forumData.restriction?.nftOwnership
-        ? [forumData.restriction.nftOwnership.collectionId.toBase58()]
-        : forumData.restriction.nftListAnyOwnership
-        ? forumData.restriction.nftListAnyOwnership.collectionIds.map(
-            (pkey) => {
-              return pkey.toBase58();
-            }
-          )
-        : forumData.restriction.tokenOwnership
-        ? [forumData.restriction.tokenOwnership.mint.toBase58()]
-        : [];
+      return restrictionListToString(forumData.restriction);
     } else return [];
   });
   const [newForumAccessToken, setNewForumAccessToken] = useState<string>("");
@@ -89,6 +90,14 @@ export function ForumContent(props: ForumContentProps) {
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
+
+  useEffect(() => {
+    if (!keepGates && newTopic.accessToken.length === 0) {
+      setUngatedNewTopic(true);
+    } else {
+      setUngatedNewTopic(false);
+    }
+  }, [newTopic.accessToken, keepGates]);
 
   // Begin mutating operations
   const addModerators = async () => {
@@ -165,28 +174,22 @@ export function ForumContent(props: ForumContentProps) {
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
-      const tokenCSV = newForumAccessToken.replace(/\s+/g, "");
-      const csvList = tokenCSV.split(",");
-      const currentIds = currentForumAccessToken.map((token) => {
-        return newPublicKey(token);
-      });
-      const newIds = csvList.map((token) => {
-        return newPublicKey(token);
-      });
-      const accessCollectionIds = newIds.concat(currentIds);
-
-      const restrictionList = {
-        nftListAnyOwnership: {
-          collectionIds: accessCollectionIds,
-        },
-      } as PostRestriction;
+      const restriction = pubkeysToRestriction(
+        newForumAccessToken,
+        isSuccess(forumData.restriction) ? forumData.restriction : undefined
+      );
+      const currentIds = restrictionListToString(restriction);
 
       const tx = await forumObject.setForumPostRestriction(
         forumData.collectionId,
-        restrictionList
+        restriction
       );
 
-      setShowAddAccessToken(false);
+      setCurrentForumAccessToken(
+        currentForumAccessToken.concat([newForumAccessToken])
+      );
+      setNewForumAccessToken("");
+      setShowManageAccessToken(false);
       setAddingAccessToken(false);
       setModalInfo({
         title: "Success!",
@@ -198,15 +201,11 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
+      setCurrentForumAccessToken(currentIds);
     } catch (error: any) {
       setAddingAccessToken(false);
       if (error.code !== 4001) {
-        // setCurrentForumAccessToken(
-        //   isSuccess(forumData.restriction)
-        //     ? [forumData.restriction?.nftOwnership?.collectionId.toBase58()] ?? [""]
-        //     : [""]
-        // );
-        setShowAddAccessToken(false);
+        setShowManageAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
@@ -217,19 +216,82 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
+  const deleteAccessToken = async () => {
+    setRemoveAccessToken({ ...removeAccessToken, removing: true });
+    try {
+      const filteredTokens = currentForumAccessToken.filter(
+        (t) => t != removeAccessToken.token
+      );
+
+      let tx = "";
+      if (filteredTokens.length > 0) {
+        const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
+        tx = await forumObject.setForumPostRestriction(
+          forumData.collectionId,
+          restrictionList
+        );
+      } else {
+        tx = await forumObject.deleteForumPostRestriction(
+          forumData.collectionId
+        );
+      }
+
+      setCurrentForumAccessToken(filteredTokens);
+      setRemoveAccessToken({ show: false, removing: false });
+
+      setModalInfo({
+        title: "Success!",
+        type: MessageType.success,
+        body: (
+          <div className="successBody">
+            <div>The access token was removed.</div>
+            <TransactionLink transaction={tx} />
+          </div>
+        ),
+      });
+    } catch (error: any) {
+      setRemoveAccessToken({ show: false, removing: false });
+      if (error?.error?.code !== 4001) {
+        setShowManageAccessToken(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The access token could not be removed`,
+          collapsible: { header: "Error", content: error.message },
+        });
+      }
+    }
+  };
+
   const createTopic = async () => {
     const p = {
-      subj: title,
-      body: description,
+      subj: newTopic.title,
+      body: newTopic.description,
     };
 
     setCreatingNewTopic(true);
     try {
-      const token = accessToken ? newPublicKey(accessToken) : undefined;
+      let restriction;
+      // First case checks if existing gates are kept and new ones being added
+      // Second case removes existing gates and adds new ones
+      // Third case removes existing gates
+      // Final case keeps existing gates
+      if (keepGates && newTopic.accessToken !== "") {
+        restriction = pubkeysToRestriction(
+          newTopic.accessToken,
+          isSuccess(forumData.restriction) ? forumData.restriction : undefined
+        );
+      } else if (!keepGates && newTopic.accessToken !== "") {
+        restriction = pubkeysToRestriction(newTopic.accessToken);
+      } else if (!keepGates) {
+        restriction = { null: {} };
+      } else {
+        restriction = undefined;
+      }
       const tx = await forumObject.createTopic(
         p,
         forumData.collectionId,
-        token ? { nftOwnership: { collectionId: token } } : undefined
+        restriction
       );
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
@@ -238,9 +300,7 @@ export function ForumContent(props: ForumContentProps) {
           type: MessageType.success,
           title: "Topic created!",
         });
-        setTitle("");
-        setDescription("");
-        setAccessToken("");
+        setNewTopic({ title: "", description: "", accessToken: "" });
         setShowNewTopicModal(false);
         forumObject.connection.confirmTransaction(tx).then(() => update());
       } else {
@@ -261,6 +321,14 @@ export function ForumContent(props: ForumContentProps) {
           type: MessageType.error,
           body: `The topic could not be created`,
           collapsible: { header: "Error", content: error.message },
+        });
+      } else {
+        setShowNewTopicModal(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The topic could not be created`,
+          collapsible: { header: "Error", content: error },
         });
       }
     }
@@ -286,9 +354,7 @@ export function ForumContent(props: ForumContentProps) {
     <div className="forumContentHeader">
       <div className="box">
         <div className="description">{forumData.description.desc}</div>
-        <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
-          {createTopicButton}
-        </PermissionsGate>
+        {createTopicButton}
       </div>
     </div>
   );
@@ -311,7 +377,7 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
-        {showAddAccessToken && _.isNil(modalInfo) && (
+        {showManageAccessToken && _.isNil(modalInfo) && (
           <PopUpModal
             id="add-access-token"
             visible
@@ -334,14 +400,36 @@ export function ForumContent(props: ForumContentProps) {
                 <label className="addModeratorsLabel">
                   Current NFT Collection ID
                 </label>
-                {currentForumAccessToken.map((token) => {
-                  return <div className="currentAccessToken">{token}</div>;
-                })}
+                {currentForumAccessToken.length === 0 ? (
+                  <div className="noRestriction">
+                    The forum has no restriction
+                  </div>
+                ) : (
+                  currentForumAccessToken.map((token, index) => {
+                    return (
+                      <div className="currentToken" key={index}>
+                        <>{token}</>
+                        <div
+                          onClick={() => {
+                            setShowManageAccessToken(false);
+                            setRemoveAccessToken({
+                              ...removeAccessToken,
+                              show: true,
+                              token,
+                            });
+                          }}
+                        >
+                          <Trash />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
             }
             loading={addingAccessToken}
             onClose={() => {
-              setShowAddAccessToken(false);
+              setShowManageAccessToken(false);
               setNewForumAccessToken("");
             }}
             okButton={
@@ -349,85 +437,132 @@ export function ForumContent(props: ForumContentProps) {
                 Save
               </button>
             }
-            // cancelButton={
-            //   <button
-            //     className="cancelButton"
-            //     onClick={() => {
-            //       setShowAddAccessToken(false);
-            //       setNewForumAccessToken("");
-            //     }}>
-            //     Cancel
-            //   </button>
-            // }
           />
         )}
-        {showNewTopicModal && _.isNil(modalInfo) && (
+        {removeAccessToken.show && _.isNil(modalInfo) && (
           <PopUpModal
-            id="create-topic"
+            id="remove-access-token"
             visible
-            title={"Create new Topic"}
+            title="Are you sure you want to remove NFT Collection ID?"
             body={
-              <div className="createTopicBody">
-                <>
-                  <span className="createTopicLabel">Topic Title</span>
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    className="createTopicTitleInput"
-                    name="name"
-                    required
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </>
-                <>
-                  <span className="createTopicLabel">Topic Description</span>
-                  <textarea
-                    placeholder="Description"
-                    className="createTopicTitleInput createTopicTextArea"
-                    maxLength={800}
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                  />
-                </>
-                <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
-                  <>
-                    <span className="createTopicLabel">Limit post access</span>
-                    <input
-                      type="text"
-                      placeholder="Token mint ID"
-                      className="newAccessToken"
-                      name="accessToken"
-                      value={accessToken}
-                      onChange={(e) => setAccessToken(e.target.value)}
-                    />
-                  </>
-                </PermissionsGate>
+              <div>
+                This action will remove the token
+                {` ${removeAccessToken.token?.substring(0, 4)}...`}
+                {`${removeAccessToken.token?.slice(-4)} `} from gating the
+                forum.
               </div>
             }
-            loading={creatingNewTopic}
+            loading={removeAccessToken.removing}
+            onClose={() =>
+              setRemoveAccessToken({ show: false, removing: false })
+            }
             okButton={
-              <button
-                className="okButton"
-                disabled={title.length === 0}
-                onClick={() => createTopic()}
-              >
-                Create
+              <button className="okButton" onClick={() => deleteAccessToken()}>
+                Remove
               </button>
             }
             onClose={() => {
-              setShowNewTopicModal(false);
-            }}
-            // cancelButton={
-            //   <button
-            //     className="cancelButton"
-            //     onClick={() => setShowNewTopicModal(false)}
-            //   >
-            //     Cancel
-            //   </button>
-            // }
+                  setRemoveAccessToken({ show: false, removing: false })
+            }
           />
         )}
+        {(() => {
+          if (showNewTopicModal && _.isNil(modalInfo)) {
+            if (role === UserRoleType.Viewer) {
+              return (
+                <PopUpModal
+                  id="create-topic"
+                  title="You are not authorized"
+                  body={
+                    "Oops! You need a token to participate. Please contact the forum’s moderators."
+                  }
+                  visible
+                  okButton={
+                    <button
+                      className="okButton"
+                      onClick={() => setShowNewTopicModal(false)}>
+                      OK
+                    </button>
+                  }
+                />
+              );
+            } else {
+              return (
+                <PopUpModal
+                  id="create-topic"
+                  visible
+                  title={"Create new Topic"}
+                  body={
+                    <div className="createTopicBody">
+                      <>
+                        <span className="createTopicLabel">Topic Title</span>
+                        <input
+                          type="text"
+                          placeholder="Title"
+                          className="createTopicTitleInput"
+                          name="name"
+                          required
+                          value={newTopic.title}
+                          onChange={(e) =>
+                            setNewTopic({ ...newTopic, title: e.target.value })
+                          }
+                        />
+                      </>
+                      <>
+                        <span className="createTopicLabel">Topic Description</span>
+                        <textarea
+                          placeholder="Description"
+                          className="createTopicTitleInput createTopicTextArea"
+                          maxLength={800}
+                          value={newTopic.description}
+                          onChange={(e) =>
+                            setNewTopic({ ...newTopic, description: e.target.value })
+                          }
+                        />
+                      </>
+                      <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
+                        <>
+                          <span className="createTopicLabel">Limit post access</span>
+                          <input
+                            type="text"
+                            placeholder="Token mint ID"
+                            className="newAccessToken"
+                            name="accessToken"
+                            value={newTopic.accessToken}
+                            onChange={(e) =>
+                              setNewTopic({
+                                ...newTopic,
+                                accessToken: e.target.value,
+                              })
+                            }
+                          />
+                        </>
+                      </PermissionsGate>
+                    </div>
+                  }
+                  loading={creatingNewTopic}
+                  okButton={
+                    <button
+                      className="okButton"
+                      disabled={newTopic.title.length === 0}
+                      onClick={() => createTopic()}>
+                      Create
+                    </button>
+                  }
+                  cancelButton={
+                    <button
+                      className="cancelButton"
+                      onClick={() => setShowNewTopicModal(false)}>
+                      Cancel
+                    </button>
+                  }
+                />
+              );
+            }
+          } else {
+            return null;
+          }
+        })()}
         {_.isNil(modalInfo) && showAddModerators && (
           <PopUpModal
             id="add-moderators"
@@ -465,13 +600,7 @@ export function ForumContent(props: ForumContentProps) {
               </button>
             }
             onClose={() => setShowAddModerators(false)}
-            // cancelButton={
-            //   <button
-            //     className="cancelButton"
-            //     onClick={() => setShowAddModerators(false)}>
-            //     Cancel
-            //   </button>
-            // }
+
           />
         )}
         {_.isNil(modalInfo) && showAddOwners && (
@@ -511,14 +640,6 @@ export function ForumContent(props: ForumContentProps) {
               </button>
             }
             onClose={() => setShowAddOwners(false)}
-            // cancelButton={
-            //   <button
-            //     className="cancelButton"
-            //     onClick={() => setShowAddOwners(false)}
-            //   >
-            //     Cancel
-            //   </button>
-            // }
           />
         )}
         {forumHeader}
@@ -547,7 +668,7 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
+                onClick={() => setShowManageAccessToken(true)}
               >
                 Manage forum access
               </button>

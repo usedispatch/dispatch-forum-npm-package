@@ -359,9 +359,7 @@ export function ForumContent(props: ForumContentProps) {
     <div className="forumContentHeader">
       <div className="box">
         <div className="description">{forumData.description.desc}</div>
-        <PermissionsGate scopes={[SCOPES.canCreateTopic]}>
-          {createTopicButton}
-        </PermissionsGate>
+        {createTopicButton}
       </div>
     </div>
   );
@@ -491,101 +489,103 @@ export function ForumContent(props: ForumContentProps) {
             }
           />
         )}
-        {showNewTopicModal && _.isNil(modalInfo) && (
-          <PopUpModal
-            id="create-topic"
-            visible
-            title={"Create new Topic"}
-            body={
-              <div className="createTopicBody">
-                <>
-                  <span className="createTopicLabel">Topic Title</span>
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    className="createTopicTitleInput"
-                    name="name"
-                    required
-                    value={newTopic.title}
-                    onChange={(e) =>
-                      setNewTopic({ ...newTopic, title: e.target.value })
-                    }
-                  />
-                </>
-                <>
-                  <span className="createTopicLabel">Topic Description</span>
-                  <textarea
-                    placeholder="Description"
-                    className="createTopicTitleInput createTopicTextArea"
-                    maxLength={800}
-                    value={newTopic.description}
-                    onChange={(e) =>
-                      setNewTopic({ ...newTopic, description: e.target.value })
-                    }
-                  />
-                </>
-                <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
-                  <>
-                    {currentForumAccessToken.length > 0 && (
-                      <div className="gateCheckbox">
+        {(() => {
+          if (showNewTopicModal && _.isNil(modalInfo)) {
+            if (role === UserRoleType.Viewer) {
+              return (
+                <PopUpModal
+                  id="create-topic"
+                  title="You are not authorized"
+                  body={
+                    "Oops! You need a token to participate. Please contact the forum’s moderators."
+                  }
+                  visible
+                  okButton={
+                    <button
+                      className="okButton"
+                      onClick={() => setShowNewTopicModal(false)}>
+                      OK
+                    </button>
+                  }
+                />
+              );
+            } else {
+              return (
+                <PopUpModal
+                  id="create-topic"
+                  visible
+                  title={"Create new Topic"}
+                  body={
+                    <div className="createTopicBody">
+                      <>
+                        <span className="createTopicLabel">Topic Title</span>
                         <input
-                          type="checkbox"
-                          checked={keepGates}
-                          onChange={(e) => {
-                            setKeepGates(e.target.checked);
-                          }}
+                          type="text"
+                          placeholder="Title"
+                          className="createTopicTitleInput"
+                          name="name"
+                          required
+                          value={newTopic.title}
+                          onChange={(e) =>
+                            setNewTopic({ ...newTopic, title: e.target.value })
+                          }
                         />
-                        <div className="createTopicLabel">
-                          Keep Existing Forum Gates on Topic
-                        </div>
-                      </div>
-                    )}
-                    <span className="createTopicLabel">
-                      Add post restrictions
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="Add a comma separated list of NFT collection IDs"
-                      className="newAccessToken"
-                      name="accessToken"
-                      value={newTopic.accessToken}
-                      onChange={(e) =>
-                        setNewTopic({
-                          ...newTopic,
-                          accessToken: e.target.value,
-                        })
-                      }
-                    />
-                    {ungatedNewTopic && (
-                      <div className="warningTopicLabel">
-                        {" "}
-                        Warning: This topic is ungated and open to anyone.
-                      </div>
-                    )}
-                  </>
-                </PermissionsGate>
-              </div>
+                      </>
+                      <>
+                        <span className="createTopicLabel">Topic Description</span>
+                        <textarea
+                          placeholder="Description"
+                          className="createTopicTitleInput createTopicTextArea"
+                          maxLength={800}
+                          value={newTopic.description}
+                          onChange={(e) =>
+                            setNewTopic({ ...newTopic, description: e.target.value })
+                          }
+                        />
+                      </>
+                      <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
+                        <>
+                          <span className="createTopicLabel">Limit post access</span>
+                          <input
+                            type="text"
+                            placeholder="Token mint ID"
+                            className="newAccessToken"
+                            name="accessToken"
+                            value={newTopic.accessToken}
+                            onChange={(e) =>
+                              setNewTopic({
+                                ...newTopic,
+                                accessToken: e.target.value,
+                              })
+                            }
+                          />
+                        </>
+                      </PermissionsGate>
+                    </div>
+                  }
+                  loading={creatingNewTopic}
+                  okButton={
+                    <button
+                      className="okButton"
+                      disabled={newTopic.title.length === 0}
+                      onClick={() => createTopic()}>
+                      Create
+                    </button>
+                  }
+                  cancelButton={
+                    <button
+                      className="cancelButton"
+                      onClick={() => setShowNewTopicModal(false)}>
+                      Cancel
+                    </button>
+                  }
+                />
+              );
             }
-            loading={creatingNewTopic}
-            okButton={
-              <button
-                className="okButton"
-                disabled={newTopic.title.length === 0}
-                onClick={() => createTopic()}
-              >
-                Create
-              </button>
-            }
-            cancelButton={
-              <button
-                className="cancelButton"
-                onClick={() => setShowNewTopicModal(false)}
-              >
-                Cancel
-              </button>
-            }
-          />
-        )}
+          } else {
+            return null;
+          }
+        })()}
         {_.isNil(modalInfo) && showAddModerators && (
           <PopUpModal
             id="add-moderators"

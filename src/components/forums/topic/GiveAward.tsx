@@ -76,6 +76,7 @@ export function GiveAward(props: GiveAwardProps) {
     setLoading(true);
 
     try {
+      console.log(Forum.connection.rpcEndpoint);
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT?.mint!,
@@ -240,7 +241,7 @@ interface TransferSOLProps {
 
 async function transferSOL(props: TransferSOLProps) {
   const { posterId, amount, wallet } = props;
-  const connection = new web3.Connection("https://api.devnet.solana.com");
+  const { connection } = useForum();
 
   let tx = new web3.Transaction().add(
     web3.SystemProgram.transfer({

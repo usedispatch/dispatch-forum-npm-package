@@ -1,6 +1,7 @@
 @layer components {
   .editPostContainer {
     display: flex;
+    color: black;
 
     .successBody {
       display: flex;
@@ -69,6 +70,7 @@
     .editPostLabel {
       margin-bottom: 8px;
       font-size: 16px;
+      font-weight: 500;
     }
 
     .okButton {

@@ -1,6 +1,7 @@
 @layer components {
   .editForumContainer {
     display: flex;
+    color: black;
 
     .actionDivider {
       width: 1px;
@@ -74,6 +75,7 @@
     .editForumLabel {
       margin-bottom: 8px;
       font-size: 16px;
+      font-weight: 500;
     }
 
     .okButton {

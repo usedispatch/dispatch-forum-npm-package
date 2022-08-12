@@ -163,6 +163,7 @@ export function TopicContent(props: TopicContentProps) {
       }
     }
   };
+
   return (
     <>
       {!_.isNil(modalInfo) && (
@@ -420,6 +421,10 @@ function TopicHeader(props: TopicHeaderProps) {
       })}`
     : "-";
 
+  const croppedPosterId = `${topic.poster
+    .toBase58()
+    .slice(0, 4)}...${topic.poster.toBase58().slice(-4)}`;
+
   return (
     <div className="topicHeader">
       <div className="topicTitle">
@@ -429,7 +434,7 @@ function TopicHeader(props: TopicHeaderProps) {
             <div className="icon">
               <Jdenticon value={topic?.poster.toBase58()} alt="posterID" />
             </div>
-            <div className="posterId">{topic?.poster.toBase58()}</div>
+            <div className="posterId">{croppedPosterId}</div>
           </div>
           <div className="postedAt">
             Posted at: {postedAt}

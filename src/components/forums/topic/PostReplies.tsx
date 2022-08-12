@@ -71,9 +71,12 @@ export function PostReplies(props: PostRepliesProps) {
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
+        const croppedPosterId = `${reply.poster
+          .toBase58()
+          .slice(0, 4)}...${reply.poster.toBase58().slice(-4)}`;
+
         return (
           <div key={index}>
-            {index > 0 && <div className="repliesDivider" />}
             <div className="replyContent">
               <div className="replyHeader">
                 <div className="posterId">
@@ -83,7 +86,7 @@ export function PostReplies(props: PostRepliesProps) {
                       alt="posterID"
                     />
                   </div>
-                  <div className="walletId">{reply.poster.toBase58()}</div>
+                  <div className="walletId">{croppedPosterId}</div>
                 </div>
                 <div className="postedAt">
                   {postedAt(reply)}

@@ -129,6 +129,11 @@
         color: #86878e;
         display: flex;
       }
+
+      @media only screen and (max-width: 480px) {
+        flex-direction: column;
+        align-items: flex-start;
+      }
     }
 
     .postBody {

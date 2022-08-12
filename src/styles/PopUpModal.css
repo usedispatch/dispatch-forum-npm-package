@@ -44,8 +44,15 @@
         border-radius: 16px;
         -ms-scroll-chaining: none;
         overscroll-behavior: contain;
-        top: 25%;
+
+        position: absolute;
+        top: 10%;
         width: 450px;
+
+        @media only screen and (max-width: 480px) {
+          width: 350px;
+          padding: 16px;
+        }
       }
     }
 

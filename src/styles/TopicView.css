@@ -75,6 +75,10 @@
   .topicView {
     background: #f7f7fe;
     padding-top: 24px;
+
+    @media only screen and (max-width: 480px) {
+      overflow-x: overlay;
+    }
   }
 
   .topicViewContainer {
@@ -93,13 +97,17 @@
     .topicViewContent {
       width: 100%;
       max-width: 1280px;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 0 32px;
       padding: 0 0 24px;
 
       .topicViewLoading {
         padding-top: 192px;
       }
+    }
+
+    @media only screen and (max-width: 480px) {
+      margin: 0 8px;
+      width: fit-content;
     }
   }
 }

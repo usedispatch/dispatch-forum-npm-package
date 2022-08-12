@@ -13,10 +13,6 @@
     padding-left: 5px;
   }
 
-  .topicTools {
-    display: flex;
-  }
-
   .currentAccessToken {
     font-size: 14px;
     margin: 1rem;
@@ -213,6 +209,11 @@
         border: none;
         color: #414149;
         font-size: 14px;
+
+        .topicTools {
+          display: flex;
+          align-items: center;
+        }
 
         .left {
           display: flex;

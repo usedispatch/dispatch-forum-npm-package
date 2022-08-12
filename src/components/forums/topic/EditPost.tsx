@@ -166,7 +166,6 @@ export function EditPost(props: EditPostProps) {
                 Save
               </button>
             }
-            onClose={() => resetToInitialValues()}
           />
         )}
         {!_.isNil(modalInfo) && (

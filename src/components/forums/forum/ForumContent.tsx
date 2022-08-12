@@ -461,9 +461,6 @@ export function ForumContent(props: ForumContentProps) {
                 Remove
               </button>
             }
-            onClose={() => {
-                  setRemoveAccessToken({ show: false, removing: false })
-            }
           />
         )}
         {(() => {
@@ -480,7 +477,8 @@ export function ForumContent(props: ForumContentProps) {
                   okButton={
                     <button
                       className="okButton"
-                      onClick={() => setShowNewTopicModal(false)}>
+                      onClick={() => setShowNewTopicModal(false)}
+                    >
                       OK
                     </button>
                   }
@@ -509,20 +507,27 @@ export function ForumContent(props: ForumContentProps) {
                         />
                       </>
                       <>
-                        <span className="createTopicLabel">Topic Description</span>
+                        <span className="createTopicLabel">
+                          Topic Description
+                        </span>
                         <textarea
                           placeholder="Description"
                           className="createTopicTitleInput createTopicTextArea"
                           maxLength={800}
                           value={newTopic.description}
                           onChange={(e) =>
-                            setNewTopic({ ...newTopic, description: e.target.value })
+                            setNewTopic({
+                              ...newTopic,
+                              description: e.target.value,
+                            })
                           }
                         />
                       </>
                       <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
                         <>
-                          <span className="createTopicLabel">Limit post access</span>
+                          <span className="createTopicLabel">
+                            Limit post access
+                          </span>
                           <input
                             type="text"
                             placeholder="Token mint ID"
@@ -545,14 +550,16 @@ export function ForumContent(props: ForumContentProps) {
                     <button
                       className="okButton"
                       disabled={newTopic.title.length === 0}
-                      onClick={() => createTopic()}>
+                      onClick={() => createTopic()}
+                    >
                       Create
                     </button>
                   }
                   cancelButton={
                     <button
                       className="cancelButton"
-                      onClick={() => setShowNewTopicModal(false)}>
+                      onClick={() => setShowNewTopicModal(false)}
+                    >
                       Cancel
                     </button>
                   }
@@ -600,7 +607,6 @@ export function ForumContent(props: ForumContentProps) {
               </button>
             }
             onClose={() => setShowAddModerators(false)}
-
           />
         )}
         {_.isNil(modalInfo) && showAddOwners && (

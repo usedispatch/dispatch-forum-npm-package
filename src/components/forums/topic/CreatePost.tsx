@@ -77,6 +77,7 @@ export function CreatePost(props: CreatePostProps) {
         NOTIFICATION_BANNER_TIMEOUT
       );
       onReload();
+      setBodySize(0);
     } catch (error: any) {
       const message = JSON.stringify(error);
       setLoading(false);
@@ -129,7 +130,9 @@ export function CreatePost(props: CreatePostProps) {
                   required
                   disabled={!permission.readAndWrite}
                   onChange={(event) => {
-                    setBodySize(new Buffer(event.target.value).byteLength);
+                    setBodySize(
+                      new Buffer(event.target.value, "utf-8").byteLength
+                    );
                   }}
                   name="post"
                 />

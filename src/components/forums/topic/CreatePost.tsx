@@ -59,7 +59,7 @@ export function CreatePost(props: CreatePostProps) {
     try {
       const tx = await createForumPost(post, topicId, collectionId);
       if (tx) {
-        Forum.connection.confirmTransaction(tx).then(() => update());
+        await Forum.connection.confirmTransaction(tx).then(() => update());
       }
       setLoading(false);
       setIsNotificationHidden(false);

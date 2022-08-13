@@ -96,7 +96,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.success,
       });
       if (tx) {
-        forum.connection.confirmTransaction(tx).then(() => update());
+        await forum.connection.confirmTransaction(tx).then(() => update());
       }
       setTimeout(
         () => setIsNotificationHidden(true),
@@ -129,7 +129,7 @@ export function PostContent(props: PostContentProps) {
         body: `The post was deleted`,
       });
       if (tx) {
-        forum.connection.confirmTransaction(tx).then(() => update());
+        await forum.connection.confirmTransaction(tx).then(() => update());
       }
       setShowDeleteConfirmation(false);
       setDeleting(false);

@@ -76,7 +76,6 @@ export function GiveAward(props: GiveAwardProps) {
     setLoading(true);
 
     try {
-      console.log(Forum.connection.rpcEndpoint);
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT?.mint!,

@@ -525,6 +525,21 @@ export function ForumContent(props: ForumContentProps) {
                       </>
                       <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
                         <>
+                          {currentForumAccessToken.length > 0 && (
+                            <div className="gateCheckbox">
+                              <input
+                                type="checkbox"
+                                checked={keepGates}
+                                onChange={(e) => {
+                                  setKeepGates(e.target.checked);
+                                }}
+                              />
+                              <div className="createTopicLabel">
+                                Keep Existing Forum Gates on Topic
+                              </div>
+                            </div>
+                          )}
+                          {isSuccess(forumData.restriction) && <div></div>}
                           <span className="createTopicLabel">
                             Limit post access
                           </span>

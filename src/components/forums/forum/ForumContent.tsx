@@ -302,7 +302,9 @@ export function ForumContent(props: ForumContentProps) {
         });
         setNewTopic({ title: "", description: "", accessToken: "" });
         setShowNewTopicModal(false);
-        forumObject.connection.confirmTransaction(tx).then(() => update());
+        await forumObject.connection
+          .confirmTransaction(tx)
+          .then(() => update());
       } else {
         setCreatingNewTopic(false);
         setModalInfo({

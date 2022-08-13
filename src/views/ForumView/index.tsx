@@ -172,7 +172,7 @@ export const ForumView = (props: ForumViewProps) => {
         });
 
         if (res?.txs) {
-          Promise.all(
+          await Promise.all(
             res.txs.map((tx) => forumObject.connection.confirmTransaction(tx))
           ).then(() => update());
         }

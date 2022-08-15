@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
+import { Helmet } from "react-helmet";
 import { useForumData, useModal } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
@@ -142,6 +143,14 @@ export const TopicView = (props: Props) => {
 
   return (
     <div className="dsp- ">
+      <Helmet>
+        <meta charSet="utf-8" />
+        {isSuccess(topic) ? (
+          <title>{topic.data.subj}</title>
+        ) : (
+          <title>Create Forum for {collectionId}</title>
+        )}
+      </Helmet>
       <div className="topicView">
         {modal}
         {!permission.readAndWrite && <ConnectionAlert />}

@@ -11,11 +11,10 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
-import { EditForum, ManageOwners, TopicList } from "../index";
+import { EditForum, ManageOwners, ManageModerators, TopicList } from "../index";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
 import { ForumData } from "../../../utils/hooks";
@@ -40,22 +39,11 @@ export function ForumContent(props: ForumContentProps) {
     description: string;
     accessToken: string;
   }>({ title: "", description: "", accessToken: "" });
-  const [currentMods, setCurrentMods] = useState<string[]>(() => {
-    if (isSuccess(forumData.moderators)) {
-      return forumData.moderators.map((pkey) => pkey.toBase58());
-    } else {
-      // TODO(andrew) show error here for missing mods
-      return [];
-    }
-  });
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [keepGates, setKeepGates] = useState(true);
 
-  const [showAddModerators, setShowAddModerators] = useState(false);
-  const [newModerator, setNewModerator] = useState<string>("");
-  const [addingNewModerator, setAddingNewModerator] = useState(false);
   const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
   const [removeAccessToken, setRemoveAccessToken] = useState<{
@@ -89,43 +77,6 @@ export function ForumContent(props: ForumContentProps) {
   }, [newTopic.accessToken, keepGates]);
 
   // Begin mutating operations
-  const addModerators = async () => {
-    setAddingNewModerator(true);
-    try {
-      const moderatorId = newPublicKey(newModerator);
-      const tx = await forumObject.addModerator(
-        moderatorId,
-        forumData.collectionId
-      );
-      setCurrentMods(currentMods.concat(newModerator));
-      setNewModerator("");
-      setShowAddModerators(false);
-      setAddingNewModerator(false);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: (
-          <div className="successBody">
-            <div>The moderator was added</div>
-            <TransactionLink transaction={tx!} />
-          </div>
-        ),
-      });
-    } catch (error: any) {
-      setAddingNewModerator(false);
-      if (error.code !== 4001) {
-        setNewModerator("");
-        setShowAddModerators(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The moderators could not be added`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
-    }
-  };
-
   const addAccessToken = async () => {
     setAddingAccessToken(true);
     try {
@@ -537,45 +488,6 @@ export function ForumContent(props: ForumContentProps) {
             return null;
           }
         })()}
-        {_.isNil(modalInfo) && showAddModerators && (
-          <PopUpModal
-            id="add-moderators"
-            visible
-            title={"Manage moderators"}
-            body={
-              <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">Add new</label>
-                <input
-                  placeholder="Add moderator's wallet ID here"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={newModerator}
-                  onChange={(e) => setNewModerator(e.target.value)}
-                />
-                <label className="addModeratorsLabel">Current moderators</label>
-                <ul>
-                  {currentMods.map((m) => {
-                    return (
-                      <li key={m} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={m} alt="moderatorId" />
-                        </div>
-                        {m}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            }
-            loading={addingNewModerator}
-            okButton={
-              <button className="okButton" onClick={() => addModerators()}>
-                Save
-              </button>
-            }
-            onClose={() => setShowAddModerators(false)}
-          />
-        )}
         {forumHeader}
         {role === UserRoleType.Owner && (
           <div className="moderatorToolsContainer">
@@ -583,12 +495,7 @@ export function ForumContent(props: ForumContentProps) {
               scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
               <div>Moderator tools: </div>
               <ManageOwners forumData={forumData} update={update} />
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}>
-                Manage moderators
-              </button>
+              <ManageModerators forumData={forumData} update={update} />
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}

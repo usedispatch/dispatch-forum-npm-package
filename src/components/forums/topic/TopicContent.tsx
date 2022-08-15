@@ -178,7 +178,8 @@ export function TopicContent(props: TopicContentProps) {
             <a
               className="okButton"
               href={modalInfo.okPath}
-              onClick={() => setModalInfo(null)}>
+              onClick={() => setModalInfo(null)}
+            >
               OK
             </a>
           }
@@ -305,11 +306,13 @@ export function TopicContent(props: TopicContentProps) {
             <div className="topicTools">
               <PermissionsGate
                 scopes={[SCOPES.canDeleteTopic]}
-                posterKey={topic.poster}>
+                posterKey={topic.poster}
+              >
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowDeleteConfirmation(true)}>
+                  onClick={() => setShowDeleteConfirmation(true)}
+                >
                   <div className="delete">
                     <Trash />
                   </div>
@@ -322,10 +325,14 @@ export function TopicContent(props: TopicContentProps) {
                 showDividers={{ leftDivider: true, rightDivider: false }}
               />
               <div className="actionDivider" />
+              <div className="lock">
+                <Lock />
+              </div>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}>
+                onClick={() => setShowAddAccessToken(true)}
+              >
                 Manage post access
               </button>
             </div>
@@ -335,7 +342,8 @@ export function TopicContent(props: TopicContentProps) {
                 <button
                   className="awardButton"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowGiveAward(true)}>
+                  onClick={() => setShowGiveAward(true)}
+                >
                   <Gift /> Send Token
                 </button>
               </>
@@ -433,7 +441,8 @@ function TopicHeader(props: TopicHeaderProps) {
               <a
                 href={`https://solscan.io/account/${topic.address}?cluster=${forum.cluster}`}
                 className="transactionLink"
-                target="_blank">
+                target="_blank"
+              >
                 <Info />
               </a>
             </div>

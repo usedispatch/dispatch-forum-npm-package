@@ -107,7 +107,7 @@
 
     @media only screen and (max-width: 480px) {
       margin: 0 8px;
-      width: fit-content;
+      /* width: fit-content; */
     }
   }
 }

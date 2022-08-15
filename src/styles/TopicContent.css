@@ -238,26 +238,15 @@
           }
         }
 
-        .lock {
-          margin-right: 4px;
-          height: 12px;
-          width: 12px;
-
-          svg {
-            path {
-              stroke: #86878e;
-            }
-          }
-        }
-
         .deleteButton {
           margin: 0;
         }
 
         .delete {
           margin-right: 4px;
-          height: 18px;
-          width: 18px;
+          margin-left: 10px;
+          height: 16px;
+          width: 16px;
 
           svg {
             path {
@@ -293,6 +282,7 @@
 
         .actionDivider {
           width: 1px;
+          height: 20px;
           margin: 0 10px;
 
           background: #b8b9dc;

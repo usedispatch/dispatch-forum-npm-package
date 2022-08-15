@@ -313,26 +313,21 @@ export function TopicContent(props: TopicContentProps) {
                   <div className="delete">
                     <Trash />
                   </div>
-                  Delete
                 </button>
-                <EditPost
-                  post={topic}
-                  forumData={forumData}
-                  update={() => update()}
-                  showDividers={{ leftDivider: true, rightDivider: true }}
-                />
               </PermissionsGate>
-              <div>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddAccessToken(true)}>
-                  <div className="lock">
-                    <Lock />
-                  </div>
-                  view post access
-                </button>
-              </div>
+              <EditPost
+                post={topic}
+                forumData={forumData}
+                update={() => update()}
+                showDividers={{ leftDivider: true, rightDivider: false }}
+              />
+              <div className="actionDivider" />
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddAccessToken(true)}>
+                Manage post access
+              </button>
             </div>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <>

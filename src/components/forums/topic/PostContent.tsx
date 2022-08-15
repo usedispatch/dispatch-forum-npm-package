@@ -164,10 +164,6 @@ export function PostContent(props: PostContentProps) {
     minute: "numeric",
   })}`;
 
-  const croppedPosterId = `${post.poster.toBase58().slice(0, 4)}...${post.poster
-    .toBase58()
-    .slice(-4)}`;
-
   return (
     <>
       <div className="postContentContainer">
@@ -270,7 +266,7 @@ export function PostContent(props: PostContentProps) {
                   <div className="icon">
                     <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
                   </div>
-                  <div className="walletId">{croppedPosterId}</div>
+                  <div className="walletId">{post.poster.toBase58()}</div>
                 </div>
                 <div className="postedAt">
                   Posted at: {postedAt}

@@ -119,7 +119,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [accessToken, setAccessToken] = useState<string>();
-
+  const [bodySize, setBodySize] = useState<number>(0);
   const onCreateForumClick = () => {
     createForum();
   };
@@ -270,11 +270,14 @@ export const ForumView = (props: ForumViewProps) => {
                   <textarea
                     placeholder="Description"
                     className="createForumInput createForumDescription"
-                    maxLength={800}
                     value={description}
-                    disabled={creatingNewForum}
-                    onChange={(e) => setDescription(e.target.value)}
+                    disabled={creatingNewForum || bodySize > 800}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      setBodySize(new Buffer(e.target.value).byteLength);
+                    }}
                   />
+                  <div>{bodySize}/800</div>
                 </>
                 <>
                   <span className="createForumLabel">Moderator</span>

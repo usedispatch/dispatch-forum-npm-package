@@ -34,7 +34,9 @@ export function EditPost(props: EditPostProps) {
     subj: string;
     loading?: boolean;
   }>({ show: false, body: post.data.body ?? "", subj: post.data.subj ?? "" });
-
+  const [bodySize, setBodySize] = useState(
+    new Buffer(post.data.body, "utf-8").byteLength
+  );
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
     content?: string | ReactNode;
@@ -145,10 +147,12 @@ export function EditPost(props: EditPostProps) {
                     }
                     className="editPostInput"
                     value={editPost.body}
-                    onChange={(e) =>
-                      setEditPost({ ...editPost, body: e.target.value })
-                    }
+                    onChange={(e) => {
+                      setEditPost({ ...editPost, body: e.target.value });
+                      setBodySize(new Buffer(e.target.value).byteLength);
+                    }}
                   />
+                  <div> {bodySize}/800 </div>
                 </div>
               </div>
             }
@@ -158,11 +162,12 @@ export function EditPost(props: EditPostProps) {
               <button
                 className="okButton"
                 disabled={
-                  post.isTopic
+                  (post.isTopic
                     ? editPost.subj.length === 0
-                    : editPost.body.length === 0
+                    : editPost.body.length === 0) || bodySize > 800
                 }
-                onClick={() => editPostInfo()}>
+                onClick={() => editPostInfo()}
+              >
                 Save
               </button>
             }
@@ -187,7 +192,8 @@ export function EditPost(props: EditPostProps) {
         <button
           className="editPostButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditPost({ ...editPost, show: true })}>
+          onClick={() => setEditPost({ ...editPost, show: true })}
+        >
           <Edit /> Edit
         </button>
         {showDividers.rightDivider && <div className="actionDivider" />}

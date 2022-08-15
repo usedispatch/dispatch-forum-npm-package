@@ -11,8 +11,7 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
-import { EditForum } from "./EditForum";
-import { TopicList } from "..";
+import { EditForum, ManageOwners, TopicList } from "../index";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -24,6 +23,7 @@ import {
   restrictionListToString,
   pubkeysToRestriction,
 } from "../../../utils/restrictionListHelper";
+
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
@@ -48,25 +48,14 @@ export function ForumContent(props: ForumContentProps) {
       return [];
     }
   });
-  const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
-    if (isSuccess(forumData.owners)) {
-      return forumData.owners.map((pkey) => pkey.toBase58());
-    } else {
-      // TODO(andrew) show error here for missing owners
-      return [];
-    }
-  });
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [keepGates, setKeepGates] = useState(true);
 
   const [showAddModerators, setShowAddModerators] = useState(false);
-  const [showAddOwners, setShowAddOwners] = useState(false);
   const [newModerator, setNewModerator] = useState<string>("");
-  const [newOwner, setNewOwner] = useState<string>("");
   const [addingNewModerator, setAddingNewModerator] = useState(false);
-  const [addingNewOwner, setAddingNewOwner] = useState(false);
   const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
   const [removeAccessToken, setRemoveAccessToken] = useState<{
@@ -132,40 +121,6 @@ export function ForumContent(props: ForumContentProps) {
           type: MessageType.error,
           body: `The moderators could not be added`,
           collapsible: { header: "Error", content: error.message },
-        });
-      }
-    }
-  };
-
-  const addOwner = async () => {
-    setAddingNewOwner(true);
-    try {
-      const ownerId = newPublicKey(newOwner);
-      const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
-      setCurrentOwners(currentOwners.concat(newOwner));
-      setNewOwner("");
-      setShowAddOwners(false);
-      setAddingNewOwner(false);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: (
-          <div className="successBody">
-            <div>The owner was added</div>
-            <TransactionLink transaction={tx!} />
-          </div>
-        ),
-      });
-    } catch (error: any) {
-      setAddingNewOwner(false);
-      if (error.code !== 4001) {
-        setNewOwner("");
-        setShowAddOwners(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The owners could not be added`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
         });
       }
     }
@@ -244,7 +199,7 @@ export function ForumContent(props: ForumContentProps) {
         type: MessageType.success,
         body: (
           <div className="successBody">
-            <div>The access token was removed.</div>
+            The access token was removed.
             <TransactionLink transaction={tx} />
           </div>
         ),
@@ -343,8 +298,7 @@ export function ForumContent(props: ForumContentProps) {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}
-    >
+      }}>
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -419,8 +373,7 @@ export function ForumContent(props: ForumContentProps) {
                               show: true,
                               token,
                             });
-                          }}
-                        >
+                          }}>
                           <Trash />
                         </div>
                       </div>
@@ -479,8 +432,7 @@ export function ForumContent(props: ForumContentProps) {
                   okButton={
                     <button
                       className="okButton"
-                      onClick={() => setShowNewTopicModal(false)}
-                    >
+                      onClick={() => setShowNewTopicModal(false)}>
                       OK
                     </button>
                   }
@@ -567,16 +519,14 @@ export function ForumContent(props: ForumContentProps) {
                     <button
                       className="okButton"
                       disabled={newTopic.title.length === 0}
-                      onClick={() => createTopic()}
-                    >
+                      onClick={() => createTopic()}>
                       Create
                     </button>
                   }
                   cancelButton={
                     <button
                       className="cancelButton"
-                      onClick={() => setShowNewTopicModal(false)}
-                    >
+                      onClick={() => setShowNewTopicModal(false)}>
                       Cancel
                     </button>
                   }
@@ -626,73 +576,23 @@ export function ForumContent(props: ForumContentProps) {
             onClose={() => setShowAddModerators(false)}
           />
         )}
-        {_.isNil(modalInfo) && showAddOwners && (
-          <PopUpModal
-            id="add-owners"
-            visible
-            title={"Manage owners"}
-            body={
-              <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">Add new</label>
-                <input
-                  placeholder="Add owners's wallet ID here"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={newOwner}
-                  onChange={(e) => setNewOwner(e.target.value)}
-                />
-                <label className="addModeratorsLabel">Current owners</label>
-                <ul>
-                  {currentOwners.map((m) => {
-                    return (
-                      <li key={m} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={m} alt="moderatorId" />
-                        </div>
-                        {m}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            }
-            loading={addingNewOwner}
-            okButton={
-              <button className="okButton" onClick={() => addOwner()}>
-                Save
-              </button>
-            }
-            onClose={() => setShowAddOwners(false)}
-          />
-        )}
         {forumHeader}
         {role === UserRoleType.Owner && (
           <div className="moderatorToolsContainer">
             <PermissionsGate
-              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
-            >
+              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}>
               <div>Moderator tools: </div>
-              <PermissionsGate scopes={[SCOPES.canAddOwner]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}
-                >
-                  Manage owners
-                </button>
-              </PermissionsGate>
+              <ManageOwners forumData={forumData} update={update} />
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}
-              >
+                onClick={() => setShowAddModerators(true)}>
                 Manage moderators
               </button>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowManageAccessToken(true)}
-              >
+                onClick={() => setShowManageAccessToken(true)}>
                 Manage forum access
               </button>
             </PermissionsGate>

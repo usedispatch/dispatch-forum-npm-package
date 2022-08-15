@@ -73,7 +73,6 @@ export function PostReplies(props: PostRepliesProps) {
       {replies.map((reply, index) => {
         return (
           <div key={index}>
-            {index > 0 && <div className="repliesDivider" />}
             <div className="replyContent">
               <div className="replyHeader">
                 <div className="posterId">

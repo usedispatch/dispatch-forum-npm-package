@@ -238,7 +238,7 @@
 
   .repliesSection {
     margin-top: 16px;
-    margin-left: 0.5rem; /* votePostContent.width + gap */
+    margin-left: 16px;
     border-left-width: 1px;
     border-color: #cac9cb;
 

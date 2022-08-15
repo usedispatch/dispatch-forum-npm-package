@@ -3,7 +3,7 @@ import { useState, ReactNode, useEffect } from "react";
 import Jdenticon from "react-jdenticon";
 import { PostRestriction } from "@usedispatch/client";
 
-import { Plus, Trash } from "../../../assets";
+import { Lock, Plus, Trash } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -343,8 +343,7 @@ export function ForumContent(props: ForumContentProps) {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}
-    >
+      }}>
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -419,8 +418,7 @@ export function ForumContent(props: ForumContentProps) {
                               show: true,
                               token,
                             });
-                          }}
-                        >
+                          }}>
                           <Trash />
                         </div>
                       </div>
@@ -479,8 +477,7 @@ export function ForumContent(props: ForumContentProps) {
                   okButton={
                     <button
                       className="okButton"
-                      onClick={() => setShowNewTopicModal(false)}
-                    >
+                      onClick={() => setShowNewTopicModal(false)}>
                       OK
                     </button>
                   }
@@ -567,16 +564,14 @@ export function ForumContent(props: ForumContentProps) {
                     <button
                       className="okButton"
                       disabled={newTopic.title.length === 0}
-                      onClick={() => createTopic()}
-                    >
+                      onClick={() => createTopic()}>
                       Create
                     </button>
                   }
                   cancelButton={
                     <button
                       className="cancelButton"
-                      onClick={() => setShowNewTopicModal(false)}
-                    >
+                      onClick={() => setShowNewTopicModal(false)}>
                       Cancel
                     </button>
                   }
@@ -669,12 +664,14 @@ export function ForumContent(props: ForumContentProps) {
         <PermissionsGate scopes={[SCOPES.canEditForum]}>
           <div className="moderatorToolsContainer">
             <div>Owner tools: </div>
+            <div className="lock">
+              <Lock />
+            </div>
             <PermissionsGate scopes={[SCOPES.canAddOwner]}>
               <button
-                className="moderatorTool"
+                className="moderatorTool owners"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddOwners(true)}
-              >
+                onClick={() => setShowAddOwners(true)}>
                 Manage owners
               </button>
             </PermissionsGate>
@@ -682,8 +679,7 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}
-              >
+                onClick={() => setShowAddModerators(true)}>
                 Manage moderators
               </button>
             </PermissionsGate>
@@ -691,8 +687,7 @@ export function ForumContent(props: ForumContentProps) {
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowManageAccessToken(true)}
-              >
+                onClick={() => setShowManageAccessToken(true)}>
                 Manage forum access
               </button>
             </PermissionsGate>

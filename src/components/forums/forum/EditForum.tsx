@@ -170,19 +170,6 @@ export function EditForum(props: EditForumProps) {
                 Save
               </button>
             }
-            // cancelButton={
-            //   <button
-            //     className="cancelButton"
-            //     onClick={() =>
-            //       setEditForum({
-            //         show: false,
-            //         title: forumData.description.title,
-            //         description: forumData.description.desc,
-            //       })
-            //     }>
-            //     Cancel
-            //   </button>
-            // }
           />
         )}
         {!_.isNil(modalInfo) && (

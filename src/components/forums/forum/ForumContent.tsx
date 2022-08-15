@@ -666,21 +666,19 @@ export function ForumContent(props: ForumContentProps) {
           />
         )}
         {forumHeader}
-        {role === UserRoleType.Owner && (
+        <PermissionsGate scopes={[SCOPES.canEditForum]}>
           <div className="moderatorToolsContainer">
-            <PermissionsGate
-              scopes={[SCOPES.canEditMods, SCOPES.canAddForumRestriction]}
-            >
-              <div>Moderator tools: </div>
-              <PermissionsGate scopes={[SCOPES.canAddOwner]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}
-                >
-                  Manage owners
-                </button>
-              </PermissionsGate>
+            <div>Owner tools: </div>
+            <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+              <button
+                className="moderatorTool"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowAddOwners(true)}
+              >
+                Manage owners
+              </button>
+            </PermissionsGate>
+            <PermissionsGate scopes={[SCOPES.canEditMods]}>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
@@ -688,6 +686,8 @@ export function ForumContent(props: ForumContentProps) {
               >
                 Manage moderators
               </button>
+            </PermissionsGate>
+            <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
@@ -698,7 +698,7 @@ export function ForumContent(props: ForumContentProps) {
             </PermissionsGate>
             <EditForum forumData={forumData} update={update} />
           </div>
-        )}
+        </PermissionsGate>
         {!_.isNil(forumData.collectionId) && (
           <TopicList forumData={forumData} />
         )}

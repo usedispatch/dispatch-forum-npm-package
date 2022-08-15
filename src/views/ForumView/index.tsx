@@ -213,7 +213,8 @@ export const ForumView = (props: ForumViewProps) => {
         disabled={!permission.readAndWrite}
         onClick={() => {
           setShowNewForumModal(true);
-        }}>
+        }}
+      >
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -270,7 +271,7 @@ export const ForumView = (props: ForumViewProps) => {
                     placeholder="Description"
                     className="createForumInput createForumDescription"
                     value={description}
-                    disabled={creatingNewForum || bodySize > 800}
+                    disabled={creatingNewForum}
                     onChange={(e) => {
                       setDescription(e.target.value);
                       setBodySize(new Buffer(e.target.value).byteLength);
@@ -294,7 +295,7 @@ export const ForumView = (props: ForumViewProps) => {
                     placeholder="Add a comma separated list of collection IDs"
                     className="createForumInput lastInputField"
                     value={accessToken}
-                    disabled={creatingNewForum}
+                    disabled={creatingNewForum || bodySize > 800}
                     onChange={(e) => setAccessToken(e.target.value)}
                   />
                 </>
@@ -305,14 +306,16 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}>
+                onClick={() => onCreateForumClick()}
+              >
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}>
+                onClick={() => setShowNewForumModal(false)}
+              >
                 Cancel
               </div>
             }
@@ -326,7 +329,8 @@ export const ForumView = (props: ForumViewProps) => {
                 <div
                   className={`forumViewTitle ${
                     !permission.readAndWrite ? "alert" : ""
-                  }`}>
+                  }`}
+                >
                   {forumData.description.title}
                 </div>
               ) /* TODO(andrew) what to render here if title isn't loaded */

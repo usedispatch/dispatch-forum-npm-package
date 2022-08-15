@@ -44,9 +44,6 @@
         SCOPES.canCreatePost,
         SCOPES.canCreateReply,
         SCOPES.canEditMods,
-        SCOPES.canDeleteTopic,
-        SCOPES.canDeletePost,
-        SCOPES.canDeleteReply,
         SCOPES.canAddTopicRestriction,
         SCOPES.canRemoveTopicRestriction
       ],

@@ -11,6 +11,7 @@
     canCreateForum: "can-create-forum",
     canDeleteForum: "can-delete-forum",
     canEditMods: "edit-mods",
+    canEditForum: "edit-forum",
     canClaimForum: "can-claim",
     canAddOwner: "can-add-forum",
     canDeleteOwner: "can-delete-forum",
@@ -43,7 +44,6 @@
         SCOPES.canCreateTopic,
         SCOPES.canCreatePost,
         SCOPES.canCreateReply,
-        SCOPES.canEditMods,
         SCOPES.canDeleteTopic,
         SCOPES.canDeletePost,
         SCOPES.canDeleteReply,
@@ -59,11 +59,14 @@
         SCOPES.canDeleteTopic,
         SCOPES.canDeletePost,
         SCOPES.canDeleteReply,
+        SCOPES.canAddForumRestriction,
+        SCOPES.canRemoveForumRestriction,
         SCOPES.canAddTopicRestriction,
         SCOPES.canRemoveTopicRestriction,
         SCOPES.canAddOwner,
         SCOPES.canDeleteOwner,
-        SCOPES.canClaimForum
+        SCOPES.canClaimForum,
+        SCOPES.canEditForum
     ]
   };
 

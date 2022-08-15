@@ -23,7 +23,9 @@ export function EditForum(props: EditForumProps) {
   const { forumData, update } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
-
+  const [bodySize, setBodySize] = useState(
+    new Buffer(forumData.description.desc, "utf-8").byteLength
+  );
   const [editForum, setEditForum] = useState<{
     show: boolean;
     title: string;
@@ -59,6 +61,7 @@ export function EditForum(props: EditForumProps) {
       const tx = await forumObject.setDescription(forumData.collectionId, desc);
 
       await update();
+      setBodySize(0);
       setEditForum({ show: false, title: desc.title, description: desc.desc });
       setNotificationContent({
         isHidden: false,
@@ -131,13 +134,17 @@ export function EditForum(props: EditForumProps) {
                     placeholder="New forum description"
                     className="editForumInput"
                     value={editForum.description}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setEditForum({
                         ...editForum,
                         description: e.target.value,
-                      })
-                    }
+                      });
+                      setBodySize(
+                        new Buffer(e.target.value, "utf-8").byteLength
+                      );
+                    }}
                   />
+                  <div> {bodySize}/800 </div>
                 </div>
               </div>
             }
@@ -156,26 +163,13 @@ export function EditForum(props: EditForumProps) {
                   !(
                     editForum.description.length > 0 &&
                     editForum.title.length > 0
-                  )
+                  ) || bodySize > 800
                 }
                 onClick={() => editForumInfo()}
               >
                 Save
               </button>
             }
-            // cancelButton={
-            //   <button
-            //     className="cancelButton"
-            //     onClick={() =>
-            //       setEditForum({
-            //         show: false,
-            //         title: forumData.description.title,
-            //         description: forumData.description.desc,
-            //       })
-            //     }>
-            //     Cancel
-            //   </button>
-            // }
           />
         )}
         {!_.isNil(modalInfo) && (

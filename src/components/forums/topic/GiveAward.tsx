@@ -57,6 +57,7 @@ export function GiveAward(props: GiveAwardProps) {
         posterId: post.poster,
         collectionId: collectionId,
         amount: selectedAmount,
+        connection: Forum.connection
       });
       setLoading(false);
       onSuccess(
@@ -236,11 +237,16 @@ interface TransferSOLProps {
   posterId: web3.PublicKey;
   collectionId: web3.PublicKey;
   amount: number;
+  connection: web3.Connection;
 }
 
 async function transferSOL(props: TransferSOLProps) {
-  const { posterId, amount, wallet } = props;
-  const { connection } = useForum();
+  const {
+    posterId,
+    amount,
+    wallet,
+    connection
+  } = props;
 
   let tx = new web3.Transaction().add(
     web3.SystemProgram.transfer({

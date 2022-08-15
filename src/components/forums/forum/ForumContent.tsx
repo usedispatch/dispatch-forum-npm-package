@@ -1,7 +1,5 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useEffect } from "react";
-import Jdenticon from "react-jdenticon";
-import { PostRestriction } from "@usedispatch/client";
 
 import { Plus, Trash } from "../../../assets";
 import {

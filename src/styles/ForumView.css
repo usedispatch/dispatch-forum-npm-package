@@ -204,7 +204,6 @@
       width: 100%;
 
       .forumViewTitle {
-        max-width: 1280px;
         margin: 0 32px;
         padding: 64px 24px 0;
 
@@ -221,7 +220,6 @@
       }
 
       .forumViewContentBox {
-        max-width: 1280px;
         margin: 0 32px;
         padding: 24px 0;
 

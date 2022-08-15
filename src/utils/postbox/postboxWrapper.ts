@@ -12,7 +12,7 @@ import {
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
-import { 
+import {
   getAssociatedTokenAddress,
   createAssociatedTokenAccountInstruction,
   createTransferCheckedInstruction,
@@ -78,13 +78,13 @@ export interface IForum {
   addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
 
   addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
-  
+
   // Get a list of moderators
   getModerators(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
 
   // Get a list of owners
   getOwners(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
-  
+
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
   getTopicsForForum(
@@ -256,7 +256,7 @@ export class DispatchForum implements IForum {
 
     const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
     const isMod= await forum.isModerator();
-    return isMod  
+    return isMod
   }
 
   // Get the description of the forum: title and blurb
@@ -285,12 +285,12 @@ export class DispatchForum implements IForum {
         }
 
       }
-    } catch (error) {      
+    } catch (error) {
       throw(parseError(error))
     }
   }
 
-  
+
   setDescription = async (collectionId: web3.PublicKey, desc: {
     title: string;
     desc: string;
@@ -546,8 +546,8 @@ export class DispatchForum implements IForum {
         await conn.confirmTransaction(tx1);
 
         return tx1
-      } 
-    } catch (error) {   
+      }
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -568,7 +568,7 @@ export class DispatchForum implements IForum {
       );
       const tx = await forum.editForumPost(post, newPostData);
       return tx
-    } catch (error) {   
+    } catch (error) {
       throw(parseError(error))
     }}
 
@@ -582,7 +582,7 @@ export class DispatchForum implements IForum {
       const topicPosts = await forum.getTopicMessages(topic);
 
       return topicPosts;
-    } catch (error) {      
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -596,7 +596,7 @@ export class DispatchForum implements IForum {
       const tx = await forum.deleteForumPost(post, asMod);
 
       return tx;
-    } catch (error) {      
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -610,7 +610,7 @@ export class DispatchForum implements IForum {
       const tx = await forum.voteUpForumPost(post);
 
       return tx;
-    } catch (error) {      
+    } catch (error) {
       throw(parseError(error))
     }
   }
@@ -624,13 +624,13 @@ export class DispatchForum implements IForum {
       const tx = await forum.voteDownForumPost(post);
 
       return tx;
-    } catch (error) {          
+    } catch (error) {
       throw(parseError(error))
     }
   }
-  
+
   replyToForumPost = async (
-    replyToPost: ForumPost, collectionId: web3.PublicKey, 
+    replyToPost: ForumPost, collectionId: web3.PublicKey,
     post: {
       subj?: string;
       body: string;
@@ -644,7 +644,7 @@ export class DispatchForum implements IForum {
       const reply = await forum.replyToForumPost(replyToPost, post);
 
       return reply;
-    } catch (error) {      
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -658,7 +658,7 @@ export class DispatchForum implements IForum {
       const replies = await forum.getReplies(topic);
 
       return replies;
-    } catch (error) {      
+    } catch (error) {
       throw(parseError(error))
     }
   }
@@ -672,7 +672,7 @@ export class DispatchForum implements IForum {
       const restriction = await forum.getForumPostRestriction();
 
       return restriction;
-    } catch (error) {          
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -686,9 +686,9 @@ export class DispatchForum implements IForum {
       const forum = new Forum(dispatchConn, collectionId);
 
       const tx = await forum.setForumPostRestrictionIx(restriction);
-      
+
       return dispatchConn.sendTransaction(tx);
-    } catch (error) {          
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -703,9 +703,9 @@ export class DispatchForum implements IForum {
       const forum = new Forum(dispatchConn, collectionId);
 
       const tx = await forum.deleteForumPostRestriction();
-      
+
       return tx;
-    } catch (error) {          
+    } catch (error) {
       throw(parseError(error))
     }
   };
@@ -719,11 +719,11 @@ export class DispatchForum implements IForum {
       const tx = await forum.canVote(post);
 
       return tx;
-    } catch (error) {          
+    } catch (error) {
       throw(parseError(error))
     }
   };
-  
+
   getNFTsForCurrentUser = async() => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -756,8 +756,19 @@ export class DispatchForum implements IForum {
         const url = stringToURL(uri);
         if (isSuccess(url)) {
           if (url.protocol === 'https:') {
-            const fetchedURI = await fetch(url);
-            const parsed = await fetchedURI.json()
+
+            let fetchedURI;
+            let parsed;
+            try {
+              fetchedURI = await fetch(url);
+              parsed = await fetchedURI.json()
+            }
+            catch (error) {
+              return dispatchClientError({
+                message: `Cannot load metadata for token ${mint.toBase58()}. The metadata URI is invalid.`
+              });
+            }
+
             // Verify that the parsed object has a string image
             if ('image' in parsed && typeof parsed.image === 'string') {
               const imageURL = stringToURL(parsed.image);
@@ -855,7 +866,7 @@ export class DispatchForum implements IForum {
         )
       );
       const result = sendTransaction(txn, conn);
-      
+
       return result;
     } catch (error) {
       console.log(error)

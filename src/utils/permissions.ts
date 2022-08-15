@@ -59,6 +59,8 @@
         SCOPES.canDeleteTopic,
         SCOPES.canDeletePost,
         SCOPES.canDeleteReply,
+        SCOPES.canAddForumRestriction,
+        SCOPES.canRemoveForumRestriction,
         SCOPES.canAddTopicRestriction,
         SCOPES.canRemoveTopicRestriction,
         SCOPES.canAddOwner,

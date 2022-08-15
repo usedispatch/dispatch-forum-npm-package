@@ -280,7 +280,7 @@ export const ForumView = (props: ForumViewProps) => {
                     placeholder="Description"
                     className="createForumInput createForumDescription"
                     value={description}
-                    disabled={creatingNewForum || bodySize > 800}
+                    disabled={creatingNewForum}
                     onChange={(e) => {
                       setDescription(e.target.value);
                       setBodySize(new Buffer(e.target.value).byteLength);
@@ -304,7 +304,7 @@ export const ForumView = (props: ForumViewProps) => {
                     placeholder="Add a comma separated list of collection IDs"
                     className="createForumInput lastInputField"
                     value={accessToken}
-                    disabled={creatingNewForum}
+                    disabled={creatingNewForum || bodySize > 800}
                     onChange={(e) => setAccessToken(e.target.value)}
                   />
                 </>

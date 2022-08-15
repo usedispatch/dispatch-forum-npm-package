@@ -13,7 +13,7 @@
   .forumContentHeader .description {
     font-family: Manrope, sans-serif;
     color: #414149;
-
+    word-wrap: anywhere;
     margin-right: 40px;
   }
 

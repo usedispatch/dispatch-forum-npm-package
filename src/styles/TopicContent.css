@@ -18,6 +18,12 @@
     margin: 1rem;
   }
 
+  .noRestriction {
+    font-size: 14px;
+    font-weight: 400;
+    color: #86878e;
+  }
+
   .acceptDeleteTopicButton {
     display: flex;
     align-items: center;
@@ -251,6 +257,18 @@
           svg {
             path {
               fill: #86878e;
+            }
+          }
+        }
+
+        .lock {
+          margin: 0 10px 0 0;
+          height: 16px;
+          width: 16px;
+
+          svg {
+            path {
+              stroke: #86878e;
             }
           }
         }

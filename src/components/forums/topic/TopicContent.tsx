@@ -178,8 +178,7 @@ export function TopicContent(props: TopicContentProps) {
             <a
               className="okButton"
               href={modalInfo.okPath}
-              onClick={() => setModalInfo(null)}
-            >
+              onClick={() => setModalInfo(null)}>
               OK
             </a>
           }
@@ -207,6 +206,11 @@ export function TopicContent(props: TopicContentProps) {
               <label className="addModeratorsLabel">
                 Current NFT Collection IDs
               </label>
+              {currentForumAccessToken.length === 0 && (
+                <div className="noRestriction">
+                  The topic has no restriction
+                </div>
+              )}
               {currentForumAccessToken.map((token) => {
                 return <div className="currentAccessToken">{token}</div>;
               })}
@@ -306,47 +310,40 @@ export function TopicContent(props: TopicContentProps) {
             <div className="topicTools">
               <PermissionsGate
                 scopes={[SCOPES.canDeleteTopic]}
-                posterKey={topic.poster}
-              >
+                posterKey={topic.poster}>
                 <button
                   className="moderatorTool"
                   disabled={!permission.readAndWrite}
-                  onClick={() => setShowDeleteConfirmation(true)}
-                >
+                  onClick={() => setShowDeleteConfirmation(true)}>
                   <div className="delete">
                     <Trash />
                   </div>
                 </button>
+                <div className="actionDivider" />
               </PermissionsGate>
               <EditPost
                 post={topic}
                 forumData={forumData}
                 update={() => update()}
-                showDividers={{ leftDivider: true, rightDivider: false }}
+                showDividers={{ leftDivider: false, rightDivider: true }}
               />
-              <div className="actionDivider" />
               <div className="lock">
                 <Lock />
               </div>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
+                onClick={() => setShowAddAccessToken(true)}>
                 Manage post access
               </button>
             </div>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-              <>
-                <div className="actionDivider" />
-                <button
-                  className="awardButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowGiveAward(true)}
-                >
-                  <Gift /> Send Token
-                </button>
-              </>
+              <button
+                className="awardButton"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowGiveAward(true)}>
+                <Gift /> Send Token
+              </button>
             </PermissionsGate>
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
@@ -441,8 +438,7 @@ function TopicHeader(props: TopicHeaderProps) {
               <a
                 href={`https://solscan.io/account/${topic.address}?cluster=${forum.cluster}`}
                 className="transactionLink"
-                target="_blank"
-              >
+                target="_blank">
                 <Info />
               </a>
             </div>

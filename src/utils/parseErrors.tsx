@@ -24,19 +24,23 @@ const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
 export function parseError(error: any) {
   let result = { ...error, message: JSON.stringify(error) };
-
-  if (error.message) {
+  if (error.message != undefined) {
     const hexIndex = (error.message as string).indexOf("0x");
     if (hexIndex >= 0) {
       const hexString = (error.message as string).substring(hexIndex + 2);
       const decimal = hexToDecimal(hexString) - 6000;
-
       const message = postboxErrorCode[decimal];
       if (!_.isNil(result)) {
         result = { code: decimal, message };
       }
+    } else {
+      const json = error.toString().match(/(?:.*  )(.*)/);
+      const errJson = JSON.parse(json[1]);
+      if (errJson.error.code === 429)  {
+        result = { code: 429, message: JSON.stringify("The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds." )};
+      }
     }
   }
-
   return result;
 }
+ 

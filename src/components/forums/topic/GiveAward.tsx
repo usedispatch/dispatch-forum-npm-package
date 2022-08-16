@@ -57,7 +57,7 @@ export function GiveAward(props: GiveAwardProps) {
         posterId: post.poster,
         collectionId: collectionId,
         amount: selectedAmount,
-        connection: Forum.connection
+        connection: Forum.connection,
       });
       setLoading(false);
       onSuccess(
@@ -129,14 +129,18 @@ export function GiveAward(props: GiveAwardProps) {
             ) : (
               <div className="giftsContainer">
                 <div className="giftsGrid">
+                  {nfts.length === 0 && (
+                    <div className="noAvailableNFT">
+                      There are no available NFTs in your wallet
+                    </div>
+                  )}
                   {nfts.map((nft, index) => (
                     <div
                       key={index}
                       className={`giftContainer ${
                         nft.mint === selectedNFT?.mint ? "selectedNFT" : ""
                       }`}
-                      onClick={() => setSelectedNFT(nft)}
-                    >
+                      onClick={() => setSelectedNFT(nft)}>
                       <img src={nft.uri.toString()} />
                       <div className="giftName">{nft.name}</div>
                     </div>
@@ -154,15 +158,13 @@ export function GiveAward(props: GiveAwardProps) {
               onClick={() => {
                 setSelectedType(AwardType.NFT);
                 getNFTsForCurrentUser();
-              }}
-            >
+              }}>
               <Plus />
               NFT
             </button>
             <button
               className="solType"
-              onClick={() => setSelectedType(AwardType.SOL)}
-            >
+              onClick={() => setSelectedType(AwardType.SOL)}>
               <SolanaLogo color="white" />
               SOL
             </button>
@@ -213,16 +215,14 @@ export function GiveAward(props: GiveAwardProps) {
             <button
               className="attachButton"
               disabled={selectedAmount === 0}
-              onClick={() => attachAward()}
-            >
+              onClick={() => attachAward()}>
               Send
             </button>
           ) : (
             <button
               className="confirmAndAwardButton"
               disabled={_.isNil(selectedNFT)}
-              onClick={() => transferNFT()}
-            >
+              onClick={() => transferNFT()}>
               Send
             </button>
           ))
@@ -241,12 +241,7 @@ interface TransferSOLProps {
 }
 
 async function transferSOL(props: TransferSOLProps) {
-  const {
-    posterId,
-    amount,
-    wallet,
-    connection
-  } = props;
+  const { posterId, amount, wallet, connection } = props;
 
   let tx = new web3.Transaction().add(
     web3.SystemProgram.transfer({

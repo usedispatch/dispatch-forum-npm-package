@@ -118,6 +118,12 @@
 
         overflow-x: overlay;
 
+        .noAvailableNFT {
+          font-size: 14px;
+          font-weight: 400;
+          color: #86878e;
+        }
+
         .giftContainer {
           cursor: pointer;
           padding: 8px;

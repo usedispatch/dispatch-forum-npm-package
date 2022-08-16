@@ -35,7 +35,8 @@
 
   .gateCheckbox {
     display: flex;
-    padding-bottom: 0.5rem;
+    align-items: center;
+    padding-bottom: 16px;
   }
 
   .noRestriction {

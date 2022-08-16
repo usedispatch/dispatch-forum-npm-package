@@ -338,15 +338,12 @@ export function TopicContent(props: TopicContentProps) {
               </button>
             </div>
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-              <>
-                <div className="actionDivider" />
-                <button
-                  className="awardButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowGiveAward(true)}>
-                  <Gift /> Send Token
-                </button>
-              </>
+              <button
+                className="awardButton"
+                disabled={!permission.readAndWrite}
+                onClick={() => setShowGiveAward(true)}>
+                <Gift /> Send Token
+              </button>
             </PermissionsGate>
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>

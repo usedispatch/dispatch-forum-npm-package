@@ -4,6 +4,8 @@ import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
+import ReactGA from "react-ga4";
+
 import { useForumData, useModal } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
@@ -37,6 +39,7 @@ interface Props {
 }
 
 export const TopicView = (props: Props) => {
+  ReactGA.send("pageview");
   const forum = useForum();
   const role = useRole();
   const { permission } = forum;

@@ -11,6 +11,7 @@ import {
 import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 import { Helmet } from "react-helmet";
+import ReactGA from "react-ga4";
 
 import { Plus } from "../../assets";
 import {
@@ -76,6 +77,7 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
+  ReactGA.send("pageview");
   const forumObject = useForum();
   const Role = useRole();
   const { wallet, permission } = forumObject;

@@ -1,5 +1,6 @@
 import { web3 } from "@project-serum/anchor";
 import { WalletAdapterInterface } from "@usedispatch/client";
+import ReactGA from "react-ga4"
 import {
   FC,
   ReactNode,
@@ -46,6 +47,8 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
   buildForumPath,
   buildTopicPath,
 }) => {
+  ReactGA.initialize("G-QD3BDH1D5P");
+
   const forum = useMemo(
     () => new MainForum(wallet, connection, cluster),
     [wallet, connection, cluster]

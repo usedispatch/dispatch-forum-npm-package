@@ -353,7 +353,16 @@ export function ForumContent(props: ForumContentProps) {
 
   const forumHeader = (
     <div className="forumContentHeader">
-      <div className="box">
+      <div className={"titleBox"}>
+        {currentForumAccessToken.length > 0 && (
+          <div className="gatedForum">
+            <Lock />
+          </div>
+        )}
+        {forumData.description.title}
+        {/* TODO(andrew) what to render here if title isn't loaded */}
+      </div>
+      <div className="descriptionBox">
         <div className="description">{forumData.description.desc}</div>
         {createTopicButton}
       </div>
@@ -660,40 +669,42 @@ export function ForumContent(props: ForumContentProps) {
             onClose={() => setShowAddOwners(false)}
           />
         )}
-        {forumHeader}
-        <PermissionsGate scopes={[SCOPES.canEditForum]}>
-          <div className="moderatorToolsContainer">
-            <div>Owner tools: </div>
-            <div className="lock">
-              <Lock />
+        <div className="forumContentBox">
+          {forumHeader}
+          <PermissionsGate scopes={[SCOPES.canEditForum]}>
+            <div className="moderatorToolsContainer">
+              <div>Owner tools: </div>
+              <div className="lock">
+                <Lock />
+              </div>
+              <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+                <button
+                  className="moderatorTool owners"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowAddOwners(true)}>
+                  Manage owners
+                </button>
+              </PermissionsGate>
+              <PermissionsGate scopes={[SCOPES.canEditMods]}>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowAddModerators(true)}>
+                  Manage moderators
+                </button>
+              </PermissionsGate>
+              <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                <button
+                  className="moderatorTool"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => setShowManageAccessToken(true)}>
+                  Manage forum access
+                </button>
+              </PermissionsGate>
+              <EditForum forumData={forumData} update={update} />
             </div>
-            <PermissionsGate scopes={[SCOPES.canAddOwner]}>
-              <button
-                className="moderatorTool owners"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddOwners(true)}>
-                Manage owners
-              </button>
-            </PermissionsGate>
-            <PermissionsGate scopes={[SCOPES.canEditMods]}>
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddModerators(true)}>
-                Manage moderators
-              </button>
-            </PermissionsGate>
-            <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowManageAccessToken(true)}>
-                Manage forum access
-              </button>
-            </PermissionsGate>
-            <EditForum forumData={forumData} update={update} />
-          </div>
-        </PermissionsGate>
+          </PermissionsGate>
+        </div>
         {!_.isNil(forumData.collectionId) && (
           <TopicList forumData={forumData} />
         )}

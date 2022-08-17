@@ -15,7 +15,7 @@
 
   .currentAccessToken {
     font-size: 14px;
-    margin: 1rem;
+    margin: 0 0 8px 0;
   }
 
   .noRestriction {
@@ -191,11 +191,20 @@
         }
 
         .subj {
+          display: flex;
+          justify-content: flex-start;
+          align-items: baseline;
+          gap: 5px;
           padding-top: 16px;
 
           overflow-wrap: anywhere;
           font-weight: 600;
           font-size: 17px;
+
+          .gatedTopic {
+            height: 18px;
+            width: 18px;
+          }
         }
 
         .topicBody {

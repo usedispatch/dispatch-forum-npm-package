@@ -305,7 +305,11 @@ export function TopicContent(props: TopicContentProps) {
           </div>
         </div>
         <div className="headerAndActions">
-          <TopicHeader topic={topic} forum={forum} />
+          <TopicHeader
+            topic={topic}
+            forum={forum}
+            isGated={currentForumAccessToken.length > 0}
+          />
           <div className="moderatorToolsContainer">
             <div className="topicTools">
               <PermissionsGate
@@ -405,10 +409,11 @@ export function TopicContent(props: TopicContentProps) {
 interface TopicHeaderProps {
   topic: ForumPost;
   forum: DispatchForum;
+  isGated: boolean;
 }
 
 function TopicHeader(props: TopicHeaderProps) {
-  const { topic, forum } = props;
+  const { isGated, topic, forum } = props;
 
   const postedAt = topic
     ? `${topic.data.ts.toLocaleDateString(undefined, {
@@ -442,9 +447,16 @@ function TopicHeader(props: TopicHeaderProps) {
                 <Info />
               </a>
             </div>
-          </div>{" "}
+          </div>
         </div>
-        <div className="subj">{topic?.data.subj ?? "subject"}</div>
+        <div className="subj">
+          {isGated && (
+            <div className="gatedTopic">
+              <Lock />
+            </div>
+          )}
+          {topic?.data.subj ?? "subject"}
+        </div>
       </div>
       <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
     </div>

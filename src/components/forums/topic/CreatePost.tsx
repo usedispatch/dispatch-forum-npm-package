@@ -137,13 +137,12 @@ export function CreatePost(props: CreatePostProps) {
                   name="post"
                 />
               </div>
-              <div>{bodySize}/800</div>
+              <div className="textSize">{bodySize}/800</div>
               <div className="buttonContainer">
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!permission.readAndWrite || bodySize > 800}
-                >
+                  disabled={!permission.readAndWrite || bodySize > 800}>
                   Post
                 </button>
               </div>

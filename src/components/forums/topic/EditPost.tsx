@@ -49,12 +49,14 @@ export function EditPost(props: EditPostProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const resetToInitialValues = () =>
+  const resetToInitialValues = () => {
     setEditPost({
       show: false,
       body: post.data.body ?? "",
       subj: post.data.subj ?? "",
     });
+    setBodySize(new Buffer(post.data.body, "utf-8").byteLength);
+  };
 
   const editPostInfo = async () => {
     setEditPost({ ...editPost, loading: true });
@@ -152,7 +154,7 @@ export function EditPost(props: EditPostProps) {
                       setBodySize(new Buffer(e.target.value).byteLength);
                     }}
                   />
-                  <div> {bodySize}/800 </div>
+                  <div className="textSize"> {bodySize}/800 </div>
                 </div>
               </div>
             }
@@ -166,8 +168,7 @@ export function EditPost(props: EditPostProps) {
                     ? editPost.subj.length === 0
                     : editPost.body.length === 0) || bodySize > 800
                 }
-                onClick={() => editPostInfo()}
-              >
+                onClick={() => editPostInfo()}>
                 Save
               </button>
             }
@@ -192,8 +193,7 @@ export function EditPost(props: EditPostProps) {
         <button
           className="editPostButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditPost({ ...editPost, show: true })}
-        >
+          onClick={() => setEditPost({ ...editPost, show: true })}>
           <Edit /> Edit
         </button>
         {showDividers.rightDivider && <div className="actionDivider" />}

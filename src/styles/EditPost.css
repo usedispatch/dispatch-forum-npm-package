@@ -65,6 +65,12 @@
           outline-offset: 2px;
         }
       }
+
+      .textSize {
+        font-size: 12px;
+        color: gray;
+        text-align: right;
+      }
     }
 
     .editPostLabel {

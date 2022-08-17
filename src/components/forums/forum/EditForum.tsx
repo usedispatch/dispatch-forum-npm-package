@@ -129,10 +129,9 @@ export function EditForum(props: EditForumProps) {
                 </div>
                 <div>
                   <label className="editForumLabel">Forum description</label>
-                  <input
-                    type="text"
+                  <textarea
                     placeholder="New forum description"
-                    className="editForumInput"
+                    className="editForumInput description"
                     value={editForum.description}
                     onChange={(e) => {
                       setEditForum({
@@ -144,18 +143,21 @@ export function EditForum(props: EditForumProps) {
                       );
                     }}
                   />
-                  <div> {bodySize}/800 </div>
+                  <div className="textSize"> {bodySize}/800 </div>
                 </div>
               </div>
             }
             loading={editForum.loading}
-            onClose={() =>
+            onClose={() => {
               setEditForum({
                 show: false,
                 title: forumData.description.title,
                 description: forumData.description.desc,
-              })
-            }
+              });
+              setBodySize(
+                new Buffer(forumData.description.desc, "utf-8").byteLength
+              );
+            }}
             okButton={
               <button
                 className="okButton"
@@ -165,8 +167,7 @@ export function EditForum(props: EditForumProps) {
                     editForum.title.length > 0
                   ) || bodySize > 800
                 }
-                onClick={() => editForumInfo()}
-              >
+                onClick={() => editForumInfo()}>
                 Save
               </button>
             }
@@ -191,8 +192,7 @@ export function EditForum(props: EditForumProps) {
         <button
           className="editForumButton"
           disabled={!permission.readAndWrite}
-          onClick={() => setEditForum({ ...editForum, show: true })}
-        >
+          onClick={() => setEditForum({ ...editForum, show: true })}>
           <Edit /> Edit forum
         </button>
       </div>

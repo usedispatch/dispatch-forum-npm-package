@@ -23,6 +23,12 @@
     flex-direction: column;
   }
 
+  .textSize {
+    font-size: 12px;
+    color: gray;
+    text-align: right;
+  }
+
   .postContent {
     font-size: 14px;
     background: transparent;

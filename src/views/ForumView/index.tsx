@@ -180,7 +180,9 @@ export const ForumView = (props: ForumViewProps) => {
           ).then(() => update());
         }
       }
+      ReactGA.event("successfulForumCreation")
     } catch (e: any) {
+      ReactGA.event("failedForumCreation")
       if (e.error?.code === 4001) {
         setShowNewForumModal(true);
       } else {
@@ -216,7 +218,9 @@ export const ForumView = (props: ForumViewProps) => {
         disabled={!permission.readAndWrite}
         onClick={() => {
           setShowNewForumModal(true);
-        }}>
+          ReactGA.event("startForumCreate")
+        }}
+      >
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -316,14 +320,20 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}>
+                onClick={() => {
+                  onCreateForumClick();
+                  ReactGA.event("sendForumCreate")
+                  }}>
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}>
+                onClick={() => {
+                  setShowNewForumModal(false);
+                  ReactGA.event("cancelForumCreate")
+                  }}>
                 Cancel
               </div>
             }

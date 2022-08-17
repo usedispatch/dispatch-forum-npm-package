@@ -203,9 +203,11 @@ export const ForumView = (props: ForumViewProps) => {
   }, [forumObject.cluster]);
 
   useEffect(() => {
-    if (isSuccess(forumData) && forumObject.wallet.publicKey) {
+    if (isSuccess(forumData) && permission.readAndWrite) {
       getUserRole(forumObject, collectionPublicKey!, Role);
-    }
+    } else if (isNotFound(forumData) && permission.readAndWrite) {
+      setShowNewForumModal(true);
+    } 
   }, [forumData, publicKey]);
 
   const createForumButton = (
@@ -227,12 +229,10 @@ export const ForumView = (props: ForumViewProps) => {
 
   const emptyView = (
     <div className="emptyForumView">
-      <div className="emptyTitle">The Forum does not exist yet</div>
-      <div className="emptySubTitle">
-        {permission.readAndWrite
-          ? "Create one to post, share, and more"
-          : "Contact the owner of this collection or a moderator to start the forum."}
-      </div>
+      <div className="emptyTitle">Connect your wallet to create a forum!</div>
+        <div className="emptySubTitle">
+          Create one to post, share, and more
+        </div>
       {createForumButton}
     </div>
   );

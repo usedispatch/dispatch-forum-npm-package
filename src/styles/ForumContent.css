@@ -1,20 +1,42 @@
 @layer components {
   .forumContentHeader {
     height: auto;
+    margin: 48px 0 0;
     padding: 0 24px 48px;
-  }
 
-  .forumContentHeader .box {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+    .titleBox {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+      margin: 0 auto;
+      padding: 24px 0;
 
-  .forumContentHeader .description {
-    font-family: Manrope, sans-serif;
-    color: #414149;
-    word-wrap: anywhere;
-    margin-right: 40px;
+      font-size: 36px;
+      color: #2e008b;
+
+      @media only screen and (max-width: 480px) {
+        margin: 0 8px;
+      }
+    }
+
+    .descriptionBox {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .description {
+        font-family: Manrope, sans-serif;
+        color: #414149;
+        word-wrap: anywhere;
+        margin-right: 40px;
+      }
+    }
+
+    .gatedForum {
+      height: 24px;
+      width: 24px;
+    }
   }
 
   .newAccessToken {
@@ -168,6 +190,7 @@
 
     @media only screen and (max-width: 480px) {
       padding: 12px;
+      flex-wrap: wrap;
     }
   }
 
@@ -312,5 +335,11 @@
         opacity: 0.6;
       }
     }
+  }
+
+  .forumContentBox {
+    background: white;
+    box-shadow: 0px 4px 12px rgb(0 0 0 / 16%);
+    border-radius: 12px;
   }
 }

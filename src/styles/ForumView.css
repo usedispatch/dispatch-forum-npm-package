@@ -202,34 +202,15 @@
     .forumViewContent {
       height: 100%;
       width: 100%;
+      margin: 0;
+      padding: 0 42px;
 
-      .forumViewTitle {
-        margin: 0 32px;
-        padding: 64px 24px 0;
-
-        font-size: 36px;
-        color: #2e008b;
-
-        &.alert {
-          padding-top: 24;
-        }
-
-        @media only screen and (max-width: 480px) {
-          margin: 0 8px;
-        }
+      .forumLoading {
+        padding-top: 192px;
       }
 
-      .forumViewContentBox {
-        margin: 0 32px;
-        padding: 24px 0;
-
-        .forumLoading {
-          padding-top: 192px;
-        }
-
-        @media only screen and (max-width: 480px) {
-          margin: 0 8px;
-        }
+      @media only screen and (max-width: 480px) {
+        margin: 0 8px;
       }
     }
   }

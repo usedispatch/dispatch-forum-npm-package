@@ -214,8 +214,7 @@ export const ForumView = (props: ForumViewProps) => {
         disabled={!permission.readAndWrite}
         onClick={() => {
           setShowNewForumModal(true);
-        }}
-      >
+        }}>
         <div className="createForumIconContainer">
           <Plus />
         </div>
@@ -315,16 +314,14 @@ export const ForumView = (props: ForumViewProps) => {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                onClick={() => onCreateForumClick()}
-              >
+                onClick={() => onCreateForumClick()}>
                 Create
               </button>
             }
             cancelButton={
               <div
                 className="cancelCreateForumButton"
-                onClick={() => setShowNewForumModal(false)}
-              >
+                onClick={() => setShowNewForumModal(false)}>
                 Cancel
               </div>
             }
@@ -333,44 +330,29 @@ export const ForumView = (props: ForumViewProps) => {
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {
-              isSuccess(forumData) && (
-                <div
-                  className={`forumViewTitle ${
-                    !permission.readAndWrite ? "alert" : ""
-                  }`}
-                >
-                  {forumData.description.title}
-                </div>
-              ) /* TODO(andrew) what to render here if title isn't loaded */
-            }
-            <div className="forumViewContentBox">
-              <div>
-                {(() => {
-                  if (isSuccess(forumData)) {
-                    return (
-                      <ForumContent
-                        forumObject={forumObject}
-                        forumData={forumData}
-                        update={update}
-                      />
-                    );
-                  } else if (isInitial(forumData) || isPending(forumData)) {
-                    return (
-                      <div className="forumLoading">
-                        <Spinner />
-                      </div>
-                    );
-                  } else if (isNotFound(forumData)) {
-                    return emptyView;
-                  } else {
-                    // TODO(andrew) better, more detailed error
-                    // view here
-                    return disconnectedView;
-                  }
-                })()}
-              </div>
-            </div>
+            {(() => {
+              if (isSuccess(forumData)) {
+                return (
+                  <ForumContent
+                    forumObject={forumObject}
+                    forumData={forumData}
+                    update={update}
+                  />
+                );
+              } else if (isInitial(forumData) || isPending(forumData)) {
+                return (
+                  <div className="forumLoading">
+                    <Spinner />
+                  </div>
+                );
+              } else if (isNotFound(forumData)) {
+                return emptyView;
+              } else {
+                // TODO(andrew) better, more detailed error
+                // view here
+                return disconnectedView;
+              }
+            })()}
           </div>
           <PoweredByDispatch />
         </div>

@@ -191,11 +191,20 @@
         }
 
         .subj {
+          display: flex;
+          justify-content: flex-start;
+          align-items: center;
+          gap: 5px;
           padding-top: 16px;
 
           overflow-wrap: anywhere;
           font-weight: 600;
           font-size: 17px;
+
+          .gatedTopic {
+            height: 18px;
+            width: 18px;
+          }
         }
 
         .topicBody {

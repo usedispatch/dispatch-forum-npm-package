@@ -44,6 +44,9 @@ export function PostContent(props: PostContentProps) {
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [reply, setReply] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
+  const [replySize, setReplySize] = useState(
+    new Buffer(reply, "utf-8").byteLength
+  );
 
   const [showGiveAward, setShowGiveAward] = useState(false);
   const [postToAward, setPostToAward] = useState<ForumPost>();
@@ -364,10 +367,14 @@ export function PostContent(props: PostContentProps) {
                     required
                     onChange={(e) => setReply(e.target.value)}
                   />
+                  <div className="textSize"> {replySize}/800 </div>
                   <div className="buttonsContainer">
                     <button
                       className="cancelReplyButton"
-                      onClick={() => setShowReplyBox(false)}>
+                      onClick={() => {
+                        setShowReplyBox(false);
+                        new Buffer(reply, "utf-8").byteLength;
+                      }}>
                       Cancel
                     </button>
                     <button className="postReplyButton" type="submit">

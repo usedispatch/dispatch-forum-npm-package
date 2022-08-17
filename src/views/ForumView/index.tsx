@@ -283,6 +283,7 @@ export const ForumView = (props: ForumViewProps) => {
                   <textarea
                     placeholder="Description"
                     className="createForumInput createForumDescription"
+                    maxLength={800}
                     value={description}
                     disabled={creatingNewForum}
                     onChange={(e) => {

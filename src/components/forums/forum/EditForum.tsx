@@ -133,6 +133,7 @@ export function EditForum(props: EditForumProps) {
                     placeholder="New forum description"
                     className="editForumInput description"
                     value={editForum.description}
+                    maxLength={800}
                     onChange={(e) => {
                       setEditForum({
                         ...editForum,

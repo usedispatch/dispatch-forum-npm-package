@@ -128,6 +128,7 @@ export function CreatePost(props: CreatePostProps) {
                   className="postContent"
                   placeholder="Type your comment here"
                   required
+                  maxLength={800}
                   disabled={!permission.readAndWrite}
                   onChange={(event) => {
                     setBodySize(

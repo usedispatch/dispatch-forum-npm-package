@@ -140,14 +140,14 @@ export function EditPost(props: EditPostProps) {
                   <label className="editPostLabel">
                     {post.isTopic ? "Topic description" : "Post content"}
                   </label>
-                  <input
-                    type="text"
+                  <textarea
+                    maxLength={800}
                     placeholder={
                       post.isTopic
                         ? "New topic description"
                         : "New post content"
                     }
-                    className="editPostInput"
+                    className="editPostInput description"
                     value={editPost.body}
                     onChange={(e) => {
                       setEditPost({ ...editPost, body: e.target.value });

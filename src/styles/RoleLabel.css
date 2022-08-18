@@ -1,0 +1,18 @@
+@layer components {
+  .roleLabel {
+    display: flex;
+    align-items: center;
+
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 12px;
+
+    &.mod {
+      color: #84b971;
+    }
+
+    &.op {
+      color: #ffb549;
+    }
+  }
+}

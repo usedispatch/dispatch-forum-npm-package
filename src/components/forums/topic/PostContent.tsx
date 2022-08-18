@@ -13,14 +13,13 @@ import {
   TransactionLink,
 } from "./../../common";
 import { Votes, Notification } from "../../../components/forums";
-import { PostReplies } from "../topic/PostReplies";
-import { GiveAward } from "./GiveAward";
-import { EditPost } from "./EditPost";
+import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData } from "../../../utils/hooks";
+import { isSuccess } from "../../../utils/loading";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
@@ -28,12 +27,14 @@ interface PostContentProps {
   forumData: ForumData;
   post: ForumPost;
   userRole: UserRoleType;
+  topicPosterId: string;
   update: () => Promise<void>;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, onDeletePost, update } = props;
+  const { forumData, forum, userRole, topicPosterId, onDeletePost, update } =
+    props;
 
   const permission = forum.permission;
 
@@ -164,6 +165,10 @@ export function PostContent(props: PostContentProps) {
     minute: "numeric",
   })}`;
 
+  const moderators = isSuccess(forumData.moderators)
+    ? forumData.moderators.map((m) => m.toBase58())
+    : [];
+
   return (
     <>
       <div className="postContentContainer">
@@ -266,7 +271,14 @@ export function PostContent(props: PostContentProps) {
                   <div className="icon">
                     <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
                   </div>
-                  <div className="walletId">{post.poster.toBase58()}</div>
+                  <div className="walletId">
+                    {post.poster.toBase58()}
+                    <RoleLabel
+                      topicOwnerId={topicPosterId}
+                      posterId={post?.poster.toBase58()}
+                      moderators={moderators}
+                    />
+                  </div>
                 </div>
                 <div className="postedAt">
                   Posted at: {postedAt}
@@ -333,6 +345,7 @@ export function PostContent(props: PostContentProps) {
                 forumData={forumData}
                 replies={replies}
                 userRole={userRole}
+                topicOwnerId={topicPosterId}
                 update={() => update()}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);

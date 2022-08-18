@@ -2,16 +2,11 @@ import * as web3 from "@solana/web3.js";
 import { useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 
-import { Spinner } from "../../common";
 import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/permissions";
-import { ForumData } from '../../../utils/hooks';
-import {
-  selectRepliesFromPosts,
-  sortByVotes
-} from '../../../utils/posts';
-import { isSuccess } from '../../../utils/loading';
+import { ForumData } from "../../../utils/hooks";
+import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostListProps {
   forum: DispatchForum;
@@ -37,23 +32,23 @@ export function PostList(props: PostListProps) {
 
   return (
     <div className="postListContainer">
-      {posts.length === 0 ?
-        emptyList :
-        posts.map((post) => {
-
-          return (
-            <div key={`post_${post.postId}`}>
-              <PostContent
-                forum={forum}
-                forumData={forumData}
-                post={post}
-                onDeletePost={onDeletePost}
-                update={update}
-                userRole={userRole}
-              />
-            </div>
-          );
-        })}
+      {posts.length === 0
+        ? emptyList
+        : posts.map((post) => {
+            return (
+              <div key={`post_${post.postId}`}>
+                <PostContent
+                  forum={forum}
+                  forumData={forumData}
+                  post={post}
+                  userRole={userRole}
+                  topicPosterId={topic.poster.toBase58()}
+                  onDeletePost={onDeletePost}
+                  update={update}
+                />
+              </div>
+            );
+          })}
     </div>
   );
 }

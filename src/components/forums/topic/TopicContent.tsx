@@ -398,7 +398,7 @@ export function TopicContent(props: TopicContentProps) {
             () => setIsNotificationHidden(true),
             NOTIFICATION_BANNER_TIMEOUT
           );
-          // TODO refresh here
+          await update();
         }}
         userRole={userRole}
       />

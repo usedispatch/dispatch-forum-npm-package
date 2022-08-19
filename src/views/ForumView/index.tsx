@@ -24,6 +24,7 @@ import {
 import {
   ConnectionAlert,
   ForumContent,
+  UploadForumImage,
   PoweredByDispatch,
 } from "../../components/forums";
 import { selectTopics } from "../../utils/posts";
@@ -37,7 +38,6 @@ import {
   isInitial,
   isPending,
   isNotFound,
-  isDispatchClientError,
 } from "../../utils/loading";
 import { useForumData, useModal } from "../../utils/hooks";
 import { pubkeysToRestriction } from "../../utils/restrictionListHelper";
@@ -122,6 +122,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
+  const [bannerImage, setBannerImage] = useState("");
   const [accessToken, setAccessToken] = useState<string>();
   const [bodySize, setBodySize] = useState<number>(0);
   const onCreateForumClick = () => {
@@ -161,6 +162,13 @@ export const ForumView = (props: ForumViewProps) => {
       } as ForumInfo;
 
       const res = await forumObject.createForum(forum);
+
+      if (bannerImage.length > 0 && collectionPublicKey) {
+        const imgs = await forumObject.setImageUrls(
+          collectionPublicKey,
+          bannerImage
+        );
+      }
 
       if (!_.isNil(res?.forum)) {
         setShowNewForumModal(false);
@@ -212,7 +220,7 @@ export const ForumView = (props: ForumViewProps) => {
       getUserRole(forumObject, collectionPublicKey!, Role);
     } else if (isNotFound(forumData) && permission.readAndWrite) {
       setShowNewForumModal(true);
-    } 
+    }
   }, [forumData, publicKey]);
 
   const createForumButton = (
@@ -235,9 +243,7 @@ export const ForumView = (props: ForumViewProps) => {
   const emptyView = (
     <div className="emptyForumView">
       <div className="emptyTitle">Connect your wallet to create a forum!</div>
-        <div className="emptySubTitle">
-          Create one to post, share, and more
-        </div>
+      <div className="emptySubTitle">Create one to post, share, and more</div>
       {createForumButton}
     </div>
   );
@@ -319,11 +325,15 @@ export const ForumView = (props: ForumViewProps) => {
                   <span className="createForumLabel">Limit forum access</span>
                   <input
                     placeholder="Add a comma separated list of collection IDs"
-                    className="createForumInput lastInputField"
+                    className="createForumInput"
                     value={accessToken}
                     disabled={creatingNewForum || bodySize > 800}
                     onChange={(e) => setAccessToken(e.target.value)}
                   />
+                </>
+                <>
+                  <span className="createForumLabel">Upload banner image</span>
+                  <UploadForumImage imageURL={(url) => setBannerImage(url)} />
                 </>
               </div>
             }

@@ -88,6 +88,7 @@ export function PostContent(props: PostContentProps) {
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
+      await update();
       setIsNotificationHidden(false);
       setNotificationContent({
         content: (
@@ -125,17 +126,12 @@ export function PostContent(props: PostContentProps) {
         forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
-      onDeletePost(tx);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: `The post was deleted`,
-      });
+      onDeletePost(tx); // the function is defined on TopicContent, the notification is set there
+      setShowDeleteConfirmation(false);
+      setDeleting(false);
       if (tx) {
         await forum.connection.confirmTransaction(tx).then(() => update());
       }
-      setShowDeleteConfirmation(false);
-      setDeleting(false);
     } catch (error: any) {
       setShowDeleteConfirmation(false);
       setDeleting(false);
@@ -144,7 +140,7 @@ export function PostContent(props: PostContentProps) {
         modalInfoError = {
           title: "The post could not be deleted",
           type: MessageType.error,
-          body: `The user cancelled the request`,
+          body: `The user canceled the request`,
         };
       } else {
         modalInfoError = {

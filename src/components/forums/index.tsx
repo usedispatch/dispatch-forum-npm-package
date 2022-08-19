@@ -5,6 +5,7 @@ export * from "./PoweredByDispatch";
 export * from "./forum/EditForum";
 export * from "./forum/ForumContent";
 export * from "./forum/TopicList";
+export * from "./forum/UploadForumImage";
 
 export * from "./topic/CreatePost";
 export * from "./topic/EditPost";

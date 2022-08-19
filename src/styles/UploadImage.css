@@ -1,0 +1,33 @@
+@layer components {
+  .uploadImageWrapper {
+    margin: 4px 0 0;
+    padding: 24px;
+    text-align: center;
+    background: #f7f7fe;
+    border: 1px #6e59b1 dashed;
+    border-radius: 6px;
+
+    .dragAndDropButton {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+
+      font-size: 14px;
+      color: #86878e;
+    }
+
+    .imageContainer {
+      display: flex;
+      justify-content: center;
+    }
+
+    .imageButtonsContainer {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+  }
+}

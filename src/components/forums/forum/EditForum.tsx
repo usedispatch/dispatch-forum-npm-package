@@ -8,7 +8,7 @@ import {
   PopUpModal,
   TransactionLink,
 } from "../../common";
-import { Notification } from "../../forums";
+import { UploadForumImage, Notification } from "../../forums";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
@@ -37,6 +37,8 @@ export function EditForum(props: EditForumProps) {
     description: forumData.description.desc,
   });
 
+  const [bannerImage, setBannerImage] = useState("");
+
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
     content?: string | ReactNode;
@@ -60,6 +62,13 @@ export function EditForum(props: EditForumProps) {
 
       const tx = await forumObject.setDescription(forumData.collectionId, desc);
 
+      if (bannerImage.length > 0) {
+        console.log("esta en el if", bannerImage);
+        const imgs = await forumObject.setImageUrls(
+          forumData.collectionId,
+          bannerImage
+        );
+      }
       await update();
       setBodySize(0);
       setEditForum({ show: false, title: desc.title, description: desc.desc });
@@ -146,6 +155,10 @@ export function EditForum(props: EditForumProps) {
                   />
                   <div className="textSize"> {bodySize}/800 </div>
                 </div>
+                <>
+                  <span className="createForumLabel">Upload banner image</span>
+                  <UploadForumImage imageURL={(url) => setBannerImage(url)} />
+                </>
               </div>
             }
             loading={editForum.loading}

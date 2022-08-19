@@ -55,7 +55,8 @@
     "lodash": "^4.17.21",
     "lodash.orderby": "^4.6.0",
     "react-ga4": "^1.4.1",
-    "react-helmet": "^6.1.0"
+    "react-helmet": "^6.1.0",
+    "react-images-uploading": "^3.1.7"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

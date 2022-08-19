@@ -7,8 +7,7 @@ import {
   WalletAdapterInterface,
   PostRestriction,
   getMintsForOwner,
-  getMetadataForOwner,
-  getMetadataForMints
+  getMetadataForOwner
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -124,6 +123,10 @@ export interface IForum {
     body: string;
     meta?: any;
   }): Promise<string>;
+
+  setImageUrls(collectionId: web3.PublicKey, image: string ): Promise<string>;
+
+  getImageUrls(collectionId: web3.PublicKey): Promise<any>;
 
   // For a given topic, the messages
   getTopicMessages(topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined>;
@@ -570,7 +573,43 @@ export class DispatchForum implements IForum {
       return tx
     } catch (error) {
       throw(parseError(error))
-    }}
+    }
+  }
+
+  setImageUrls = async(collectionId: web3.PublicKey, image: string): Promise<string> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+
+      const expectedImages = { background: image };
+      const tx = await forum.setImageUrls(expectedImages);
+      return tx
+    } catch (error) {
+      console.log(error);
+      throw(parseError(error))
+    }
+  }
+
+  getImageUrls = async(collectionId: web3.PublicKey) => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+      const tx = await forum.getImageUrls();
+      return tx
+    } catch (error) {
+      throw(parseError(error))
+    }
+  }
 
   getTopicMessages = async (topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined> => {
     const owner = this.wallet;

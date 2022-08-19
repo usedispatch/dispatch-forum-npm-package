@@ -33,6 +33,7 @@ export interface ForumData {
   description: Description;
   posts: ForumPost[];
   restriction: LoadingResult<PostRestriction>;
+  images: any;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -131,18 +132,35 @@ export function useForumData(
     }
   }
 
+  async function fetchForumImage(): Promise<any> {
+    if (collectionId) {
+      try {
+        const imgs = await forum.getImageUrls(collectionId);
+        console.log("image", imgs);
+        if (imgs) {
+          return imgs;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error: any) {
+        console.log(error);
+      }
+    }
+  }
+
   async function update() {
     if (collectionId) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, moderators, description, posts, restriction] =
+        const [owners, moderators, description, posts, restriction, images] =
           await Promise.all([
             fetchOwners(),
             fetchModerators(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
+            fetchForumImage(),
           ]);
 
         if (isSuccess(description) && isSuccess(posts)) {
@@ -155,6 +173,7 @@ export function useForumData(
             description,
             posts,
             restriction,
+            images,
           });
         } else {
           // We already confirmed the forum existed, so assume

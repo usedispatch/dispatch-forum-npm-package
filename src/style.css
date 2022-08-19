@@ -18,6 +18,7 @@
 @import "./styles/EditForum.css";
 @import "./styles/ForumContent.css";
 @import "./styles/TopicList.css";
+@import "./styles/UploadImage.css";
 
 /* Topic */
 @import "./styles/CreatePost.css";

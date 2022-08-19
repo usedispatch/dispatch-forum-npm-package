@@ -372,6 +372,8 @@ export function ForumContent(props: ForumContentProps) {
   return (
     <div className="dsp- ">
       <div className="forumContent">
+        {/* TODO(Ana) move this to header */}
+        <img src={forumData?.images?.background} />
         {!_.isNil(modalInfo) && (
           <PopUpModal
             id="create-topic-info"

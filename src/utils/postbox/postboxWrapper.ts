@@ -219,7 +219,7 @@ export class DispatchForum implements IForum {
         if (!(await forumAsOwner.exists())) {
           const forumInfoObject = {
             collectionId: collectionPublicKey,
-            owners: [owner.publicKey],
+            owners: forumInfo.owners,
             moderators: forumInfo.moderators,
             title: forumInfo.title,
             description: forumInfo.description,

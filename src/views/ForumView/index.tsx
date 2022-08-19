@@ -121,6 +121,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [showNewForumModal, setShowNewForumModal] = useState(false);
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
+  const [newOwners, setNewOwners] = useState("");
   const [accessToken, setAccessToken] = useState<string>();
   const [bodySize, setBodySize] = useState<number>(0);
   const onCreateForumClick = () => {
@@ -144,8 +145,12 @@ export const ForumView = (props: ForumViewProps) => {
           ? [publicKey, newPublicKey(newModerator)]
           : [publicKey];
 
+      const owners = [publicKey].concat(
+        newOwners.split(",").map((o) => newPublicKey(o))
+      );
+
       const forum = {
-        owners: [publicKey],
+        owners,
         moderators,
         title: title,
         description: description,
@@ -280,6 +285,7 @@ export const ForumView = (props: ForumViewProps) => {
                   <textarea
                     placeholder="Description"
                     className="createForumInput createForumDescription"
+                    maxLength={800}
                     value={description}
                     disabled={creatingNewForum}
                     onChange={(e) => {
@@ -287,7 +293,7 @@ export const ForumView = (props: ForumViewProps) => {
                       setBodySize(new Buffer(e.target.value).byteLength);
                     }}
                   />
-                  <div>{bodySize}/800</div>
+                  <div className="textSize">{bodySize}/800</div>
                 </>
                 <>
                   <span className="createForumLabel">Moderator</span>
@@ -297,6 +303,16 @@ export const ForumView = (props: ForumViewProps) => {
                     value={newModerator}
                     disabled={creatingNewForum}
                     onChange={(e) => setNewModerator(e.target.value)}
+                  />
+                </>
+                <>
+                  <span className="createForumLabel">Owners</span>
+                  <input
+                    placeholder="Add a comma separated list of owners IDs"
+                    className="createForumInput"
+                    value={newOwners}
+                    disabled={creatingNewForum}
+                    onChange={(e) => setNewOwners(e.target.value)}
                   />
                 </>
                 <>

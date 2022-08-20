@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Send a workflow dispatch to re-deploy staging with the latest code
-        run: curl \
-          -X POST \
-        -H 'Accept: application/vnd.github+json' \
-        -H 'Authorization: token ${{ secrets.VERCEL_TOKEN }}' \
-        'https://api.github.com/repos/usedispatch/www.dispatch.forum/actions/workflows/deploy_staging.yml/dispatches' \
-        -d '{"ref":"main","inputs":{}}'
+        run: |
+          curl \
+            -X POST \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'Authorization: token ${{ secrets.VERCEL_TOKEN }}' \
+            'https://api.github.com/repos/usedispatch/www.dispatch.forum/actions/workflows/deploy_staging.yml/dispatches' \
+            -d '{"ref":"main","inputs":{}}'

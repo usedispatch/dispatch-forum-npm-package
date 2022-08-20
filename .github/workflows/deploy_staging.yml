@@ -14,6 +14,6 @@ jobs:
           curl \
             -X POST \
             -H 'Accept: application/vnd.github+json' \
-            -H 'Authorization: token ${{ secrets.VERCEL_TOKEN }}' \
+            -H 'Authorization: token ${{ secrets.WEBSITE_STAGING_REDEPLOY_TOKEN }}' \
             'https://api.github.com/repos/usedispatch/www.dispatch.forum/actions/workflows/deploy_staging.yml/dispatches' \
             -d '{"ref":"main","inputs":{}}'

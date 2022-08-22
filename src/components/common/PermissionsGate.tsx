@@ -31,7 +31,7 @@ export function PermissionsGate(props: PermissionsGateProps) {
 
   const permissionGranted =
     hasPermission({ permissions, scopes }) ||
-    wallet.publicKey?.toBase58() === posterKey?.toBase58();
+    wallet?.publicKey?.toBase58() === posterKey?.toBase58();
   if (!permissionGranted) {
     return RenderError ? <RenderError /> : null;
   }

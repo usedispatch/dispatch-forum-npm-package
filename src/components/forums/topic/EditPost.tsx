@@ -102,7 +102,7 @@ export function EditPost(props: EditPostProps) {
     }
   };
 
-  if (!wallet.publicKey?.equals(post.poster)) {
+  if (!wallet?.publicKey?.equals(post.poster)) {
     return null;
   }
 

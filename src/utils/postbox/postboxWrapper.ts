@@ -4,7 +4,7 @@ import {
   Forum,
   ForumInfo,
   ForumPost,
-  WalletAdapterInterface,
+  WalletInterface,
   PostRestriction,
   getMintsForOwner,
   getMetadataForOwner
@@ -170,12 +170,12 @@ export interface IForum {
 }
 
 export class DispatchForum implements IForum {
-  public wallet: WalletAdapterInterface;
+  public wallet: WalletInterface;
   public connection: web3.Connection;
   public permission: Permission;
   public cluster: web3.Cluster;
 
-  constructor(wallet: WalletAdapterInterface, conn: web3.Connection, cluster: web3.Cluster) {
+  constructor(wallet: WalletInterface, conn: web3.Connection, cluster: web3.Cluster) {
     this.connection = conn;
     this.wallet = wallet;
     this.cluster = cluster;
@@ -190,7 +190,8 @@ export class DispatchForum implements IForum {
         publicKey: new web3.PublicKey('11111111111111111111111111111111'),
         signAllTransactions: () => {return Promise.resolve([])},
         signTransaction: () => {return Promise.resolve(new web3.Transaction())},
-        sendTransaction: () => {return Promise.resolve('');}
+        sendTransaction: () => {return Promise.resolve('');},
+        wallet: null
       };
       this.permission = { readAndWrite: false };
     }

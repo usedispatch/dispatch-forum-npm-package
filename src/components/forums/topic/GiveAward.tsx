@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
-import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
+import { ForumPost, WalletInterface } from "@usedispatch/client";
 
 import {
   CollapsibleProps,
@@ -233,7 +233,7 @@ export function GiveAward(props: GiveAwardProps) {
 }
 
 interface TransferSOLProps {
-  wallet: WalletAdapterInterface;
+  wallet: WalletInterface;
   posterId: web3.PublicKey;
   collectionId: web3.PublicKey;
   amount: number;

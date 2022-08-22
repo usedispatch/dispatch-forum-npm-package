@@ -49,6 +49,7 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "@bundlr-network/client": "^0.8.1",
     "@project-serum/anchor": "^0.24.2",
     "@solana/spl-token": "^0.2.0",
     "@usedispatch/client": "^0.12.0",

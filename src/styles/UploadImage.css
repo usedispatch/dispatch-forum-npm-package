@@ -3,6 +3,8 @@
     margin: 4px 0 0;
     padding: 24px;
     text-align: center;
+    transition: height 2s;
+
     background: #f7f7fe;
     border: 1px #6e59b1 dashed;
     border-radius: 6px;
@@ -14,12 +16,25 @@
       margin: 0 auto;
 
       font-size: 14px;
+      font-weight: 600;
       color: #86878e;
     }
 
     .imageContainer {
       display: flex;
       justify-content: center;
+      gap: 5px;
+      margin: 5px;
+
+      &.currentBanner {
+        flex-direction: column;
+        align-items: center;
+        margin: 0 0 24px;
+
+        color: #454196;
+        font-size: 14px;
+        font-weight: 500;
+      }
     }
 
     .imageButtonsContainer {
@@ -28,6 +43,17 @@
       flex-direction: column;
       align-items: center;
       gap: 5px;
+
+      button {
+        padding: 5px;
+        color: #454196;
+        font-size: 14px;
+        font-weight: 600;
+
+        &:hover {
+          opacity: 0.85;
+        }
+      }
     }
   }
 }

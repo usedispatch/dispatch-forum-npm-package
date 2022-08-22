@@ -371,9 +371,9 @@ export function ForumContent(props: ForumContentProps) {
 
   return (
     <div className="dsp- ">
-      <div className="forumContent">
-        {/* TODO(Ana) move this to header */}
-        <img src={forumData?.images?.background} />
+      <div
+        className="forumContent"
+        style={{ backgroundImage: "url(https://i.redd.it/8q34iulyoqd51.jpg)" }}>
         {!_.isNil(modalInfo) && (
           <PopUpModal
             id="create-topic-info"
@@ -707,10 +707,8 @@ export function ForumContent(props: ForumContentProps) {
             </div>
           </PermissionsGate>
         </div>
-        {!_.isNil(forumData.collectionId) && (
-          <TopicList forumData={forumData} />
-        )}
       </div>
+      {!_.isNil(forumData.collectionId) && <TopicList forumData={forumData} />}
     </div>
   );
 }

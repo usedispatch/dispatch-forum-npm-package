@@ -156,10 +156,13 @@ export function EditForum(props: EditForumProps) {
                   <div className="textSize"> {bodySize}/800 </div>
                 </div>
                 <>
-                  <span className="createForumLabel">Upload banner image</span>
-                  <UploadForumImage setImageURL={(url: URL) => {
-                    setBannerImage(url)
-                  }} />
+                  <span className="editForumLabel">Upload banner image</span>
+                  <UploadForumImage
+                    setImageURL={(url: URL) => {
+                      setBannerImage(url);
+                    }}
+                    currentBanner={forumData.images.background}
+                  />
                 </>
               </div>
             }

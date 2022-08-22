@@ -16,10 +16,11 @@ async function uploadFileToArweave(file: File): Promise<URL> {
 
 interface UploadForumImageProps {
   setImageURL: (url: URL) => void;
+  currentBanner?: string;
 }
 
 export function UploadForumImage(props: UploadForumImageProps) {
-  const { setImageURL } = props;
+  const { setImageURL, currentBanner  } = props;
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -72,30 +73,51 @@ export function UploadForumImage(props: UploadForumImageProps) {
             imageList,
             onImageUpload,
             onImageUpdate,
-            onImageRemove,
             isDragging,
             dragProps,
           }) => (
             <div className="uploadImageWrapper">
-              {imageList.length === 0 && (
-                <button
-                  style={isDragging ? { color: "red" } : undefined}
-                  className="dragAndDropButton"
-                  onClick={onImageUpload}
-                  {...dragProps}>
-                  <div>Drag and drop your file</div>
-                  <div>Or click to browse</div>
-                </button>
-              )}
-              {imageList.map((image, index) => (
-                <div key={index} className="imageContainer">
-                  <img src={image["data_url"]} alt="" width="100" />
-                  <div className="imageButtonsContainer">
-                    <button onClick={() => onImageUpdate(index)}>Update</button>
-                    <button onClick={() => onImageRemove(index)}>Remove</button>
+              {imageList.length === 0 ? (
+                currentBanner ? (
+                  <>
+                    <div
+                      key="currentbanner"
+                      className="imageContainer currentBanner">
+                      <div>Current banner</div>
+                      <img src={currentBanner} alt="" width="180" />
+                    </div>
+                    <button
+                      style={isDragging ? { color: "red" } : undefined}
+                      className="dragAndDropButton"
+                      onClick={onImageUpload}
+                      {...dragProps}>
+                      <div>To change the banner drag and drop your file</div>
+                      <div>Or click to browse</div>
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    style={isDragging ? { color: "red" } : undefined}
+                    className="dragAndDropButton"
+                    onClick={onImageUpload}
+                    {...dragProps}>
+                    <div>Drag and drop your file</div>
+                    <div>Or click to browse</div>
+                  </button>
+                )
+              ) : (
+                imageList.map((image, index) => (
+                  <div key={index} className="imageContainer">
+                    <img src={image["data_url"]} alt="" width="180" />
+                    <div className="imageButtonsContainer">
+                      <button onClick={() => onImageUpdate(index)}>
+                        Update
+                      </button>
+                      <button onClick={() => setImages([])}>Remove</button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
         </ImageUploading>

@@ -373,7 +373,12 @@ export function ForumContent(props: ForumContentProps) {
     <div className="dsp- ">
       <div
         className="forumContent"
-        style={{ backgroundImage: `url(${forumData.images.background})` }}>
+        style={{
+          backgroundImage: `url(${forumData.images?.background})`,
+          boxShadow: forumData.images?.background
+            ? "0px 4px 8px rgb(0 0 0 / 8%)"
+            : undefined,
+        }}>
         {!_.isNil(modalInfo) && (
           <PopUpModal
             id="create-topic-info"

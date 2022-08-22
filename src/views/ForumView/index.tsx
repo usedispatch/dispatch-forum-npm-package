@@ -141,14 +141,23 @@ export const ForumView = (props: ForumViewProps) => {
         });
       }
 
+      // TODO(andrew) do A LOT more validation here of possible badly-behaved strings
+
       const moderators =
         newModerator.length > 0
           ? [publicKey, newPublicKey(newModerator)]
           : [publicKey];
 
-      const owners = [publicKey].concat(
-        newOwners.split(",").map((o) => newPublicKey(o))
-      );
+      const additionalOwnerKeys = newOwners
+        // Split at commas TODO also at commas with whitespace,
+        // e.g. '<key1> , <key2>'
+        .split(',')
+        // Remove the empty string wherever it is found
+        .filter(str => str.length > 0)
+        // Transform into pubkey
+        .map(o => newPublicKey(o));
+
+      const owners = [publicKey].concat(additionalOwnerKeys);
 
       const forum = {
         owners,

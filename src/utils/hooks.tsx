@@ -267,8 +267,6 @@ export function useBundlr(): WebBundlr | null {
       'https://devnet.bundlr.network' :
       'http://node1.bundlr.network';
 
-    console.log(bundlrEndpoint);
-
     if (forum.wallet.wallet) {
       const bundlr = new WebBundlr(
         bundlrEndpoint,

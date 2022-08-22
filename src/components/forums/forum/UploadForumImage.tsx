@@ -23,11 +23,8 @@ async function uploadFileWithBundlr(file: File, bundlr: WebBundlr): Promise<URL>
     await bundlr.fund(price.multipliedBy(2));
   }
 
-  console.log('creating transaction');
   const tx = bundlr.createTransaction(bytes);
-  console.log('signing transaction');
   await tx.sign();
-  console.log('uploading transaction');
   await tx.upload();
 
   const id = tx.id;
@@ -35,7 +32,6 @@ async function uploadFileWithBundlr(file: File, bundlr: WebBundlr): Promise<URL>
   const url = new URL(
     `https://arweave.net/${id}`
   );
-  console.log('uu', url);
 
   // TODO upload to arweave here
   return url;

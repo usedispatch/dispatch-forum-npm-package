@@ -122,7 +122,7 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
-  const [bannerImage, setBannerImage] = useState("");
+  const [bannerImage, setBannerImage] = useState<URL | null>(null);
   const [accessToken, setAccessToken] = useState<string>();
   const [bodySize, setBodySize] = useState<number>(0);
   const onCreateForumClick = () => {
@@ -172,10 +172,10 @@ export const ForumView = (props: ForumViewProps) => {
 
       const res = await forumObject.createForum(forum);
 
-      if (bannerImage.length > 0 && collectionPublicKey) {
+      if (bannerImage && collectionPublicKey) {
         const imgs = await forumObject.setImageUrls(
           collectionPublicKey,
-          bannerImage
+          bannerImage.href
         );
       }
 
@@ -342,7 +342,7 @@ export const ForumView = (props: ForumViewProps) => {
                 </>
                 <>
                   <span className="createForumLabel">Upload banner image</span>
-                  <UploadForumImage imageURL={(url) => setBannerImage(url)} />
+                  <UploadForumImage setImageURL={(url) => setBannerImage(url)} />
                 </>
               </div>
             }

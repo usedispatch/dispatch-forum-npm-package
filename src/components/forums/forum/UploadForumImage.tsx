@@ -1,16 +1,25 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
-import ImageUploading from "react-images-uploading";
+import ImageUploading, { ImageListType } from "react-images-uploading";
 
 import { MessageType } from "../../common";
 import { Notification } from "../index";
 
+// TODO(andrew) move this to a utils file
+async function uploadFileToArweave(file: File): Promise<URL> {
+  const arrayBuffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(arrayBuffer);
+
+  // TODO upload to arweave here
+  return new URL('');
+}
+
 interface UploadForumImageProps {
-  imageURL: (url: string) => void;
+  setImageURL: (url: URL) => void;
 }
 
 export function UploadForumImage(props: UploadForumImageProps) {
-  const { imageURL } = props;
+  const { setImageURL } = props;
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -22,9 +31,26 @@ export function UploadForumImage(props: UploadForumImageProps) {
 
   const [images, setImages] = useState<any[]>([]);
 
-  const onChange = (imageList) => {
-    imageURL(imageList[0].data_url);
+  // TODO(andrew) rewrite all of this with error types instead of
+  // console.error() calls
+  const onChange = (imageList: ImageListType) => {
+    // Make sure we've uploaded exactly one file
+    if (imageList.length === 1) {
+      const file = imageList[0].file;
+      if (file) {
+        uploadFileToArweave(file)
+          .then(url => setImageURL(url));
+      } else {
+        console.error(`Could not get file for the uploaded image`);
+      }
+    } else {
+      console.error(`Should upload exactly one image. Uploaded ${imageList.length}`);
+    }
+    // Upload
     setImages(imageList);
+    // Set the image URL once it is loaded TODO replace this with
+    // Arweave
+    setImageURL(imageList[0].data_url);
   };
 
   return (

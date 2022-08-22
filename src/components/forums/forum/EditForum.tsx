@@ -37,7 +37,7 @@ export function EditForum(props: EditForumProps) {
     description: forumData.description.desc,
   });
 
-  const [bannerImage, setBannerImage] = useState("");
+  const [bannerImage, setBannerImage] = useState<URL | null>(null);
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -62,11 +62,11 @@ export function EditForum(props: EditForumProps) {
 
       const tx = await forumObject.setDescription(forumData.collectionId, desc);
 
-      if (bannerImage.length > 0) {
+      if (bannerImage) {
         console.log("esta en el if", bannerImage);
         const imgs = await forumObject.setImageUrls(
           forumData.collectionId,
-          bannerImage
+          bannerImage.href
         );
       }
       await update();
@@ -157,7 +157,9 @@ export function EditForum(props: EditForumProps) {
                 </div>
                 <>
                   <span className="createForumLabel">Upload banner image</span>
-                  <UploadForumImage imageURL={(url) => setBannerImage(url)} />
+                  <UploadForumImage setImageURL={(url: URL) => {
+                    setBannerImage(url)
+                  }} />
                 </>
               </div>
             }

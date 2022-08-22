@@ -1,6 +1,7 @@
 import { useMemo, useState, ReactNode } from "react";
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
+import { WebBundlr } from '@bundlr-network/client';
 import { Loading, LoadingResult } from "../types/loading";
 import {
   CollapsibleProps,
@@ -18,6 +19,7 @@ import {
   isDispatchClientError,
 } from "../utils/loading";
 import { DispatchForum } from "./postbox/postboxWrapper";
+import { useForum } from '../contexts/DispatchProvider';
 
 // TODO(andrew) move this to DispatchForum.getDescription()
 // so that function can be properly typed
@@ -250,4 +252,34 @@ export function useModal() {
     showModals,
     setModals: setModalInfoList,
   };
+}
+
+export function useBundlr(): WebBundlr | null {
+  const forum = useForum();
+
+  return useMemo(() => {
+
+    // Assume that if we're using devnet, it will be the standard
+    // public Solana devnet endpoint. If so, use the bundlr
+    // devnet endpoint, if so use the bundlr mainnet
+    const bundlrEndpoint =
+      forum.connection.rpcEndpoint === clusterApiUrl('devnet') ?
+      'https://devnet.bundlr.network' :
+      'http://node1.bundlr.network';
+
+    console.log(bundlrEndpoint);
+
+    if (forum.wallet.wallet) {
+      const bundlr = new WebBundlr(
+        bundlrEndpoint,
+        'solana',
+        forum.wallet.wallet.adapter,
+        { providerUrl: forum.connection.rpcEndpoint }
+      );
+
+      return bundlr;
+    } else {
+      return null;
+    }
+  }, [forum.connection.rpcEndpoint, forum.wallet.wallet?.adapter]);
 }

@@ -24,6 +24,7 @@ import {
   restrictionListToString,
   pubkeysToRestriction,
 } from "../../../utils/restrictionListHelper";
+import { UploadForumImage } from "./UploadForumImage";
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
@@ -709,6 +710,10 @@ export function ForumContent(props: ForumContentProps) {
                 </button>
               </PermissionsGate>
               <EditForum forumData={forumData} update={update} />
+              <UploadForumImage
+                onSetImageURL={() => update()}
+                currentBanner={forumData.images.background}
+              />
             </div>
           </PermissionsGate>
         </div>

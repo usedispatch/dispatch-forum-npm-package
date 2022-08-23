@@ -3,10 +3,11 @@ import { useState, ReactNode, useMemo } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { WebBundlr } from "@bundlr-network/client";
 
-import { MessageType, Spinner } from "../../common";
-import { Notification } from "../index";
+import { MessageType, PopUpModal, Spinner } from "../../common";
+import { Notification } from "../../forums";
 
 import { useBundlr } from "../../../utils/hooks";
+import { useForum } from "../../../contexts/DispatchProvider";
 
 // TODO(andrew) move this to a utils file
 async function uploadFileWithBundlr(
@@ -40,12 +41,14 @@ async function uploadFileWithBundlr(
 }
 
 interface UploadForumImageProps {
-  setImageURL: (url: URL) => void;
+  onSetImageURL: (url: URL) => void;
   currentBanner?: string;
 }
 
 export function UploadForumImage(props: UploadForumImageProps) {
-  const { setImageURL, currentBanner } = props;
+  const { onSetImageURL, currentBanner } = props;
+  const forumObject = useForum();
+  const { permission } = forumObject;
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -56,7 +59,9 @@ export function UploadForumImage(props: UploadForumImageProps) {
   const fileTypes = ["jpg", "png"];
 
   const [images, setImages] = useState<any[]>([]);
+  const [proccessingImage, setProccessingImage] = useState(false);
   const [loadingImage, setLoadingImage] = useState(false);
+  const [showUploadImage, setShowUploadImage] = useState(false);
 
   const bundlr = useBundlr();
 
@@ -70,92 +75,142 @@ export function UploadForumImage(props: UploadForumImageProps) {
       } else if (!bundlr) {
         console.error(`Could not initialize bundlr`);
       } else {
-        setLoadingImage(true);
+        setProccessingImage(true);
         await uploadFileWithBundlr(file, bundlr).then((url) =>
-          setImageURL(url)
+          onSetImageURL(url)
         );
-        setLoadingImage(false);
+        setProccessingImage(false);
       }
       // Upload
       setImages(imageList);
       // Set the image URL once it is loaded TODO replace this with Arweave
-      setImageURL(imageList[0].data_url);
+      onSetImageURL(imageList[0].data_url);
     } catch (error: any) {
       console.log(error);
-      setLoadingImage(false);
+      setProccessingImage(false);
+    }
+  };
+
+  const onSave = () => {
+    try {
+      // setLoadingImage(true)
+      // await forumObject.setImageUrls(
+      //   forumData.collectionId,
+      //   bannerImage.href
+      // );
+      // onSetImageUrl
+      // setLoadingImage(false)
+    } catch (error) {
+      // setLoadingImage(false)
     }
   };
 
   return (
     <div className="dsp- ">
-      <div className="">
+      <div className="customizeBanner">
         <Notification
           hidden={notificationContent.isHidden}
           content={notificationContent?.content}
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
-        <ImageUploading
-          value={images}
-          onChange={onChange}
-          maxNumber={1}
-          acceptType={fileTypes}
-          dataURLKey="data_url">
-          {({
-            imageList,
-            onImageUpload,
-            onImageUpdate,
-            isDragging,
-            dragProps,
-          }) => (
-            <div className="uploadImageWrapper">
-              {loadingImage ? (
-                <>
-                  <div className="uploadImageLabel">Processing new file</div>
-                  <Spinner />
-                </>
-              ) : imageList.length === 0 ? (
-                currentBanner ? (
+        {showUploadImage && (
+          <PopUpModal
+            id="cutomize-banner"
+            visible
+            title={"Upload banner image"}
+            loading={loadingImage}
+            body={
+              <div className="uploadImageWrapper">
+                {proccessingImage ? (
                   <>
-                    <div key="currentbanner" className="imageContainer">
-                      <div className="uploadImageLabel">Current banner</div>
-                      <img src={currentBanner} alt="" width="180" />
-                    </div>
-                    <button
-                      style={isDragging ? { color: "red" } : undefined}
-                      className="dragAndDropButton"
-                      onClick={onImageUpload}
-                      {...dragProps}>
-                      <div>To change the banner drag and drop your file</div>
-                      <div>Or click to browse</div>
-                    </button>
+                    <div className="uploadImageLabel">Processing new image</div>
+                    <Spinner />
                   </>
                 ) : (
-                  <button
-                    style={isDragging ? { color: "red" } : undefined}
-                    className="dragAndDropButton"
-                    onClick={onImageUpload}
-                    {...dragProps}>
-                    <div>Drag and drop your file</div>
-                    <div>Or click to browse</div>
-                  </button>
-                )
-              ) : (
-                imageList.map((image, index) => (
-                  <div key={index} className="imageContainer">
-                    <img src={image["data_url"]} alt="" width="180" />
-                    <div className="imageButtonsContainer">
-                      <button onClick={() => onImageUpdate(index)}>
-                        Update
-                      </button>
-                      <button onClick={() => setImages([])}>Remove</button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          )}
-        </ImageUploading>
+                  <ImageUploading
+                    value={images}
+                    onChange={onChange}
+                    maxNumber={1}
+                    acceptType={fileTypes}
+                    dataURLKey="data_url">
+                    {({
+                      imageList,
+                      onImageUpload,
+                      onImageUpdate,
+                      isDragging,
+                      dragProps,
+                    }) =>
+                      imageList.length === 0 ? (
+                        currentBanner ? (
+                          <>
+                            <div key="currentbanner" className="imageContainer">
+                              <div className="uploadImageLabel">
+                                Current banner
+                              </div>
+                              <img src={currentBanner} alt="" width="200" />
+                            </div>
+                            <button
+                              style={isDragging ? { color: "red" } : undefined}
+                              className="dragAndDropButton"
+                              onClick={onImageUpload}
+                              {...dragProps}>
+                              <div>
+                                To change the banner drag and drop your file
+                              </div>
+                              <div>Or click to browse</div>
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            style={isDragging ? { color: "red" } : undefined}
+                            className="dragAndDropButton"
+                            onClick={onImageUpload}
+                            {...dragProps}>
+                            <div>Drag and drop your file</div>
+                            <div>Or click to browse</div>
+                          </button>
+                        )
+                      ) : (
+                        imageList.map((image, index) => (
+                          <div key={index} className="imageContainer">
+                            <img src={image["data_url"]} alt="" width="200" />
+                            <div className="imageButtonsContainer">
+                              <button onClick={() => onImageUpdate(index)}>
+                                Update
+                              </button>
+                              <button onClick={() => setImages([])}>
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        ))
+                      )
+                    }
+                  </ImageUploading>
+                )}
+              </div>
+            }
+            onClose={() => {
+              setShowUploadImage(false);
+              setImages([]);
+            }}
+            okButton={
+              <button
+                className="okButton"
+                disabled={images.length === 0}
+                onClick={() => onSave()}>
+                Save
+              </button>
+            }
+          />
+        )}
+        <button
+          className="customizeBannerButton"
+          disabled={!permission.readAndWrite}
+          onClick={() => setShowUploadImage(true)}>
+          Customize banner
+        </button>
       </div>
     </div>
   );

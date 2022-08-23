@@ -24,10 +24,8 @@ import {
 import {
   ConnectionAlert,
   ForumContent,
-  UploadForumImage,
   PoweredByDispatch,
 } from "../../components/forums";
-import { selectTopics } from "../../utils/posts";
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
@@ -122,7 +120,6 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
-  const [bannerImage, setBannerImage] = useState<URL | null>(null);
   const [accessToken, setAccessToken] = useState<string>();
   const [bodySize, setBodySize] = useState<number>(0);
   const onCreateForumClick = () => {
@@ -151,11 +148,11 @@ export const ForumView = (props: ForumViewProps) => {
       const additionalOwnerKeys = newOwners
         // Split at commas TODO also at commas with whitespace,
         // e.g. '<key1> , <key2>'
-        .split(',')
+        .split(",")
         // Remove the empty string wherever it is found
-        .filter(str => str.length > 0)
+        .filter((str) => str.length > 0)
         // Transform into pubkey
-        .map(o => newPublicKey(o));
+        .map((o) => newPublicKey(o));
 
       const owners = [publicKey].concat(additionalOwnerKeys);
 
@@ -171,13 +168,6 @@ export const ForumView = (props: ForumViewProps) => {
       } as ForumInfo;
 
       const res = await forumObject.createForum(forum);
-
-      if (bannerImage && collectionPublicKey) {
-        const imgs = await forumObject.setImageUrls(
-          collectionPublicKey,
-          bannerImage.href
-        );
-      }
 
       if (!_.isNil(res?.forum)) {
         setShowNewForumModal(false);
@@ -339,10 +329,6 @@ export const ForumView = (props: ForumViewProps) => {
                     disabled={creatingNewForum || bodySize > 800}
                     onChange={(e) => setAccessToken(e.target.value)}
                   />
-                </>
-                <>
-                  <span className="createForumLabel">Upload banner image</span>
-                  <UploadForumImage setImageURL={(url) => setBannerImage(url)} />
                 </>
               </div>
             }

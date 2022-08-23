@@ -63,8 +63,7 @@ export function EditForum(props: EditForumProps) {
       const tx = await forumObject.setDescription(forumData.collectionId, desc);
 
       if (bannerImage) {
-        console.log("esta en el if", bannerImage);
-        const imgs = await forumObject.setImageUrls(
+        await forumObject.setImageUrls(
           forumData.collectionId,
           bannerImage.href
         );
@@ -158,9 +157,7 @@ export function EditForum(props: EditForumProps) {
                 <>
                   <span className="editForumLabel">Upload banner image</span>
                   <UploadForumImage
-                    setImageURL={(url: URL) => {
-                      setBannerImage(url);
-                    }}
+                    setImageURL={(url: URL) => setBannerImage(url)}
                     currentBanner={forumData.images.background}
                   />
                 </>

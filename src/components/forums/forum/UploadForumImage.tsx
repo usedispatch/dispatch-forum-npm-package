@@ -1,14 +1,18 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
-import { WebBundlr } from '@bundlr-network/client';
+import { WebBundlr } from "@bundlr-network/client";
 
-import { MessageType } from "../../common";
+import { MessageType, Spinner } from "../../common";
 import { Notification } from "../index";
-import { useBundlr } from '../../../utils/hooks';
+
+import { useBundlr } from "../../../utils/hooks";
 
 // TODO(andrew) move this to a utils file
-async function uploadFileWithBundlr(file: File, bundlr: WebBundlr): Promise<URL> {
+async function uploadFileWithBundlr(
+  file: File,
+  bundlr: WebBundlr
+): Promise<URL> {
   const arrayBuffer = await file.arrayBuffer();
   const bytes = new Uint8Array(arrayBuffer);
 
@@ -29,9 +33,7 @@ async function uploadFileWithBundlr(file: File, bundlr: WebBundlr): Promise<URL>
 
   const id = tx.id;
 
-  const url = new URL(
-    `https://arweave.net/${id}`
-  );
+  const url = new URL(`https://arweave.net/${id}`);
 
   // TODO upload to arweave here
   return url;
@@ -43,7 +45,7 @@ interface UploadForumImageProps {
 }
 
 export function UploadForumImage(props: UploadForumImageProps) {
-  const { setImageURL, currentBanner  } = props;
+  const { setImageURL, currentBanner } = props;
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -51,34 +53,37 @@ export function UploadForumImage(props: UploadForumImageProps) {
     type?: MessageType;
   }>({ isHidden: true });
 
-  const fileTypes = ["png"];
+  const fileTypes = ["jpg", "png"];
 
   const [images, setImages] = useState<any[]>([]);
+  const [loadingImage, setLoadingImage] = useState(false);
 
   const bundlr = useBundlr();
 
-  // TODO(andrew) rewrite all of this with error types instead of
-  // console.error() calls
-  const onChange = (imageList: ImageListType) => {
-    // Make sure we've uploaded exactly one file
-    if (imageList.length === 1) {
+  // TODO(andrew) rewrite all of this with error types instead of console.error() calls
+  const onChange = async (imageList: ImageListType) => {
+    try {
+      // The component only allows 1 file
       const file = imageList[0].file;
       if (!file) {
         console.error(`Could not get file for the uploaded image`);
       } else if (!bundlr) {
         console.error(`Could not initialize bundlr`);
       } else {
-        uploadFileWithBundlr(file, bundlr)
-          .then(url => setImageURL(url));
+        setLoadingImage(true);
+        await uploadFileWithBundlr(file, bundlr).then((url) =>
+          setImageURL(url)
+        );
+        setLoadingImage(false);
       }
-    } else {
-      console.error(`Should upload exactly one image. Uploaded ${imageList.length}`);
+      // Upload
+      setImages(imageList);
+      // Set the image URL once it is loaded TODO replace this with Arweave
+      setImageURL(imageList[0].data_url);
+    } catch (error: any) {
+      console.log(error);
+      setLoadingImage(false);
     }
-    // Upload
-    setImages(imageList);
-    // Set the image URL once it is loaded TODO replace this with
-    // Arweave
-    setImageURL(imageList[0].data_url);
   };
 
   return (
@@ -104,13 +109,16 @@ export function UploadForumImage(props: UploadForumImageProps) {
             dragProps,
           }) => (
             <div className="uploadImageWrapper">
-              {imageList.length === 0 ? (
+              {loadingImage ? (
+                <>
+                  <div className="uploadImageLabel">Processing new file</div>
+                  <Spinner />
+                </>
+              ) : imageList.length === 0 ? (
                 currentBanner ? (
                   <>
-                    <div
-                      key="currentbanner"
-                      className="imageContainer currentBanner">
-                      <div>Current banner</div>
+                    <div key="currentbanner" className="imageContainer">
+                      <div className="uploadImageLabel">Current banner</div>
                       <img src={currentBanner} alt="" width="180" />
                     </div>
                     <button

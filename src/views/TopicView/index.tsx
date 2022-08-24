@@ -39,7 +39,6 @@ interface Props {
 }
 
 export const TopicView = (props: Props) => {
-  ReactGA.send("pageview");
   const forum = useForum();
   const role = useRole();
   const { permission } = forum;
@@ -57,9 +56,9 @@ export const TopicView = (props: Props) => {
       return null;
     }
   }, [collectionId]);
-
+  
   const { forumData, update } = useForumData(collectionPublicKey, forum);
-
+  
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {
       const post = forumData.posts.find(({ isTopic, postId }) => {
@@ -148,10 +147,8 @@ export const TopicView = (props: Props) => {
     <div className="dsp- ">
       <Helmet>
         <meta charSet="utf-8" />
-        {isSuccess(topic) ? (
-          <title>{topic.data.subj}</title>
-        ) : (
-          <title>Create Forum for {collectionId}</title>
+        {isSuccess(topic) && (
+          <title>{topic.data.subj} -- Topic </title>
         )}
       </Helmet>
       <div className="topicView">

@@ -256,18 +256,6 @@ export function PostContent(props: PostContentProps) {
         />
         <>
           <div className="postContentBox">
-            <PermissionsGate scopes={[SCOPES.canVote]}>
-              <Votes
-                post={post}
-                onDownVotePost={() =>
-                  forum.voteDownForumPost(post, forumData.collectionId)
-                }
-                onUpVotePost={() =>
-                  forum.voteUpForumPost(post, forumData.collectionId)
-                }
-                updateVotes={(upVoted) => updateVotes(upVoted)}
-              />
-            </PermissionsGate>
             <div className="box">
               <div className="postHeader">
                 <div className="posterId">
@@ -297,11 +285,23 @@ export function PostContent(props: PostContentProps) {
               </div>
               <div className="postBody">{post?.data.body}</div>
               <div className="actionsContainer">
+                <PermissionsGate scopes={[SCOPES.canVote]}>
+                  <Votes
+                    post={post}
+                    onDownVotePost={() =>
+                      forum.voteDownForumPost(post, forumData.collectionId)
+                    }
+                    onUpVotePost={() =>
+                      forum.voteUpForumPost(post, forumData.collectionId)
+                    }
+                    updateVotes={(upVoted) => updateVotes(upVoted)}
+                  />
+                </PermissionsGate>
                 <EditPost
                   post={post}
                   forumData={forumData}
                   update={() => update()}
-                  showDividers={{ leftDivider: false, rightDivider: false }}
+                  showDividers={{ leftDivider: true, rightDivider: false }}
                 />
                 <PermissionsGate scopes={[SCOPES.canCreateReply]}>
                   <div className="right">

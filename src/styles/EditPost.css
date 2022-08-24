@@ -8,6 +8,14 @@
       flex-direction: column;
     }
 
+    .actionDivider {
+      width: 1px;
+      height: 22px;
+      margin: 0 10px;
+
+      background: #cac9cb;
+    }
+
     .editPostButton {
       display: flex;
       align-items: center;

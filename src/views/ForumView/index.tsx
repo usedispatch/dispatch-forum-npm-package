@@ -77,7 +77,6 @@ interface ForumViewProps {
  */
 
 export const ForumView = (props: ForumViewProps) => {
-  ReactGA.send("pageview");
   const forumObject = useForum();
   const Role = useRole();
   const { wallet, permission } = forumObject;
@@ -251,11 +250,12 @@ export const ForumView = (props: ForumViewProps) => {
     <div className="dsp-">
       <Helmet>
         <meta charSet="utf-8" />
-        {isSuccess(forumData) ? (
-          <title>{forumData.description.title}</title>
-        ) : (
-          <title>Create Forum for {collectionId}</title>
-        )}
+        {/* {isInitial(forumData) && <title>Loading Forum...</title>} */}
+        {isNotFound(forumData) && <title>Create Forum for {collectionId}</title>}
+        {isSuccess(forumData) && <title>{forumData.description.title}</title>}
+        {/* {(isNotFound(forumData) || isSuccess(forumData)) } */}
+        {/* {console.log(isSuccess(forumData), isNotFound(forumData))}
+        { !_.isEmpty(window.document.title) &&  ReactGA.send("pageview") } */}
       </Helmet>
       <div className="forumView">
         {modal}
@@ -267,6 +267,7 @@ export const ForumView = (props: ForumViewProps) => {
             body={
               <div className="createForumBody">
                 <>
+                { ReactGA.send("pageview")}
                   <span className="createForumLabel">Forum Title</span>
                   <input
                     type="text"

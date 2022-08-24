@@ -12,5 +12,6 @@ export * from "./topic/GiveAward";
 export * from "./topic/PostContent";
 export * from "./topic/PostsList";
 export * from "./topic/PostReplies";
+export * from "./topic/RoleLabel";
 export * from "./topic/TopicContent";
 export * from "./topic/Votes";

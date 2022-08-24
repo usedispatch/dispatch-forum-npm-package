@@ -25,6 +25,9 @@
     }
 
     .walletId {
+      display: flex;
+      gap: 10px;
+
       font-size: 14px;
       font-weight: 400;
       color: #86878e;

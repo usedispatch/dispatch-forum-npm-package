@@ -5,17 +5,18 @@ import { ForumPost } from "@usedispatch/client";
 
 import { Gift, Info, Reply, Trash } from "../../../assets";
 import { PermissionsGate } from "../../../components/common";
-import { Votes } from "./Votes";
-import { EditPost } from "./EditPost";
+import { EditPost, RoleLabel, Votes } from "../index";
 
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData } from "../../../utils/hooks";
+import { isSuccess } from "../../../utils/loading";
 
 interface PostRepliesProps {
   forumData: ForumData;
   userRole: UserRoleType;
   replies: ForumPost[];
+  topicOwnerId: string;
   update: () => Promise<void>;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
@@ -27,6 +28,7 @@ interface PostRepliesProps {
 export function PostReplies(props: PostRepliesProps) {
   const {
     forumData,
+    topicOwnerId,
     onDeletePost,
     onReplyClick,
     onDownVotePost,
@@ -68,6 +70,10 @@ export function PostReplies(props: PostRepliesProps) {
     return null;
   }
 
+  const moderators = isSuccess(forumData.moderators)
+    ? forumData.moderators.map((m) => m.toBase58())
+    : [];
+
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
@@ -77,12 +83,16 @@ export function PostReplies(props: PostRepliesProps) {
               <div className="replyHeader">
                 <div className="posterId">
                   <div className="icon">
-                    <Jdenticon
-                      value={reply?.poster.toBase58()}
-                      alt="posterID"
+                    <Jdenticon value={reply.poster.toBase58()} alt="posterID" />
+                  </div>
+                  <div className="walletId">
+                    {reply.poster.toBase58()}
+                    <RoleLabel
+                      topicOwnerId={topicOwnerId}
+                      posterId={reply.poster.toBase58()}
+                      moderators={moderators}
                     />
                   </div>
-                  <div className="walletId">{reply.poster.toBase58()}</div>
                 </div>
                 <div className="postedAt">
                   {postedAt(reply)}

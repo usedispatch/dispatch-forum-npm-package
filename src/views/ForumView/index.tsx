@@ -252,7 +252,7 @@ export const ForumView = (props: ForumViewProps) => {
         <meta charSet="utf-8" />
         {/* {isInitial(forumData) && <title>Loading Forum...</title>} */}
         {isNotFound(forumData) && <title>Create Forum for {collectionId}</title>}
-        {isSuccess(forumData) && <title>{forumData.description.title}</title>}
+        {isSuccess(forumData) && <title>{forumData.description.title} -- Forum</title>}
         {/* {(isNotFound(forumData) || isSuccess(forumData)) } */}
         {/* {console.log(isSuccess(forumData), isNotFound(forumData))}
         { !_.isEmpty(window.document.title) &&  ReactGA.send("pageview") } */}

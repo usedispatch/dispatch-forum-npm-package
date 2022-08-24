@@ -2,6 +2,7 @@ import * as _ from "lodash";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
+import ReactGA from "react-ga4";
 
 import { Gift, Info, MessageSquare, Trash, Lock } from "../../../assets";
 
@@ -184,6 +185,8 @@ export function TopicContent(props: TopicContentProps) {
           }
         />
       )}
+      {ReactGA.send("pageview")}
+
       {showAddAccessToken && _.isNil(modalInfo) && (
         <PopUpModal
           id="add-access-token"

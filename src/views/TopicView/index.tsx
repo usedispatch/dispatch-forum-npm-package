@@ -39,7 +39,6 @@ interface Props {
 }
 
 export const TopicView = (props: Props) => {
-  ReactGA.send("pageview");
   const forum = useForum();
   const role = useRole();
   const { permission } = forum;
@@ -149,7 +148,7 @@ export const TopicView = (props: Props) => {
       <Helmet>
         <meta charSet="utf-8" />
         {isSuccess(topic) && (
-          <title>{topic.data.subj}</title>
+          <title>{topic.data.subj} -- Topic </title>
         )}
       </Helmet>
       <div className="topicView">

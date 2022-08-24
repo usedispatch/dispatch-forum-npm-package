@@ -90,11 +90,6 @@
     display: flex;
     gap: 16px;
     width: 100%;
-
-    .votePostContent {
-      flex-direction: column;
-      width: 30px;
-    }
   }
 
   .box {
@@ -244,7 +239,7 @@
 
   .repliesSection {
     margin-top: 16px;
-    margin-left: 16px;
+    margin-left: 11px;
     border-left-width: 1px;
     border-color: #cac9cb;
 

@@ -4,20 +4,15 @@ import {
   useState,
   useEffect,
   useMemo,
-  ReactNode,
-  useCallback,
   useRef,
 } from "react";
-import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
+import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
 
-import { Plus } from "../../assets";
 import {
-  CollapsibleProps,
   MessageType,
-  PopUpModal,
   Spinner,
   TransactionLink,
 } from "../../components/common";
@@ -26,21 +21,18 @@ import {
   ForumContent,
   PoweredByDispatch,
 } from "../../components/forums";
-import { selectTopics } from "../../utils/posts";
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
-import { newPublicKey } from "./../../utils/postbox/validateNewPublicKey";
 import { getUserRole } from "./../../utils/postbox/userRole";
-import { Loading } from "../../types/loading";
 import {
   isSuccess,
   isInitial,
   isPending,
   isNotFound,
-  isDispatchClientError,
 } from "../../utils/loading";
 import { useForumData, useModal } from "../../utils/hooks";
 import { pubkeysToRestriction } from "../../utils/restrictionListHelper";
+import { csvStringToPubkeyList } from "../../utils/csvStringToPubkeyList";
 
 interface ForumViewProps {
   collectionId: string;
@@ -121,8 +113,12 @@ export const ForumView = (props: ForumViewProps) => {
   const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
-  const [accessToken, setAccessToken] = useState<string>();
+  const [accessToken, setAccessToken] = useState<string>("");
   const [bodySize, setBodySize] = useState<number>(0);
+  const [modList, setModList] = useState<web3.PublicKey[]>([]);
+  const [ownerList, setOwnerList] = useState<web3.PublicKey[]>([]);
+  const [accessList, setAccessList] = useState<web3.PublicKey[]>([]);
+
   const onCreateForumClick = () => {
     createForum();
   };
@@ -139,14 +135,8 @@ export const ForumView = (props: ForumViewProps) => {
         });
       }
 
-      const moderators =
-        newModerator.length > 0
-          ? [publicKey, newPublicKey(newModerator)]
-          : [publicKey];
-
-      const owners = [publicKey].concat(
-        newOwners.split(",").map((o) => newPublicKey(o))
-      );
+      const moderators = [...modList, publicKey];
+      const owners = [...ownerList, publicKey];
 
       const forum = {
         owners,
@@ -184,9 +174,9 @@ export const ForumView = (props: ForumViewProps) => {
           ).then(() => update());
         }
       }
-      ReactGA.event("successfulForumCreation")
+      ReactGA.event("successfulForumCreation");
     } catch (e: any) {
-      ReactGA.event("failedForumCreation")
+      ReactGA.event("failedForumCreation");
       if (e.error?.code === 4001) {
         setShowNewForumModal(true);
       } else {
@@ -211,37 +201,253 @@ export const ForumView = (props: ForumViewProps) => {
   useEffect(() => {
     if (isSuccess(forumData) && permission.readAndWrite) {
       getUserRole(forumObject, collectionPublicKey!, Role);
-    } else if (isNotFound(forumData) && permission.readAndWrite) {
-      setShowNewForumModal(true);
-    } 
+    }
   }, [forumData, publicKey]);
 
-  const createForumButton = (
-    <div className="createForumButtonContainer">
-      <button
-        type="button"
-        className="okInfoButton"
-        disabled={!permission.readAndWrite}
-        onClick={() => {
-          setShowNewForumModal(true);
-          ReactGA.event("startForumCreate")
-        }}
-      >
-        <div className="createForumIconContainer">
-          <Plus />
-        </div>
-        Create a new Forum
-      </button>
-    </div>
-  );
+  const parseModList = () => {
+    try {
+      const list = csvStringToPubkeyList(newModerator);
+      setModList(list);
+    } catch (e: any) {
+      setModList([]);
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: e.message },
+      });
+    }
+  };
 
-  const emptyView = (
+  const parseOwnerList = () => {
+    try {
+      const list = csvStringToPubkeyList(newOwners);
+      setOwnerList(list);
+    } catch (e: any) {
+      setOwnerList([]);
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: e.message },
+      });
+    }
+  };
+
+  const parseCollectionList = () => {
+    try {
+      const list = csvStringToPubkeyList(accessToken);
+      setAccessList(list);
+    } catch (e: any) {
+      setAccessList([]);
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: e.message },
+      });
+    }
+  };
+
+  const createForumView = (
     <div className="emptyForumView">
-      <div className="emptyTitle">Connect your wallet to create a forum!</div>
-        <div className="emptySubTitle">
-          Create one to post, share, and more
+      <div className="emptyTitle">Create New Forum</div>
+      <div className="emptySubTitle">
+        Create one to create topics, post, share, rate, and gift tokens.
+      </div>
+      <div className="createForumContainer">
+        <div className="createForumBody">
+          <>
+            {ReactGA.send("pageview")}
+            <span className="createForumLabel">Forum Title</span>
+            <input
+              type="text"
+              placeholder="Title"
+              className="createForumInput"
+              name="name"
+              required
+              value={title}
+              disabled={creatingNewForum}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </>
+          <>
+            <span className="createForumLabel">Forum Description</span>
+            <textarea
+              placeholder="Description"
+              className="createForumInput createForumDescription"
+              maxLength={800}
+              value={description}
+              disabled={creatingNewForum}
+              onChange={(e) => {
+                setDescription(e.target.value);
+                setBodySize(new Buffer(e.target.value).byteLength);
+              }}
+            />
+            <div className="textSize">{bodySize}/800</div>
+          </>
+          <div
+            className="collapse collapse-arrow border border-base-100 bg-base-content rounded-box"
+            tabIndex={0}
+          >
+            <input type="checkbox" />
+            <div className="collapse-title font-medium">Advanced Options</div>
+            <div className="collapse-content">
+              <>
+                <span className="createForumLabel">Add Moderators</span>
+                <div className="dropdown">
+                  <label
+                    tabIndex={0}
+                    className="btn btn-circle btn-ghost btn-xs text-info"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      className="w-4 h-4 stroke-current"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                  </label>
+                  <div
+                    tabIndex={0}
+                    className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                  >
+                    <div className="card-body">
+                      <p>Your wallet ID will be automatically added as a moderator, but if you'd like to add additional moderators you can specify them here as a comma seperated list!</p>
+                    </div>
+                  </div>
+                </div>
+                <input
+                  placeholder="Add a comma separated list of moderator IDs"
+                  className="createForumInput"
+                  value={newModerator}
+                  disabled={creatingNewForum}
+                  onChange={(e) => setNewModerator(e.target.value)}
+                  onBlur={(e) => parseModList()}
+                />
+                {modList?.map((mod) => {
+                  return <div>{mod.toBase58()}</div>;
+                })}
+              </>
+              <>
+                <span className="createForumLabel">Add Owners</span>
+                <div className="dropdown dropdown-end dropdown-right">
+                  <label
+                    tabIndex={0}
+                    className="btn btn-circle btn-ghost btn-xs text-info"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      className="w-4 h-4 stroke-current"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                  </label>
+                  <div
+                    tabIndex={0}
+                    className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                  >
+                    <div className="card-body">
+                      <p>Your wallet ID will be automatically added as an owner, but if you'd like to add additional owners you can specify them here as a comma seperated list!</p>
+                    </div>
+                  </div>
+                </div>
+                <input
+                  placeholder="Add a comma separated list of owners IDs"
+                  className="createForumInput"
+                  value={newOwners}
+                  disabled={creatingNewForum}
+                  onChange={(e) => setNewOwners(e.target.value)}
+                  onBlur={(e) => parseOwnerList()}
+                />
+                <div>
+                  {ownerList?.map((owner) => {
+                    return <div key={owner.toBase58()}>{owner.toBase58()}</div>;
+                  })}
+                </div>
+              </>
+              <>
+                <span className="createForumLabel">Limit forum access</span>
+                <div className="dropdown dropdown-end dropdown-right">
+                  <label
+                    tabIndex={0}
+                    className="btn btn-circle btn-ghost btn-xs text-info"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      className="w-4 h-4 stroke-current"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                  </label>
+                  <div
+                    tabIndex={0}
+                    className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                  >
+                    <div className="card-body">
+                      <p>Here, you are able to gate your forum to Metaplex NFT Collection holders. Simply enter the collection ID of your NFT collection and only token holders can create posts. You can find the collection ID in the metadata URI of your NFT.</p>
+                    </div>
+                  </div>
+                </div>
+                <input
+                  placeholder="Add a comma separated list of collection IDs"
+                  className="createForumInput lastInputField"
+                  value={accessToken}
+                  disabled={creatingNewForum || bodySize > 800}
+                  onChange={(e) => setAccessToken(e.target.value)}
+                  onBlur={(e) => parseCollectionList()}
+                />
+                <div>
+                  {accessList?.map((token) => {
+                    return <div key={token.toBase58()}>{token.toBase58()}</div>;
+                  })}
+                </div>
+              </>
+            </div>
+          </div>
+          <div className="createForumButtonContainer">
+            <div
+              className="cancelCreateForumButton"
+              onClick={() => {
+                setShowNewForumModal(false);
+                ReactGA.event("cancelForumCreate");
+              }}
+            >
+              Cancel
+            </div>
+            <button
+              type="submit"
+              className="acceptCreateForumButton"
+              onClick={() => {
+                onCreateForumClick();
+                ReactGA.event("sendForumCreate");
+              }}
+            >
+              Create
+            </button>
+          </div>
         </div>
-      {createForumButton}
+      </div>
     </div>
   );
 
@@ -255,107 +461,16 @@ export const ForumView = (props: ForumViewProps) => {
     <div className="dsp-">
       <Helmet>
         <meta charSet="utf-8" />
-        {/* {isInitial(forumData) && <title>Loading Forum...</title>} */}
-        {isNotFound(forumData) && <title>Create Forum for {collectionId}</title>}
-        {isSuccess(forumData) && <title>{forumData.description.title} -- Forum</title>}
-        {/* {(isNotFound(forumData) || isSuccess(forumData)) } */}
-        {/* {console.log(isSuccess(forumData), isNotFound(forumData))}
-        { !_.isEmpty(window.document.title) &&  ReactGA.send("pageview") } */}
+        {isNotFound(forumData) && (
+          <title>Create Forum for {collectionId}</title>
+        )}
+        {isSuccess(forumData) && (
+          <title>{forumData.description.title} -- Forum</title>
+        )}
       </Helmet>
       <div className="forumView">
         {modal}
-        {showNewForumModal && (
-          <PopUpModal
-            id="create-forum"
-            visible
-            title={"Create new Forum"}
-            body={
-              <div className="createForumBody">
-                <>
-                { ReactGA.send("pageview")}
-                  <span className="createForumLabel">Forum Title</span>
-                  <input
-                    type="text"
-                    placeholder="Title"
-                    className="createForumInput"
-                    name="name"
-                    required
-                    value={title}
-                    disabled={creatingNewForum}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
-                </>
-                <>
-                  <span className="createForumLabel">Forum Description</span>
-                  <textarea
-                    placeholder="Description"
-                    className="createForumInput createForumDescription"
-                    maxLength={800}
-                    value={description}
-                    disabled={creatingNewForum}
-                    onChange={(e) => {
-                      setDescription(e.target.value);
-                      setBodySize(new Buffer(e.target.value).byteLength);
-                    }}
-                  />
-                  <div className="textSize">{bodySize}/800</div>
-                </>
-                <>
-                  <span className="createForumLabel">Moderator</span>
-                  <input
-                    placeholder="Add moderator's wallet ID here"
-                    className="createForumInput"
-                    value={newModerator}
-                    disabled={creatingNewForum}
-                    onChange={(e) => setNewModerator(e.target.value)}
-                  />
-                </>
-                <>
-                  <span className="createForumLabel">Owners</span>
-                  <input
-                    placeholder="Add a comma separated list of owners IDs"
-                    className="createForumInput"
-                    value={newOwners}
-                    disabled={creatingNewForum}
-                    onChange={(e) => setNewOwners(e.target.value)}
-                  />
-                </>
-                <>
-                  <span className="createForumLabel">Limit forum access</span>
-                  <input
-                    placeholder="Add a comma separated list of collection IDs"
-                    className="createForumInput lastInputField"
-                    value={accessToken}
-                    disabled={creatingNewForum || bodySize > 800}
-                    onChange={(e) => setAccessToken(e.target.value)}
-                  />
-                </>
-              </div>
-            }
-            loading={creatingNewForum}
-            okButton={
-              <button
-                type="submit"
-                className="acceptCreateForumButton"
-                onClick={() => {
-                  onCreateForumClick();
-                  ReactGA.event("sendForumCreate")
-                  }}>
-                Create
-              </button>
-            }
-            cancelButton={
-              <div
-                className="cancelCreateForumButton"
-                onClick={() => {
-                  setShowNewForumModal(false);
-                  ReactGA.event("cancelForumCreate")
-                  }}>
-                Cancel
-              </div>
-            }
-          />
-        )}
+
         {!permission.readAndWrite && <ConnectionAlert />}
         <div className="forumViewContainer">
           <div className="forumViewContent">
@@ -375,7 +490,7 @@ export const ForumView = (props: ForumViewProps) => {
                   </div>
                 );
               } else if (isNotFound(forumData)) {
-                return emptyView;
+                return createForumView;
               } else {
                 // TODO(andrew) better, more detailed error
                 // view here

@@ -160,6 +160,44 @@ export function useForumData(
   return { forumData, update };
 }
 
+export function useModerators(
+  collectionId: PublicKey | null,
+  forum: DispatchForum
+): {
+  moderators: Loading<PublicKey[]>,
+    update: () => Promise<void>
+} {
+  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
+
+  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
+    if (collectionId) {
+      try {
+        const fetchData = await forum.getModerators(collectionId, true);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
+  async function update() {
+    if (collectionId) {
+      if (await forum.exists(collectionId)) {
+        const fetchResult = await fetchModerators();
+        setModerators(fetchResult);
+      }
+    }
+  }
+
+  return { moderators, update };
+}
+
 export interface ModalInfo {
   title: string | ReactNode;
   type: MessageType;

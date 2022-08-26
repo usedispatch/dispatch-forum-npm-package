@@ -168,9 +168,10 @@ export function PostContent(props: PostContentProps) {
     minute: "numeric",
   })}`;
 
-  const moderators = isSuccess(forumData.moderators)
-    ? forumData.moderators.map((m) => m.toBase58())
-    : [];
+    // TODO(andrew) reimplement moderator label later
+  // const moderators = isSuccess(forumData.moderators)
+  //   ? forumData.moderators.map((m) => m.toBase58())
+  //   : [];
 
   return (
     <>
@@ -267,7 +268,6 @@ export function PostContent(props: PostContentProps) {
                     <RoleLabel
                       topicOwnerId={topicPosterId}
                       posterId={post?.poster.toBase58()}
-                      moderators={moderators}
                     />
                   </div>
                 </div>

@@ -70,10 +70,6 @@ export function PostReplies(props: PostRepliesProps) {
     return null;
   }
 
-  const moderators = isSuccess(forumData.moderators)
-    ? forumData.moderators.map((m) => m.toBase58())
-    : [];
-
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
@@ -90,7 +86,6 @@ export function PostReplies(props: PostRepliesProps) {
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
                       posterId={reply.poster.toBase58()}
-                      moderators={moderators}
                     />
                   </div>
                 </div>

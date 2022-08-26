@@ -40,14 +40,15 @@ export function ForumContent(props: ForumContentProps) {
     description: string;
     accessToken: string;
   }>({ title: "", description: "", accessToken: "" });
-  const [currentMods, setCurrentMods] = useState<string[]>(() => {
-    if (isSuccess(forumData.moderators)) {
-      return forumData.moderators.map((pkey) => pkey.toBase58());
-    } else {
-      // TODO(andrew) show error here for missing mods
-      return [];
-    }
-  });
+  // TODO(andrew) reimplement this with lazy-loaded mods
+  // const [currentMods, setCurrentMods] = useState<string[]>(() => {
+  //   if (isSuccess(forumData.moderators)) {
+  //     return forumData.moderators.map((pkey) => pkey.toBase58());
+  //   } else {
+  //     // TODO(andrew) show error here for missing mods
+  //     return [];
+  //   }
+  // });
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (isSuccess(forumData.owners)) {
       return forumData.owners.map((pkey) => pkey.toBase58());
@@ -108,7 +109,7 @@ export function ForumContent(props: ForumContentProps) {
         moderatorId,
         forumData.collectionId
       );
-      setCurrentMods(currentMods.concat(newModerator));
+      // setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
       setAddingNewModerator(false);
@@ -611,7 +612,7 @@ export function ForumContent(props: ForumContentProps) {
                   />
                 <label className="addModeratorsLabel">Current moderators</label>
                 <ul>
-                  {currentMods.map((m) => {
+                  {/* TODO(andrew) moderator view here currentMods.map((m) => {
                     return (
                       <li key={m} className="currentModerators">
                         <div className="iconContainer">
@@ -620,7 +621,7 @@ export function ForumContent(props: ForumContentProps) {
                         {m}
                       </li>
                     );
-                  })}
+                  })*/}
                 </ul>
               </div>
             }

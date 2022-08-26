@@ -19,7 +19,7 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, useModerators } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -40,15 +40,38 @@ export function ForumContent(props: ForumContentProps) {
     description: string;
     accessToken: string;
   }>({ title: "", description: "", accessToken: "" });
+
+  // here, moderators will always refer to the mods as fetched
+  // from the server, which is an immutable value and can only be
+  // changed by calling updateMods(). currentMods is the mutable
+  // value that can be edited client-side
+  const { moderators, update: updateMods } = useModerators(
+    forumData.collectionId, forumObject
+  );
+
   // TODO(andrew) reimplement this with lazy-loaded mods
-  // const [currentMods, setCurrentMods] = useState<string[]>(() => {
-  //   if (isSuccess(forumData.moderators)) {
-  //     return forumData.moderators.map((pkey) => pkey.toBase58());
-  //   } else {
-  //     // TODO(andrew) show error here for missing mods
-  //     return [];
-  //   }
-  // });
+  // The mods as stored on the client side. Editable by the user
+  // and can be submitted to contract. Whenever the mods are
+  // loaded, this variable is set to correspond to the loaded
+  // mods
+  // This always starts as null because initially no mods are
+  // loaded
+  const [currentMods, setCurrentMods] = useState<string[] | null>(null);
+
+  // Fetch the moderators from contract and set the current mods
+  // to correspond to that
+  async function updateAndSetCurrentMods() {
+    await updateMods();
+    // If the mods are fetched successfully...
+    if (isSuccess(moderators)) {
+      const base58s = moderators.map(pubkey => pubkey.toBase58());
+      // Set the current mods to be their base58-ified pubkeys
+      setCurrentMods(base58s);
+    } else {
+      // TODO(andrew) error handling if the fetch fails?
+    }
+  }
+
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (isSuccess(forumData.owners)) {
       return forumData.owners.map((pkey) => pkey.toBase58());
@@ -102,6 +125,13 @@ export function ForumContent(props: ForumContentProps) {
 
   // Begin mutating operations
   const addModerators = async () => {
+    // In order to add moderators, they must have been fetched
+    // successfully at least once. This means that moderators
+    // must be a success type (indicating it was fetched
+    // successfully from server) and currentMods must not be null
+    // (indicating they were set at least once by
+    // updateAndSetCurrentMods()
+    if (!isSuccess(moderators) || currentMods === null) { return; }
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
@@ -109,7 +139,7 @@ export function ForumContent(props: ForumContentProps) {
         moderatorId,
         forumData.collectionId
       );
-      // setCurrentMods(currentMods.concat(newModerator));
+      setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
       setAddingNewModerator(false);
@@ -612,6 +642,29 @@ export function ForumContent(props: ForumContentProps) {
                   />
                 <label className="addModeratorsLabel">Current moderators</label>
                 <ul>
+                  {(() => {
+                    // If the moderators were successfully
+                    // fetched and currentMods was set...
+                    if (isSuccess(moderators) && currentMods) {
+                      // Display the current moderators value
+                      return currentMods.map(m => (
+                        <li key={m} className="currentModerators">
+                          <>
+                            <div className="iconContainer">
+                              <Jdenticon value={m} alt="moderatorId" />
+                            </div>
+                            {m}
+                          </>
+                        </li>
+                      ));
+                    } else {
+                      return (
+                        <button
+                          onClick={updateAndSetCurrentMods}
+                        >Fetch moderators</button>
+                      );
+                    }
+                  })()}
                   {/* TODO(andrew) moderator view here currentMods.map((m) => {
                     return (
                       <li key={m} className="currentModerators">

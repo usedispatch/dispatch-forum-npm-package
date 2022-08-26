@@ -49,29 +49,6 @@ export function ForumContent(props: ForumContentProps) {
     forumData.collectionId, forumObject
   );
 
-  // TODO(andrew) reimplement this with lazy-loaded mods
-  // The mods as stored on the client side. Editable by the user
-  // and can be submitted to contract. Whenever the mods are
-  // loaded, this variable is set to correspond to the loaded
-  // mods
-  // This always starts as null because initially no mods are
-  // loaded
-  const [currentMods, setCurrentMods] = useState<string[] | null>(null);
-
-  // Fetch the moderators from contract and set the current mods
-  // to correspond to that
-  async function updateAndSetCurrentMods() {
-    await updateMods();
-    // If the mods are fetched successfully...
-    if (isSuccess(moderators)) {
-      const base58s = moderators.map(pubkey => pubkey.toBase58());
-      // Set the current mods to be their base58-ified pubkeys
-      setCurrentMods(base58s);
-    } else {
-      // TODO(andrew) error handling if the fetch fails?
-    }
-  }
-
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (isSuccess(forumData.owners)) {
       return forumData.owners.map((pkey) => pkey.toBase58());
@@ -124,14 +101,12 @@ export function ForumContent(props: ForumContentProps) {
   }, [newTopic.accessToken, keepGates]);
 
   // Begin mutating operations
-  const addModerators = async () => {
+  const addModerator = async () => {
     // In order to add moderators, they must have been fetched
     // successfully at least once. This means that moderators
     // must be a success type (indicating it was fetched
-    // successfully from server) and currentMods must not be null
-    // (indicating they were set at least once by
-    // updateAndSetCurrentMods()
-    if (!isSuccess(moderators) || currentMods === null) { return; }
+    // successfully from server)
+    if (!isSuccess(moderators)) { return; }
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
@@ -139,7 +114,6 @@ export function ForumContent(props: ForumContentProps) {
         moderatorId,
         forumData.collectionId
       );
-      setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
       setAddingNewModerator(false);
@@ -153,6 +127,8 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
+
+      forumObject.connection.confirmTransaction(tx!).then(() => updateMods());
     } catch (error: any) {
       setAddingNewModerator(false);
       if (error.code !== 4001) {
@@ -670,7 +646,7 @@ export function ForumContent(props: ForumContentProps) {
                 } else {
                   return (
                     <button
-                      onClick={updateAndSetCurrentMods}
+                      onClick={updateMods}
                     >Fetch moderators</button>
                   );
                 }
@@ -679,7 +655,7 @@ export function ForumContent(props: ForumContentProps) {
             }
             loading={addingNewModerator}
             okButton={
-              <button className="okButton" onClick={() => addModerators()}>
+              <button className="okButton" onClick={() => addModerator()}>
                 Save
               </button>
             }

@@ -1,21 +1,12 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import {
-  useState,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
 
-import {
-  MessageType,
-  Spinner,
-  TransactionLink,
-} from "../../components/common";
+import { MessageType, Spinner, TransactionLink } from "../../components/common";
 import {
   ConnectionAlert,
   ForumContent,
@@ -190,6 +181,7 @@ export const ForumView = (props: ForumViewProps) => {
       }
     } finally {
       setCreatingNewForum(false);
+      update();
     }
   };
 
@@ -255,199 +247,224 @@ export const ForumView = (props: ForumViewProps) => {
       <div className="emptySubTitle">
         Create one to create topics, post, share, rate, and gift tokens.
       </div>
-      <div className="createForumContainer">
-        <div className="createForumBody">
-          <>
-            {ReactGA.send("pageview")}
-            <span className="createForumLabel">Forum Title</span>
-            <input
-              type="text"
-              placeholder="Title"
-              className="createForumInput"
-              name="name"
-              required
-              value={title}
-              disabled={creatingNewForum}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </>
-          <>
-            <span className="createForumLabel">Forum Description</span>
-            <textarea
-              placeholder="Description"
-              className="createForumInput createForumDescription"
-              maxLength={800}
-              value={description}
-              disabled={creatingNewForum}
-              onChange={(e) => {
-                setDescription(e.target.value);
-                setBodySize(new Buffer(e.target.value).byteLength);
-              }}
-            />
-            <div className="textSize">{bodySize}/800</div>
-          </>
-          <div
-            className="collapse collapse-arrow border border-base-100 bg-base-content rounded-box"
-            tabIndex={0}
-          >
-            <input type="checkbox" />
-            <div className="collapse-title font-medium">Advanced Options</div>
-            <div className="collapse-content">
-              <>
-                <span className="createForumLabel">Add Moderators</span>
-                <div className="dropdown">
-                  <label
-                    tabIndex={0}
-                    className="btn btn-circle btn-ghost btn-xs text-info"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4 stroke-current"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      ></path>
-                    </svg>
-                  </label>
-                  <div
-                    tabIndex={0}
-                    className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
-                  >
-                    <div className="card-body">
-                      <p>Your wallet ID will be automatically added as a moderator, but if you'd like to add additional moderators you can specify them here as a comma seperated list!</p>
-                    </div>
-                  </div>
-                </div>
-                <input
-                  placeholder="Add a comma separated list of moderator IDs"
-                  className="createForumInput"
-                  value={newModerator}
-                  disabled={creatingNewForum}
-                  onChange={(e) => setNewModerator(e.target.value)}
-                  onBlur={(e) => parseModList()}
-                />
-                {modList?.map((mod) => {
-                  return <div>{mod.toBase58()}</div>;
-                })}
-              </>
-              <>
-                <span className="createForumLabel">Add Owners</span>
-                <div className="dropdown dropdown-end dropdown-right">
-                  <label
-                    tabIndex={0}
-                    className="btn btn-circle btn-ghost btn-xs text-info"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4 stroke-current"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      ></path>
-                    </svg>
-                  </label>
-                  <div
-                    tabIndex={0}
-                    className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
-                  >
-                    <div className="card-body">
-                      <p>Your wallet ID will be automatically added as an owner, but if you'd like to add additional owners you can specify them here as a comma seperated list!</p>
-                    </div>
-                  </div>
-                </div>
-                <input
-                  placeholder="Add a comma separated list of owners IDs"
-                  className="createForumInput"
-                  value={newOwners}
-                  disabled={creatingNewForum}
-                  onChange={(e) => setNewOwners(e.target.value)}
-                  onBlur={(e) => parseOwnerList()}
-                />
-                <div>
-                  {ownerList?.map((owner) => {
-                    return <div key={owner.toBase58()}>{owner.toBase58()}</div>;
-                  })}
-                </div>
-              </>
-              <>
-                <span className="createForumLabel">Limit forum access</span>
-                <div className="dropdown dropdown-end dropdown-right">
-                  <label
-                    tabIndex={0}
-                    className="btn btn-circle btn-ghost btn-xs text-info"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      className="w-4 h-4 stroke-current"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                      ></path>
-                    </svg>
-                  </label>
-                  <div
-                    tabIndex={0}
-                    className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
-                  >
-                    <div className="card-body">
-                      <p>Here, you are able to gate your forum to Metaplex NFT Collection holders. Simply enter the collection ID of your NFT collection and only token holders can create posts. You can find the collection ID in the metadata URI of your NFT.</p>
-                    </div>
-                  </div>
-                </div>
-                <input
-                  placeholder="Add a comma separated list of collection IDs"
-                  className="createForumInput lastInputField"
-                  value={accessToken}
-                  disabled={creatingNewForum || bodySize > 800}
-                  onChange={(e) => setAccessToken(e.target.value)}
-                  onBlur={(e) => parseCollectionList()}
-                />
-                <div>
-                  {accessList?.map((token) => {
-                    return <div key={token.toBase58()}>{token.toBase58()}</div>;
-                  })}
-                </div>
-              </>
-            </div>
-          </div>
-          <div className="createForumButtonContainer">
+      {creatingNewForum ? (
+        <div className="forumLoading">
+          <Spinner />
+        </div>
+      ) : (
+        <div className="createForumContainer">
+          <div className="createForumBody">
+            <>
+              {ReactGA.send("pageview")}
+              <span className="createForumLabel">Forum Title</span>
+              <input
+                type="text"
+                placeholder="Title"
+                className="createForumInput"
+                name="name"
+                required
+                value={title}
+                disabled={creatingNewForum}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </>
+            <>
+              <span className="createForumLabel">Forum Description</span>
+              <textarea
+                placeholder="Description"
+                className="createForumInput createForumDescription"
+                maxLength={800}
+                value={description}
+                disabled={creatingNewForum}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  setBodySize(new Buffer(e.target.value).byteLength);
+                }}
+              />
+              <div className="textSize">{bodySize}/800</div>
+            </>
             <div
-              className="cancelCreateForumButton"
-              onClick={() => {
-                setShowNewForumModal(false);
-                ReactGA.event("cancelForumCreate");
-              }}
+              className="collapse collapse-arrow border border-base-100 bg-base-content rounded-box"
+              tabIndex={0}
             >
-              Cancel
+              <input type="checkbox" />
+              <div className="collapse-title font-medium">Advanced Options</div>
+              <div className="collapse-content">
+                <>
+                  <span className="createForumLabel">Add Moderators</span>
+                  <div className="dropdown">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-circle btn-ghost btn-xs text-info"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 stroke-current"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                    </label>
+                    <div
+                      tabIndex={0}
+                      className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                    >
+                      <div className="card-body">
+                        <p>
+                          Your wallet ID will be automatically added as a
+                          moderator, but if you'd like to add additional
+                          moderators you can specify them here as a comma
+                          seperated list!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <input
+                    placeholder="Add a comma separated list of moderator IDs"
+                    className="createForumInput"
+                    value={newModerator}
+                    disabled={creatingNewForum}
+                    onChange={(e) => setNewModerator(e.target.value)}
+                    onBlur={(e) => parseModList()}
+                  />
+                  {modList?.map((mod) => {
+                    return <div>{mod.toBase58()}</div>;
+                  })}
+                </>
+                <>
+                  <span className="createForumLabel">Add Owners</span>
+                  <div className="dropdown dropdown-end dropdown-right">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-circle btn-ghost btn-xs text-info"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 stroke-current"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                    </label>
+                    <div
+                      tabIndex={0}
+                      className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                    >
+                      <div className="card-body">
+                        <p>
+                          Your wallet ID will be automatically added as an
+                          owner, but if you'd like to add additional owners you
+                          can specify them here as a comma seperated list!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <input
+                    placeholder="Add a comma separated list of owners IDs"
+                    className="createForumInput"
+                    value={newOwners}
+                    disabled={creatingNewForum}
+                    onChange={(e) => setNewOwners(e.target.value)}
+                    onBlur={(e) => parseOwnerList()}
+                  />
+                  <div>
+                    {ownerList?.map((owner) => {
+                      return (
+                        <div key={owner.toBase58()}>{owner.toBase58()}</div>
+                      );
+                    })}
+                  </div>
+                </>
+                <>
+                  <span className="createForumLabel">Limit forum access</span>
+                  <div className="dropdown dropdown-end dropdown-right">
+                    <label
+                      tabIndex={0}
+                      className="btn btn-circle btn-ghost btn-xs text-info"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className="w-4 h-4 stroke-current"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        ></path>
+                      </svg>
+                    </label>
+                    <div
+                      tabIndex={0}
+                      className="card compact dropdown-content shadow bg-base-100 rounded-box w-64"
+                    >
+                      <div className="card-body">
+                        <p>
+                          Here, you are able to gate your forum to Metaplex NFT
+                          Collection holders. Simply enter the collection ID of
+                          your NFT collection and only token holders can create
+                          posts. You can find the collection ID in the metadata
+                          URI of your NFT.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <input
+                    placeholder="Add a comma separated list of collection IDs"
+                    className="createForumInput lastInputField"
+                    value={accessToken}
+                    disabled={creatingNewForum || bodySize > 800}
+                    onChange={(e) => setAccessToken(e.target.value)}
+                    onBlur={(e) => parseCollectionList()}
+                  />
+                  <div>
+                    {accessList?.map((token) => {
+                      return (
+                        <div key={token.toBase58()}>{token.toBase58()}</div>
+                      );
+                    })}
+                  </div>
+                </>
+              </div>
             </div>
-            <button
-              type="submit"
-              className="acceptCreateForumButton"
-              onClick={() => {
-                onCreateForumClick();
-                ReactGA.event("sendForumCreate");
-              }}
-            >
-              Create
-            </button>
+            <div className="createForumButtonContainer">
+              <div
+                className="cancelCreateForumButton"
+                onClick={() => {
+                  setShowNewForumModal(false);
+                  ReactGA.event("cancelForumCreate");
+                }}
+              >
+                Cancel
+              </div>
+              <button
+                type="submit"
+                className="acceptCreateForumButton"
+                onClick={() => {
+                  onCreateForumClick();
+                  ReactGA.event("sendForumCreate");
+                }}
+              >
+                Create
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 

@@ -645,18 +645,21 @@ export function ForumContent(props: ForumContentProps) {
                   {(() => {
                     // If the moderators were successfully
                     // fetched and currentMods was set...
-                    if (isSuccess(moderators) && currentMods) {
-                      // Display the current moderators value
-                      return currentMods.map(m => (
-                        <li key={m} className="currentModerators">
-                          <>
-                            <div className="iconContainer">
-                              <Jdenticon value={m} alt="moderatorId" />
-                            </div>
-                            {m}
-                          </>
-                        </li>
-                      ));
+                    if (isSuccess(moderators)) {
+                      // Display them
+                      return moderators.map(pubkey => {
+                        const m = pubkey.toBase58();
+                        return (
+                          <li key={m} className="currentModerators">
+                            <>
+                              <div className="iconContainer">
+                                <Jdenticon value={m} alt="moderatorId" />
+                              </div>
+                              {m}
+                            </>
+                          </li>
+                        )
+                      });
                     } else {
                       return (
                         <button

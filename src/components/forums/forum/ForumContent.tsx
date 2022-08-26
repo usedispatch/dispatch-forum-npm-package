@@ -641,11 +641,15 @@ export function ForumContent(props: ForumContentProps) {
                         value={newModerator}
                         onChange={(e) => setNewModerator(e.target.value)}
                       />
+                      <button className="okButton" onClick={() => addModerator()}>
+                        Save
+                      </button>
                     </>
                   );
                 } else {
                   return (
                     <button
+                      className="okButton"
                       onClick={updateMods}
                     >Fetch moderators</button>
                   );
@@ -654,11 +658,6 @@ export function ForumContent(props: ForumContentProps) {
             </div>
             }
             loading={addingNewModerator}
-            okButton={
-              <button className="okButton" onClick={() => addModerator()}>
-                Save
-              </button>
-            }
             onClose={() => setShowAddModerators(false)}
           />
         )}

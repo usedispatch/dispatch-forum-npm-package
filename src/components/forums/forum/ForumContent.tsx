@@ -19,7 +19,7 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, useModerators } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -40,14 +40,15 @@ export function ForumContent(props: ForumContentProps) {
     description: string;
     accessToken: string;
   }>({ title: "", description: "", accessToken: "" });
-  const [currentMods, setCurrentMods] = useState<string[]>(() => {
-    if (isSuccess(forumData.moderators)) {
-      return forumData.moderators.map((pkey) => pkey.toBase58());
-    } else {
-      // TODO(andrew) show error here for missing mods
-      return [];
-    }
-  });
+
+  // here, moderators will always refer to the mods as fetched
+  // from the server, which is an immutable value and can only be
+  // changed by calling updateMods(). currentMods is the mutable
+  // value that can be edited client-side
+  const { moderators, update: updateMods } = useModerators(
+    forumData.collectionId, forumObject
+  );
+
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (isSuccess(forumData.owners)) {
       return forumData.owners.map((pkey) => pkey.toBase58());
@@ -100,7 +101,12 @@ export function ForumContent(props: ForumContentProps) {
   }, [newTopic.accessToken, keepGates]);
 
   // Begin mutating operations
-  const addModerators = async () => {
+  const addModerator = async () => {
+    // In order to add moderators, they must have been fetched
+    // successfully at least once. This means that moderators
+    // must be a success type (indicating it was fetched
+    // successfully from server)
+    if (!isSuccess(moderators)) { return; }
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
@@ -108,7 +114,6 @@ export function ForumContent(props: ForumContentProps) {
         moderatorId,
         forumData.collectionId
       );
-      setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
       setAddingNewModerator(false);
@@ -122,6 +127,8 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
+
+      forumObject.connection.confirmTransaction(tx!).then(() => updateMods());
     } catch (error: any) {
       setAddingNewModerator(false);
       if (error.code !== 4001) {
@@ -601,117 +608,138 @@ export function ForumContent(props: ForumContentProps) {
           title={"Manage moderators"}
           body={
             <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">Add new</label>
-                <input
-                  placeholder="Add moderator's wallet ID here"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={newModerator}
-                  onChange={(e) => setNewModerator(e.target.value)}
-                  />
-                <label className="addModeratorsLabel">Current moderators</label>
-                <ul>
-                  {currentMods.map((m) => {
+              {(() => {
+                // If the moderators were successfully
+                // fetched and currentMods was set...
+                if (isSuccess(moderators)) {
+                  // Display them
+                  const moderatorList = moderators.map(pubkey => {
+                    const m = pubkey.toBase58();
                     return (
                       <li key={m} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={m} alt="moderatorId" />
-                        </div>
-                        {m}
+                        <>
+                          <div className="iconContainer">
+                            <Jdenticon value={m} alt="moderatorId" />
+                          </div>
+                          {m}
+                        </>
                       </li>
-                    );
-                  })}
-                </ul>
-              </div>
+                    )
+                  });
+
+                  return (
+                    <>
+                      <label className="addModeratorsLabel">Current moderators</label>
+                      <ul>
+                        {moderatorList}
+                      </ul>
+                      <label className="addModeratorsLabel">Add new</label>
+                      <input
+                        placeholder="Add moderator's wallet ID here"
+                        className="addModeratorsInput"
+                        maxLength={800}
+                        value={newModerator}
+                        onChange={(e) => setNewModerator(e.target.value)}
+                      />
+                      <button className="okButton" onClick={() => addModerator()}>
+                        Save
+                      </button>
+                    </>
+                  );
+                } else {
+                  return (
+                    <button
+                      className="okButton"
+                      onClick={updateMods}
+                    >Fetch moderators</button>
+                  );
+                }
+              })()}
+            </div>
             }
             loading={addingNewModerator}
-            okButton={
-              <button className="okButton" onClick={() => addModerators()}>
-                Save
-              </button>
-            }
             onClose={() => setShowAddModerators(false)}
-            />
-            )}
-        {_.isNil(modalInfo) && showAddOwners && (
-          <PopUpModal
-          id="add-owners"
-          visible
-          title={"Manage owners"}
-          body={
-            <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">Add new</label>
-                <input
-                  placeholder="Add owners's wallet ID here"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={newOwner}
-                  onChange={(e) => setNewOwner(e.target.value)}
+          />
+        )}
+          {_.isNil(modalInfo) && showAddOwners && (
+            <PopUpModal
+              id="add-owners"
+              visible
+              title={"Manage owners"}
+              body={
+                <div className="addModeratorsBody">
+                  <label className="addModeratorsLabel">Add new</label>
+                  <input
+                    placeholder="Add owners's wallet ID here"
+                    className="addModeratorsInput"
+                    maxLength={800}
+                    value={newOwner}
+                    onChange={(e) => setNewOwner(e.target.value)}
                   />
-                <label className="addModeratorsLabel">Current owners</label>
-                <ul>
-                  {currentOwners.map((m) => {
-                    return (
-                      <li key={m} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={m} alt="moderatorId" />
-                        </div>
-                        {m}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            }
-            loading={addingNewOwner}
-            okButton={
-              <button className="okButton" onClick={() => addOwner()}>
-                Save
-              </button>
-            }
-            onClose={() => setShowAddOwners(false)}
+                  <label className="addModeratorsLabel">Current owners</label>
+                  <ul>
+                    {currentOwners.map((m) => {
+                      return (
+                        <li key={m} className="currentModerators">
+                          <div className="iconContainer">
+                            <Jdenticon value={m} alt="moderatorId" />
+                          </div>
+                          {m}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              }
+              loading={addingNewOwner}
+              okButton={
+                <button className="okButton" onClick={() => addOwner()}>
+                  Save
+                </button>
+              }
+              onClose={() => setShowAddOwners(false)}
             />
-            )}
-        <div className="forumContentBox">
-          {forumHeader}
-          <PermissionsGate scopes={[SCOPES.canEditForum]}>
-            <div className="moderatorToolsContainer">
-              <div>Owner tools: </div>
-              <div className="lock">
-                <Lock />
-              </div>
-              <PermissionsGate scopes={[SCOPES.canAddOwner]}>
-                <button
-                  className="moderatorTool owners"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}>
-                  Manage owners
-                </button>
-              </PermissionsGate>
-              <PermissionsGate scopes={[SCOPES.canEditMods]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddModerators(true)}>
-                  Manage moderators
-                </button>
-              </PermissionsGate>
-              <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowManageAccessToken(true)}>
-                  Manage forum access
-                </button>
-              </PermissionsGate>
-              <EditForum forumData={forumData} update={update} />
-            </div>
-          </PermissionsGate>
-        </div>
-        {!_.isNil(forumData.collectionId) && (
-          <TopicList forumData={forumData} />
           )}
-          </>
+          <div className="forumContentBox">
+            {forumHeader}
+            <PermissionsGate scopes={[SCOPES.canEditForum]}>
+              <div className="moderatorToolsContainer">
+                <div>Owner tools: </div>
+                <div className="lock">
+                  <Lock />
+                </div>
+                <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+                  <button
+                    className="moderatorTool owners"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowAddOwners(true)}>
+                    Manage owners
+                  </button>
+                </PermissionsGate>
+                <PermissionsGate scopes={[SCOPES.canEditMods]}>
+                  <button
+                    className="moderatorTool"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowAddModerators(true)}>
+                    Manage moderators
+                  </button>
+                </PermissionsGate>
+                <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                  <button
+                    className="moderatorTool"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowManageAccessToken(true)}>
+                    Manage forum access
+                  </button>
+                </PermissionsGate>
+                <EditForum forumData={forumData} update={update} />
+              </div>
+            </PermissionsGate>
+          </div>
+          {!_.isNil(forumData.collectionId) && (
+            <TopicList forumData={forumData} />
+          )}
+        </>
       </div>
     </div>
   );

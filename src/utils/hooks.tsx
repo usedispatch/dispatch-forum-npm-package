@@ -29,7 +29,9 @@ export interface Description {
 export interface ForumData {
   collectionId: PublicKey;
   owners: LoadingResult<PublicKey[]>;
-  moderators: LoadingResult<PublicKey[]>;
+  // TODO(andrew) if/when we optimize moderators, return this
+  // field to the main forum data hook
+  // moderators: LoadingResult<PublicKey[]>;
   description: Description;
   posts: ForumPost[];
   restriction: LoadingResult<PostRestriction>;
@@ -63,22 +65,10 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
-  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
-    if (collectionId) {
-      try {
-        const fetchData = await forum.getModerators(collectionId, true);
-        if (fetchData) {
-          return fetchData;
-        } else {
-          return onChainAccountNotFound();
-        }
-      } catch (error) {
-        return dispatchClientError(error);
-      }
-    } else {
-      return onChainAccountNotFound();
-    }
-  }
+
+  // TODO(andrew) when the moderators call is optimized, return
+  // the fetchModerators() call to its place here
+
   async function fetchDescription(): Promise<LoadingResult<Description>> {
     if (collectionId) {
       try {
@@ -136,10 +126,9 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, moderators, description, posts, restriction] =
+        const [owners, description, posts, restriction] =
           await Promise.all([
             fetchOwners(),
-            fetchModerators(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
@@ -151,7 +140,6 @@ export function useForumData(
           setForumData({
             collectionId,
             owners,
-            moderators,
             description,
             posts,
             restriction,
@@ -170,6 +158,44 @@ export function useForumData(
     }
   }
   return { forumData, update };
+}
+
+export function useModerators(
+  collectionId: PublicKey | null,
+  forum: DispatchForum
+): {
+  moderators: Loading<PublicKey[]>,
+    update: () => Promise<void>
+} {
+  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
+
+  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
+    if (collectionId) {
+      try {
+        const fetchData = await forum.getModerators(collectionId, true);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
+  async function update() {
+    if (collectionId) {
+      if (await forum.exists(collectionId)) {
+        const fetchResult = await fetchModerators();
+        setModerators(fetchResult);
+      }
+    }
+  }
+
+  return { moderators, update };
 }
 
 export interface ModalInfo {

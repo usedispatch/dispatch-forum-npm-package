@@ -83,7 +83,7 @@ export const TopicView = (props: Props) => {
     // it and show them in the modal
     if (isSuccess(forumData)) {
       // Filter out all loading components that failed
-      const errors = [forumData.owners, forumData.moderators].filter(
+      const errors = [forumData.owners].filter(
         (loading) => isDispatchClientError(loading)
       ) as DispatchClientError[];
 

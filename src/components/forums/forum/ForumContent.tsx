@@ -309,6 +309,8 @@ export function ForumContent(props: ForumContentProps) {
         });
         setNewTopic({ title: "", description: "", accessToken: "" });
         setShowNewTopicModal(false);
+
+        // re-load forum in background
         await forumObject.connection
           .confirmTransaction(tx)
           .then(() => update());

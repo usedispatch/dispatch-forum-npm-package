@@ -58,9 +58,7 @@ export function CreatePost(props: CreatePostProps) {
     const post = { body: target.post.value };
     try {
       const tx = await createForumPost(post, topicId, collectionId);
-      if (tx) {
-        await Forum.connection.confirmTransaction(tx).then(() => update());
-      }
+      
       setLoading(false);
       setIsNotificationHidden(false);
       setNotificationContent({
@@ -75,7 +73,10 @@ export function CreatePost(props: CreatePostProps) {
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
-      );
+        );
+      if (tx) {
+        await Forum.connection.confirmTransaction(tx).then(() => update());
+      }
       onReload();
       setBodySize(0);
     } catch (error: any) {

@@ -43,6 +43,8 @@
       }
 
       .tableHeaderText {
+        min-width: 600px;
+
         font-weight: 400;
         font-size: 22px;
         text-align: left;

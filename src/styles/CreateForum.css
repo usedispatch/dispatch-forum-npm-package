@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 64px;
+    margin: 64px 0 24px;
     font-family: Manrope, sans-serif;
   }
 
@@ -84,10 +84,25 @@
     }
 
     .collapsibleContainer {
-      padding: 16px;
+      padding: 0;
+      border: none;
       background: inherit;
       margin: 16px 0;
       max-height: none;
+
+      .collapsibleHeader {
+        font-size: 16px;
+        font-weight: 500;
+
+        svg {
+          height: 14px;
+          width: 14px;
+
+          path {
+            stroke: #1e1e26;
+          }
+        }
+      }
     }
   }
 
@@ -150,34 +165,6 @@
     text-align: center;
     text-transform: capitalize;
     font-weight: 600;
-
-    &:hover {
-      opacity: 0.85;
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.65;
-    }
-  }
-
-  .cancelCreateForumButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 16px;
-    height: 48px;
-    border-radius: 10px;
-    border-width: 1px;
-    border-color: #3f1d96;
-
-    background: white;
-    color: #3f1d96;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    text-transform: capitalize;
 
     &:hover {
       opacity: 0.85;

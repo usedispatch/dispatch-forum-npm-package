@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { useState, ReactNode, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 import ReactGA from "react-ga4";
@@ -14,8 +14,6 @@ import {
 } from "../../common";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { isSuccess } from "../../../utils/loading";
 import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
@@ -205,7 +203,7 @@ export function CreateForum(props: CreateForumProps) {
           <div className="formBody">
             <>
               {ReactGA.send("pageview")}
-              <span className="formLabel">Forum Title</span>
+              <span className="formLabel">Title</span>
               <input
                 type="text"
                 placeholder="Title"
@@ -218,7 +216,7 @@ export function CreateForum(props: CreateForumProps) {
               />
             </>
             <>
-              <span className="formLabel">Forum Description</span>
+              <span className="formLabel">Description</span>
               <textarea
                 placeholder="Description"
                 className="formInput description"
@@ -233,7 +231,7 @@ export function CreateForum(props: CreateForumProps) {
               <div className="textSize">{bodySize}/800</div>
             </>
             <Collapsible
-              header="Advanced options"
+              header="Show advanced options"
               content={
                 <div>
                   <>
@@ -288,12 +286,6 @@ export function CreateForum(props: CreateForumProps) {
             />
             <div className="createForumButtonContainer">
               <button
-                className="cancelCreateForumButton"
-                disabled={creatingNewForum}
-                onClick={() => ReactGA.event("cancelForumCreate")}>
-                Cancel
-              </button>
-              <button
                 type="submit"
                 className="acceptCreateForumButton"
                 disabled={creatingNewForum || title.length === 0}
@@ -301,7 +293,7 @@ export function CreateForum(props: CreateForumProps) {
                   onCreateForumClick();
                   ReactGA.event("sendForumCreate");
                 }}>
-                Create
+                Create forum
               </button>
             </div>
           </div>

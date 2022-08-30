@@ -43,6 +43,8 @@
       }
 
       .tableHeaderText {
+        min-width: 600px;
+
         font-weight: 400;
         font-size: 22px;
         text-align: left;
@@ -52,6 +54,7 @@
           font-size: 20px;
 
           width: 280px;
+          margin: 0 0 0 auto;
           max-width: 280px;
           min-width: 280px;
         }
@@ -64,6 +67,7 @@
         font-size: 20px;
 
         width: 120px;
+        margin: 0 0 0 auto;
         max-width: 120px;
         min-width: 120px;
       }

@@ -121,6 +121,24 @@ export function useForumData(
     }
   }
 
+  /**
+   * create a post in local state, without sending anything to
+   * the network
+   */
+  function addPost(post: ForumPost) {
+    // We can only add a post if the forum was actually loaded
+    // successfully in the first place
+    if (isSuccess(forumData)) {
+      setForumData({
+        ...forumData,
+        posts: forumData.posts.concat(post)
+      });
+    }
+  }
+
+  /**
+   * re-fetch all data related to this forum from chain
+   */
   async function update() {
     if (collectionId) {
       // Wait for the forum to exist first...

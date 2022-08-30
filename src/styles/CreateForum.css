@@ -1,0 +1,165 @@
+@layer components {
+  .createForumContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 64px;
+    font-family: Manrope, sans-serif;
+  }
+
+  .createForumTitle {
+    font-size: 40px;
+    text-align: center;
+    color: #2e008b;
+    padding-bottom: 1rem;
+  }
+
+  .createForumSubtitle {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 300;
+    color: #414149;
+    width: 650px;
+    padding-bottom: 1rem;
+  }
+
+  .createForumForm {
+    width: 50%;
+    background: #fff;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 8px 16px #41414933;
+    margin-top: 1rem;
+
+    .formBody {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      width: 85%;
+      background: #fff;
+      padding: 2rem;
+    }
+
+    .formLabel {
+      padding: 0 4px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .textSize {
+      font-size: 12px;
+      color: gray;
+      text-align: right;
+    }
+
+    .formInput {
+      width: 100%;
+      font-size: 14px;
+      padding: 12px;
+      margin-top: 4px;
+      margin-bottom: 16px;
+
+      border-color: #cac9cb;
+      border-width: 1px;
+      border-radius: 6px;
+
+      &:focus {
+        outline: 2px solid transparent;
+        outline-offset: 2px;
+      }
+
+      &.description {
+        height: 144px;
+        margin-bottom: 1rem;
+      }
+    }
+
+    .lastInputField {
+      margin-bottom: 0;
+    }
+  }
+
+  .createForumButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    margin-top: 1rem;
+    font-size: 11.2px;
+    color: #6b7280;
+
+    .createForumIconContainer {
+      margin-right: 8px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .okInfoButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 6px;
+
+    cursor: pointer;
+    background: #3f1d96;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.65;
+    }
+  }
+
+  .acceptCreateForumButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 48px;
+    padding: 0 30px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    background: #3f1d96;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+
+  .cancelCreateForumButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 16px;
+    height: 48px;
+    border-radius: 10px;
+    border-width: 1px;
+    border-color: #3f1d96;
+
+    background: white;
+    color: #3f1d96;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: capitalize;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+}

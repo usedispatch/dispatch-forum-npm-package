@@ -69,14 +69,25 @@
         outline-offset: 2px;
       }
 
+      &:disabled {
+        cursor: not-allowed;
+      }
+
       &.description {
         height: 144px;
-        margin-bottom: 1rem;
+        margin-bottom: 0;
       }
     }
 
     .lastInputField {
       margin-bottom: 0;
+    }
+
+    .collapsibleContainer {
+      padding: 16px;
+      background: inherit;
+      margin: 16px 0;
+      max-height: none;
     }
   }
 
@@ -116,6 +127,11 @@
     &:hover {
       opacity: 0.65;
     }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
   }
 
   .acceptCreateForumButton {
@@ -137,6 +153,11 @@
 
     &:hover {
       opacity: 0.85;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
     }
   }
 
@@ -160,6 +181,11 @@
 
     &:hover {
       opacity: 0.85;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
     }
   }
 }

@@ -45,53 +45,8 @@
     border-radius: 12px;
   }
 
-  .acceptCreateForumButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 48px;
-    padding: 0 30px;
-    border-radius: 10px;
-
-    cursor: pointer;
-    background: #3f1d96;
-    color: white;
-    font-size: 14px;
-    text-align: center;
-    text-transform: capitalize;
-    font-weight: 600;
-
-    &:hover {
-      opacity: 0.85;
-    }
-  }
-
   .card-body {
     background: white;
-  }
-
-  .cancelCreateForumButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 16px;
-    height: 48px;
-    border-radius: 10px;
-    border-width: 1px;
-    border-color: #3f1d96;
-
-    background: white;
-    color: #3f1d96;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    text-transform: capitalize;
-
-    &:hover {
-      opacity: 0.85;
-    }
   }
 
   .okInfoButton {

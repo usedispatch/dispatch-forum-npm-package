@@ -6,6 +6,7 @@ import ReactGA from "react-ga4";
 
 import { Lock, Plus, Trash } from "../../../assets";
 import {
+  Collapsible,
   CollapsibleProps,
   MessageType,
   PopUpModal,
@@ -231,7 +232,86 @@ export function CreateForum(props: CreateForumProps) {
               />
               <div className="textSize">{bodySize}/800</div>
             </>
-            <div
+            <Collapsible
+              header="Advanced options"
+              content={
+                <div>
+                  <>
+                    <span className="formLabel">Add Moderators</span>
+                    <input
+                      placeholder="Add a comma separated list of moderator IDs"
+                      className="formInput"
+                      value={newModerator}
+                      disabled={creatingNewForum}
+                      onChange={(e) => setNewModerator(e.target.value)}
+                      onBlur={(e) => parseModList()}
+                    />
+                    {modList?.map((mod) => (
+                      <div key={mod.toBase58()}>{mod.toBase58()}</div>
+                    ))}
+                  </>
+                  <>
+                    <span className="formLabel">Add Owners</span>
+                    <input
+                      placeholder="Add a comma separated list of owners IDs"
+                      className="formInput"
+                      value={newOwners}
+                      disabled={creatingNewForum}
+                      onChange={(e) => setNewOwners(e.target.value)}
+                      onBlur={(e) => parseOwnerList()}
+                    />
+                    <div>
+                      {ownerList?.map((owner) => (
+                        <div key={owner.toBase58()}>{owner.toBase58()}</div>
+                      ))}
+                    </div>
+                  </>
+                  <>
+                    <span className="formLabel">Limit forum access</span>
+                    <input
+                      placeholder="Add a comma separated list of collection IDs"
+                      className="formInput lastInputField"
+                      value={accessToken}
+                      disabled={creatingNewForum || bodySize > 800}
+                      onChange={(e) => setAccessToken(e.target.value)}
+                      onBlur={(e) => parseCollectionList()}
+                    />
+                    <div>
+                      {accessList?.map((token) => {
+                        const tokenB58 = token.toBase58();
+                        return <div key={tokenB58}>{tokenB58}</div>;
+                      })}
+                    </div>
+                  </>
+                </div>
+              }
+            />
+            <div className="createForumButtonContainer">
+              <button
+                className="cancelCreateForumButton"
+                disabled={creatingNewForum}
+                onClick={() => ReactGA.event("cancelForumCreate")}>
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="acceptCreateForumButton"
+                disabled={creatingNewForum || title.length === 0}
+                onClick={() => {
+                  onCreateForumClick();
+                  ReactGA.event("sendForumCreate");
+                }}>
+                Create
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/*<div
               className="collapse collapse-arrow border border-base-100 bg-base-content rounded-box"
               tabIndex={0}>
               <input type="checkbox" />
@@ -374,26 +454,4 @@ export function CreateForum(props: CreateForumProps) {
                   </div>
                 </>
               </div>
-            </div>
-            <div className="createForumButtonContainer">
-              <div
-                className="cancelCreateForumButton"
-                onClick={() => ReactGA.event("cancelForumCreate")}>
-                Cancel
-              </div>
-              <button
-                type="submit"
-                className="acceptCreateForumButton"
-                onClick={() => {
-                  onCreateForumClick();
-                  ReactGA.event("sendForumCreate");
-                }}>
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+            </div>*/

@@ -44,6 +44,8 @@ export function useForumData(
   forum: DispatchForum
 ): {
   forumData: Loading<ForumData>;
+  addPost: (post: ForumPost) => void;
+  deletePost: (post: ForumPost) => void;
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
@@ -137,6 +139,23 @@ export function useForumData(
   }
 
   /**
+   * Delete a post in the local state, without deleting on the
+   * network
+   */
+  // Could also parameterize this by postId or public key.
+  // Feel free to change as desired to filter by useful criteria
+  function deletePost(post: ForumPost) {
+    // We can only delete a post if the forum was actually loaded
+    // successfully in the first place
+    if (isSuccess(forumData)) {
+      setForumData({
+        ...forumData,
+        posts: forumData.posts.filter(p => post !== p)
+      });
+    }
+  }
+
+  /**
    * re-fetch all data related to this forum from chain
    */
   async function update() {
@@ -175,7 +194,12 @@ export function useForumData(
       setForumData(onChainAccountNotFound());
     }
   }
-  return { forumData, update };
+  return {
+    forumData,
+    addPost,
+    deletePost,
+    update
+  };
 }
 
 export function useModerators(

@@ -26,6 +26,17 @@ export interface Description {
   desc: string;
 }
 
+/**
+ * A post that is created locally, but has not yet been confirmed
+ * on-chain. Should not be allowed to be interacted with
+ */
+export type LocalPost = Pick<
+  ForumPost
+  , 'data'
+  | 'replyTo'
+  | 'isTopic'
+>;
+
 export interface ForumData {
   collectionId: PublicKey;
   owners: LoadingResult<PublicKey[]>;
@@ -33,7 +44,7 @@ export interface ForumData {
   // field to the main forum data hook
   // moderators: LoadingResult<PublicKey[]>;
   description: Description;
-  posts: ForumPost[];
+  posts: (ForumPost | LocalPost)[];
   restriction: LoadingResult<PostRestriction>;
 }
 
@@ -44,7 +55,7 @@ export function useForumData(
   forum: DispatchForum
 ): {
   forumData: Loading<ForumData>;
-  addPost: (post: ForumPost) => void;
+  addPost: (post: LocalPost) => void;
   deletePost: (post: ForumPost) => void;
   update: () => Promise<void>;
 } {
@@ -127,7 +138,7 @@ export function useForumData(
    * create a post in local state, without sending anything to
    * the network
    */
-  function addPost(post: ForumPost) {
+  function addPost(post: LocalPost) {
     // We can only add a post if the forum was actually loaded
     // successfully in the first place
     if (isSuccess(forumData)) {
@@ -144,7 +155,7 @@ export function useForumData(
    */
   // Could also parameterize this by postId or public key.
   // Feel free to change as desired to filter by useful criteria
-  function deletePost(post: ForumPost) {
+  function deletePost(post: ForumPost | LocalPost) {
     // We can only delete a post if the forum was actually loaded
     // successfully in the first place
     if (isSuccess(forumData)) {

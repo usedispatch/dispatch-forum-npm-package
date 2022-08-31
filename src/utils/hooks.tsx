@@ -166,11 +166,12 @@ export function useForumData(
 
   /**
    * Delete a post in the local state, without deleting on the
-   * network
+   * network. Only `ForumPost`s (i.e., posts that have been
+   * confirmed on-chain) can be deleted
    */
   // Could also parameterize this by postId or public key.
   // Feel free to change as desired to filter by useful criteria
-  function deletePost(post: ForumPost | LocalPost) {
+  function deletePost(post: ForumPost) {
     // We can only delete a post if the forum was actually loaded
     // successfully in the first place
     if (isSuccess(forumData)) {

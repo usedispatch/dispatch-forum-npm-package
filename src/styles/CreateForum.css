@@ -50,6 +50,10 @@
       padding: 2rem;
     }
 
+    .formSection {
+      margin-bottom: 16px;
+    }
+
     .formLabel {
       display: flex;
       gap: 5px;
@@ -76,7 +80,6 @@
       font-size: 14px;
       padding: 12px;
       margin-top: 4px;
-      margin-bottom: 16px;
 
       border-color: #cac9cb;
       border-width: 1px;
@@ -124,6 +127,25 @@
           }
         }
       }
+    }
+
+    .idsList {
+      padding: 8px 0 0 8px;
+    }
+
+    .addedIds {
+      display: flex;
+      align-items: center;
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      font-weight: 400;
+      color: #414149;
+    }
+
+    .iconContainer {
+      heigh: 28px;
+      width: 28px;
+      margin-right: 8px;
     }
   }
 

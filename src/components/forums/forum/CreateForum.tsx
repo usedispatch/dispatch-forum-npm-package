@@ -1,8 +1,9 @@
 import * as _ from "lodash";
-import { useState, useMemo } from "react";
+import { useState, useMemo, ReactNode } from "react";
+import Jdenticon from "react-jdenticon";
+import ReactGA from "react-ga4";
 import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
-import ReactGA from "react-ga4";
 
 import { Info } from "../../../assets";
 import {
@@ -12,6 +13,7 @@ import {
   Tooltip,
   TransactionLink,
 } from "../../common";
+import { Notification } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { useModal } from "../../../utils/hooks";
@@ -29,16 +31,22 @@ export function CreateForum(props: CreateForumProps) {
   const { wallet } = forumObject;
   const { publicKey } = wallet;
 
+  const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [creatingNewForum, setCreatingNewForum] = useState(false);
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
   const [accessToken, setAccessToken] = useState<string>("");
-  const [bodySize, setBodySize] = useState<number>(0);
   const [modList, setModList] = useState<web3.PublicKey[]>([]);
   const [ownerList, setOwnerList] = useState<web3.PublicKey[]>([]);
   const [accessList, setAccessList] = useState<web3.PublicKey[]>([]);
+  const [bodySize, setBodySize] = useState<number>(0);
+
+  const [notification, setNotification] = useState<{
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
 
   const { modal, showModal } = useModal();
   const croppedCollectionID = useMemo(() => {
@@ -79,45 +87,54 @@ export function CreateForum(props: CreateForumProps) {
 
   const parseModList = () => {
     try {
-      const list = csvStringToPubkeyList(newModerator);
-      setModList(list);
+      if (newModerator.length > 0) {
+        const list = csvStringToPubkeyList(newModerator);
+        setModList(list);
+      } else {
+        setModList([]);
+      }
     } catch (e: any) {
       setModList([]);
-      showModal({
-        title: "Something went wrong!",
+      setNotification({
+        isHidden: false,
+        content: <>Error on adding moderator: {e.message}</>,
         type: MessageType.error,
-        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: "Error", content: e.message },
       });
     }
   };
 
   const parseOwnerList = () => {
     try {
-      const list = csvStringToPubkeyList(newOwners);
-      setOwnerList(list);
+      if (newOwners.length > 0) {
+        const list = csvStringToPubkeyList(newOwners);
+        setOwnerList(list);
+      } else {
+        setOwnerList([]);
+      }
     } catch (e: any) {
       setOwnerList([]);
-      showModal({
-        title: "Something went wrong!",
+      setNotification({
+        isHidden: false,
+        content: <>Error on adding owner: {e.message}</>,
         type: MessageType.error,
-        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: "Error", content: e.message },
       });
     }
   };
 
   const parseCollectionList = () => {
     try {
-      const list = csvStringToPubkeyList(accessToken);
-      setAccessList(list);
+      if (accessToken.length > 0) {
+        const list = csvStringToPubkeyList(accessToken);
+        setAccessList(list);
+      } else {
+        setAccessList([]);
+      }
     } catch (e: any) {
       setAccessList([]);
-      showModal({
-        title: "Something went wrong!",
+      setNotification({
+        isHidden: false,
+        content: <>Error on adding owner: {e.message}</>,
         type: MessageType.error,
-        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: "Error", content: e.message },
       });
     }
   };
@@ -192,9 +209,9 @@ export function CreateForum(props: CreateForumProps) {
     }
   };
 
-  const AdvancedOptions = () => (
+  const advancedOptions = (
     <div>
-      <>
+      <div className="formSection">
         <span className="formLabel">
           Add Moderators
           <Tooltip
@@ -214,13 +231,25 @@ export function CreateForum(props: CreateForumProps) {
           value={newModerator}
           disabled={creatingNewForum}
           onChange={(e) => setNewModerator(e.target.value)}
-          onBlur={(e) => parseModList()}
+          onBlur={() => parseModList()}
         />
-        {modList?.map((mod) => (
-          <div key={mod.toBase58()}>{mod.toBase58()}</div>
-        ))}
-      </>
-      <>
+        <ul className="idsList">
+          {modList.map((pubkey) => {
+            const m = pubkey.toBase58();
+            return (
+              <li key={m} className="addedIds">
+                <>
+                  <div className="iconContainer">
+                    <Jdenticon value={m} alt="moderatorId" />
+                  </div>
+                  {m}
+                </>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div className="formSection">
         <span className="formLabel">
           Add Owners
           <Tooltip
@@ -240,15 +269,25 @@ export function CreateForum(props: CreateForumProps) {
           value={newOwners}
           disabled={creatingNewForum}
           onChange={(e) => setNewOwners(e.target.value)}
-          onBlur={(e) => parseOwnerList()}
+          onBlur={() => parseOwnerList()}
         />
-        <div>
-          {ownerList?.map((owner) => (
-            <div key={owner.toBase58()}>{owner.toBase58()}</div>
-          ))}
-        </div>
-      </>
-      <>
+        <ul className="idsList">
+          {ownerList.map((pubkey) => {
+            const o = pubkey.toBase58();
+            return (
+              <li key={o} className="addedIds">
+                <>
+                  <div className="iconContainer">
+                    <Jdenticon value={o} alt="ownerId" />
+                  </div>
+                  {o}
+                </>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+      <div className="formSection">
         <span className="formLabel">
           Limit forum access
           <Tooltip
@@ -270,19 +309,30 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setAccessToken(e.target.value)}
           onBlur={(e) => parseCollectionList()}
         />
-        <div>
-          {accessList?.map((token) => {
-            const tokenB58 = token.toBase58();
-            return <div key={tokenB58}>{tokenB58}</div>;
+        <ul className="idsList">
+          {accessList.map((pubkey) => {
+            const a = pubkey.toBase58();
+            return (
+              <li key={a} className="addedIds">
+                {a}
+              </li>
+            );
           })}
-        </div>
-      </>
+        </ul>
+      </div>
     </div>
   );
 
   return (
     <div className="dsp- ">
       <div className="createForumContainer">
+        {modal}
+        <Notification
+          hidden={notification.isHidden}
+          content={notification?.content}
+          type={notification?.type}
+          onClose={() => setNotification({ isHidden: true })}
+        />
         <div className="createForumTitle">Create New Forum</div>
         <div className="createForumSubtitle">
           Create one to create topics, post, share, rate, and gift tokens.
@@ -290,8 +340,8 @@ export function CreateForum(props: CreateForumProps) {
         <div
           className={`createForumForm ${creatingNewForum ? "creating" : ""}`}>
           <div className="formBody">
-            <>
-              {ReactGA.send("pageview")}
+            <div className="formSection">
+              <>{ReactGA.send("pageview")}</>
               <span className="formLabel">Title</span>
               <input
                 type="text"
@@ -303,8 +353,8 @@ export function CreateForum(props: CreateForumProps) {
                 disabled={creatingNewForum}
                 onChange={(e) => setTitle(e.target.value)}
               />
-            </>
-            <>
+            </div>
+            <div className="formSection">
               <span className="formLabel">Description</span>
               <textarea
                 placeholder="Description"
@@ -318,10 +368,10 @@ export function CreateForum(props: CreateForumProps) {
                 }}
               />
               <div className="textSize">{bodySize}/800</div>
-            </>
+            </div>
             <Collapsible
               header="Show advanced options"
-              content={<AdvancedOptions />}
+              content={advancedOptions}
             />
             {creatingNewForum && <Spinner />}
             <div className="createForumButtonContainer">

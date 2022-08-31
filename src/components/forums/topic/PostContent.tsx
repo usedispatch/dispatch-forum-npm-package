@@ -34,11 +34,12 @@ interface PostContentProps {
   topicPosterId: string;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, addPost } = props;
+  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, addPost, deletePost } = props;
 
   const permission = forum.permission;
 
@@ -151,6 +152,7 @@ export function PostContent(props: PostContentProps) {
         forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
+      deletePost(postToDelete);
       onDeletePost(tx);
       setModalInfo({
         title: "Success!",

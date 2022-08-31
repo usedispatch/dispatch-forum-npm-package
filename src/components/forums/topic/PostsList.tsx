@@ -14,12 +14,13 @@ interface PostListProps {
   userRole: UserRoleType;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update, addPost } = props;
+  const { forumData, forum, userRole, onDeletePost, topic, update, addPost, deletePost } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
@@ -48,6 +49,7 @@ export function PostList(props: PostListProps) {
                   onDeletePost={onDeletePost}
                   update={update}
                   addPost={addPost}
+                  deletePost={deletePost}
                 />
               </div>
             );

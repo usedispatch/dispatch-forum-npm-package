@@ -34,13 +34,14 @@ interface TopicContentProps {
   forumData: ForumData;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, addPost, updateVotes, topic } = props;
+  const { forum, forumData, userRole, update, addPost, deletePost, updateVotes, topic } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -388,6 +389,7 @@ export function TopicContent(props: TopicContentProps) {
         forumData={forumData}
         update={update}
         addPost={addPost}
+        deletePost={deletePost}
         topic={topic}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);

@@ -12,9 +12,11 @@ export const Collapsible = (props: CollapsibleProps) => {
 
   return (
     <div className="collapsibleContainer">
-      <div className="collapsibleHeaderContainer">
+      <div
+        className="collapsibleHeaderContainer"
+        onClick={() => setIsOpen(!isOpen)}>
         <div className="collapsibleHeader">{header ?? ""}</div>
-        <button className="visibilityButton" onClick={() => setIsOpen(!isOpen)}>
+        <button className="visibilityButton">
           <Chevron direction={isOpen ? "up" : "down"} />
         </button>
       </div>

@@ -88,12 +88,15 @@
       border: none;
       background: inherit;
       margin: 16px 0;
+      overflow-y: visible;
       max-height: none;
 
       .collapsibleHeader {
         font-size: 16px;
         font-weight: 500;
+      }
 
+      .visibilityButton {
         svg {
           height: 14px;
           width: 14px;

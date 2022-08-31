@@ -18,14 +18,18 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData } from "../../../utils/hooks";
+import {
+  ForumData,
+  LocalPost,
+  isForumPost
+} from "../../../utils/hooks";
 import { isSuccess } from "../../../utils/loading";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
-  post: ForumPost;
+  post: LocalPost | ForumPost;
   userRole: UserRoleType;
   topicPosterId: string;
   update: () => Promise<void>;
@@ -68,21 +72,29 @@ export function PostContent(props: PostContentProps) {
   const post = useMemo(() => props.post, [props.post]);
 
   const replies = useMemo(() => {
-    const replies = selectRepliesFromPosts(forumData.posts, post);
-    return sortByVotes(replies);
+    if (isForumPost(post)) {
+      const replies = selectRepliesFromPosts(forumData.posts, post);
+      return sortByVotes(replies);
+    } else {
+      // If a post is not a ForumPost, it does not have replies
+      return [];
+    }
   }, [forumData, post]);
 
   const updateVotes = (upVoted: boolean) => {
-    if (upVoted) {
-      post.upVotes = post.upVotes + 1;
-    } else {
-      post.downVotes = post.downVotes + 1;
+    if (isForumPost(post)) {
+      if (upVoted) {
+        post.upVotes = post.upVotes + 1;
+      } else {
+        post.downVotes = post.downVotes + 1;
+      }
     }
   };
 
   const onReplyToPost = async () => {
     setSendingReply(true);
     try {
+      if (!isForumPost(post)) { return; }
       const tx = await forum.replyToForumPost(post, forumData.collectionId, {
         body: reply,
       });
@@ -121,6 +133,7 @@ export function PostContent(props: PostContentProps) {
   const onDelete = async () => {
     setDeleting(true);
     try {
+      if (!isForumPost(postToDelete)) { return; }
       const tx = await forum.deleteForumPost(
         postToDelete,
         forumData.collectionId,
@@ -273,6 +286,7 @@ export function PostContent(props: PostContentProps) {
                 </div>
                 <div className="postedAt">
                   Posted at: {postedAt}
+                  {isForumPost(post) &&
                   <div className="accountInfo">
                     <a
                       href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
@@ -281,9 +295,11 @@ export function PostContent(props: PostContentProps) {
                       <Info />
                     </a>
                   </div>
+                  }
                 </div>
               </div>
               <div className="postBody">{post?.data.body}</div>
+              {isForumPost(post) &&
               <div className="actionsContainer">
                 <PermissionsGate scopes={[SCOPES.canVote]}>
                   <Votes
@@ -338,6 +354,7 @@ export function PostContent(props: PostContentProps) {
                   </div>
                 </PermissionsGate>
               </div>
+              }
             </div>
           </div>
           <div

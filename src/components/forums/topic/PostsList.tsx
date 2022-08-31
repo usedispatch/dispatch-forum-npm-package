@@ -36,7 +36,8 @@ export function PostList(props: PostListProps) {
         ? emptyList
         : posts.map((post) => {
             return (
-              <div key={`post_${post.postId}`}>
+              // HACK: Use the timestring for key value here because the postId and address may not be present on `LocalPost`s
+              <div key={`post_${post.data.ts.toLocaleTimeString()}`}>
                 <PostContent
                   forum={forum}
                   forumData={forumData}

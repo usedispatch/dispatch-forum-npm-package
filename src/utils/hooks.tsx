@@ -35,7 +35,22 @@ export type LocalPost = Pick<
   , 'data'
   | 'replyTo'
   | 'isTopic'
+  | 'poster'
 >;
+
+export function isForumPost(
+  post: LocalPost | ForumPost
+): post is ForumPost {
+  // A post is a LocalPost if it has an address field
+  // TODO(andrew) confirm that this is the best field to check
+  return 'address' in post
+}
+
+export function isLocalPost(
+  post: LocalPost | ForumPost
+): post is LocalPost {
+  return !isForumPost(post);
+}
 
 export interface ForumData {
   collectionId: PublicKey;

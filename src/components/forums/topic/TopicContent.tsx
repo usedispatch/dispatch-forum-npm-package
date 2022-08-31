@@ -387,6 +387,7 @@ export function TopicContent(props: TopicContentProps) {
         forum={forum}
         forumData={forumData}
         update={update}
+        addPost={addPost}
         topic={topic}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);

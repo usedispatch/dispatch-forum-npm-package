@@ -33,12 +33,12 @@ interface PostContentProps {
   userRole: UserRoleType;
   topicPosterId: string;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, topicPosterId, onDeletePost, update } =
-    props;
+  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, addPost } = props;
 
   const permission = forum.permission;
 
@@ -111,6 +111,18 @@ export function PostContent(props: PostContentProps) {
         ),
         type: MessageType.success,
       });
+
+      const localPost: LocalPost = {
+        data: {
+          body: reply,
+          ts: new Date()
+        },
+        poster: forum.wallet.publicKey!,
+        isTopic: false,
+        replyTo: post.address
+      };
+      addPost(localPost);
+
       if (tx) {
         await forum.connection.confirmTransaction(tx).then(() => update());
       }

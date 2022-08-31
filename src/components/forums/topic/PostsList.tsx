@@ -5,7 +5,7 @@ import { ForumPost } from "@usedispatch/client";
 import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/permissions";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, LocalPost } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostListProps {
@@ -13,12 +13,13 @@ interface PostListProps {
   forumData: ForumData;
   userRole: UserRoleType;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
   topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update } = props;
+  const { forumData, forum, userRole, onDeletePost, topic, update, addPost } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
@@ -46,6 +47,7 @@ export function PostList(props: PostListProps) {
                   topicPosterId={topic.poster.toBase58()}
                   onDeletePost={onDeletePost}
                   update={update}
+                  addPost={addPost}
                 />
               </div>
             );

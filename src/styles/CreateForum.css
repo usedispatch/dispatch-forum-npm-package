@@ -94,6 +94,10 @@
         cursor: not-allowed;
       }
 
+      &.readonly {
+        background: #f7f7fe;
+      }
+
       &.description {
         height: 144px;
         margin-bottom: 0;

@@ -341,6 +341,16 @@ export function CreateForum(props: CreateForumProps) {
           className={`createForumForm ${creatingNewForum ? "creating" : ""}`}>
           <div className="formBody">
             <div className="formSection">
+              <span className="formLabel">Collection ID</span>
+              <input
+                type="text"
+                className={`formInput readonly`}
+                required
+                value={collectionId}
+                readOnly
+              />
+            </div>
+            <div className="formSection">
               <>{ReactGA.send("pageview")}</>
               <span className="formLabel">Title</span>
               <input

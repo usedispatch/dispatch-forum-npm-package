@@ -24,13 +24,22 @@
   }
 
   .createForumForm {
-    width: 50%;
-    background: #fff;
-    border-radius: 15px;
     display: flex;
     justify-content: center;
+    width: 50%;
+    margin-top: 16px;
+
+    background: #fff;
+    border-radius: 15px;
     box-shadow: 0 8px 16px #41414933;
-    margin-top: 1rem;
+
+    &.creating {
+      opacity: 0.65;
+
+      .spinner {
+        margin-top: 16px;
+      }
+    }
 
     .formBody {
       display: flex;
@@ -42,9 +51,18 @@
     }
 
     .formLabel {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+
       padding: 0 4px;
       font-size: 16px;
       font-weight: 500;
+    }
+
+    .labelTooltip {
+      height: 16px;
+      width: 16px;
     }
 
     .textSize {

@@ -4,12 +4,12 @@ import { ForumInfo } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 import ReactGA from "react-ga4";
 
-import { Lock, Plus, Trash } from "../../../assets";
+import { Info } from "../../../assets";
 import {
   Collapsible,
-  CollapsibleProps,
   MessageType,
-  PopUpModal,
+  Spinner,
+  Tooltip,
   TransactionLink,
 } from "../../common";
 
@@ -192,6 +192,94 @@ export function CreateForum(props: CreateForumProps) {
     }
   };
 
+  const AdvancedOptions = () => (
+    <div>
+      <>
+        <span className="formLabel">
+          Add Moderators
+          <Tooltip
+            content={
+              <div className="labelTooltip">
+                <Info />
+              </div>
+            }
+            message={
+              "Your wallet ID will be automatically added as a moderator, but if you'd like to add additional moderators you can specify them here as a comma seperated list!"
+            }
+          />
+        </span>
+        <input
+          placeholder="Add a comma separated list of moderator IDs"
+          className="formInput"
+          value={newModerator}
+          disabled={creatingNewForum}
+          onChange={(e) => setNewModerator(e.target.value)}
+          onBlur={(e) => parseModList()}
+        />
+        {modList?.map((mod) => (
+          <div key={mod.toBase58()}>{mod.toBase58()}</div>
+        ))}
+      </>
+      <>
+        <span className="formLabel">
+          Add Owners
+          <Tooltip
+            content={
+              <div className="labelTooltip">
+                <Info />
+              </div>
+            }
+            message={
+              "Your wallet ID will be automatically added as an owner, but if you'd like to add additional owners you can specify them here as a comma seperated list!"
+            }
+          />
+        </span>
+        <input
+          placeholder="Add a comma separated list of owners IDs"
+          className="formInput"
+          value={newOwners}
+          disabled={creatingNewForum}
+          onChange={(e) => setNewOwners(e.target.value)}
+          onBlur={(e) => parseOwnerList()}
+        />
+        <div>
+          {ownerList?.map((owner) => (
+            <div key={owner.toBase58()}>{owner.toBase58()}</div>
+          ))}
+        </div>
+      </>
+      <>
+        <span className="formLabel">
+          Limit forum access
+          <Tooltip
+            content={
+              <div className="labelTooltip">
+                <Info />
+              </div>
+            }
+            message={
+              "Here, you are able to gate your forum to Metaplex NFT Collection holders. Simply enter the collection ID of your NFT collection and only token holders can create posts. You can find the collection ID in the metadata URI of your NFT."
+            }
+          />
+        </span>
+        <input
+          placeholder="Add a comma separated list of collection IDs"
+          className="formInput lastInputField"
+          value={accessToken}
+          disabled={creatingNewForum || bodySize > 800}
+          onChange={(e) => setAccessToken(e.target.value)}
+          onBlur={(e) => parseCollectionList()}
+        />
+        <div>
+          {accessList?.map((token) => {
+            const tokenB58 = token.toBase58();
+            return <div key={tokenB58}>{tokenB58}</div>;
+          })}
+        </div>
+      </>
+    </div>
+  );
+
   return (
     <div className="dsp- ">
       <div className="createForumContainer">
@@ -199,7 +287,8 @@ export function CreateForum(props: CreateForumProps) {
         <div className="createForumSubtitle">
           Create one to create topics, post, share, rate, and gift tokens.
         </div>
-        <div className="createForumForm">
+        <div
+          className={`createForumForm ${creatingNewForum ? "creating" : ""}`}>
           <div className="formBody">
             <>
               {ReactGA.send("pageview")}
@@ -232,58 +321,9 @@ export function CreateForum(props: CreateForumProps) {
             </>
             <Collapsible
               header="Show advanced options"
-              content={
-                <div>
-                  <>
-                    <span className="formLabel">Add Moderators</span>
-                    <input
-                      placeholder="Add a comma separated list of moderator IDs"
-                      className="formInput"
-                      value={newModerator}
-                      disabled={creatingNewForum}
-                      onChange={(e) => setNewModerator(e.target.value)}
-                      onBlur={(e) => parseModList()}
-                    />
-                    {modList?.map((mod) => (
-                      <div key={mod.toBase58()}>{mod.toBase58()}</div>
-                    ))}
-                  </>
-                  <>
-                    <span className="formLabel">Add Owners</span>
-                    <input
-                      placeholder="Add a comma separated list of owners IDs"
-                      className="formInput"
-                      value={newOwners}
-                      disabled={creatingNewForum}
-                      onChange={(e) => setNewOwners(e.target.value)}
-                      onBlur={(e) => parseOwnerList()}
-                    />
-                    <div>
-                      {ownerList?.map((owner) => (
-                        <div key={owner.toBase58()}>{owner.toBase58()}</div>
-                      ))}
-                    </div>
-                  </>
-                  <>
-                    <span className="formLabel">Limit forum access</span>
-                    <input
-                      placeholder="Add a comma separated list of collection IDs"
-                      className="formInput lastInputField"
-                      value={accessToken}
-                      disabled={creatingNewForum || bodySize > 800}
-                      onChange={(e) => setAccessToken(e.target.value)}
-                      onBlur={(e) => parseCollectionList()}
-                    />
-                    <div>
-                      {accessList?.map((token) => {
-                        const tokenB58 = token.toBase58();
-                        return <div key={tokenB58}>{tokenB58}</div>;
-                      })}
-                    </div>
-                  </>
-                </div>
-              }
+              content={<AdvancedOptions />}
             />
+            {creatingNewForum && <Spinner />}
             <div className="createForumButtonContainer">
               <button
                 type="submit"
@@ -302,148 +342,3 @@ export function CreateForum(props: CreateForumProps) {
     </div>
   );
 }
-
-/*<div
-              className="collapse collapse-arrow border border-base-100 bg-base-content rounded-box"
-              tabIndex={0}>
-              <input type="checkbox" />
-              <div className="collapse-title font-medium">Advanced Options</div>
-              <div className="collapse-content">
-                <>
-                  <span className="createForumLabel">Add Moderators</span>
-                  <div className="dropdown">
-                    <label
-                      tabIndex={0}
-                      className="btn btn-circle btn-ghost btn-xs text-info">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        className="w-4 h-4 stroke-current">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </label>
-                    <div
-                      tabIndex={0}
-                      className="card compact dropdown-content shadow bg-base-100 rounded-box w-64">
-                      <div className="card-body">
-                        <p>
-                          Your wallet ID will be automatically added as a
-                          moderator, but if you'd like to add additional
-                          moderators you can specify them here as a comma
-                          seperated list!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <input
-                    placeholder="Add a comma separated list of moderator IDs"
-                    className="createForumInput"
-                    value={newModerator}
-                    disabled={creatingNewForum}
-                    onChange={(e) => setNewModerator(e.target.value)}
-                    onBlur={(e) => parseModList()}
-                  />
-                  {modList?.map((mod) => {
-                    return <div>{mod.toBase58()}</div>;
-                  })}
-                </>
-                <>
-                  <span className="createForumLabel">Add Owners</span>
-                  <div className="dropdown dropdown-end dropdown-right">
-                    <label
-                      tabIndex={0}
-                      className="btn btn-circle btn-ghost btn-xs text-info">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        className="w-4 h-4 stroke-current">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </label>
-                    <div
-                      tabIndex={0}
-                      className="card compact dropdown-content shadow bg-base-100 rounded-box w-64">
-                      <div className="card-body">
-                        <p>
-                          Your wallet ID will be automatically added as an
-                          owner, but if you'd like to add additional owners you
-                          can specify them here as a comma seperated list!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <input
-                    placeholder="Add a comma separated list of owners IDs"
-                    className="createForumInput"
-                    value={newOwners}
-                    disabled={creatingNewForum}
-                    onChange={(e) => setNewOwners(e.target.value)}
-                    onBlur={(e) => parseOwnerList()}
-                  />
-                  <div>
-                    {ownerList?.map((owner) => {
-                      return (
-                        <div key={owner.toBase58()}>{owner.toBase58()}</div>
-                      );
-                    })}
-                  </div>
-                </>
-                <>
-                  <span className="createForumLabel">Limit forum access</span>
-                  <div className="dropdown dropdown-end dropdown-right">
-                    <label
-                      tabIndex={0}
-                      className="btn btn-circle btn-ghost btn-xs text-info">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        className="w-4 h-4 stroke-current">
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                      </svg>
-                    </label>
-                    <div
-                      tabIndex={0}
-                      className="card compact dropdown-content shadow bg-base-100 rounded-box w-64">
-                      <div className="card-body">
-                        <p>
-                          Here, you are able to gate your forum to Metaplex NFT
-                          Collection holders. Simply enter the collection ID of
-                          your NFT collection and only token holders can create
-                          posts. You can find the collection ID in the metadata
-                          URI of your NFT.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <input
-                    placeholder="Add a comma separated list of collection IDs"
-                    className="createForumInput lastInputField"
-                    value={accessToken}
-                    disabled={creatingNewForum || bodySize > 800}
-                    onChange={(e) => setAccessToken(e.target.value)}
-                    onBlur={(e) => parseCollectionList()}
-                  />
-                  <div>
-                    {accessList?.map((token) => {
-                      const tokenB58 = token.toBase58();
-                      return <div key={tokenB58}>{tokenB58}</div>;
-                    })}
-                  </div>
-                </>
-              </div>
-            </div>*/

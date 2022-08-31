@@ -1,6 +1,8 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
+import { ForumPost } from '@usedispatch/client';
+import { LocalPost } from '../../../utils/hooks';
 
 import {
   CollapsibleProps,
@@ -14,7 +16,7 @@ import { useForum } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface CreatePostProps {
-  topicId: number;
+  topic: ForumPost;
   collectionId: web3.PublicKey;
   createForumPost: (
     post: {
@@ -26,11 +28,12 @@ interface CreatePostProps {
     collectionId: web3.PublicKey
   ) => Promise<string | undefined>;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
   onReload: () => void;
 }
 
 export function CreatePost(props: CreatePostProps) {
-  const { createForumPost, collectionId, topicId, onReload, update } = props;
+  const { createForumPost, collectionId, topic, onReload, update, addPost } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -57,7 +60,19 @@ export function CreatePost(props: CreatePostProps) {
 
     const post = { body: target.post.value };
     try {
-      const tx = await createForumPost(post, topicId, collectionId);
+      const tx = await createForumPost(post, topic.postId, collectionId);
+
+      // TODO HERE
+      const localPost: LocalPost = {
+        data: {
+          body: post.body,
+          ts: new Date()
+        },
+        poster: Forum.wallet.publicKey!,
+        isTopic: false,
+        replyTo: topic.address
+      };
+      addPost(localPost);
       
       setLoading(false);
       setIsNotificationHidden(false);
@@ -70,6 +85,7 @@ export function CreatePost(props: CreatePostProps) {
         ),
         type: MessageType.success,
       });
+
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT

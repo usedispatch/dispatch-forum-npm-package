@@ -23,7 +23,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, LocalPost } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -33,13 +33,14 @@ interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
   topic: ForumPost;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, updateVotes, topic } = props;
+  const { forum, forumData, userRole, update, addPost, updateVotes, topic } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -355,7 +356,7 @@ export function TopicContent(props: TopicContentProps) {
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
-              topicId={topic.postId}
+              topic={topic}
               collectionId={forumData.collectionId}
               createForumPost={async (
                 { subj, body, meta },
@@ -370,6 +371,7 @@ export function TopicContent(props: TopicContentProps) {
                 return signature;
               }}
               update={update}
+              addPost={addPost}
               onReload={() => {}}
             />
           </PermissionsGate>

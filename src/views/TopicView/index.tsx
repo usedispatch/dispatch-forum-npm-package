@@ -57,7 +57,7 @@ export const TopicView = (props: Props) => {
     }
   }, [collectionId]);
   
-  const { forumData, update } = useForumData(collectionPublicKey, forum);
+  const { forumData, update, addPost } = useForumData(collectionPublicKey, forum);
   
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {
@@ -196,6 +196,7 @@ export const TopicView = (props: Props) => {
                           topic={topic}
                           userRole={role.role}
                           update={update}
+                          addPost={addPost}
                           updateVotes={(upVoted) => updateVotes(upVoted)}
                         />
                       </>

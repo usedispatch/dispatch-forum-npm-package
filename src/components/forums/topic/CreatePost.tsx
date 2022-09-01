@@ -62,7 +62,6 @@ export function CreatePost(props: CreatePostProps) {
     try {
       const tx = await createForumPost(post, topic.postId, collectionId);
 
-      // TODO HERE
       const localPost: LocalPost = {
         data: {
           body: post.body,

@@ -26,6 +26,32 @@ export interface Description {
   desc: string;
 }
 
+/**
+ * A post that is created locally, but has not yet been confirmed
+ * on-chain. Should not be allowed to be interacted with
+ */
+export type LocalPost = Pick<
+  ForumPost
+  , 'data'
+  | 'replyTo'
+  | 'isTopic'
+  | 'poster'
+>;
+
+export function isForumPost(
+  post: LocalPost | ForumPost
+): post is ForumPost {
+  // A post is a LocalPost if it has an address field
+  // TODO(andrew) confirm that this is the best field to check
+  return 'address' in post
+}
+
+export function isLocalPost(
+  post: LocalPost | ForumPost
+): post is LocalPost {
+  return !isForumPost(post);
+}
+
 export interface ForumData {
   collectionId: PublicKey;
   owners: LoadingResult<PublicKey[]>;
@@ -33,7 +59,7 @@ export interface ForumData {
   // field to the main forum data hook
   // moderators: LoadingResult<PublicKey[]>;
   description: Description;
-  posts: ForumPost[];
+  posts: (ForumPost | LocalPost)[];
   restriction: LoadingResult<PostRestriction>;
 }
 
@@ -44,6 +70,8 @@ export function useForumData(
   forum: DispatchForum
 ): {
   forumData: Loading<ForumData>;
+  addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
@@ -121,6 +149,42 @@ export function useForumData(
     }
   }
 
+  /**
+   * create a post in local state, without sending anything to
+   * the network
+   */
+  function addPost(post: LocalPost) {
+    // We can only add a post if the forum was actually loaded
+    // successfully in the first place
+    if (isSuccess(forumData)) {
+      setForumData({
+        ...forumData,
+        posts: forumData.posts.concat(post)
+      });
+    }
+  }
+
+  /**
+   * Delete a post in the local state, without deleting on the
+   * network. Only `ForumPost`s (i.e., posts that have been
+   * confirmed on-chain) can be deleted
+   */
+  // Could also parameterize this by postId or public key.
+  // Feel free to change as desired to filter by useful criteria
+  function deletePost(post: ForumPost) {
+    // We can only delete a post if the forum was actually loaded
+    // successfully in the first place
+    if (isSuccess(forumData)) {
+      setForumData({
+        ...forumData,
+        posts: forumData.posts.filter(p => post !== p)
+      });
+    }
+  }
+
+  /**
+   * re-fetch all data related to this forum from chain
+   */
   async function update() {
     if (collectionId) {
       // Wait for the forum to exist first...
@@ -157,7 +221,12 @@ export function useForumData(
       setForumData(onChainAccountNotFound());
     }
   }
-  return { forumData, update };
+  return {
+    forumData,
+    addPost,
+    deletePost,
+    update
+  };
 }
 
 export function useModerators(

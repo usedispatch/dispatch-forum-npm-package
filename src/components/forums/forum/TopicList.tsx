@@ -9,6 +9,7 @@ import {
   selectRepliesFromPosts,
   selectTopics,
   sortByVotes,
+  selectForumPosts
 } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
 
@@ -17,9 +18,10 @@ interface TopicListProps {
 }
 
 export function TopicList({ forumData }: TopicListProps) {
-  const topics: ForumPost[] = useMemo(() => {
+  const topics = useMemo(() => {
     const topics = selectTopics(forumData.posts);
-    return sortByVotes(topics);
+    const sorted = sortByVotes(topics);
+    return selectForumPosts(sorted);
   }, [forumData]);
 
   return (
@@ -70,7 +72,7 @@ function RowContent(props: RowContentProps) {
   );
 
   const replies: ForumPost[] = useMemo(() => {
-    return selectRepliesFromPosts(forumData.posts, topic);
+    return selectForumPosts(selectRepliesFromPosts(forumData.posts, topic));
   }, [forumData]);
 
   const activtyDate = useCallback((posts: ForumPost[]) => {

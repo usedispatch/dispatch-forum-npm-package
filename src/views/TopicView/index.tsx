@@ -57,13 +57,23 @@ export const TopicView = (props: Props) => {
     }
   }, [collectionId]);
   
-  const { forumData, update } = useForumData(collectionPublicKey, forum);
+  const { forumData, update, addPost, deletePost } = useForumData(collectionPublicKey, forum);
   
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {
-      const post = forumData.posts.find(({ isTopic, postId }) => {
-        return isTopic && postId === topicId;
-      });
+      const post = forumData.posts.find((post) => {
+        // This conditional only evaluates to true if `post` is a
+        // ForumPost and not a LocalPost-- that is, if it exists
+        // on-chain
+        if ('postId' in post) {
+          return post.isTopic && post.postId === topicId
+        } else {
+          return false;
+        }
+        // The above function only returns true if the post in
+        // question is a ForumPost. But the TypeScript checker
+        // can't recognize that, so we cast here
+      }) as ForumPost;
       if (post) {
         return post;
       } else {
@@ -186,6 +196,8 @@ export const TopicView = (props: Props) => {
                           topic={topic}
                           userRole={role.role}
                           update={update}
+                          addPost={addPost}
+                          deletePost={deletePost}
                           updateVotes={(upVoted) => updateVotes(upVoted)}
                         />
                       </>

@@ -18,23 +18,30 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData } from "../../../utils/hooks";
+import {
+  ForumData,
+  LocalPost,
+  isForumPost
+} from "../../../utils/hooks";
 import { isSuccess } from "../../../utils/loading";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
-  post: ForumPost;
+  post: LocalPost | ForumPost;
   userRole: UserRoleType;
   topicPosterId: string;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
+  postInFlight: boolean;
+  setPostInFlight: (postInFlight: boolean) => void;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, topicPosterId, onDeletePost, update } =
-    props;
+  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, addPost, deletePost, postInFlight, setPostInFlight } = props;
 
   const permission = forum.permission;
 
@@ -68,21 +75,30 @@ export function PostContent(props: PostContentProps) {
   const post = useMemo(() => props.post, [props.post]);
 
   const replies = useMemo(() => {
-    const replies = selectRepliesFromPosts(forumData.posts, post);
-    return sortByVotes(replies);
+    if (isForumPost(post)) {
+      const replies = selectRepliesFromPosts(forumData.posts, post);
+      return sortByVotes(replies);
+    } else {
+      // If a post is not a ForumPost, it does not have replies
+      return [];
+    }
   }, [forumData, post]);
 
   const updateVotes = (upVoted: boolean) => {
-    if (upVoted) {
-      post.upVotes = post.upVotes + 1;
-    } else {
-      post.downVotes = post.downVotes + 1;
+    if (isForumPost(post)) {
+      if (upVoted) {
+        post.upVotes = post.upVotes + 1;
+      } else {
+        post.downVotes = post.downVotes + 1;
+      }
     }
   };
 
   const onReplyToPost = async () => {
     setSendingReply(true);
+    setPostInFlight(true);
     try {
+      if (!isForumPost(post)) { return; }
       const tx = await forum.replyToForumPost(post, forumData.collectionId, {
         body: reply,
       });
@@ -99,14 +115,32 @@ export function PostContent(props: PostContentProps) {
         ),
         type: MessageType.success,
       });
+
+      const localPost: LocalPost = {
+        data: {
+          body: reply,
+          ts: new Date()
+        },
+        poster: forum.wallet.publicKey!,
+        isTopic: false,
+        replyTo: post.address
+      };
+      addPost(localPost);
+
       if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
+        await forum.connection
+          .confirmTransaction(tx)
+          .then(() => {
+            update();
+            setPostInFlight(false);
+          });
       }
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
       );
     } catch (error: any) {
+      setPostInFlight(false);
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
@@ -121,21 +155,23 @@ export function PostContent(props: PostContentProps) {
   const onDelete = async () => {
     setDeleting(true);
     try {
+      if (!isForumPost(postToDelete)) { return; }
       const tx = await forum.deleteForumPost(
         postToDelete,
         forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
+      deletePost(postToDelete);
       onDeletePost(tx);
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
         body: `The post was deleted`,
       });
+      setShowDeleteConfirmation(false);
       if (tx) {
         await forum.connection.confirmTransaction(tx).then(() => update());
       }
-      setShowDeleteConfirmation(false);
       setDeleting(false);
     } catch (error: any) {
       setShowDeleteConfirmation(false);
@@ -273,6 +309,7 @@ export function PostContent(props: PostContentProps) {
                 </div>
                 <div className="postedAt">
                   Posted at: {postedAt}
+                  {isForumPost(post) &&
                   <div className="accountInfo">
                     <a
                       href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
@@ -281,9 +318,11 @@ export function PostContent(props: PostContentProps) {
                       <Info />
                     </a>
                   </div>
+                  }
                 </div>
               </div>
               <div className="postBody">{post?.data.body}</div>
+              {isForumPost(post) &&
               <div className="actionsContainer">
                 <PermissionsGate scopes={[SCOPES.canVote]}>
                   <Votes
@@ -338,6 +377,7 @@ export function PostContent(props: PostContentProps) {
                   </div>
                 </PermissionsGate>
               </div>
+              }
             </div>
           </div>
           <div
@@ -375,6 +415,7 @@ export function PostContent(props: PostContentProps) {
                   <textarea
                     placeholder="Type your reply here"
                     className="replyTextArea"
+                    disabled={postInFlight}
                     maxLength={800}
                     value={reply}
                     required
@@ -390,7 +431,11 @@ export function PostContent(props: PostContentProps) {
                       }}>
                       Cancel
                     </button>
-                    <button className="postReplyButton" type="submit">
+                    <button
+                      className="postReplyButton"
+                      type="submit"
+                      disabled={postInFlight}
+                    >
                       Reply
                     </button>
                   </div>

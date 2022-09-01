@@ -140,7 +140,11 @@ export function TopicContent(props: TopicContentProps) {
         okPath: forumPath,
       });
       if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
+        // When the topic is confirmed deleted, redirect to the
+        // parent URL (the main forum)
+        await forum.connection
+          .confirmTransaction(tx)
+          .then(() => location.assign('..'));
       }
       setShowDeleteConfirmation(false);
       setDeletingTopic(false);

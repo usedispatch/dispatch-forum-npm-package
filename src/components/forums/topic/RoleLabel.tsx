@@ -1,6 +1,8 @@
 import * as _ from "lodash";
+import { ForumData } from "../../../utils/hooks";
 
 interface RoleLabelProps {
+  forumData: ForumData;
   topicOwnerId: string;
   posterId: string;
   // TODO implement moderator check later

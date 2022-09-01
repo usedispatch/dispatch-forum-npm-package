@@ -1,6 +1,11 @@
 import { useMemo, useState, ReactNode } from "react";
-import { PublicKey } from "@solana/web3.js";
-import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
+import { PublicKey, AccountInfo } from "@solana/web3.js";
+import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated } from "@usedispatch/client";
+import { uniqBy } from 'lodash';
+import {
+  getAssociatedTokenAddress,
+  unpackAccount
+} from '@solana/spl-token';
 import { Loading, LoadingResult } from "../types/loading";
 import {
   CollapsibleProps,
@@ -35,6 +40,7 @@ export interface ForumData {
   description: Description;
   posts: ForumPost[];
   restriction: LoadingResult<PostRestriction>;
+  moderatorMint: PublicKey;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -53,6 +59,23 @@ export function useForumData(
     if (collectionId) {
       try {
         const fetchData = await forum.getOwners(collectionId, true);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
+  async function fetchModeratorMint(): Promise<LoadingResult<PublicKey>> {
+    if (collectionId) {
+      try {
+        const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
           return fetchData;
         } else {
@@ -126,15 +149,18 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, description, posts, restriction] =
+        const [owners, description, posts, restriction, moderatorMint] =
           await Promise.all([
             fetchOwners(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
+            fetchModeratorMint(),
           ]);
 
-        if (isSuccess(description) && isSuccess(posts)) {
+        // TODO(andrew) perhaps allow the page to load even if
+        // moderatorMint isn't fetched successfully?
+        if (isSuccess(description) && isSuccess(posts) && isSuccess(moderatorMint)) {
           // If owners and moderators were successfully fetched, then
           // just set them and go
           setForumData({
@@ -143,6 +169,7 @@ export function useForumData(
             description,
             posts,
             restriction,
+            moderatorMint
           });
         } else {
           // We already confirmed the forum existed, so assume
@@ -257,4 +284,43 @@ export function useModal() {
     showModals,
     setModals: setModalInfoList,
   };
+}
+
+/*
+ * Of the posters participating in this forum, return the set of
+ * them that are moderators
+ */
+export async function useParticipatingModerators(
+  forumData: ForumData,
+  forum: DispatchForum
+) {
+
+  async function fetchModerators() {
+    const { moderatorMint } = forumData;
+
+    // Fetch the authors of all posts, unique by base58 key
+    const authors = uniqBy(
+      forumData.posts.map(({ poster }) => poster),
+      (pkey) => pkey.toBase58()
+    );
+
+    // Derive associated token accounts
+    const atas = await Promise.all(authors.map(author => {
+      return getAssociatedTokenAddress(moderatorMint, author);
+    }));
+
+    // Fetch the accounts
+    const accounts = await getAccountsInfoPaginated(
+      forum.connection, atas
+    );
+    // Filter out the nulls
+    const nonnullAccounts = accounts.filter(account =>
+      account !== null
+    ) as AccountInfo<Buffer>[];
+    // Parse the accounts
+    const parsedAccounts = nonnullAccounts.map(account =>
+      // TODO(andrew) use unpackAccount() here to parse out the ATA's
+      // then filter them to get those that hold the mod token
+    );
+  }
 }

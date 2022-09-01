@@ -17,10 +17,12 @@ interface PostListProps {
   deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
+  postInFlight: boolean;
+  setPostInFlight: (postInFlight: boolean) => void;
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update, addPost, deletePost } = props;
+  const { forumData, forum, userRole, onDeletePost, topic, update, addPost, deletePost, postInFlight, setPostInFlight } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
@@ -50,6 +52,8 @@ export function PostList(props: PostListProps) {
                   update={update}
                   addPost={addPost}
                   deletePost={deletePost}
+                  postInFlight={postInFlight}
+                  setPostInFlight={setPostInFlight}
                 />
               </div>
             );

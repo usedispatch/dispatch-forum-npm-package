@@ -30,10 +30,12 @@ interface CreatePostProps {
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
   onReload: () => void;
+  postInFlight: boolean;
+  setPostInFlight: (postInFlight: boolean) => void;
 }
 
 export function CreatePost(props: CreatePostProps) {
-  const { createForumPost, collectionId, topic, onReload, update, addPost } = props;
+  const { createForumPost, collectionId, topic, onReload, update, addPost, postInFlight, setPostInFlight } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -90,7 +92,12 @@ export function CreatePost(props: CreatePostProps) {
         NOTIFICATION_BANNER_TIMEOUT
         );
       if (tx) {
-        await Forum.connection.confirmTransaction(tx).then(() => update());
+        await Forum.connection
+          .confirmTransaction(tx)
+          .then(() => {
+            setPostInFlight(false);
+            update();
+          });
       }
       onReload();
       setBodySize(0);
@@ -145,7 +152,7 @@ export function CreatePost(props: CreatePostProps) {
                   placeholder="Type your comment here"
                   required
                   maxLength={800}
-                  disabled={!permission.readAndWrite}
+                  disabled={!permission.readAndWrite || postInFlight}
                   onChange={(event) => {
                     setBodySize(
                       new Buffer(event.target.value, "utf-8").byteLength
@@ -159,7 +166,7 @@ export function CreatePost(props: CreatePostProps) {
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!permission.readAndWrite || bodySize > 800}>
+                  disabled={!permission.readAndWrite || bodySize > 800 || postInFlight}>
                   Post
                 </button>
               </div>

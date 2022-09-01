@@ -81,6 +81,13 @@ export function TopicContent(props: TopicContentProps) {
     okPath?: string;
   } | null>(null);
 
+  /**
+   * Whether a post is currently being created.
+   * This allows us to lock the UI to stop a user from posting
+   * again
+   */
+  const [postInFlight, setPostInFlight] = useState(false);
+
   // TODO (Ana): add corresponding function when its available
   // const addAccessToken = async () => {
   //   setAddingAccessToken(true);
@@ -364,6 +371,7 @@ export function TopicContent(props: TopicContentProps) {
                 topicId,
                 collectionId
               ) => {
+                setPostInFlight(true);
                 const signature = forum.createForumPost(
                   { subj, body, meta },
                   topicId,
@@ -374,6 +382,8 @@ export function TopicContent(props: TopicContentProps) {
               update={update}
               addPost={addPost}
               onReload={() => {}}
+              postInFlight={postInFlight}
+              setPostInFlight={setPostInFlight}
             />
           </PermissionsGate>
         </div>
@@ -409,6 +419,8 @@ export function TopicContent(props: TopicContentProps) {
           // TODO refresh here
         }}
         userRole={userRole}
+        postInFlight={postInFlight}
+        setPostInFlight={setPostInFlight}
       />
     </>
   );

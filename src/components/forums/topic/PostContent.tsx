@@ -36,10 +36,12 @@ interface PostContentProps {
   addPost: (post: LocalPost) => void;
   deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
+  postInFlight: boolean;
+  setPostInFlight: (postInFlight: boolean) => void;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, addPost, deletePost } = props;
+  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, addPost, deletePost, postInFlight, setPostInFlight } = props;
 
   const permission = forum.permission;
 
@@ -94,6 +96,7 @@ export function PostContent(props: PostContentProps) {
 
   const onReplyToPost = async () => {
     setSendingReply(true);
+    setPostInFlight(true);
     try {
       if (!isForumPost(post)) { return; }
       const tx = await forum.replyToForumPost(post, forumData.collectionId, {
@@ -125,7 +128,12 @@ export function PostContent(props: PostContentProps) {
       addPost(localPost);
 
       if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
+        await forum.connection
+          .confirmTransaction(tx)
+          .then(() => {
+            update();
+            setPostInFlight(false);
+          });
       }
       setTimeout(
         () => setIsNotificationHidden(true),
@@ -406,6 +414,7 @@ export function PostContent(props: PostContentProps) {
                   <textarea
                     placeholder="Type your reply here"
                     className="replyTextArea"
+                    disabled={postInFlight}
                     maxLength={800}
                     value={reply}
                     required
@@ -421,7 +430,11 @@ export function PostContent(props: PostContentProps) {
                       }}>
                       Cancel
                     </button>
-                    <button className="postReplyButton" type="submit">
+                    <button
+                      className="postReplyButton"
+                      type="submit"
+                      disabled={postInFlight}
+                    >
                       Reply
                     </button>
                   </div>

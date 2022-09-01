@@ -10,6 +10,7 @@ import {
   PermissionsGate,
   PopUpModal,
   TransactionLink,
+  Spinner
 } from "../../common";
 import { EditForum } from "./EditForum";
 import { TopicList } from "..";
@@ -60,6 +61,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
+  const [newTopicInFlight, setNewTopicInFlight] = useState(false);
   const [keepGates, setKeepGates] = useState(true);
 
   const [showAddModerators, setShowAddModerators] = useState(false);
@@ -302,6 +304,7 @@ export function ForumContent(props: ForumContentProps) {
       );
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
+        setNewTopicInFlight(true);
         setModalInfo({
           body: <TransactionLink transaction={tx} />,
           type: MessageType.success,
@@ -313,7 +316,10 @@ export function ForumContent(props: ForumContentProps) {
         // re-load forum in background
         await forumObject.connection
           .confirmTransaction(tx)
-          .then(() => update());
+          .then(() => {
+            update();
+            setNewTopicInFlight(false);
+          });
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -738,9 +744,13 @@ export function ForumContent(props: ForumContentProps) {
               </div>
             </PermissionsGate>
           </div>
-          {!_.isNil(forumData.collectionId) && (
-            <TopicList forumData={forumData} />
-          )}
+          {(() => {
+            if (newTopicInFlight) {
+              return <Spinner />
+            } else if (!_.isNil(forumData.collectionId)) {
+              return <TopicList forumData={forumData} />
+            }
+          })()}
         </>
       </div>
     </div>

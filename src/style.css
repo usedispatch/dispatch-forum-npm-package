@@ -7,6 +7,7 @@
 @import "./styles/DeleteMesageButton.css";
 @import "./styles/PopUpModal.css";
 @import "./styles/Spinner.css";
+@import "./styles/Tooltip.css";
 @import "./styles/TransactionLink.css";
 
 /* Forums */
@@ -15,6 +16,7 @@
 @import "./styles/Notification.css";
 
 /* Forum */
+@import "./styles/CreateForum.css";
 @import "./styles/EditForum.css";
 @import "./styles/ForumContent.css";
 @import "./styles/TopicList.css";

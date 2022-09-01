@@ -45,68 +45,8 @@
     border-radius: 12px;
   }
 
-  .createForumButtonContainer {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-
-    margin-top: 16px;
-    font-size: 11.2px;
-    color: #6b7280;
-
-    .createForumIconContainer {
-      margin-right: 8px;
-      width: 16px;
-      height: 16px;
-    }
-  }
-
-  .acceptCreateForumButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 48px;
-    padding: 0 30px;
-    border-radius: 10px;
-
-    cursor: pointer;
-    background: #3f1d96;
-    color: white;
-    font-size: 14px;
-    text-align: center;
-    text-transform: capitalize;
-    font-weight: 600;
-
-    &:hover {
-      opacity: 0.85;
-    }
-  }
-
   .card-body {
     background: white;
-  }
-  .cancelCreateForumButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 16px;
-    height: 48px;
-    border-radius: 10px;
-    border-width: 1px;
-    border-color: #3f1d96;
-
-    background: white;
-    color: #3f1d96;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    text-transform: capitalize;
-
-    &:hover {
-      opacity: 0.85;
-    }
   }
 
   .okInfoButton {
@@ -140,67 +80,6 @@
       svg path {
         fill: #7c7b7c;
       }
-    }
-  }
-
-  .createForumContainer {
-    width: 50%;
-    background: white;
-    border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    box-shadow: 0px 8px 16px rgba(65, 65, 73, 0.2);
-    margin-top: 1rem;
-
-    .collapse {
-      margin-top: 16px;
-    }
-  }
-
-  .createForumBody {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 85%;
-    background: white;
-    padding: 2rem;
-
-    .createForumLabel {
-      padding: 0 4px;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
-    .textSize {
-      font-size: 12px;
-      color: gray;
-      text-align: right;
-    }
-
-    .createForumInput {
-      width: 100%;
-      font-size: 14px;
-      padding: 12px;
-      margin-top: 4px;
-      margin-bottom: 16px;
-
-      border-color: #cac9cb;
-      border-width: 1px;
-      border-radius: 6px;
-
-      &:focus {
-        outline: 2px solid transparent;
-        outline-offset: 2px;
-      }
-    }
-
-    .createForumDescription {
-      height: 144px;
-      margin-bottom: 0;
-    }
-
-    .lastInputField {
-      margin-bottom: 0;
     }
   }
 

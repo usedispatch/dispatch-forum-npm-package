@@ -140,6 +140,7 @@ export function PostContent(props: PostContentProps) {
         NOTIFICATION_BANNER_TIMEOUT
       );
     } catch (error: any) {
+      setPostInFlight(false);
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",

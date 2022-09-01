@@ -102,6 +102,7 @@ export function CreatePost(props: CreatePostProps) {
       onReload();
       setBodySize(0);
     } catch (error: any) {
+      setPostInFlight(false);
       const message = JSON.stringify(error);
       setLoading(false);
       if (error.code !== 4001) {

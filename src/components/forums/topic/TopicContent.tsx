@@ -140,6 +140,8 @@ export function TopicContent(props: TopicContentProps) {
         okPath: forumPath,
       });
       if (tx) {
+        // When the topic is confirmed deleted, redirect to the
+        // parent URL (the main forum)
         await forum.connection
           .confirmTransaction(tx)
           .then(() => location.assign('..'));

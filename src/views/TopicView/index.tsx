@@ -59,8 +59,7 @@ export const TopicView = (props: Props) => {
   
   const { forumData, update } = useForumData(collectionPublicKey, forum);
 
-  const moderators = useParticipatingModerators(forumData, forum);
-  console.log(moderators);
+  const participatingModerators = useParticipatingModerators(forumData, forum);
   
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {
@@ -185,6 +184,7 @@ export const TopicView = (props: Props) => {
                         />
                         <TopicContent
                           forumData={forumData}
+                          participatingModerators={participatingModerators}
                           forum={forum}
                           topic={topic}
                           userRole={role.role}

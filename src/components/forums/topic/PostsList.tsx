@@ -11,6 +11,7 @@ import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 interface PostListProps {
   forum: DispatchForum;
   forumData: ForumData;
+  participatingModerators: web3.PublicKey[] | null;
   userRole: UserRoleType;
   update: () => Promise<void>;
   topic: ForumPost;
@@ -18,7 +19,7 @@ interface PostListProps {
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update } = props;
+  const { forumData, forum, userRole, onDeletePost, topic, update, participatingModerators } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
@@ -42,9 +43,10 @@ export function PostList(props: PostListProps) {
                   forumData={forumData}
                   post={post}
                   userRole={userRole}
-                  topicPosterId={topic.poster.toBase58()}
+                  topicPosterId={topic.poster}
                   onDeletePost={onDeletePost}
                   update={update}
+                  participatingModerators={participatingModerators}
                 />
               </div>
             );

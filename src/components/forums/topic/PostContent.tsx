@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import { PublicKey } from '@solana/web3.js';
 import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
@@ -25,15 +26,16 @@ import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
+  participatingModerators: PublicKey[] | null;
   post: ForumPost;
   userRole: UserRoleType;
-  topicPosterId: string;
+  topicPosterId: PublicKey;
   update: () => Promise<void>;
   onDeletePost: (tx: string) => Promise<void>;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, topicPosterId, onDeletePost, update } =
+  const { forumData, forum, userRole, topicPosterId, onDeletePost, update, participatingModerators } =
     props;
 
   const permission = forum.permission;
@@ -267,7 +269,8 @@ export function PostContent(props: PostContentProps) {
                     {post.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicPosterId}
-                      posterId={post?.poster.toBase58()}
+                      posterId={post?.poster}
+                      moderators={participatingModerators}
                     />
                   </div>
                 </div>
@@ -346,6 +349,7 @@ export function PostContent(props: PostContentProps) {
             <div className="repliesBox">
               <PostReplies
                 forumData={forumData}
+                participatingModerators={participatingModerators}
                 replies={replies}
                 userRole={userRole}
                 topicOwnerId={topicPosterId}

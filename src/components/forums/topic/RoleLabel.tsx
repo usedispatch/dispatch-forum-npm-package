@@ -1,18 +1,19 @@
-import * as _ from "lodash";
-import { ForumData } from "../../../utils/hooks";
+import { isNil } from "lodash";
+import { PublicKey } from '@solana/web3.js';
 
 interface RoleLabelProps {
-  topicOwnerId: string;
-  posterId: string;
-  // TODO implement moderator check later
-  // moderators: string[];
+  topicOwnerId: PublicKey;
+  posterId: PublicKey;
+  moderators: PublicKey[] | null;
 }
 
 export function RoleLabel(props: RoleLabelProps) {
-  const { topicOwnerId, posterId } = props;
+  const { topicOwnerId, posterId, moderators } = props;
+
+  const isModerator = !isNil(moderators) && moderators.some((m) => m.equals(posterId));
 
   const label =
-    topicOwnerId === posterId ? "op" : undefined;
+    topicOwnerId.equals(posterId) ? "op" : isModerator ? "mod" : undefined;
 
   return <div className={`roleLabel ${label}`}>{label}</div>;
 }

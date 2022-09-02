@@ -6,7 +6,7 @@ import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
 import ReactGA from "react-ga4";
 
-import { useForumData, useModal } from "../../utils/hooks";
+import { useForumData, useModal, useParticipatingModerators } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
 import {
@@ -58,6 +58,9 @@ export const TopicView = (props: Props) => {
   }, [collectionId]);
   
   const { forumData, update } = useForumData(collectionPublicKey, forum);
+
+  const moderators = useParticipatingModerators(forumData, forum);
+  console.log(moderators);
   
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {

@@ -1,10 +1,11 @@
 import { useMemo, useState, ReactNode } from "react";
 import { PublicKey, AccountInfo } from "@solana/web3.js";
 import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated } from "@usedispatch/client";
-import { uniqBy } from 'lodash';
+import { uniqBy, zip, isNil } from 'lodash';
 import {
   getAssociatedTokenAddress,
-  unpackAccount
+  unpackAccount,
+  Account
 } from '@solana/spl-token';
 import { Loading, LoadingResult } from "../types/loading";
 import {
@@ -290,12 +291,14 @@ export function useModal() {
  * Of the posters participating in this forum, return the set of
  * them that are moderators
  */
-export async function useParticipatingModerators(
+export function useParticipatingModerators(
   forumData: ForumData,
   forum: DispatchForum
 ) {
 
-  async function fetchModerators() {
+  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
+
+  async function fetchParticipatingModerators() {
     const { moderatorMint } = forumData;
 
     // Fetch the authors of all posts, unique by base58 key
@@ -310,17 +313,40 @@ export async function useParticipatingModerators(
     }));
 
     // Fetch the accounts
-    const accounts = await getAccountsInfoPaginated(
+    const binaryAccounts = await getAccountsInfoPaginated(
       forum.connection, atas
     );
+
+    const pairs = zip(authors, atas, binaryAccounts);
+
     // Filter out the nulls
-    const nonnullAccounts = accounts.filter(account =>
-      account !== null
-    ) as AccountInfo<Buffer>[];
+    const nonnullPairs = pairs.filter(([wallet, ata, account]) => {
+      return !isNil(wallet) && !isNil(ata) && !isNil(account);
+    }) as [PublicKey, PublicKey, AccountInfo<Buffer>][];
+
     // Parse the accounts
-    const parsedAccounts = nonnullAccounts.map(account =>
-      // TODO(andrew) use unpackAccount() here to parse out the ATA's
-      // then filter them to get those that hold the mod token
-    );
+    const parsedAccounts: [PublicKey, PublicKey, Account][] = nonnullPairs.map(([wallet, ata, account]) => {
+      const unpacked = unpackAccount(ata, account);
+      return [wallet, ata, unpacked];
+    });
+
+    // Filter out only the ones that hold the token
+    const tokenHolders = parsedAccounts.filter(([/* skip */, /* skip */, account]) => {
+      return account.amount > 0
+    });
+
+    const tokenHoldingWallets = tokenHolders.map(([wallet]) => wallet);
+
+    return tokenHoldingWallets;
+  }
+
+  async function update() {
+    const moderators = await fetchParticipatingModerators();
+    setModerators(moderators);
+  }
+
+  return {
+    moderators,
+    update
   }
 }

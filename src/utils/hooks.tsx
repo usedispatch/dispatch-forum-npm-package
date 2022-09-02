@@ -1,4 +1,4 @@
-import { useMemo, useState, ReactNode } from "react";
+import { useMemo, useState, useEffect, ReactNode } from "react";
 import { PublicKey, AccountInfo } from "@solana/web3.js";
 import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated } from "@usedispatch/client";
 import { uniqBy, zip, isNil } from 'lodash';
@@ -292,13 +292,16 @@ export function useModal() {
  * them that are moderators
  */
 export function useParticipatingModerators(
-  forumData: ForumData,
+  forumData: Loading<ForumData>,
   forum: DispatchForum
 ) {
 
-  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
+  // TODO make this a result type/
+  const [moderators, setModerators] = useState<PublicKey[] | null>(null);
 
-  async function fetchParticipatingModerators() {
+  async function fetchParticipatingModerators(
+    forumData: ForumData
+  ) {
     const { moderatorMint } = forumData;
 
     // Fetch the authors of all posts, unique by base58 key
@@ -340,13 +343,12 @@ export function useParticipatingModerators(
     return tokenHoldingWallets;
   }
 
-  async function update() {
-    const moderators = await fetchParticipatingModerators();
-    setModerators(moderators);
-  }
+  useEffect(() => {
+    if (isSuccess(forumData)) {
+      fetchParticipatingModerators(forumData)
+        .then((moderators) => setModerators(moderators));
+    }
+  }, [forumData]);
 
-  return {
-    moderators,
-    update
-  }
+  return moderators;
 }

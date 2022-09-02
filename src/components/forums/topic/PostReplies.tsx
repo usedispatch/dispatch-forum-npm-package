@@ -10,15 +10,15 @@ import { EditPost, RoleLabel, Votes } from "../index";
 
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, LocalPost } from "../../../utils/hooks";
 import { isSuccess } from "../../../utils/loading";
 
 interface PostRepliesProps {
   forumData: ForumData;
   participatingModerators: PublicKey[] | null;
   userRole: UserRoleType;
-  replies: ForumPost[];
   topicOwnerId: PublicKey;
+  replies: (LocalPost | ForumPost)[];
   update: () => Promise<void>;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
@@ -42,7 +42,7 @@ export function PostReplies(props: PostRepliesProps) {
   const forum = useForum();
   const permission = forum.permission;
 
-  const postedAt = (reply: ForumPost) =>
+  const postedAt = (reply: LocalPost | ForumPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
       year: "numeric",
       month: "numeric",
@@ -59,7 +59,9 @@ export function PostReplies(props: PostRepliesProps) {
   );
 
   const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost) => {
-    const index = replies.findIndex((r) => r.postId === replyToUpdate.postId);
+    const index = replies.findIndex((r) => {
+      return 'postId' in r && r.postId === replyToUpdate.postId
+    });
     if (upVoted) {
       replyToUpdate.upVotes = replyToUpdate.upVotes + 1;
       replies[index] = replyToUpdate;
@@ -95,6 +97,8 @@ export function PostReplies(props: PostRepliesProps) {
                 </div>
                 <div className="postedAt">
                   {postedAt(reply)}
+                  {/* Only show Address link if post is confirmed */}
+                  {'address' in reply &&
                   <div className="accountInfo">
                     <a
                       href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
@@ -103,11 +107,14 @@ export function PostReplies(props: PostRepliesProps) {
                       <Info />
                     </a>
                   </div>
+                  }
                 </div>
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
                 <div className="leftBox">
+                  {/* Only show votes if post is confirmed */}
+                  { 'upVotes' in reply &&
                   <PermissionsGate scopes={[SCOPES.canVote]}>
                     <Votes
                       updateVotes={(upVoted) => updateVotes(upVoted, reply)}
@@ -116,13 +123,19 @@ export function PostReplies(props: PostRepliesProps) {
                       post={reply}
                     />
                   </PermissionsGate>
+                  }
+                  {/* Only show edit dialog if post is confirmed */}
+                  { 'address' in reply &&
                   <EditPost
                     post={reply}
                     forumData={forumData}
                     update={() => update()}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
+                  }
                 </div>
+                {/* Only show delete, reply, and award if post is confirmed */}
+                { 'address' in reply &&
                 <div className="rightBox">
                   <PermissionsGate
                     scopes={[SCOPES.canDeleteReply]}
@@ -151,6 +164,7 @@ export function PostReplies(props: PostRepliesProps) {
                     </button>
                   </PermissionsGate>
                 </div>
+                }
               </div>
             </div>
           </div>

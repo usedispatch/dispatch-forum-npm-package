@@ -24,7 +24,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, LocalPost } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -35,13 +35,15 @@ interface TopicContentProps {
   forumData: ForumData;
   participatingModerators: PublicKey[] | null;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, updateVotes, topic, participatingModerators } = props;
+  const { forum, forumData, userRole, update, addPost, deletePost, updateVotes, topic, participatingModerators } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -80,6 +82,13 @@ export function TopicContent(props: TopicContentProps) {
     collapsible?: CollapsibleProps;
     okPath?: string;
   } | null>(null);
+
+  /**
+   * Whether a post is currently being created.
+   * This allows us to lock the UI to stop a user from posting
+   * again
+   */
+  const [postInFlight, setPostInFlight] = useState(false);
 
   // TODO (Ana): add corresponding function when its available
   // const addAccessToken = async () => {
@@ -141,10 +150,14 @@ export function TopicContent(props: TopicContentProps) {
         ),
         okPath: forumPath,
       });
-      if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
-      }
       setShowDeleteConfirmation(false);
+      if (tx) {
+        // When the topic is confirmed deleted, redirect to the
+        // parent URL (the main forum)
+        await forum.connection
+          .confirmTransaction(tx)
+          .then(() => location.assign('..'));
+      }
       setDeletingTopic(false);
       return tx;
     } catch (error: any) {
@@ -357,13 +370,14 @@ export function TopicContent(props: TopicContentProps) {
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
-              topicId={topic.postId}
+              topic={topic}
               collectionId={forumData.collectionId}
               createForumPost={async (
                 { subj, body, meta },
                 topicId,
                 collectionId
               ) => {
+                setPostInFlight(true);
                 const signature = forum.createForumPost(
                   { subj, body, meta },
                   topicId,
@@ -372,7 +386,10 @@ export function TopicContent(props: TopicContentProps) {
                 return signature;
               }}
               update={update}
+              addPost={addPost}
               onReload={() => {}}
+              postInFlight={postInFlight}
+              setPostInFlight={setPostInFlight}
             />
           </PermissionsGate>
         </div>
@@ -388,6 +405,8 @@ export function TopicContent(props: TopicContentProps) {
         forumData={forumData}
         participatingModerators={participatingModerators}
         update={update}
+        addPost={addPost}
+        deletePost={deletePost}
         topic={topic}
         onDeletePost={async (tx) => {
           setIsNotificationHidden(false);
@@ -407,6 +426,8 @@ export function TopicContent(props: TopicContentProps) {
           // TODO refresh here
         }}
         userRole={userRole}
+        postInFlight={postInFlight}
+        setPostInFlight={setPostInFlight}
       />
     </>
   );

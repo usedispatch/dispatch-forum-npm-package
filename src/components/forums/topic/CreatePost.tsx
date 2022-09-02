@@ -1,6 +1,8 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
+import { ForumPost } from '@usedispatch/client';
+import { LocalPost } from '../../../utils/hooks';
 
 import {
   CollapsibleProps,
@@ -14,7 +16,7 @@ import { useForum } from "../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface CreatePostProps {
-  topicId: number;
+  topic: ForumPost;
   collectionId: web3.PublicKey;
   createForumPost: (
     post: {
@@ -26,11 +28,14 @@ interface CreatePostProps {
     collectionId: web3.PublicKey
   ) => Promise<string | undefined>;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
   onReload: () => void;
+  postInFlight: boolean;
+  setPostInFlight: (postInFlight: boolean) => void;
 }
 
 export function CreatePost(props: CreatePostProps) {
-  const { createForumPost, collectionId, topicId, onReload, update } = props;
+  const { createForumPost, collectionId, topic, onReload, update, addPost, postInFlight, setPostInFlight } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
@@ -57,10 +62,19 @@ export function CreatePost(props: CreatePostProps) {
 
     const post = { body: target.post.value };
     try {
-      const tx = await createForumPost(post, topicId, collectionId);
-      if (tx) {
-        await Forum.connection.confirmTransaction(tx).then(() => update());
-      }
+      const tx = await createForumPost(post, topic.postId, collectionId);
+
+      const localPost: LocalPost = {
+        data: {
+          body: post.body,
+          ts: new Date()
+        },
+        poster: Forum.wallet.publicKey!,
+        isTopic: false,
+        replyTo: topic.address
+      };
+      addPost(localPost);
+      
       setLoading(false);
       setIsNotificationHidden(false);
       setNotificationContent({
@@ -72,13 +86,23 @@ export function CreatePost(props: CreatePostProps) {
         ),
         type: MessageType.success,
       });
+
       setTimeout(
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
-      );
+        );
+      if (tx) {
+        await Forum.connection
+          .confirmTransaction(tx)
+          .then(() => {
+            setPostInFlight(false);
+            update();
+          });
+      }
       onReload();
       setBodySize(0);
     } catch (error: any) {
+      setPostInFlight(false);
       const message = JSON.stringify(error);
       setLoading(false);
       if (error.code !== 4001) {
@@ -129,7 +153,7 @@ export function CreatePost(props: CreatePostProps) {
                   placeholder="Type your comment here"
                   required
                   maxLength={800}
-                  disabled={!permission.readAndWrite}
+                  disabled={!permission.readAndWrite || postInFlight}
                   onChange={(event) => {
                     setBodySize(
                       new Buffer(event.target.value, "utf-8").byteLength
@@ -143,7 +167,7 @@ export function CreatePost(props: CreatePostProps) {
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!permission.readAndWrite || bodySize > 800}>
+                  disabled={!permission.readAndWrite || bodySize > 800 || postInFlight}>
                   Post
                 </button>
               </div>

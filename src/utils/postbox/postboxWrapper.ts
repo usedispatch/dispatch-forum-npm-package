@@ -233,7 +233,6 @@ export class DispatchForum implements IForum {
           }
 
           txs = await forumAsOwner.createForum(forumInfoObject);
-          await Promise.all(txs.map((t) => conn.confirmTransaction(t)));
         }
 
         return {forum: forumAsOwner, txs};
@@ -507,7 +506,6 @@ export class DispatchForum implements IForum {
       );
       if (await forum.exists()) {
         const newTopic = await forum.createTopic(topic, postRestriction);
-        await conn.confirmTransaction(newTopic);
 
         return newTopic;
       }
@@ -560,7 +558,6 @@ export class DispatchForum implements IForum {
   ): Promise<string | undefined> => {
     const owner = this.wallet;
     const conn = this.connection;
-
     try {
       const forum = new Forum(
         new DispatchConnection(conn, owner, {cluster: this.cluster}),
@@ -569,9 +566,8 @@ export class DispatchForum implements IForum {
       const topic = await this.getTopicData(topicId, collectionId);
       if ((await forum.exists()) && topic) {
         const tx1 = await forum.createForumPost(post, topic);
-        await conn.confirmTransaction(tx1);
 
-        return tx1
+        return tx1;
       }
     } catch (error) {
       throw(parseError(error))

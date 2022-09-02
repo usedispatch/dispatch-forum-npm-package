@@ -86,7 +86,6 @@ export function PostReplies(props: PostRepliesProps) {
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
                       posterId={reply.poster.toBase58()}
-                      forumData={forumData}
                     />
                   </div>
                 </div>

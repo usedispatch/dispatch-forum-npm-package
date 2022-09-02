@@ -18,8 +18,12 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData, LocalPost, isForumPost } from "../../../utils/hooks";
-import { isSuccess } from "../../../utils/loading";
+import {
+  ForumData,
+  LocalPost,
+  isForumPost,
+  isLocalPost,
+} from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
@@ -66,11 +70,11 @@ export function PostContent(props: PostContentProps) {
   const [showGiveAward, setShowGiveAward] = useState(false);
   const [postToAward, setPostToAward] = useState<ForumPost>();
 
-  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const [notificationContent, setNotificationContent] = useState<{
-    content: string | ReactNode;
-    type: MessageType;
-  }>();
+  const [notification, setNotification] = useState<{
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -114,15 +118,15 @@ export function PostContent(props: PostContentProps) {
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
-      setIsNotificationHidden(false);
-      setNotificationContent({
+      setNotification({
+        isHidden: false,
         content: (
           <>
-            Replied successfully.
+            Processing reply.
             <TransactionLink transaction={tx!} />
           </>
         ),
-        type: MessageType.success,
+        type: MessageType.info,
       });
 
       const localPost: LocalPost = {
@@ -140,14 +144,25 @@ export function PostContent(props: PostContentProps) {
         await forum.connection.confirmTransaction(tx).then(() => {
           update();
           setPostInFlight(false);
+          setNotification({
+            isHidden: false,
+            content: (
+              <>
+                Replied successfully.
+                <TransactionLink transaction={tx!} />
+              </>
+            ),
+            type: MessageType.success,
+          });
+          setTimeout(
+            () => setNotification({ isHidden: true }),
+            NOTIFICATION_BANNER_TIMEOUT
+          );
         });
       }
-      setTimeout(
-        () => setIsNotificationHidden(true),
-        NOTIFICATION_BANNER_TIMEOUT
-      );
     } catch (error: any) {
       setPostInFlight(false);
+      setNotification({ isHidden: true });
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
@@ -218,9 +233,14 @@ export function PostContent(props: PostContentProps) {
   //   ? forumData.moderators.map((m) => m.toBase58())
   //   : [];
 
+  const isLocal = isLocalPost(post);
+
   return (
     <>
-      <div className="postContentContainer">
+      <div
+        className={`postContentContainer ${
+          postInFlight && isLocal ? "inFlight" : ""
+        }`}>
         {_.isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
@@ -273,13 +293,13 @@ export function PostContent(props: PostContentProps) {
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
               setShowGiveAward(false);
-              setIsNotificationHidden(false);
-              setNotificationContent({
+              setNotification({
+                isHidden: false,
                 content: notificationContent,
                 type: MessageType.success,
               });
               setTimeout(
-                () => setIsNotificationHidden(true),
+                () => setNotification({ isHidden: true }),
                 NOTIFICATION_BANNER_TIMEOUT
               );
             }}
@@ -295,10 +315,10 @@ export function PostContent(props: PostContentProps) {
           />
         )}
         <Notification
-          hidden={isNotificationHidden}
-          content={notificationContent?.content}
-          type={notificationContent?.type}
-          onClose={() => setIsNotificationHidden(true)}
+          hidden={notification.isHidden}
+          content={notification?.content}
+          type={notification?.type}
+          onClose={() => setNotification({ isHidden: true })}
         />
         <>
           <div className="postContentBox">
@@ -317,16 +337,25 @@ export function PostContent(props: PostContentProps) {
                   </div>
                 </div>
                 <div className="postedAt">
-                  Posted at: {postedAt}
-                  {isForumPost(post) && (
-                    <div className="accountInfo">
-                      <a
-                        href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
-                        className="transactionLink"
-                        target="_blank">
-                        <Info />
-                      </a>
-                    </div>
+                  {isForumPost(post) ? (
+                    <>
+                      Posted at: {postedAt}
+                      <div className="accountInfo">
+                        <a
+                          href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                          className="transactionLink"
+                          target="_blank">
+                          <Info />
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      Posting
+                      <div className="posting">
+                        <Spinner />
+                      </div>
+                    </>
                   )}
                 </div>
               </div>

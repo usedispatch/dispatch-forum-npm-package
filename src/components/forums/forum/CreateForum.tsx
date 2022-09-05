@@ -133,7 +133,7 @@ export function CreateForum(props: CreateForumProps) {
       setAccessList([]);
       setNotification({
         isHidden: false,
-        content: <>Error on adding owner: {e.message}</>,
+        content: <>Error on limiting access: {e.message}</>,
         type: MessageType.error,
       });
     }
@@ -307,7 +307,7 @@ export function CreateForum(props: CreateForumProps) {
           value={accessToken}
           disabled={creatingNewForum || bodySize > 800}
           onChange={(e) => setAccessToken(e.target.value)}
-          onBlur={(e) => parseCollectionList()}
+          onBlur={() => parseCollectionList()}
         />
         <ul className="idsList">
           {accessList.map((pubkey) => {

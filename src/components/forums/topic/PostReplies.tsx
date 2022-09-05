@@ -4,13 +4,17 @@ import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
 import { Gift, Info, Reply, Trash } from "../../../assets";
-import { PermissionsGate } from "../../../components/common";
+import { PermissionsGate, Spinner } from "../../../components/common";
 import { EditPost, RoleLabel, Votes } from "../index";
 
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData, LocalPost } from "../../../utils/hooks";
-import { isSuccess } from "../../../utils/loading";
+import {
+  ForumData,
+  isForumPost,
+  isLocalPost,
+  LocalPost,
+} from "../../../utils/hooks";
 
 interface PostRepliesProps {
   forumData: ForumData;
@@ -57,7 +61,7 @@ export function PostReplies(props: PostRepliesProps) {
 
   const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost) => {
     const index = replies.findIndex((r) => {
-      return 'postId' in r && r.postId === replyToUpdate.postId
+      return "postId" in r && r.postId === replyToUpdate.postId;
     });
     if (upVoted) {
       replyToUpdate.upVotes = replyToUpdate.upVotes + 1;
@@ -75,9 +79,11 @@ export function PostReplies(props: PostRepliesProps) {
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
+        const isPost = isForumPost(reply);
+
         return (
           <div key={index}>
-            <div className="replyContent">
+            <div className={`replyContent  ${!isPost ? "inFlight" : ""}`}>
               <div className="replyHeader">
                 <div className="posterId">
                   <div className="icon">
@@ -92,75 +98,84 @@ export function PostReplies(props: PostRepliesProps) {
                   </div>
                 </div>
                 <div className="postedAt">
-                  {postedAt(reply)}
-                  {/* Only show Address link if post is confirmed */}
-                  {'address' in reply &&
-                  <div className="accountInfo">
-                    <a
-                      href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
-                      className="transactionLink"
-                      target="_blank">
-                      <Info />
-                    </a>
-                  </div>
-                  }
+                  {isPost ? (
+                    <>
+                      {postedAt(reply)}
+                      {/* Only show Address link if post is confirmed */}
+                      <div className="accountInfo">
+                        <a
+                          href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
+                          className="transactionLink"
+                          target="_blank">
+                          <Info />
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      Posting
+                      <div className="posting">
+                        <Spinner />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="replyBody">{reply?.data.body}</div>
               <div className="replyActionsContainer">
                 <div className="leftBox">
                   {/* Only show votes if post is confirmed */}
-                  { 'upVotes' in reply &&
-                  <PermissionsGate scopes={[SCOPES.canVote]}>
-                    <Votes
-                      updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                      onUpVotePost={() => onUpVotePost(reply)}
-                      onDownVotePost={() => onDownVotePost(reply)}
-                      post={reply}
-                    />
-                  </PermissionsGate>
-                  }
+                  {"upVotes" in reply && (
+                    <PermissionsGate scopes={[SCOPES.canVote]}>
+                      <Votes
+                        updateVotes={(upVoted) => updateVotes(upVoted, reply)}
+                        onUpVotePost={() => onUpVotePost(reply)}
+                        onDownVotePost={() => onDownVotePost(reply)}
+                        post={reply}
+                      />
+                    </PermissionsGate>
+                  )}
                   {/* Only show edit dialog if post is confirmed */}
-                  { 'address' in reply &&
-                  <EditPost
-                    post={reply}
-                    forumData={forumData}
-                    update={() => update()}
-                    showDividers={{ leftDivider: true, rightDivider: false }}
-                  />
-                  }
+                  {"address" in reply && (
+                    <EditPost
+                      post={reply}
+                      forumData={forumData}
+                      update={() => update()}
+                      showDividers={{ leftDivider: true, rightDivider: false }}
+                    />
+                  )}
                 </div>
                 {/* Only show delete, reply, and award if post is confirmed */}
-                { 'address' in reply &&
-                <div className="rightBox">
-                  <PermissionsGate
-                    scopes={[SCOPES.canDeleteReply]}
-                    posterKey={reply.poster}>
-                    <button
-                      className="deleteButton"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => onDeletePost(reply)}>
-                      <Trash />
-                    </button>
-                    <div className="actionDivider" />
-                  </PermissionsGate>
-                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                    <button
-                      className="awardButton"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => onAwardReply(reply)}>
-                      <Gift /> Send Token
-                    </button>
-                    <div className="actionDivider" />
-                    <button
-                      className="replyButton"
-                      onClick={onReplyClick}
-                      disabled={!permission.readAndWrite}>
-                      Reply <Reply />
-                    </button>
-                  </PermissionsGate>
-                </div>
-                }
+                {"address" in reply && (
+                  <div className="rightBox">
+                    <PermissionsGate
+                      scopes={[SCOPES.canDeleteReply]}
+                      posterKey={reply.poster}>
+                      <button
+                        className="deleteButton"
+                        disabled={!permission.readAndWrite}
+                        onClick={() => onDeletePost(reply)}>
+                        <Trash />
+                      </button>
+                      <div className="actionDivider" />
+                    </PermissionsGate>
+                    <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                      <button
+                        className="awardButton"
+                        disabled={!permission.readAndWrite}
+                        onClick={() => onAwardReply(reply)}>
+                        <Gift /> Send Token
+                      </button>
+                      <div className="actionDivider" />
+                      <button
+                        className="replyButton"
+                        onClick={onReplyClick}
+                        disabled={!permission.readAndWrite}>
+                        Reply <Reply />
+                      </button>
+                    </PermissionsGate>
+                  </div>
+                )}
               </div>
             </div>
           </div>

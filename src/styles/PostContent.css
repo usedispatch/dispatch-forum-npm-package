@@ -8,6 +8,12 @@
 
     margin: 40px 0;
     padding: 24px;
+
+    &.inFlight {
+      opacity: 0.75;
+      cursor: progress;
+      background: #bdddf445;
+    }
   }
 
   .deleteSpinner {
@@ -125,7 +131,27 @@
         font-size: 12px;
         font-weight: 300;
         color: #86878e;
+
         display: flex;
+        align-items: center;
+      }
+
+      .accountInfo {
+        display: flex;
+        align-items: center;
+        padding-left: 5px;
+
+        svg {
+          height: 14px;
+        }
+      }
+
+      .posting {
+        width: 36px;
+
+        svg {
+          height: 14px;
+        }
       }
 
       @media only screen and (max-width: 480px) {
@@ -232,11 +258,6 @@
     }
   }
 
-  .accountInfo {
-    max-width: 15px;
-    padding-left: 5px;
-  }
-
   .repliesSection {
     margin-top: 16px;
     margin-left: 11px;
@@ -279,6 +300,12 @@
         outline: 2px solid transparent;
         outline-offset: 2px;
       }
+
+      &:disabled {
+        cursor: not-allowed;
+        background: #ededed57;
+        border: 1px solid #9ca3af;
+      }
     }
 
     .buttonsContainer {
@@ -307,6 +334,13 @@
       &:hover {
         opacity: 0.85;
       }
+
+      &:disabled {
+        cursor: not-allowed;
+        background: #ededed57;
+        border: 1px solid #9ca3af;
+        color: #9ca3af;
+      }
     }
 
     .cancelReplyButton {
@@ -330,6 +364,13 @@
 
       &:hover {
         opacity: 0.85;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        background: #ededed57;
+        border: 1px solid #9ca3af;
+        color: #9ca3af;
       }
     }
   }

@@ -89,7 +89,7 @@ export function CreatePost(props: CreatePostProps) {
         isHidden: false,
         content: (
           <>
-            Processing new post.
+            Creating new post.
             <TransactionLink transaction={tx!} />
           </>
         ),

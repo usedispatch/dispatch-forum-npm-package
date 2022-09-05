@@ -122,7 +122,7 @@ export function PostContent(props: PostContentProps) {
         isHidden: false,
         content: (
           <>
-            Processing reply.
+            Posting reply.
             <TransactionLink transaction={tx!} />
           </>
         ),

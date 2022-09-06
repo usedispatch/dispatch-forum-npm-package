@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { PublicKey } from '@solana/web3.js';
+import Markdown from "markdown-to-jsx";
 import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
@@ -363,7 +364,9 @@ export function PostContent(props: PostContentProps) {
                   )}
                 </div>
               </div>
-              <div className="postBody">{post?.data.body}</div>
+              <div className="postBody">
+                <Markdown>{post?.data.body}</Markdown>
+              </div>
               {isForumPost(post) && (
                 <div className="actionsContainer">
                   <PermissionsGate scopes={[SCOPES.canVote]}>

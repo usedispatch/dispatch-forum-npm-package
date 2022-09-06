@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { PublicKey } from '@solana/web3.js';
+import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
 import ReactGA from "react-ga4";
@@ -482,10 +483,12 @@ function TopicHeader(props: TopicHeaderProps) {
               <Lock />
             </div>
           )}
-          {topic?.data.subj ?? "subject"}
+          <Markdown>{topic?.data.subj ?? "subject"}</Markdown>
         </div>
       </div>
-      <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
+      <div className="topicBody">
+        <Markdown>{topic?.data.body ?? "body of the topic"}</Markdown>
+      </div>
     </div>
   );
 }

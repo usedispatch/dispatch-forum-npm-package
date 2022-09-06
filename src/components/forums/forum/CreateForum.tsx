@@ -133,7 +133,7 @@ export function CreateForum(props: CreateForumProps) {
       setAccessList([]);
       setNotification({
         isHidden: false,
-        content: <>Error on adding owner: {e.message}</>,
+        content: <>Error on limiting access: {e.message}</>,
         type: MessageType.error,
       });
     }
@@ -307,7 +307,7 @@ export function CreateForum(props: CreateForumProps) {
           value={accessToken}
           disabled={creatingNewForum || bodySize > 800}
           onChange={(e) => setAccessToken(e.target.value)}
-          onBlur={(e) => parseCollectionList()}
+          onBlur={() => parseCollectionList()}
         />
         <ul className="idsList">
           {accessList.map((pubkey) => {
@@ -341,7 +341,17 @@ export function CreateForum(props: CreateForumProps) {
           className={`createForumForm ${creatingNewForum ? "creating" : ""}`}>
           <div className="formBody">
             <div className="formSection">
-              <span className="formLabel">Collection ID</span>
+              <span className="formLabel">
+                Forum ID
+                <Tooltip
+                  content={
+                    <div className="labelTooltip">
+                      <Info />
+                    </div>
+                  }
+                  message="This is the unique ID for your forum and generated automatically. This is part of the URL for this forum"
+                />
+              </span>
               <input
                 type="text"
                 className={`formInput readonly`}

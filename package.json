@@ -54,6 +54,7 @@
     "@usedispatch/client": "^0.12.1",
     "lodash": "^4.17.21",
     "lodash.orderby": "^4.6.0",
+    "markdown-to-jsx": "^7.1.7",
     "react-ga4": "^1.4.1",
     "react-helmet": "^6.1.0"
   },

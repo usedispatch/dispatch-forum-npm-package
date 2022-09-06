@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
@@ -377,11 +378,13 @@ export function ForumContent(props: ForumContentProps) {
             <Lock />
           </div>
         )}
-        {forumData.description.title}
+        <Markdown>{forumData.description.title}</Markdown>
         {/* TODO(andrew) what to render here if title isn't loaded */}
       </div>
       <div className="descriptionBox">
-        <div className="description">{forumData.description.desc}</div>
+        <div className="description">
+          <Markdown>{forumData.description.desc}</Markdown>
+        </div>
         {createTopicButton}
       </div>
     </div>

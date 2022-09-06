@@ -86,11 +86,10 @@ export function EditPost(props: EditPostProps) {
         ),
       });
 
-      // TODO edit post here
-
+      // Edit the local post
       editPostLocal(post, editPost.body);
 
-
+      // When the transaction is confirmed, update for real
       forumObject.connection
         .confirmTransaction(tx)
         .then(() => update());

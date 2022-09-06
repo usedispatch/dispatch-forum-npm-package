@@ -199,7 +199,8 @@ export function useForumData(
           ts: postToEdit.data.ts
         },
         isTopic: postToEdit.isTopic,
-        poster: postToEdit.poster
+        poster: postToEdit.poster,
+        replyTo: postToEdit.replyTo
       };
 
       const editedPosts = filteredPosts.concat(editedPost);

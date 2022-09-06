@@ -6,7 +6,7 @@ import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
 
-import { useForumData, useModal } from "../../utils/hooks";
+import { useForumData, useModal, useParticipatingModerators } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
 import { MessageType, Spinner, Link } from "../../components/common";
@@ -51,11 +51,12 @@ export const TopicView = (props: Props) => {
     }
   }, [collectionId]);
 
-  const { forumData, update, addPost, deletePost } = useForumData(
+ const { forumData, update, addPost, deletePost } = useForumData(
     collectionPublicKey,
     forum
   );
-
+ const participatingModerators = useParticipatingModerators(forumData, forum);
+ 
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {
       const post = forumData.posts.find((post) => {
@@ -187,6 +188,7 @@ export const TopicView = (props: Props) => {
                         />
                         <TopicContent
                           forumData={forumData}
+                          participatingModerators={participatingModerators}
                           forum={forum}
                           topic={topic}
                           userRole={role.role}

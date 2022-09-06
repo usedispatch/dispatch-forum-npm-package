@@ -69,6 +69,8 @@ export interface IForum {
     title: string;
     desc: string;
   } | undefined>;
+  
+  getModeratorMint(collectionId: web3.PublicKey, assumeExists?: boolean): Promise<web3.PublicKey | undefined>;
 
   setDescription(collectionId: web3.PublicKey, desc: {
     title: string;
@@ -286,6 +288,30 @@ export class DispatchForum implements IForum {
       }
     } catch (error) {
       throw(parseError(error))
+    }
+  }
+
+  getModeratorMint = async (
+    collectionId: web3.PublicKey,
+    assumeExists = false
+  ): Promise<web3.PublicKey | undefined> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      if (owner.publicKey) {
+        const forum = new Forum(
+          new DispatchConnection(conn, owner, { cluster: this.cluster }),
+          collectionId
+        );
+
+        if(assumeExists || await forum.exists()) {
+          const moderatorMint = forum.getModeratorMint();
+          return moderatorMint;
+        }
+      }
+    } catch (error) {
+      throw(parseError(error));
     }
   }
 

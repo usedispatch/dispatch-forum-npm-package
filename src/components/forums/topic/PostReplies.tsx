@@ -1,6 +1,7 @@
 import * as _ from "lodash";
 import Markdown from "markdown-to-jsx";
 import { useMemo } from "react";
+import { PublicKey } from '@solana/web3.js'
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -19,9 +20,10 @@ import {
 
 interface PostRepliesProps {
   forumData: ForumData;
+  participatingModerators: PublicKey[] | null;
   userRole: UserRoleType;
+  topicOwnerId: PublicKey;
   replies: (LocalPost | ForumPost)[];
-  topicOwnerId: string;
   update: () => Promise<void>;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
@@ -33,6 +35,7 @@ interface PostRepliesProps {
 export function PostReplies(props: PostRepliesProps) {
   const {
     forumData,
+    participatingModerators,
     topicOwnerId,
     onDeletePost,
     onReplyClick,
@@ -94,7 +97,8 @@ export function PostReplies(props: PostRepliesProps) {
                     {reply.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
-                      posterId={reply.poster.toBase58()}
+                      posterId={reply.poster}
+                      moderators={participatingModerators}
                     />
                   </div>
                 </div>

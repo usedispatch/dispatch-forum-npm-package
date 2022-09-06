@@ -1,6 +1,7 @@
 import * as _ from "lodash";
+import { ReactNode, useEffect, useMemo, useState } from "react";
+import { PublicKey } from '@solana/web3.js';
 import Markdown from "markdown-to-jsx";
-import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
 import ReactGA from "react-ga4";
@@ -33,6 +34,7 @@ import {
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
+  participatingModerators: PublicKey[] | null;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
   deletePost: (post: ForumPost) => void;
@@ -42,7 +44,7 @@ interface TopicContentProps {
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, addPost, deletePost, updateVotes, topic } = props;
+  const { forum, forumData, userRole, update, addPost, deletePost, updateVotes, topic, participatingModerators } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -402,6 +404,7 @@ export function TopicContent(props: TopicContentProps) {
       <PostList
         forum={forum}
         forumData={forumData}
+        participatingModerators={participatingModerators}
         update={update}
         addPost={addPost}
         deletePost={deletePost}

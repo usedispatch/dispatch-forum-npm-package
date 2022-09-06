@@ -12,6 +12,8 @@
 
     a {
       cursor: pointer;
+      color: #b8b9dc;
+      text-decoration: none;
     }
   }
 }

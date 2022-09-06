@@ -22,6 +22,7 @@ interface PostRepliesProps {
   replies: (LocalPost | ForumPost)[];
   topicOwnerId: string;
   update: () => Promise<void>;
+  editPost: (post: ForumPost, newText: string) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
@@ -39,6 +40,7 @@ export function PostReplies(props: PostRepliesProps) {
     onUpVotePost,
     onAwardReply,
     update,
+    editPost
   } = props;
   const forum = useForum();
   const permission = forum.permission;
@@ -141,6 +143,7 @@ export function PostReplies(props: PostRepliesProps) {
                       post={reply}
                       forumData={forumData}
                       update={() => update()}
+                      editPostLocal={editPost}
                       showDividers={{ leftDivider: true, rightDivider: false }}
                     />
                   )}

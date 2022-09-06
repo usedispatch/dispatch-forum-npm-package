@@ -14,6 +14,7 @@ interface PostListProps {
   userRole: UserRoleType;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
@@ -22,7 +23,7 @@ interface PostListProps {
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update, addPost, deletePost, postInFlight, setPostInFlight } = props;
+  const { forumData, forum, userRole, onDeletePost, topic, update, editPost, addPost, deletePost, postInFlight, setPostInFlight } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
@@ -51,6 +52,7 @@ export function PostList(props: PostListProps) {
                   onDeletePost={onDeletePost}
                   update={update}
                   addPost={addPost}
+                  editPost={editPost}
                   deletePost={deletePost}
                   postInFlight={postInFlight}
                   setPostInFlight={setPostInFlight}

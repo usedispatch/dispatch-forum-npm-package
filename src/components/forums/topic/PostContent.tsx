@@ -35,6 +35,7 @@ interface PostContentProps {
   postInFlight: boolean;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
   setPostInFlight: (postInFlight: boolean) => void;
@@ -49,6 +50,7 @@ export function PostContent(props: PostContentProps) {
     onDeletePost,
     update,
     addPost,
+    editPost,
     deletePost,
     postInFlight,
     setPostInFlight,
@@ -378,6 +380,7 @@ export function PostContent(props: PostContentProps) {
                     post={post}
                     forumData={forumData}
                     update={() => update()}
+                    editPostLocal={editPost}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
                   <PermissionsGate scopes={[SCOPES.canCreateReply]}>
@@ -428,6 +431,7 @@ export function PostContent(props: PostContentProps) {
                 userRole={userRole}
                 topicOwnerId={topicPosterId}
                 update={() => update()}
+                editPost={editPost}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);

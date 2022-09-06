@@ -34,6 +34,7 @@ interface TopicContentProps {
   forumData: ForumData;
   update: () => Promise<void>;
   addPost: (post: LocalPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   userRole: UserRoleType;
@@ -41,7 +42,7 @@ interface TopicContentProps {
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, addPost, deletePost, updateVotes, topic } = props;
+  const { forum, forumData, userRole, update, addPost, editPost, deletePost, updateVotes, topic } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -345,6 +346,7 @@ export function TopicContent(props: TopicContentProps) {
                 post={topic}
                 forumData={forumData}
                 update={() => update()}
+                editPostLocal={editPost}
                 showDividers={{ leftDivider: false, rightDivider: true }}
               />
               <div className="lock">
@@ -403,6 +405,7 @@ export function TopicContent(props: TopicContentProps) {
         forumData={forumData}
         update={update}
         addPost={addPost}
+        editPost={editPost}
         deletePost={deletePost}
         topic={topic}
         onDeletePost={async (tx) => {

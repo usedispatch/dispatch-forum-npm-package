@@ -19,11 +19,7 @@
       width: 24px;
 
       path {
-        fill: #ffb549;
-      }
-
-      circle {
-        fill: #ffb549;
+        stroke: #ffb549;
       }
     }
   }

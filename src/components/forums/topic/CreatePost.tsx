@@ -1,8 +1,8 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
-import { ForumPost } from '@usedispatch/client';
-import { LocalPost } from '../../../utils/hooks';
+import { ForumPost } from "@usedispatch/client";
+import { LocalPost } from "../../../utils/hooks";
 
 import {
   CollapsibleProps,
@@ -35,17 +35,26 @@ interface CreatePostProps {
 }
 
 export function CreatePost(props: CreatePostProps) {
-  const { createForumPost, collectionId, topic, onReload, update, addPost, postInFlight, setPostInFlight } = props;
+  const {
+    createForumPost,
+    collectionId,
+    topic,
+    onReload,
+    update,
+    addPost,
+    postInFlight,
+    setPostInFlight,
+  } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
   const [loading, setLoading] = useState(false);
-  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [bodySize, setBodySize] = useState(0);
-  const [notificationContent, setNotificationContent] = useState<{
-    content: string | ReactNode;
-    type: MessageType;
-  }>();
+  const [notification, setNotification] = useState<{
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
     type: MessageType;
@@ -67,42 +76,51 @@ export function CreatePost(props: CreatePostProps) {
       const localPost: LocalPost = {
         data: {
           body: post.body,
-          ts: new Date()
+          ts: new Date(),
         },
         poster: Forum.wallet.publicKey!,
         isTopic: false,
-        replyTo: topic.address
+        replyTo: topic.address,
       };
       addPost(localPost);
-      
+
       setLoading(false);
-      setIsNotificationHidden(false);
-      setNotificationContent({
+      setNotification({
+        isHidden: false,
         content: (
           <>
-            Post created successfully.
+            Creating new post.
             <TransactionLink transaction={tx!} />
           </>
         ),
-        type: MessageType.success,
+        type: MessageType.info,
       });
 
-      setTimeout(
-        () => setIsNotificationHidden(true),
-        NOTIFICATION_BANNER_TIMEOUT
-        );
       if (tx) {
-        await Forum.connection
-          .confirmTransaction(tx)
-          .then(() => {
-            setPostInFlight(false);
-            update();
+        await Forum.connection.confirmTransaction(tx).then(() => {
+          setPostInFlight(false);
+          setNotification({
+            isHidden: false,
+            content: (
+              <>
+                Post created successfully.
+                <TransactionLink transaction={tx} />
+              </>
+            ),
+            type: MessageType.success,
           });
+          update();
+        });
+        setTimeout(
+          () => setNotification({ isHidden: true }),
+          NOTIFICATION_BANNER_TIMEOUT
+        );
       }
       onReload();
       setBodySize(0);
     } catch (error: any) {
       setPostInFlight(false);
+      setNotification({ isHidden: true });
       const message = JSON.stringify(error);
       setLoading(false);
       if (error.code !== 4001) {
@@ -134,10 +152,10 @@ export function CreatePost(props: CreatePostProps) {
         />
       )}
       <Notification
-        hidden={isNotificationHidden}
-        content={notificationContent?.content}
-        type={notificationContent?.type}
-        onClose={() => setIsNotificationHidden(true)}
+        hidden={notification.isHidden}
+        content={notification?.content}
+        type={notification?.type}
+        onClose={() => setNotification({ isHidden: true })}
       />
       <div className="createPostContainer">
         <div className="createPostContent">
@@ -167,7 +185,9 @@ export function CreatePost(props: CreatePostProps) {
                 <button
                   className="createPostButton"
                   type="submit"
-                  disabled={!permission.readAndWrite || bodySize > 800 || postInFlight}>
+                  disabled={
+                    !permission.readAndWrite || bodySize > 800 || postInFlight
+                  }>
                   Post
                 </button>
               </div>

@@ -341,7 +341,17 @@ export function CreateForum(props: CreateForumProps) {
           className={`createForumForm ${creatingNewForum ? "creating" : ""}`}>
           <div className="formBody">
             <div className="formSection">
-              <span className="formLabel">Collection ID</span>
+              <span className="formLabel">
+                Forum ID
+                <Tooltip
+                  content={
+                    <div className="labelTooltip">
+                      <Info />
+                    </div>
+                  }
+                  message="This is the unique ID for your forum and generated automatically. This is part of the URL for this forum"
+                />
+              </span>
               <input
                 type="text"
                 className={`formInput readonly`}

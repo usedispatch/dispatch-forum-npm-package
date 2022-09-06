@@ -173,7 +173,7 @@ export function useForumData(
 
       // Find all posts matching the one we want to edit
       const matchingPosts = posts.filter(p => {
-        isForumPost(p) && p.address.equals(post.address)
+        return isForumPost(p) && p.address.equals(post.address)
         // Cast to ForumPost here because we know p is a
         // ForumPost, but the typechecker doesn't
       }) as ForumPost[];
@@ -183,7 +183,7 @@ export function useForumData(
         // TODO(andrew) better error handling mechanism here than
         // throwing a string? Is there a way to report this more
         // descriptively?
-        throw 'Error in edit post: could not find exactly one post to be edited';
+        throw `Error in edit post: could not find exactly one post to be edited. Found ${matchingPosts.length}`;
       }
 
       const postToEdit = matchingPosts[0];

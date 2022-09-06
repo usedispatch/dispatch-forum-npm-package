@@ -37,3 +37,43 @@
 @import "./styles/TopicView.css";
 
 @import "tailwindcss/utilities";
+
+@layer base {
+  blockquote,
+  dl,
+  dd,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  hr,
+  figure {
+    font-size: revert;
+    font-weight: revert;
+    line-height: revert;
+  }
+
+  p,
+  blockquote {
+    margin: revert;
+  }
+
+  ol,
+  ul {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+  }
+
+  a {
+    color: #007bff;
+    text-decoration: revert;
+  }
+
+  code {
+    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+      monospace;
+  }
+}

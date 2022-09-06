@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from "react";
 import { maxBy } from "lodash";
+import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
+import { useCallback, useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 
 import { usePath } from "./../../../contexts/DispatchProvider";
@@ -9,7 +10,7 @@ import {
   selectRepliesFromPosts,
   selectTopics,
   sortByVotes,
-  selectForumPosts
+  selectForumPosts,
 } from "../../../utils/posts";
 import { ForumData } from "../../../utils/hooks";
 
@@ -122,7 +123,9 @@ function RowContent(props: RowContentProps) {
     <tr className="row ">
       <th className="rowSubj">
         <Link className="" href={topicPath}>
-          <div className="textBox">{topic.data.subj}</div>
+          <div className="textBox">
+            <Markdown>{topic.data.subj ?? ""}</Markdown>
+          </div>
         </Link>
       </th>
       <td className="rowIconReplies">

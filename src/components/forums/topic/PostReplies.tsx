@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import Markdown from "markdown-to-jsx";
 import { useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
@@ -121,7 +122,9 @@ export function PostReplies(props: PostRepliesProps) {
                   )}
                 </div>
               </div>
-              <div className="replyBody">{reply?.data.body}</div>
+              <div className="replyBody">
+                <Markdown>{reply?.data.body}</Markdown>
+              </div>
               <div className="replyActionsContainer">
                 <div className="leftBox">
                   {/* Only show votes if post is confirmed */}

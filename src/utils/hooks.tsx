@@ -72,6 +72,7 @@ export function useForumData(
   forumData: Loading<ForumData>;
   addPost: (post: LocalPost) => void;
   deletePost: (post: ForumPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
@@ -164,6 +165,56 @@ export function useForumData(
     }
   }
 
+  function editPost(
+    post: ForumPost, newText: string
+  ) {
+    if (isSuccess(forumData)) {
+      const { posts } = forumData;
+
+      // Find all posts matching the one we want to edit
+      const matchingPosts = posts.filter(p => {
+        isForumPost(p) && p.address.equals(post.address)
+        // Cast to ForumPost here because we know p is a
+        // ForumPost, but the typechecker doesn't
+      }) as ForumPost[];
+
+      // Should edit exactly one post
+      if (matchingPosts.length !== 1) {
+        // TODO(andrew) better error handling mechanism here than
+        // throwing a string? Is there a way to report this more
+        // descriptively?
+        throw 'Error in edit post: could not find exactly one post to be edited';
+      }
+
+      const postToEdit = matchingPosts[0];
+
+      const filteredPosts = posts.filter(p => {
+        return p !== postToEdit
+      });
+
+      // Add the modified version of the post
+      const editedPost: LocalPost = {
+        data: {
+          body: newText,
+          ts: postToEdit.data.ts
+        },
+        isTopic: postToEdit.isTopic,
+        poster: postToEdit.poster
+      };
+
+      const editedPosts = filteredPosts.concat(editedPost);
+
+      if (editedPosts.length !== posts.length) {
+        throw 'Error in edit post: the same number of posts were not found before and after the posts were edited';
+      }
+
+      setForumData({
+        ...forumData,
+        posts: editedPosts
+      });
+    }
+  }
+
   /**
    * Delete a post in the local state, without deleting on the
    * network. Only `ForumPost`s (i.e., posts that have been
@@ -225,6 +276,7 @@ export function useForumData(
     forumData,
     addPost,
     deletePost,
+    editPost,
     update
   };
 }

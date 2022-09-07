@@ -23,7 +23,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { ForumData, LocalPost } from "../../../utils/hooks";
+import { ForumData, CreatedPost } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -33,7 +33,7 @@ interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost;

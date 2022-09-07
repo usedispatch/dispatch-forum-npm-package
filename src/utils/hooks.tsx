@@ -62,17 +62,18 @@ export type EditedPost = Pick<
 export type ClientPost = ForumPost | CreatedPost;
 
 export function isForumPost(
-  post: LocalPost | ForumPost
+  post: ClientPost
 ): post is ForumPost {
-  // A post is a LocalPost if it has an address field
+  // A post is a LocalPost if it has an associated parent object
   // TODO(andrew) confirm that this is the best field to check
-  return 'address' in post
+  return 'parent' in post;
 }
 
-export function isLocalPost(
-  post: LocalPost | ForumPost
-): post is LocalPost {
-  return !isForumPost(post);
+export function isCreatedPost(
+  post: ClientPost
+): post is CreatedPost {
+  // A post is a client post if it doesn't have the address field
+  return !('address' in post);
 }
 
 export interface ForumData {
@@ -82,7 +83,7 @@ export interface ForumData {
   // field to the main forum data hook
   // moderators: LoadingResult<PublicKey[]>;
   description: Description;
-  posts: (ForumPost | LocalPost)[];
+  posts: ClientPost[];
   restriction: LoadingResult<PostRestriction>;
 }
 
@@ -93,7 +94,7 @@ export function useForumData(
   forum: DispatchForum
 ): {
   forumData: Loading<ForumData>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
   deletePost: (post: ForumPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
   update: () => Promise<void>;
@@ -177,7 +178,7 @@ export function useForumData(
    * create a post in local state, without sending anything to
    * the network
    */
-  function addPost(post: LocalPost) {
+  function addPost(post: ClientPost) {
     // We can only add a post if the forum was actually loaded
     // successfully in the first place
     if (isSuccess(forumData)) {
@@ -216,7 +217,7 @@ export function useForumData(
       });
 
       // Add the modified version of the post
-      const editedPost: LocalPost = {
+      const editedPost: ClientPost = {
         data: {
           body: newText,
           ts: postToEdit.data.ts

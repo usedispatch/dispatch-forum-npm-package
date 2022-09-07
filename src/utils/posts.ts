@@ -2,18 +2,19 @@ import {
   ForumPost
 } from '@usedispatch/client';
 import {
-  LocalPost,
+  CreatedPost,
+  ClientPost,
   isForumPost
 } from '../utils/hooks';
 
 export function selectTopics(
-  posts: (ForumPost | LocalPost)[]
-): (LocalPost | ForumPost)[] {
+  posts: ClientPost[]
+): ClientPost[] {
   return posts.filter(({ data }) => data.meta?.topic === true)
 }
 
 export function selectForumPosts(
-  posts: (ForumPost | LocalPost)[]
+  posts: ClientPost[]
 ): ForumPost[] {
   const forumPosts = posts.filter(post => isForumPost(post));
   // We know that the filter line above leaves only ForumPosts
@@ -26,19 +27,19 @@ export function selectForumPosts(
  * Given a set of posts, return the ones that are replies
  */
 export function selectRepliesFromPosts(
-  posts: (LocalPost | ForumPost)[],
+  posts: ClientPost[],
   /**
    * A reply may only be made 'to' a ForumPost, because only
    * ForumPosts exist on-chain
    */
   to: ForumPost
-): (LocalPost | ForumPost)[] {
+): ClientPost[] {
   return posts.filter(({ replyTo }) => replyTo && replyTo.equals(to.address))
 }
 
 export function sortByVotes(
-  posts: (ForumPost | LocalPost)[],
-): (LocalPost | ForumPost)[] {
+  posts: ClientPost[],
+): ClientPost[] {
   return posts.sort((left, right) => {
     // If left is a LocalPost, it should be sorted first
     if (!('upVotes' in left)) { return -1; }

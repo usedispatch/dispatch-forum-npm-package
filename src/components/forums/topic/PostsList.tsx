@@ -5,7 +5,7 @@ import { ForumPost } from "@usedispatch/client";
 import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/permissions";
-import { ForumData, LocalPost } from "../../../utils/hooks";
+import { ForumData, CreatedPost } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostListProps {
@@ -13,7 +13,7 @@ interface PostListProps {
   forumData: ForumData;
   userRole: UserRoleType;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost;

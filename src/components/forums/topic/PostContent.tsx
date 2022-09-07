@@ -20,21 +20,22 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import {
   ForumData,
-  LocalPost,
+  CreatedPost,
   isForumPost,
-  isLocalPost,
+  isCreatedPost,
+  ClientPost
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
-  post: LocalPost | ForumPost;
+  post: ClientPost;
   userRole: UserRoleType;
   topicPosterId: string;
   postInFlight: boolean;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
@@ -131,7 +132,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.info,
       });
 
-      const localPost: LocalPost = {
+      const localPost: CreatedPost = {
         data: {
           body: reply,
           ts: new Date(),
@@ -235,7 +236,7 @@ export function PostContent(props: PostContentProps) {
   //   ? forumData.moderators.map((m) => m.toBase58())
   //   : [];
 
-  const isLocal = isLocalPost(post);
+  const isLocal = isCreatedPost(post);
 
   return (
     <>

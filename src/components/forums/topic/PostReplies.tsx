@@ -12,14 +12,15 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import {
   ForumData,
   isForumPost,
-  isLocalPost,
-  LocalPost,
+  isCreatedPost,
+  CreatedPost,
+  ClientPost
 } from "../../../utils/hooks";
 
 interface PostRepliesProps {
   forumData: ForumData;
   userRole: UserRoleType;
-  replies: (LocalPost | ForumPost)[];
+  replies: ClientPost[];
   topicOwnerId: string;
   update: () => Promise<void>;
   editPost: (post: ForumPost, newText: string) => void;
@@ -45,7 +46,7 @@ export function PostReplies(props: PostRepliesProps) {
   const forum = useForum();
   const permission = forum.permission;
 
-  const postedAt = (reply: LocalPost | ForumPost) =>
+  const postedAt = (reply: ClientPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
       year: "numeric",
       month: "numeric",

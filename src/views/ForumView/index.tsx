@@ -33,6 +33,7 @@ import {
 import { useForumData, useModal } from "../../utils/hooks";
 import { pubkeysToRestriction } from "../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../utils/csvStringToPubkeyList";
+import { addForum } from "../../utils/offChainStateController";
 
 interface ForumViewProps {
   collectionId: string;
@@ -148,6 +149,8 @@ export const ForumView = (props: ForumViewProps) => {
           ? pubkeysToRestriction(accessToken)
           : undefined,
       } as ForumInfo;
+      
+      process.env.NEXT_PUBLIC_SUPABASE_URL && collectionPublicKey && addForum(collectionPublicKey, title);
 
       const res = await forumObject.createForum(forum);
 

@@ -20,11 +20,10 @@ import { SCOPES } from "../../../utils/permissions";
 
 interface ManageOwnersProps {
   forumData: ForumData;
-  update: () => Promise<void>;
 }
 
 export function ManageOwners(props: ManageOwnersProps) {
-  const { forumData, update } = props;
+  const { forumData } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -87,7 +86,6 @@ export function ManageOwners(props: ManageOwnersProps) {
       const ownerId = newPublicKey(manageOwners.newOwner);
       const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
 
-      // await update();
       setManageOwners({
         show: false,
         currentOwners: manageOwners.currentOwners.concat(manageOwners.newOwner),

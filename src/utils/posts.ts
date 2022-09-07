@@ -31,13 +31,13 @@ export function selectForumPosts(
 export function selectRepliesFromPosts(
   posts: ClientPost[],
   /**
-   * A reply may only be made 'to' a ForumPost, because only
-   * ForumPosts exist on-chain
+   * A reply may only be made 'to' a ForumPost or an EditedPost,
+   * because only ForumPosts exist on-chain
    */
   to: ForumPost | EditedPost
 ): ClientPost[] {
   return posts.filter((post) => {
-    if ((isForumPost(post) || isEditedPost(post)) && post.replyTo) {
+    if ((isForumPost(to) || isEditedPost(to)) && post.replyTo) {
       return post.replyTo.equals(to.address);
     } else {
       return false;

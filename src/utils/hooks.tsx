@@ -184,7 +184,7 @@ export function useForumData(
    * create a post in local state, without sending anything to
    * the network
    */
-  function addPost(post: ClientPost) {
+  function addPost(post: CreatedPost) {
     // We can only add a post if the forum was actually loaded
     // successfully in the first place
     if (isSuccess(forumData)) {

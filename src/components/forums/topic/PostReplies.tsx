@@ -128,7 +128,7 @@ export function PostReplies(props: PostRepliesProps) {
               <div className="replyActionsContainer">
                 <div className="leftBox">
                   {/* Only show votes if post is confirmed */}
-                  {"upVotes" in reply && (
+                  {isForumPost(reply) && (
                     <PermissionsGate scopes={[SCOPES.canVote]}>
                       <Votes
                         updateVotes={(upVoted) => updateVotes(upVoted, reply)}
@@ -139,7 +139,7 @@ export function PostReplies(props: PostRepliesProps) {
                     </PermissionsGate>
                   )}
                   {/* Only show edit dialog if post is confirmed */}
-                  {"address" in reply && (
+                  {isForumPost(reply) && (
                     <EditPost
                       post={reply}
                       forumData={forumData}
@@ -150,7 +150,7 @@ export function PostReplies(props: PostRepliesProps) {
                   )}
                 </div>
                 {/* Only show delete, reply, and award if post is confirmed */}
-                {"address" in reply && (
+                {isForumPost(reply) && (
                   <div className="rightBox">
                     <PermissionsGate
                       scopes={[SCOPES.canDeleteReply]}

@@ -59,7 +59,10 @@ export type EditedPost = Pick<
  * been confirmed yet, or an EditedPost that already exists
  * on-chain  but has been edited.
  */
-export type ClientPost = ForumPost | CreatedPost;
+export type ClientPost
+  = ForumPost
+  | CreatedPost
+  | EditedPost;
 
 export function isForumPost(
   post: ClientPost
@@ -217,14 +220,15 @@ export function useForumData(
       });
 
       // Add the modified version of the post
-      const editedPost: ClientPost = {
+      const editedPost: EditedPost = {
         data: {
           body: newText,
           ts: postToEdit.data.ts
         },
         isTopic: postToEdit.isTopic,
         poster: postToEdit.poster,
-        replyTo: postToEdit.replyTo
+        replyTo: postToEdit.replyTo,
+        address: postToEdit.address
       };
 
       const editedPosts = filteredPosts.concat(editedPost);

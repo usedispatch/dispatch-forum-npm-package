@@ -1,5 +1,7 @@
 import * as _ from "lodash";
+import Markdown from "markdown-to-jsx";
 import { useMemo } from "react";
+import { PublicKey } from '@solana/web3.js'
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -19,9 +21,10 @@ import {
 
 interface PostRepliesProps {
   forumData: ForumData;
+  participatingModerators: PublicKey[] | null;
   userRole: UserRoleType;
   replies: ClientPost[];
-  topicOwnerId: string;
+  topicOwnerId: PublicKey;
   update: () => Promise<void>;
   editPost: (post: ForumPost, newText: string) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
@@ -34,6 +37,7 @@ interface PostRepliesProps {
 export function PostReplies(props: PostRepliesProps) {
   const {
     forumData,
+    participatingModerators,
     topicOwnerId,
     onDeletePost,
     onReplyClick,
@@ -96,7 +100,8 @@ export function PostReplies(props: PostRepliesProps) {
                     {reply.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
-                      posterId={reply.poster.toBase58()}
+                      posterId={reply.poster}
+                      moderators={participatingModerators}
                     />
                   </div>
                 </div>
@@ -124,7 +129,9 @@ export function PostReplies(props: PostRepliesProps) {
                   )}
                 </div>
               </div>
-              <div className="replyBody">{reply?.data.body}</div>
+              <div className="replyBody">
+                <Markdown>{reply?.data.body}</Markdown>
+              </div>
               <div className="replyActionsContainer">
                 <div className="leftBox">
                   {/* Only show votes if post is confirmed */}

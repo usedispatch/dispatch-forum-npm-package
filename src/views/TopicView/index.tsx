@@ -1,21 +1,15 @@
 import "./../../style.css";
 import * as _ from "lodash";
-import { useState, useEffect, ReactNode, useCallback, useMemo } from "react";
+import Markdown from "markdown-to-jsx";
+import { useEffect, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
-import ReactGA from "react-ga4";
 
-import { useForumData, useModal } from "../../utils/hooks";
+import { useForumData, useModal, useParticipatingModerators } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
-import {
-  PopUpModal,
-  MessageType,
-  Spinner,
-  CollapsibleProps,
-  Link,
-} from "../../components/common";
+import { MessageType, Spinner, Link } from "../../components/common";
 import {
   ConnectionAlert,
   PoweredByDispatch,
@@ -56,17 +50,21 @@ export const TopicView = (props: Props) => {
       return null;
     }
   }, [collectionId]);
-  
-  const { forumData, update, editPost, addPost, deletePost } = useForumData(collectionPublicKey, forum);
-  
+ 
+ const { forumData, update, addPost, editPost, deletePost } = useForumData(
+    collectionPublicKey,
+    forum
+  );
+ const participatingModerators = useParticipatingModerators(forumData, forum);
+
   const topic: Loading<ForumPost> = useMemo(() => {
     if (isSuccess(forumData)) {
       const post = forumData.posts.find((post) => {
         // This conditional only evaluates to true if `post` is a
         // ForumPost and not a LocalPost-- that is, if it exists
         // on-chain
-        if ('postId' in post) {
-          return post.isTopic && post.postId === topicId
+        if ("postId" in post) {
+          return post.isTopic && post.postId === topicId;
         } else {
           return false;
         }
@@ -93,8 +91,8 @@ export const TopicView = (props: Props) => {
     // it and show them in the modal
     if (isSuccess(forumData)) {
       // Filter out all loading components that failed
-      const errors = [forumData.owners].filter(
-        (loading) => isDispatchClientError(loading)
+      const errors = [forumData.owners].filter((loading) =>
+        isDispatchClientError(loading)
       ) as DispatchClientError[];
 
       setModals(
@@ -157,9 +155,7 @@ export const TopicView = (props: Props) => {
     <div className="dsp- ">
       <Helmet>
         <meta charSet="utf-8" />
-        {isSuccess(topic) && (
-          <title>{topic.data.subj} -- Topic </title>
-        )}
+        {isSuccess(topic) && <title>{topic.data.subj} -- Topic </title>}
       </Helmet>
       <div className="topicView">
         {modal}
@@ -192,6 +188,7 @@ export const TopicView = (props: Props) => {
                         />
                         <TopicContent
                           forumData={forumData}
+                          participatingModerators={participatingModerators}
                           forum={forum}
                           topic={topic}
                           userRole={role.role}
@@ -232,13 +229,15 @@ function Breadcrumb(props: BreadcrumbProps) {
 
   return (
     <div className="breadcrumbContainer">
-      <Link className="test" href={navigateTo}>
-        <div className="parent">{parent}</div>
+      <Link className="parent" href={navigateTo}>
+        <Markdown>{parent}</Markdown>
       </Link>
       <div className="separationIcon">
         <Chevron />
       </div>
-      <div className="current">{current}</div>
+      <div className="current">
+        <Markdown>{current}</Markdown>
+      </div>
     </div>
   );
 }

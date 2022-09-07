@@ -1,4 +1,6 @@
 import * as _ from "lodash";
+import { PublicKey } from '@solana/web3.js';
+import Markdown from "markdown-to-jsx";
 import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
@@ -32,8 +34,9 @@ interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
   post: ClientPost;
+  participatingModerators: PublicKey[] | null;
   userRole: UserRoleType;
-  topicPosterId: string;
+  topicPosterId: PublicKey;
   postInFlight: boolean;
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
@@ -56,6 +59,7 @@ export function PostContent(props: PostContentProps) {
     deletePost,
     postInFlight,
     setPostInFlight,
+    participatingModerators
   } = props;
 
   const permission = forum.permission;
@@ -337,7 +341,8 @@ export function PostContent(props: PostContentProps) {
                     {post.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicPosterId}
-                      posterId={post?.poster.toBase58()}
+                      posterId={post?.poster}
+                      moderators={participatingModerators}
                     />
                   </div>
                 </div>
@@ -384,7 +389,9 @@ export function PostContent(props: PostContentProps) {
                   })()}
                 </div>
               </div>
-              <div className="postBody">{post?.data.body}</div>
+              <div className="postBody">
+                <Markdown>{post?.data.body}</Markdown>
+              </div>
               {isForumPost(post) && (
                 <div className="actionsContainer">
                   <PermissionsGate scopes={[SCOPES.canVote]}>
@@ -450,6 +457,7 @@ export function PostContent(props: PostContentProps) {
             <div className="repliesBox">
               <PostReplies
                 forumData={forumData}
+                participatingModerators={participatingModerators}
                 replies={replies}
                 userRole={userRole}
                 topicOwnerId={topicPosterId}

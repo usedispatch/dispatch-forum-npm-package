@@ -1,5 +1,7 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useMemo, useState } from "react";
+import { PublicKey } from '@solana/web3.js';
+import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
 import ReactGA from "react-ga4";
@@ -38,6 +40,7 @@ import {
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
+  participatingModerators: PublicKey[] | null;
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
@@ -48,7 +51,7 @@ interface TopicContentProps {
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, addPost, editPost, deletePost, updateVotes, topic } = props;
+  const { forum, forumData, userRole, update, addPost, editPost, deletePost, updateVotes, topic, participatingModerators } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -409,6 +412,7 @@ export function TopicContent(props: TopicContentProps) {
       <PostList
         forum={forum}
         forumData={forumData}
+        participatingModerators={participatingModerators}
         update={update}
         addPost={addPost}
         editPost={editPost}
@@ -489,13 +493,13 @@ function TopicHeader(props: TopicHeaderProps) {
                 <Lock />
               </div>
             )}
-            {topic?.data.subj ?? "subject"}
+            <Markdown>{topic?.data.subj ?? "subject"}</Markdown>
           </div> :
             <Spinner />
         }
       </div>
       { !isEditedPost(topic) &&
-        <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
+        <div className="topicBody"><Markdown>{topic?.data.body ?? "body of the topic"}</Markdown></div>
       }
     </div>
   );

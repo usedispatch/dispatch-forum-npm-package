@@ -22,6 +22,7 @@ import {
   ForumData,
   CreatedPost,
   isForumPost,
+  isEditedPost,
   isCreatedPost,
   ClientPost
 } from "../../../utils/hooks";
@@ -340,26 +341,46 @@ export function PostContent(props: PostContentProps) {
                   </div>
                 </div>
                 <div className="postedAt">
-                  {isForumPost(post) ? (
-                    <>
-                      Posted at: {postedAt}
-                      <div className="accountInfo">
-                        <a
-                          href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
-                          className="transactionLink"
-                          target="_blank">
-                          <Info />
-                        </a>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      Posting
-                      <div className="posting">
-                        <Spinner />
-                      </div>
-                    </>
-                  )}
+                  {(() => {
+                    if (isForumPost(post)) {
+                      return (
+                        <>
+                          Posted at: {postedAt}
+                          <div className="accountInfo">
+                            <a
+                              href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                              className="transactionLink"
+                              target="_blank">
+                              <Info />
+                            </a>
+                          </div>
+                        </>
+                      );
+                    } else if(isEditedPost(post)) {
+                      return (
+                        <>
+                          Confirming edit
+                          <div className="posting">
+                            <Spinner />
+                          </div>
+                        </>
+                      );
+                    } else if(isCreatedPost(post)) {
+                      return (
+                        <>
+                          Posting
+                          <div className="posting">
+                            <Spinner />
+                          </div>
+                        </>
+                      );
+                    } else {
+                      // ForumPost, CreatedPost, and EditedPost
+                      // are the three kinds of ClientPost, so we
+                      // should never get here
+                      return null;
+                    }
+                  })()}
                 </div>
               </div>
               <div className="postBody">{post?.data.body}</div>

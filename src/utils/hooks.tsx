@@ -72,6 +72,14 @@ export function isForumPost(
   return 'parent' in post;
 }
 
+export function isEditedPost(
+  post: ClientPost
+): post is EditedPost {
+  // A post is an edited post if it's not a ForumPost, but it
+  // does have an address
+  return !isForumPost(post) && 'address' in post;
+}
+
 export function isCreatedPost(
   post: ClientPost
 ): post is CreatedPost {

@@ -11,7 +11,7 @@ import {
   PermissionsGate,
   PopUpModal,
   TransactionLink,
-  Spinner
+  Spinner,
 } from "../../common";
 import { EditForum } from "./EditForum";
 import { TopicList } from "..";
@@ -26,6 +26,7 @@ import {
   restrictionListToString,
   pubkeysToRestriction,
 } from "../../../utils/restrictionListHelper";
+import { ManageOwners } from "./ManageOwners";
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
@@ -67,11 +68,11 @@ export function ForumContent(props: ForumContentProps) {
   const [keepGates, setKeepGates] = useState(true);
 
   const [showAddModerators, setShowAddModerators] = useState(false);
-  const [showAddOwners, setShowAddOwners] = useState(false);
+  // const [showAddOwners, setShowAddOwners] = useState(false);
   const [newModerator, setNewModerator] = useState<string>("");
-  const [newOwner, setNewOwner] = useState<string>("");
+  // const [newOwner, setNewOwner] = useState<string>("");
   const [addingNewModerator, setAddingNewModerator] = useState(false);
-  const [addingNewOwner, setAddingNewOwner] = useState(false);
+  // const [addingNewOwner, setAddingNewOwner] = useState(false);
   const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
   const [removeAccessToken, setRemoveAccessToken] = useState<{
@@ -150,39 +151,39 @@ export function ForumContent(props: ForumContentProps) {
     }
   };
 
-  const addOwner = async () => {
-    setAddingNewOwner(true);
-    try {
-      const ownerId = newPublicKey(newOwner);
-      const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
-      setCurrentOwners(currentOwners.concat(newOwner));
-      setNewOwner("");
-      setShowAddOwners(false);
-      setAddingNewOwner(false);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: (
-          <div className="successBody">
-            <div>The owner was added</div>
-            <TransactionLink transaction={tx!} />
-          </div>
-        ),
-      });
-    } catch (error: any) {
-      setAddingNewOwner(false);
-      if (error.code !== 4001) {
-        setNewOwner("");
-        setShowAddOwners(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The owners could not be added`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
-        });
-      }
-    }
-  };
+  // const addOwner = async () => {
+  //   setAddingNewOwner(true);
+  //   try {
+  //     const ownerId = newPublicKey(newOwner);
+  //     const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
+  //     setCurrentOwners(currentOwners.concat(newOwner));
+  //     setNewOwner("");
+  //     setShowAddOwners(false);
+  //     setAddingNewOwner(false);
+  //     setModalInfo({
+  //       title: "Success!",
+  //       type: MessageType.success,
+  //       body: (
+  //         <div className="successBody">
+  //           <div>The owner was added</div>
+  //           <TransactionLink transaction={tx!} />
+  //         </div>
+  //       ),
+  //     });
+  //   } catch (error: any) {
+  //     setAddingNewOwner(false);
+  //     if (error.code !== 4001) {
+  //       setNewOwner("");
+  //       setShowAddOwners(false);
+  //       setModalInfo({
+  //         title: "Something went wrong!",
+  //         type: MessageType.error,
+  //         body: `The owners could not be added`,
+  //         collapsible: { header: "Error", content: JSON.stringify(error) },
+  //       });
+  //     }
+  //   }
+  // };
 
   const addAccessToken = async () => {
     setAddingAccessToken(true);
@@ -318,12 +319,10 @@ export function ForumContent(props: ForumContentProps) {
         setShowNewTopicModal(false);
 
         // re-load forum in background
-        await forumObject.connection
-          .confirmTransaction(tx)
-          .then(() => {
-            update();
-            setNewTopicInFlight(false);
-          });
+        await forumObject.connection.confirmTransaction(tx).then(() => {
+          update();
+          setNewTopicInFlight(false);
+        });
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -685,7 +684,7 @@ export function ForumContent(props: ForumContentProps) {
               onClose={() => setShowAddModerators(false)}
             />
           )}
-          {_.isNil(modalInfo) && showAddOwners && (
+          {/* {_.isNil(modalInfo) && showAddOwners && (
             <PopUpModal
               id="add-owners"
               visible
@@ -723,7 +722,7 @@ export function ForumContent(props: ForumContentProps) {
               }
               onClose={() => setShowAddOwners(false)}
             />
-          )}
+          )} */}
           <div className="forumContentBox">
             {forumHeader}
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
@@ -732,14 +731,15 @@ export function ForumContent(props: ForumContentProps) {
                 <div className="lock">
                   <Lock />
                 </div>
-                <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+                {/* <PermissionsGate scopes={[SCOPES.canAddOwner]}>
                   <button
                     className="moderatorTool owners"
                     disabled={!permission.readAndWrite}
                     onClick={() => setShowAddOwners(true)}>
                     Manage owners
                   </button>
-                </PermissionsGate>
+                </PermissionsGate> */}
+                <ManageOwners forumData={forumData} update={update} />
                 <PermissionsGate scopes={[SCOPES.canEditMods]}>
                   <button
                     className="moderatorTool"
@@ -762,9 +762,9 @@ export function ForumContent(props: ForumContentProps) {
           </div>
           {(() => {
             if (newTopicInFlight) {
-              return <Spinner />
+              return <Spinner />;
             } else if (!_.isNil(forumData.collectionId)) {
-              return <TopicList forumData={forumData} />
+              return <TopicList forumData={forumData} />;
             }
           })()}
         </>

@@ -19,6 +19,7 @@
 @import "./styles/CreateForum.css";
 @import "./styles/EditForum.css";
 @import "./styles/ForumContent.css";
+@import "./styles/ManageOwners.css";
 @import "./styles/TopicList.css";
 
 /* Topic */

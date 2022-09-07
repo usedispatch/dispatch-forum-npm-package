@@ -5,6 +5,7 @@ import {
   CreatedPost,
   ClientPost,
   EditedPost,
+  isCreatedPost,
   isForumPost,
   isEditedPost
 } from '../utils/hooks';
@@ -49,10 +50,10 @@ export function sortByVotes(
   posts: ClientPost[],
 ): ClientPost[] {
   return posts.sort((left, right) => {
-    // If left is a LocalPost, it should be sorted first
-    if (!('upVotes' in left)) { return -1; }
-    // If right is a LocalPost, it should be sorted last
-    if (!('upVotes' in right)) { return 1; }
+    // If left is not confirmed on-chain, it should be sorted first
+    if (!isForumPost(left)) { return -1; }
+    // If right is not confirmed on-chain, it should be sorted first
+    if (!isForumPost(right)) { return 1; }
     const leftVotes = left.upVotes - left.downVotes;
     const rightVotes = right.upVotes - right.downVotes;
     return rightVotes - leftVotes;

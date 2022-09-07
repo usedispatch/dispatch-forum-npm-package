@@ -23,7 +23,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { ForumData, CreatedPost } from "../../../utils/hooks";
+import { ForumData, CreatedPost, EditedPost } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -36,7 +36,7 @@ interface TopicContentProps {
   addPost: (post: CreatedPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
-  topic: ForumPost;
+  topic: ForumPost | EditedPost;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }

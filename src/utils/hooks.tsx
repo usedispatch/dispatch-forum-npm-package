@@ -36,7 +36,7 @@ export type CreatedPost = Pick<
   | 'replyTo'
   | 'isTopic'
   | 'poster'
->;
+> & { state: 'created' };
 
 /**
  * A post that has been edited locally, but the edit nas not yet
@@ -44,14 +44,9 @@ export type CreatedPost = Pick<
  * with. Unlike a CreatedPost, this type has an `address`, which
  * is the existing address of the post being edited
  */
-export type EditedPost = Pick<
-  ForumPost
-  , 'data'
-  | 'replyTo'
-  | 'isTopic'
-  | 'poster'
-  | 'address'
->;
+export type EditedPost
+  = ForumPost
+  & { state: 'edited' };
 
 /**
  * Any kind of post that can be held in the client state. This
@@ -69,7 +64,7 @@ export function isForumPost(
 ): post is ForumPost {
   // A post is a LocalPost if it has an associated parent object
   // TODO(andrew) confirm that this is the best field to check
-  return 'parent' in post;
+  return !('state' in post);
 }
 
 export function isEditedPost(
@@ -77,14 +72,14 @@ export function isEditedPost(
 ): post is EditedPost {
   // A post is an edited post if it's not a ForumPost, but it
   // does have an address
-  return !isForumPost(post) && 'address' in post;
+  return 'state' in post && post.state === 'edited';
 }
 
 export function isCreatedPost(
   post: ClientPost
 ): post is CreatedPost {
   // A post is a client post if it doesn't have the address field
-  return !('address' in post);
+  return 'state' in post && post.state === 'created';
 }
 
 export interface ForumData {
@@ -229,14 +224,12 @@ export function useForumData(
 
       // Add the modified version of the post
       const editedPost: EditedPost = {
+        ...postToEdit,
         data: {
           body: newText,
           ts: postToEdit.data.ts
         },
-        isTopic: postToEdit.isTopic,
-        poster: postToEdit.poster,
-        replyTo: postToEdit.replyTo,
-        address: postToEdit.address
+        state: 'edited'
       };
 
       const editedPosts = filteredPosts.concat(editedPost);

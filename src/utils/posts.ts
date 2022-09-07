@@ -4,7 +4,9 @@ import {
 import {
   CreatedPost,
   ClientPost,
-  isForumPost
+  EditedPost,
+  isForumPost,
+  isEditedPost
 } from '../utils/hooks';
 
 export function selectTopics(
@@ -32,9 +34,15 @@ export function selectRepliesFromPosts(
    * A reply may only be made 'to' a ForumPost, because only
    * ForumPosts exist on-chain
    */
-  to: ForumPost
+  to: ForumPost | EditedPost
 ): ClientPost[] {
-  return posts.filter(({ replyTo }) => replyTo && replyTo.equals(to.address))
+  return posts.filter((post) => {
+    if ((isForumPost(post) || isEditedPost(post)) && post.replyTo) {
+      return post.replyTo.equals(to.address);
+    } else {
+      return false;
+    }
+  })
 }
 
 export function sortByVotes(

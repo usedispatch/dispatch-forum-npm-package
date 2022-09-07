@@ -81,6 +81,7 @@ export function CreatePost(props: CreatePostProps) {
         poster: Forum.wallet.publicKey!,
         isTopic: false,
         replyTo: topic.address,
+        state: 'created'
       };
       addPost(localPost);
 

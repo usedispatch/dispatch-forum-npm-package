@@ -141,6 +141,7 @@ export function PostContent(props: PostContentProps) {
         poster: forum.wallet.publicKey!,
         isTopic: false,
         replyTo: post.address,
+        state: 'created'
       };
       addPost(localPost);
 

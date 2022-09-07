@@ -30,13 +30,36 @@ export interface Description {
  * A post that is created locally, but has not yet been confirmed
  * on-chain. Should not be allowed to be interacted with
  */
-export type LocalPost = Pick<
+export type CreatedPost = Pick<
   ForumPost
   , 'data'
   | 'replyTo'
   | 'isTopic'
   | 'poster'
 >;
+
+/**
+ * A post that has been edited locally, but the edit nas not yet
+ * ben confirmed on-chain. Should not be able to be interacted
+ * with. Unlike a CreatedPost, this type has an `address`, which
+ * is the existing address of the post being edited
+ */
+export type EditedPost = Pick<
+  ForumPost
+  , 'data'
+  | 'replyTo'
+  | 'isTopic'
+  | 'poster'
+  | 'address'
+>;
+
+/**
+ * Any kind of post that can be held in the client state. This
+ * can be a full-fledged ForumPost, a CreatedPost that has not
+ * been confirmed yet, or an EditedPost that already exists
+ * on-chain  but has been edited.
+ */
+export type ClientPost = ForumPost | CreatedPost;
 
 export function isForumPost(
   post: LocalPost | ForumPost

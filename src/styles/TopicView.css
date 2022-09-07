@@ -11,6 +11,8 @@
 
     .parent {
       cursor: pointer;
+      color: #4a279c;
+      text-decoration: none;
 
       &:hover {
         opacity: 0.65;

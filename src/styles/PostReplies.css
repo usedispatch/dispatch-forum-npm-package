@@ -4,7 +4,15 @@
   }
 
   .replyContent {
-    margin: 18px 0;
+    padding: 18px 0;
+
+    &.inFlight {
+      opacity: 0.75;
+      cursor: progress;
+      background: #bdddf445;
+      padding: 18px 18px;
+      border-radius: 12px;
+    }
   }
 
   .replyHeader {
@@ -38,6 +46,14 @@
       font-weight: 300;
       color: #86878e;
       display: flex;
+    }
+
+    .posting {
+      width: 36px;
+
+      svg {
+        height: 14px;
+      }
     }
 
     @media only screen and (max-width: 480px) {

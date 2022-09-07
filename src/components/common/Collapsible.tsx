@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Chevron } from "../../assets";
 
 export interface CollapsibleProps {
   content: any;
@@ -11,10 +12,12 @@ export const Collapsible = (props: CollapsibleProps) => {
 
   return (
     <div className="collapsibleContainer">
-      <div className="collapsibleHeaderContainer">
+      <div
+        className="collapsibleHeaderContainer"
+        onClick={() => setIsOpen(!isOpen)}>
         <div className="collapsibleHeader">{header ?? ""}</div>
-        <button className="visibilityButton" onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? "hide" : "show"}
+        <button className="visibilityButton">
+          <Chevron direction={isOpen ? "up" : "down"} />
         </button>
       </div>
       <div className="collapsibleContent" hidden={!isOpen}>

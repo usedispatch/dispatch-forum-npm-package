@@ -1,6 +1,12 @@
-import { useMemo, useState, ReactNode } from "react";
-import { PublicKey } from "@solana/web3.js";
-import { ForumInfo, ForumPost, PostRestriction } from "@usedispatch/client";
+import { useMemo, useState, useEffect, ReactNode } from "react";
+import { PublicKey, AccountInfo } from "@solana/web3.js";
+import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated } from "@usedispatch/client";
+import { uniqBy, zip, isNil } from 'lodash';
+import {
+  getAssociatedTokenAddress,
+  unpackAccount,
+  Account
+} from '@solana/spl-token';
 import { Loading, LoadingResult } from "../types/loading";
 import {
   CollapsibleProps,
@@ -26,13 +32,42 @@ export interface Description {
   desc: string;
 }
 
+/**
+ * A post that is created locally, but has not yet been confirmed
+ * on-chain. Should not be allowed to be interacted with
+ */
+export type LocalPost = Pick<
+  ForumPost
+  , 'data'
+  | 'replyTo'
+  | 'isTopic'
+  | 'poster'
+>;
+
+export function isForumPost(
+  post: LocalPost | ForumPost
+): post is ForumPost {
+  // A post is a LocalPost if it has an address field
+  // TODO(andrew) confirm that this is the best field to check
+  return 'address' in post
+}
+
+export function isLocalPost(
+  post: LocalPost | ForumPost
+): post is LocalPost {
+  return !isForumPost(post);
+}
+
 export interface ForumData {
   collectionId: PublicKey;
   owners: LoadingResult<PublicKey[]>;
-  moderators: LoadingResult<PublicKey[]>;
+  // TODO(andrew) if/when we optimize moderators, return this
+  // field to the main forum data hook
+  // moderators: LoadingResult<PublicKey[]>;
   description: Description;
-  posts: ForumPost[];
+  posts: (ForumPost | LocalPost)[];
   restriction: LoadingResult<PostRestriction>;
+  moderatorMint: PublicKey;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -42,6 +77,8 @@ export function useForumData(
   forum: DispatchForum
 ): {
   forumData: Loading<ForumData>;
+  addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
@@ -63,10 +100,11 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
-  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
+
+  async function fetchModeratorMint(): Promise<LoadingResult<PublicKey>> {
     if (collectionId) {
       try {
-        const fetchData = await forum.getModerators(collectionId, true);
+        const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
           return fetchData;
         } else {
@@ -79,6 +117,10 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
+
+  // TODO(andrew) when the moderators call is optimized, return
+  // the fetchModerators() call to its place here
+
   async function fetchDescription(): Promise<LoadingResult<Description>> {
     if (collectionId) {
       try {
@@ -131,30 +173,68 @@ export function useForumData(
     }
   }
 
+  /**
+   * create a post in local state, without sending anything to
+   * the network
+   */
+  function addPost(post: LocalPost) {
+    // We can only add a post if the forum was actually loaded
+    // successfully in the first place
+    if (isSuccess(forumData)) {
+      setForumData({
+        ...forumData,
+        posts: forumData.posts.concat(post)
+      });
+    }
+  }
+
+  /**
+   * Delete a post in the local state, without deleting on the
+   * network. Only `ForumPost`s (i.e., posts that have been
+   * confirmed on-chain) can be deleted
+   */
+  // Could also parameterize this by postId or public key.
+  // Feel free to change as desired to filter by useful criteria
+  function deletePost(post: ForumPost) {
+    // We can only delete a post if the forum was actually loaded
+    // successfully in the first place
+    if (isSuccess(forumData)) {
+      setForumData({
+        ...forumData,
+        posts: forumData.posts.filter(p => post !== p)
+      });
+    }
+  }
+
+  /**
+   * re-fetch all data related to this forum from chain
+   */
   async function update() {
     if (collectionId) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, moderators, description, posts, restriction] =
+        const [owners, description, posts, restriction, moderatorMint] =
           await Promise.all([
             fetchOwners(),
-            fetchModerators(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
+            fetchModeratorMint(),
           ]);
 
-        if (isSuccess(description) && isSuccess(posts)) {
+        // TODO(andrew) perhaps allow the page to load even if
+        // moderatorMint isn't fetched successfully?
+        if (isSuccess(description) && isSuccess(posts) && isSuccess(moderatorMint)) {
           // If owners and moderators were successfully fetched, then
           // just set them and go
           setForumData({
             collectionId,
             owners,
-            moderators,
             description,
             posts,
             restriction,
+            moderatorMint
           });
         } else {
           // We already confirmed the forum existed, so assume
@@ -169,7 +249,50 @@ export function useForumData(
       setForumData(onChainAccountNotFound());
     }
   }
-  return { forumData, update };
+  return {
+    forumData,
+    addPost,
+    deletePost,
+    update
+  };
+}
+
+export function useModerators(
+  collectionId: PublicKey | null,
+  forum: DispatchForum
+): {
+  moderators: Loading<PublicKey[]>,
+    update: () => Promise<void>
+} {
+  const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
+
+  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
+    if (collectionId) {
+      try {
+        const fetchData = await forum.getModerators(collectionId, true);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
+  async function update() {
+    if (collectionId) {
+      if (await forum.exists(collectionId)) {
+        const fetchResult = await fetchModerators();
+        setModerators(fetchResult);
+      }
+    }
+  }
+
+  return { moderators, update };
 }
 
 export interface ModalInfo {
@@ -231,4 +354,70 @@ export function useModal() {
     showModals,
     setModals: setModalInfoList,
   };
+}
+
+/*
+ * Of the posters participating in this forum, return the set of
+ * them that are moderators
+ */
+export function useParticipatingModerators(
+  forumData: Loading<ForumData>,
+  forum: DispatchForum
+) {
+
+  // TODO make this a result type/
+  const [moderators, setModerators] = useState<PublicKey[] | null>(null);
+
+  async function fetchParticipatingModerators(
+    forumData: ForumData
+  ) {
+    const { moderatorMint } = forumData;
+
+    // Fetch the authors of all posts, unique by base58 key
+    const authors = uniqBy(
+      forumData.posts.map(({ poster }) => poster),
+      (pkey) => pkey.toBase58()
+    );
+
+    // Derive associated token accounts
+    const atas = await Promise.all(authors.map(author => {
+      return getAssociatedTokenAddress(moderatorMint, author);
+    }));
+
+    // Fetch the accounts
+    const binaryAccounts = await getAccountsInfoPaginated(
+      forum.connection, atas
+    );
+
+    const pairs = zip(authors, atas, binaryAccounts);
+
+    // Filter out the nulls
+    const nonnullPairs = pairs.filter(([wallet, ata, account]) => {
+      return !isNil(wallet) && !isNil(ata) && !isNil(account);
+    }) as [PublicKey, PublicKey, AccountInfo<Buffer>][];
+
+    // Parse the accounts
+    const parsedAccounts: [PublicKey, PublicKey, Account][] = nonnullPairs.map(([wallet, ata, account]) => {
+      const unpacked = unpackAccount(ata, account);
+      return [wallet, ata, unpacked];
+    });
+
+    // Filter out only the ones that hold the token
+    const tokenHolders = parsedAccounts.filter(([/* skip */, /* skip */, account]) => {
+      return account.amount > 0
+    });
+
+    const tokenHoldingWallets = tokenHolders.map(([wallet]) => wallet);
+
+    return tokenHoldingWallets;
+  }
+
+  useEffect(() => {
+    if (isSuccess(forumData)) {
+      fetchParticipatingModerators(forumData)
+        .then((moderators) => setModerators(moderators));
+    }
+  }, [forumData]);
+
+  return moderators;
 }

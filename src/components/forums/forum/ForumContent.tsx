@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
@@ -10,6 +11,7 @@ import {
   PermissionsGate,
   PopUpModal,
   TransactionLink,
+  Spinner
 } from "../../common";
 import { EditForum } from "./EditForum";
 import { TopicList } from "..";
@@ -19,7 +21,7 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData, useModerators } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -40,14 +42,16 @@ export function ForumContent(props: ForumContentProps) {
     description: string;
     accessToken: string;
   }>({ title: "", description: "", accessToken: "" });
-  const [currentMods, setCurrentMods] = useState<string[]>(() => {
-    if (isSuccess(forumData.moderators)) {
-      return forumData.moderators.map((pkey) => pkey.toBase58());
-    } else {
-      // TODO(andrew) show error here for missing mods
-      return [];
-    }
-  });
+
+  // here, moderators will always refer to the mods as fetched
+  // from the server, which is an immutable value and can only be
+  // changed by calling updateMods(). currentMods is the mutable
+  // value that can be edited client-side
+  const { moderators, update: updateMods } = useModerators(
+    forumData.collectionId,
+    forumObject
+  );
+
   const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
     if (isSuccess(forumData.owners)) {
       return forumData.owners.map((pkey) => pkey.toBase58());
@@ -59,6 +63,7 @@ export function ForumContent(props: ForumContentProps) {
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
+  const [newTopicInFlight, setNewTopicInFlight] = useState(false);
   const [keepGates, setKeepGates] = useState(true);
 
   const [showAddModerators, setShowAddModerators] = useState(false);
@@ -100,7 +105,14 @@ export function ForumContent(props: ForumContentProps) {
   }, [newTopic.accessToken, keepGates]);
 
   // Begin mutating operations
-  const addModerators = async () => {
+  const addModerator = async () => {
+    // In order to add moderators, they must have been fetched
+    // successfully at least once. This means that moderators
+    // must be a success type (indicating it was fetched
+    // successfully from server)
+    if (!isSuccess(moderators)) {
+      return;
+    }
     setAddingNewModerator(true);
     try {
       const moderatorId = newPublicKey(newModerator);
@@ -108,7 +120,6 @@ export function ForumContent(props: ForumContentProps) {
         moderatorId,
         forumData.collectionId
       );
-      setCurrentMods(currentMods.concat(newModerator));
       setNewModerator("");
       setShowAddModerators(false);
       setAddingNewModerator(false);
@@ -122,6 +133,8 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
+
+      forumObject.connection.confirmTransaction(tx!).then(() => updateMods());
     } catch (error: any) {
       setAddingNewModerator(false);
       if (error.code !== 4001) {
@@ -295,6 +308,7 @@ export function ForumContent(props: ForumContentProps) {
       );
       if (!_.isNil(tx)) {
         setCreatingNewTopic(false);
+        setNewTopicInFlight(true);
         setModalInfo({
           body: <TransactionLink transaction={tx} />,
           type: MessageType.success,
@@ -302,9 +316,14 @@ export function ForumContent(props: ForumContentProps) {
         });
         setNewTopic({ title: "", description: "", accessToken: "" });
         setShowNewTopicModal(false);
+
+        // re-load forum in background
         await forumObject.connection
           .confirmTransaction(tx)
-          .then(() => update());
+          .then(() => {
+            update();
+            setNewTopicInFlight(false);
+          });
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -359,11 +378,13 @@ export function ForumContent(props: ForumContentProps) {
             <Lock />
           </div>
         )}
-        {forumData.description.title}
+        <Markdown>{forumData.description.title}</Markdown>
         {/* TODO(andrew) what to render here if title isn't loaded */}
       </div>
       <div className="descriptionBox">
-        <div className="description">{forumData.description.desc}</div>
+        <div className="description">
+          <Markdown>{forumData.description.desc}</Markdown>
+        </div>
         {createTopicButton}
       </div>
     </div>
@@ -373,345 +394,380 @@ export function ForumContent(props: ForumContentProps) {
     <div className="dsp- ">
       <div className="forumContent">
         <>
-        {ReactGA.send("pageview")}
+          {ReactGA.send("pageview")}
 
-        {!_.isNil(modalInfo) && (
-          <PopUpModal
-          id="create-topic-info"
-          visible
-          title={modalInfo.title}
-          messageType={modalInfo.type}
-          body={modalInfo.body}
-          collapsible={modalInfo.collapsible}
-          okButton={
-            <a className="okButton" onClick={() => setModalInfo(null)}>
-                OK
-              </a>
-            }
+          {!_.isNil(modalInfo) && (
+            <PopUpModal
+              id="create-topic-info"
+              visible
+              title={modalInfo.title}
+              messageType={modalInfo.type}
+              body={modalInfo.body}
+              collapsible={modalInfo.collapsible}
+              okButton={
+                <a className="okButton" onClick={() => setModalInfo(null)}>
+                  OK
+                </a>
+              }
             />
-            )}
-        {showManageAccessToken && _.isNil(modalInfo) && (
-          <PopUpModal
-          id="add-access-token"
-          visible
-          title="Limit forum access"
-          body={
-            <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">
-                  Add new NFT Collection ID
-                </label>
-                You can enter one NFT Collection ID here such that only holders
-                of NFT's in the collection can participate in this forum.
-                <input
-                  type="text"
-                  placeholder="NFT Collection ID"
-                  className="newAccessToken"
-                  name="accessToken"
-                  value={newForumAccessToken}
-                  onChange={(e) => setNewForumAccessToken(e.target.value)}
+          )}
+          {showManageAccessToken && _.isNil(modalInfo) && (
+            <PopUpModal
+              id="add-access-token"
+              visible
+              title="Limit forum access"
+              body={
+                <div className="addModeratorsBody">
+                  <label className="addModeratorsLabel">
+                    Add new NFT Collection ID
+                  </label>
+                  You can enter one NFT Collection ID here such that only
+                  holders of NFT's in the collection can participate in this
+                  forum.
+                  <input
+                    type="text"
+                    placeholder="NFT Collection ID"
+                    className="newAccessToken"
+                    name="accessToken"
+                    value={newForumAccessToken}
+                    onChange={(e) => setNewForumAccessToken(e.target.value)}
                   />
-                <label className="addModeratorsLabel">
-                  Current NFT Collection ID
-                </label>
-                {currentForumAccessToken.length === 0 ? (
-                  <div className="noRestriction">
-                    The forum has no restriction
-                  </div>
-                ) : (
-                  currentForumAccessToken.map((token, index) => {
-                    return (
-                      <div className="currentToken" key={index}>
-                        <>{token}</>
-                        <div
-                          onClick={() => {
-                            setShowManageAccessToken(false);
-                            setRemoveAccessToken({
-                              ...removeAccessToken,
-                              show: true,
-                              token,
-                            });
-                          }}>
-                          <Trash />
+                  <label className="addModeratorsLabel">
+                    Current NFT Collection ID
+                  </label>
+                  {currentForumAccessToken.length === 0 ? (
+                    <div className="noRestriction">
+                      The forum has no restriction
+                    </div>
+                  ) : (
+                    currentForumAccessToken.map((token, index) => {
+                      return (
+                        <div className="currentToken" key={index}>
+                          <>{token}</>
+                          <div
+                            onClick={() => {
+                              setShowManageAccessToken(false);
+                              setRemoveAccessToken({
+                                ...removeAccessToken,
+                                show: true,
+                                token,
+                              });
+                            }}>
+                            <Trash />
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })
+                      );
+                    })
                   )}
-              </div>
-            }
-            loading={addingAccessToken}
-            onClose={() => {
-              setShowManageAccessToken(false);
-              setNewForumAccessToken("");
-            }}
-            okButton={
-              <button className="okButton" onClick={() => addAccessToken()}>
-                Save
-              </button>
-            }
+                </div>
+              }
+              loading={addingAccessToken}
+              onClose={() => {
+                setShowManageAccessToken(false);
+                setNewForumAccessToken("");
+              }}
+              okButton={
+                <button className="okButton" onClick={() => addAccessToken()}>
+                  Save
+                </button>
+              }
             />
-            )}
-        {removeAccessToken.show && _.isNil(modalInfo) && (
-          <PopUpModal
-          id="remove-access-token"
-          visible
-          title="Are you sure you want to remove NFT Collection ID?"
-          body={
-            <div>
-                This action will remove the token
-                {` ${removeAccessToken.token?.substring(0, 4)}...`}
-                {`${removeAccessToken.token?.slice(-4)} `} from gating the
-                forum.
-              </div>
-            }
-            loading={removeAccessToken.removing}
-            onClose={() =>
-              setRemoveAccessToken({ show: false, removing: false })
-            }
-            okButton={
-              <button className="okButton" onClick={() => deleteAccessToken()}>
-                Remove
-              </button>
-            }
-            />
-            )}
-        {(() => {
-          if (showNewTopicModal && _.isNil(modalInfo)) {
-            if (role === UserRoleType.Viewer) {
-              return (
-                <PopUpModal
-                id="create-topic"
-                title="You are not authorized"
-                body={
-                  "Oops! You need a token to participate. Please contact the forum’s moderators."
-                }
-                visible
-                okButton={
-                  <button
+          )}
+          {removeAccessToken.show && _.isNil(modalInfo) && (
+            <PopUpModal
+              id="remove-access-token"
+              visible
+              title="Are you sure you want to remove NFT Collection ID?"
+              body={
+                <div>
+                  This action will remove the token
+                  {` ${removeAccessToken.token?.substring(0, 4)}...`}
+                  {`${removeAccessToken.token?.slice(-4)} `} from gating the
+                  forum.
+                </div>
+              }
+              loading={removeAccessToken.removing}
+              onClose={() =>
+                setRemoveAccessToken({ show: false, removing: false })
+              }
+              okButton={
+                <button
                   className="okButton"
-                  onClick={() => setShowNewTopicModal(false)}>
-                      OK
-                    </button>
-                  }
+                  onClick={() => deleteAccessToken()}>
+                  Remove
+                </button>
+              }
+            />
+          )}
+          {(() => {
+            if (showNewTopicModal && _.isNil(modalInfo)) {
+              if (role === UserRoleType.Viewer) {
+                return (
+                  <PopUpModal
+                    id="create-topic"
+                    title="You are not authorized"
+                    body={
+                      "Oops! You need a token to participate. Please contact the forum’s moderators."
+                    }
+                    visible
+                    okButton={
+                      <button
+                        className="okButton"
+                        onClick={() => setShowNewTopicModal(false)}>
+                        OK
+                      </button>
+                    }
                   />
-                  );
-                } else {
-                  return (
-                    <PopUpModal
+                );
+              } else {
+                return (
+                  <PopUpModal
                     id="create-topic"
                     visible
                     title={"Create new Topic"}
                     body={
                       <div className="createTopicBody">
-                      <>
-                        <span className="createTopicLabel">Topic Title</span>
-                        <input
-                          type="text"
-                          placeholder="Title"
-                          className="createTopicTitleInput"
-                          name="name"
-                          required
-                          value={newTopic.title}
-                          onChange={(e) =>
-                            setNewTopic({ ...newTopic, title: e.target.value })
-                          }
-                          />
-                      </>
-                      <>
-                        <span className="createTopicLabel">
-                          Topic Description
-                        </span>
-                        <textarea
-                          placeholder="Description"
-                          className="createTopicTitleInput createTopicTextArea"
-                          maxLength={800}
-                          value={newTopic.description}
-                          onChange={(e) =>
-                            setNewTopic({
-                              ...newTopic,
-                              description: e.target.value,
-                            })
-                          }
-                          />
-                      </>
-                      <PermissionsGate scopes={[SCOPES.canAddTopicRestriction]}>
                         <>
-                          {currentForumAccessToken.length > 0 && (
-                            <div className="gateCheckbox">
-                              <input
-                                type="checkbox"
-                                checked={keepGates}
-                                onChange={(e) => {
-                                  setKeepGates(e.target.checked);
-                                }}
-                                />
-                              <div className="createTopicLabel">
-                                Keep Existing Forum Gates on Topic
-                              </div>
-                            </div>
-                          )}
-                          {isSuccess(forumData.restriction) && <div></div>}
-                          <span className="createTopicLabel">
-                            Limit post access
-                          </span>
+                          <span className="createTopicLabel">Topic Title</span>
                           <input
                             type="text"
-                            placeholder="Token mint ID"
-                            className="newAccessToken"
-                            name="accessToken"
-                            value={newTopic.accessToken}
+                            placeholder="Title"
+                            className="createTopicTitleInput"
+                            name="name"
+                            required
+                            value={newTopic.title}
                             onChange={(e) =>
                               setNewTopic({
                                 ...newTopic,
-                                accessToken: e.target.value,
+                                title: e.target.value,
                               })
                             }
-                            />
+                          />
                         </>
-                      </PermissionsGate>
-                    </div>
-                  }
-                  loading={creatingNewTopic}
-                  okButton={
-                    <button
-                    className="okButton"
-                    disabled={newTopic.title.length === 0}
-                    onClick={() => createTopic()}>
-                      Create
-                    </button>
-                  }
-                  cancelButton={
-                    <button
-                    className="cancelButton"
-                    onClick={() => setShowNewTopicModal(false)}>
-                      Cancel
-                    </button>
-                  }
+                        <>
+                          <span className="createTopicLabel">
+                            Topic Description
+                          </span>
+                          <textarea
+                            placeholder="Description"
+                            className="createTopicTitleInput createTopicTextArea"
+                            maxLength={800}
+                            value={newTopic.description}
+                            onChange={(e) =>
+                              setNewTopic({
+                                ...newTopic,
+                                description: e.target.value,
+                              })
+                            }
+                          />
+                        </>
+                        <PermissionsGate
+                          scopes={[SCOPES.canAddTopicRestriction]}>
+                          <>
+                            {currentForumAccessToken.length > 0 && (
+                              <div className="gateCheckbox">
+                                <input
+                                  type="checkbox"
+                                  checked={keepGates}
+                                  onChange={(e) => {
+                                    setKeepGates(e.target.checked);
+                                  }}
+                                />
+                                <div className="createTopicLabel">
+                                  Keep Existing Forum Gates on Topic
+                                </div>
+                              </div>
+                            )}
+                            {isSuccess(forumData.restriction) && <div></div>}
+                            <span className="createTopicLabel">
+                              Limit post access
+                            </span>
+                            <input
+                              type="text"
+                              placeholder="Token mint ID"
+                              className="newAccessToken"
+                              name="accessToken"
+                              value={newTopic.accessToken}
+                              onChange={(e) =>
+                                setNewTopic({
+                                  ...newTopic,
+                                  accessToken: e.target.value,
+                                })
+                              }
+                            />
+                          </>
+                        </PermissionsGate>
+                      </div>
+                    }
+                    loading={creatingNewTopic}
+                    okButton={
+                      <button
+                        className="okButton"
+                        disabled={newTopic.title.length === 0}
+                        onClick={() => createTopic()}>
+                        Create
+                      </button>
+                    }
+                    cancelButton={
+                      <button
+                        className="cancelButton"
+                        onClick={() => setShowNewTopicModal(false)}>
+                        Cancel
+                      </button>
+                    }
                   />
-                  );
-                }
-              } else {
-                return null;
+                );
               }
-            })()}
-        {_.isNil(modalInfo) && showAddModerators && (
-          <PopUpModal
-          id="add-moderators"
-          visible
-          title={"Manage moderators"}
-          body={
-            <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">Add new</label>
-                <input
-                  placeholder="Add moderator's wallet ID here"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={newModerator}
-                  onChange={(e) => setNewModerator(e.target.value)}
-                  />
-                <label className="addModeratorsLabel">Current moderators</label>
-                <ul>
-                  {currentMods.map((m) => {
-                    return (
-                      <li key={m} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={m} alt="moderatorId" />
-                        </div>
-                        {m}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+            } else {
+              return null;
             }
-            loading={addingNewModerator}
-            okButton={
-              <button className="okButton" onClick={() => addModerators()}>
-                Save
-              </button>
-            }
-            onClose={() => setShowAddModerators(false)}
+          })()}
+          {_.isNil(modalInfo) && showAddModerators && (
+            <PopUpModal
+              id="add-moderators"
+              visible
+              title={"Manage moderators"}
+              body={
+                <div className="addModeratorsBody">
+                  {(() => {
+                    // If the moderators were successfully
+                    // fetched and currentMods was set...
+                    if (isSuccess(moderators)) {
+                      // Display them
+                      const moderatorList = moderators.map((pubkey) => {
+                        const m = pubkey.toBase58();
+                        return (
+                          <li key={m} className="currentModerators">
+                            <>
+                              <div className="iconContainer">
+                                <Jdenticon value={m} alt="moderatorId" />
+                              </div>
+                              {m}
+                            </>
+                          </li>
+                        );
+                      });
+
+                      return (
+                        <>
+                          <label className="addModeratorsLabel">
+                            Current moderators
+                          </label>
+                          <ul>{moderatorList}</ul>
+                          <label className="addModeratorsLabel">Add new</label>
+                          <input
+                            placeholder="Add moderator's wallet ID here"
+                            className="addModeratorsInput"
+                            maxLength={800}
+                            value={newModerator}
+                            onChange={(e) => setNewModerator(e.target.value)}
+                          />
+                          <button
+                            className="okButton"
+                            onClick={() => addModerator()}>
+                            Save
+                          </button>
+                        </>
+                      );
+                    } else {
+                      return (
+                        <button
+                          className="okButton fetchModerators"
+                          onClick={updateMods}>
+                          Fetch moderators
+                        </button>
+                      );
+                    }
+                  })()}
+                </div>
+              }
+              loading={addingNewModerator}
+              onClose={() => setShowAddModerators(false)}
             />
-            )}
-        {_.isNil(modalInfo) && showAddOwners && (
-          <PopUpModal
-          id="add-owners"
-          visible
-          title={"Manage owners"}
-          body={
-            <div className="addModeratorsBody">
-                <label className="addModeratorsLabel">Add new</label>
-                <input
-                  placeholder="Add owners's wallet ID here"
-                  className="addModeratorsInput"
-                  maxLength={800}
-                  value={newOwner}
-                  onChange={(e) => setNewOwner(e.target.value)}
-                  />
-                <label className="addModeratorsLabel">Current owners</label>
-                <ul>
-                  {currentOwners.map((m) => {
-                    return (
-                      <li key={m} className="currentModerators">
-                        <div className="iconContainer">
-                          <Jdenticon value={m} alt="moderatorId" />
-                        </div>
-                        {m}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-            }
-            loading={addingNewOwner}
-            okButton={
-              <button className="okButton" onClick={() => addOwner()}>
-                Save
-              </button>
-            }
-            onClose={() => setShowAddOwners(false)}
-            />
-            )}
-        <div className="forumContentBox">
-          {forumHeader}
-          <PermissionsGate scopes={[SCOPES.canEditForum]}>
-            <div className="moderatorToolsContainer">
-              <div>Owner tools: </div>
-              <div className="lock">
-                <Lock />
-              </div>
-              <PermissionsGate scopes={[SCOPES.canAddOwner]}>
-                <button
-                  className="moderatorTool owners"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddOwners(true)}>
-                  Manage owners
-                </button>
-              </PermissionsGate>
-              <PermissionsGate scopes={[SCOPES.canEditMods]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowAddModerators(true)}>
-                  Manage moderators
-                </button>
-              </PermissionsGate>
-              <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowManageAccessToken(true)}>
-                  Manage forum access
-                </button>
-              </PermissionsGate>
-              <EditForum forumData={forumData} update={update} />
-            </div>
-          </PermissionsGate>
-        </div>
-        {!_.isNil(forumData.collectionId) && (
-          <TopicList forumData={forumData} />
           )}
-          </>
+          {_.isNil(modalInfo) && showAddOwners && (
+            <PopUpModal
+              id="add-owners"
+              visible
+              title={"Manage owners"}
+              body={
+                <div className="addModeratorsBody">
+                  <label className="addModeratorsLabel">Add new</label>
+                  <input
+                    placeholder="Add owners's wallet ID here"
+                    className="addModeratorsInput"
+                    maxLength={800}
+                    value={newOwner}
+                    onChange={(e) => setNewOwner(e.target.value)}
+                  />
+                  <label className="addModeratorsLabel">Current owners</label>
+                  <ul>
+                    {currentOwners.map((m) => {
+                      return (
+                        <li key={m} className="currentModerators">
+                          <div className="iconContainer">
+                            <Jdenticon value={m} alt="moderatorId" />
+                          </div>
+                          {m}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              }
+              loading={addingNewOwner}
+              okButton={
+                <button className="okButton" onClick={() => addOwner()}>
+                  Save
+                </button>
+              }
+              onClose={() => setShowAddOwners(false)}
+            />
+          )}
+          <div className="forumContentBox">
+            {forumHeader}
+            <PermissionsGate scopes={[SCOPES.canEditForum]}>
+              <div className="moderatorToolsContainer">
+                <div>Owner tools: </div>
+                <div className="lock">
+                  <Lock />
+                </div>
+                <PermissionsGate scopes={[SCOPES.canAddOwner]}>
+                  <button
+                    className="moderatorTool owners"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowAddOwners(true)}>
+                    Manage owners
+                  </button>
+                </PermissionsGate>
+                <PermissionsGate scopes={[SCOPES.canEditMods]}>
+                  <button
+                    className="moderatorTool"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowAddModerators(true)}>
+                    Manage moderators
+                  </button>
+                </PermissionsGate>
+                <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                  <button
+                    className="moderatorTool"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowManageAccessToken(true)}>
+                    Manage forum access
+                  </button>
+                </PermissionsGate>
+                <EditForum forumData={forumData} update={update} />
+              </div>
+            </PermissionsGate>
+          </div>
+          {(() => {
+            if (newTopicInFlight) {
+              return <Spinner />
+            } else if (!_.isNil(forumData.collectionId)) {
+              return <TopicList forumData={forumData} />
+            }
+          })()}
+        </>
       </div>
     </div>
   );

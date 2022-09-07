@@ -1,4 +1,6 @@
 import * as _ from "lodash";
+import { PublicKey } from '@solana/web3.js';
+import Markdown from "markdown-to-jsx";
 import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
@@ -18,23 +20,43 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData } from "../../../utils/hooks";
-import { isSuccess } from "../../../utils/loading";
+import {
+  ForumData,
+  LocalPost,
+  isForumPost,
+  isLocalPost,
+} from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
-  post: ForumPost;
+  participatingModerators: PublicKey[] | null;
+  post: LocalPost | ForumPost;
   userRole: UserRoleType;
-  topicPosterId: string;
+  topicPosterId: PublicKey;
+  postInFlight: boolean;
   update: () => Promise<void>;
+  addPost: (post: LocalPost) => void;
+  deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
+  setPostInFlight: (postInFlight: boolean) => void;
 }
 
 export function PostContent(props: PostContentProps) {
-  const { forumData, forum, userRole, topicPosterId, onDeletePost, update } =
-    props;
+  const {
+    forumData,
+    forum,
+    userRole,
+    topicPosterId,
+    onDeletePost,
+    update,
+    addPost,
+    deletePost,
+    postInFlight,
+    setPostInFlight,
+    participatingModerators
+  } = props;
 
   const permission = forum.permission;
 
@@ -52,11 +74,11 @@ export function PostContent(props: PostContentProps) {
   const [showGiveAward, setShowGiveAward] = useState(false);
   const [postToAward, setPostToAward] = useState<ForumPost>();
 
-  const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const [notificationContent, setNotificationContent] = useState<{
-    content: string | ReactNode;
-    type: MessageType;
-  }>();
+  const [notification, setNotification] = useState<{
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -68,45 +90,83 @@ export function PostContent(props: PostContentProps) {
   const post = useMemo(() => props.post, [props.post]);
 
   const replies = useMemo(() => {
-    const replies = selectRepliesFromPosts(forumData.posts, post);
-    return sortByVotes(replies);
+    if (isForumPost(post)) {
+      const replies = selectRepliesFromPosts(forumData.posts, post);
+      return sortByVotes(replies);
+    } else {
+      // If a post is not a ForumPost, it does not have replies
+      return [];
+    }
   }, [forumData, post]);
 
   const updateVotes = (upVoted: boolean) => {
-    if (upVoted) {
-      post.upVotes = post.upVotes + 1;
-    } else {
-      post.downVotes = post.downVotes + 1;
+    if (isForumPost(post)) {
+      if (upVoted) {
+        post.upVotes = post.upVotes + 1;
+      } else {
+        post.downVotes = post.downVotes + 1;
+      }
     }
   };
 
   const onReplyToPost = async () => {
     setSendingReply(true);
+    setPostInFlight(true);
     try {
+      if (!isForumPost(post)) {
+        return;
+      }
       const tx = await forum.replyToForumPost(post, forumData.collectionId, {
         body: reply,
       });
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
-      setIsNotificationHidden(false);
-      setNotificationContent({
+      setNotification({
+        isHidden: false,
         content: (
           <>
-            Replied successfully.
+            Posting reply.
             <TransactionLink transaction={tx!} />
           </>
         ),
-        type: MessageType.success,
+        type: MessageType.info,
       });
+
+      const localPost: LocalPost = {
+        data: {
+          body: reply,
+          ts: new Date(),
+        },
+        poster: forum.wallet.publicKey!,
+        isTopic: false,
+        replyTo: post.address,
+      };
+      addPost(localPost);
+
       if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
+        await forum.connection.confirmTransaction(tx).then(() => {
+          update();
+          setPostInFlight(false);
+          setNotification({
+            isHidden: false,
+            content: (
+              <>
+                Replied successfully.
+                <TransactionLink transaction={tx!} />
+              </>
+            ),
+            type: MessageType.success,
+          });
+          setTimeout(
+            () => setNotification({ isHidden: true }),
+            NOTIFICATION_BANNER_TIMEOUT
+          );
+        });
       }
-      setTimeout(
-        () => setIsNotificationHidden(true),
-        NOTIFICATION_BANNER_TIMEOUT
-      );
     } catch (error: any) {
+      setPostInFlight(false);
+      setNotification({ isHidden: true });
       console.log(error);
       setModalInfo({
         title: "Something went wrong!",
@@ -121,21 +181,25 @@ export function PostContent(props: PostContentProps) {
   const onDelete = async () => {
     setDeleting(true);
     try {
+      if (!isForumPost(postToDelete)) {
+        return;
+      }
       const tx = await forum.deleteForumPost(
         postToDelete,
         forumData.collectionId,
         userRole === UserRoleType.Moderator
       );
+      deletePost(postToDelete);
       onDeletePost(tx);
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
         body: `The post was deleted`,
       });
+      setShowDeleteConfirmation(false);
       if (tx) {
         await forum.connection.confirmTransaction(tx).then(() => update());
       }
-      setShowDeleteConfirmation(false);
       setDeleting(false);
     } catch (error: any) {
       setShowDeleteConfirmation(false);
@@ -168,13 +232,19 @@ export function PostContent(props: PostContentProps) {
     minute: "numeric",
   })}`;
 
-  const moderators = isSuccess(forumData.moderators)
-    ? forumData.moderators.map((m) => m.toBase58())
-    : [];
+  // TODO(andrew) reimplement moderator label later
+  // const moderators = isSuccess(forumData.moderators)
+  //   ? forumData.moderators.map((m) => m.toBase58())
+  //   : [];
+
+  const isLocal = isLocalPost(post);
 
   return (
     <>
-      <div className="postContentContainer">
+      <div
+        className={`postContentContainer ${
+          postInFlight && isLocal ? "inFlight" : ""
+        }`}>
         {_.isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
@@ -227,13 +297,13 @@ export function PostContent(props: PostContentProps) {
             onCancel={() => setShowGiveAward(false)}
             onSuccess={(notificationContent) => {
               setShowGiveAward(false);
-              setIsNotificationHidden(false);
-              setNotificationContent({
+              setNotification({
+                isHidden: false,
                 content: notificationContent,
                 type: MessageType.success,
               });
               setTimeout(
-                () => setIsNotificationHidden(true),
+                () => setNotification({ isHidden: true }),
                 NOTIFICATION_BANNER_TIMEOUT
               );
             }}
@@ -249,10 +319,10 @@ export function PostContent(props: PostContentProps) {
           />
         )}
         <Notification
-          hidden={isNotificationHidden}
-          content={notificationContent?.content}
-          type={notificationContent?.type}
-          onClose={() => setIsNotificationHidden(true)}
+          hidden={notification.isHidden}
+          content={notification?.content}
+          type={notification?.type}
+          onClose={() => setNotification({ isHidden: true })}
         />
         <>
           <div className="postContentBox">
@@ -266,78 +336,93 @@ export function PostContent(props: PostContentProps) {
                     {post.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicPosterId}
-                      posterId={post?.poster.toBase58()}
-                      moderators={moderators}
+                      posterId={post?.poster}
+                      moderators={participatingModerators}
                     />
                   </div>
                 </div>
                 <div className="postedAt">
-                  Posted at: {postedAt}
-                  <div className="accountInfo">
-                    <a
-                      href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
-                      className="transactionLink"
-                      target="_blank">
-                      <Info />
-                    </a>
-                  </div>
+                  {isForumPost(post) ? (
+                    <>
+                      Posted at: {postedAt}
+                      <div className="accountInfo">
+                        <a
+                          href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                          className="transactionLink"
+                          target="_blank">
+                          <Info />
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      Posting
+                      <div className="posting">
+                        <Spinner />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
-              <div className="postBody">{post?.data.body}</div>
-              <div className="actionsContainer">
-                <PermissionsGate scopes={[SCOPES.canVote]}>
-                  <Votes
+              <div className="postBody">
+                <Markdown>{post?.data.body}</Markdown>
+              </div>
+              {isForumPost(post) && (
+                <div className="actionsContainer">
+                  <PermissionsGate scopes={[SCOPES.canVote]}>
+                    <Votes
+                      post={post}
+                      onDownVotePost={() =>
+                        forum.voteDownForumPost(post, forumData.collectionId)
+                      }
+                      onUpVotePost={() =>
+                        forum.voteUpForumPost(post, forumData.collectionId)
+                      }
+                      updateVotes={(upVoted) => updateVotes(upVoted)}
+                    />
+                  </PermissionsGate>
+                  <EditPost
                     post={post}
-                    onDownVotePost={() =>
-                      forum.voteDownForumPost(post, forumData.collectionId)
-                    }
-                    onUpVotePost={() =>
-                      forum.voteUpForumPost(post, forumData.collectionId)
-                    }
-                    updateVotes={(upVoted) => updateVotes(upVoted)}
+                    forumData={forumData}
+                    update={() => update()}
+                    showDividers={{ leftDivider: true, rightDivider: false }}
                   />
-                </PermissionsGate>
-                <EditPost
-                  post={post}
-                  forumData={forumData}
-                  update={() => update()}
-                  showDividers={{ leftDivider: true, rightDivider: false }}
-                />
-                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <div className="right">
-                    <PermissionsGate
-                      scopes={[SCOPES.canDeletePost]}
-                      posterKey={post.poster}>
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <div className="right">
+                      <PermissionsGate
+                        scopes={[SCOPES.canDeletePost]}
+                        posterKey={post.poster}>
+                        <button
+                          className="deleteButton"
+                          disabled={!permission.readAndWrite}
+                          onClick={() => {
+                            setPostToDelete(props.post);
+                            setShowDeleteConfirmation(true);
+                          }}>
+                          <Trash />
+                        </button>
+                        <div className="actionDivider" />
+                      </PermissionsGate>
                       <button
-                        className="deleteButton"
+                        className="awardButton"
                         disabled={!permission.readAndWrite}
                         onClick={() => {
-                          setPostToDelete(props.post);
-                          setShowDeleteConfirmation(true);
+                          setPostToAward(post);
+                          setShowGiveAward(true);
                         }}>
-                        <Trash />
+                        <Gift /> Send Token
                       </button>
                       <div className="actionDivider" />
-                    </PermissionsGate>
-                    <button
-                      className="awardButton"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => {
-                        setPostToAward(post);
-                        setShowGiveAward(true);
-                      }}>
-                      <Gift /> Send Token
-                    </button>
-                    <div className="actionDivider" />
-                    <button
-                      className="replyButton"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => setShowReplyBox(true)}>
-                      Reply <Reply />
-                    </button>
-                  </div>
-                </PermissionsGate>
-              </div>
+                      <button
+                        className="replyButton"
+                        disabled={!permission.readAndWrite}
+                        onClick={() => setShowReplyBox(true)}>
+                        Reply <Reply />
+                      </button>
+                    </div>
+                  </PermissionsGate>
+                </div>
+              )}
             </div>
           </div>
           <div
@@ -346,6 +431,7 @@ export function PostContent(props: PostContentProps) {
             <div className="repliesBox">
               <PostReplies
                 forumData={forumData}
+                participatingModerators={participatingModerators}
                 replies={replies}
                 userRole={userRole}
                 topicOwnerId={topicPosterId}
@@ -375,6 +461,7 @@ export function PostContent(props: PostContentProps) {
                   <textarea
                     placeholder="Type your reply here"
                     className="replyTextArea"
+                    disabled={postInFlight}
                     maxLength={800}
                     value={reply}
                     required
@@ -384,13 +471,17 @@ export function PostContent(props: PostContentProps) {
                   <div className="buttonsContainer">
                     <button
                       className="cancelReplyButton"
+                      disabled={postInFlight}
                       onClick={() => {
                         setShowReplyBox(false);
                         new Buffer(reply, "utf-8").byteLength;
                       }}>
                       Cancel
                     </button>
-                    <button className="postReplyButton" type="submit">
+                    <button
+                      className="postReplyButton"
+                      type="submit"
+                      disabled={postInFlight}>
                       Reply
                     </button>
                   </div>

@@ -343,7 +343,7 @@ export function PostContent(props: PostContentProps) {
                 </div>
                 <div className="postedAt">
                   {(() => {
-                    if (isForumPost(post) || isEditedPost(post)) {
+                    if (isForumPost(post)) {
                       return (
                         <>
                           Posted at: {postedAt}

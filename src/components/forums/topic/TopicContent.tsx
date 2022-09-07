@@ -12,6 +12,7 @@ import {
   PopUpModal,
   PermissionsGate,
   TransactionLink,
+  Spinner
 } from "../../common";
 import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
 import { EditPost } from "./EditPost";
@@ -23,7 +24,12 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { ForumData, CreatedPost, EditedPost } from "../../../utils/hooks";
+import {
+  ForumData,
+  CreatedPost,
+  EditedPost,
+  isEditedPost
+} from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -476,16 +482,21 @@ function TopicHeader(props: TopicHeaderProps) {
             </div>
           </div>
         </div>
-        <div className="subj">
-          {isGated && (
-            <div className="gatedTopic">
-              <Lock />
-            </div>
-          )}
-          {topic?.data.subj ?? "subject"}
-        </div>
+        { !isEditedPost(topic) ?
+          <div className="subj">
+            {isGated && (
+              <div className="gatedTopic">
+                <Lock />
+              </div>
+            )}
+            {topic?.data.subj ?? "subject"}
+          </div> :
+            <Spinner />
+        }
       </div>
-      <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
+      { !isEditedPost(topic) &&
+        <div className="topicBody">{topic?.data.body ?? "body of the topic"}</div>
+      }
     </div>
   );
 }

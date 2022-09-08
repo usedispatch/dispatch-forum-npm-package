@@ -35,6 +35,18 @@
       }
     }
 
+    &.upVoted {
+      svg path {
+        stroke: #84b971;
+      }
+    }
+
+    &.downVoted {
+      svg path {
+        stroke: #e86143;
+      }
+    }
+
     &:disabled {
       cursor: not-allowed;
     }

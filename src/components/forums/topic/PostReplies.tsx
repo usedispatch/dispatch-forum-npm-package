@@ -135,6 +135,8 @@ export function PostReplies(props: PostRepliesProps) {
                   {"upVotes" in reply && (
                     <PermissionsGate scopes={[SCOPES.canVote]}>
                       <Votes
+                        forumData={forumData}
+                        update={update}
                         updateVotes={(upVoted) => updateVotes(upVoted, reply)}
                         onUpVotePost={() => onUpVotePost(reply)}
                         onDownVotePost={() => onDownVotePost(reply)}

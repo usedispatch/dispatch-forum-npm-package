@@ -371,6 +371,8 @@ export function PostContent(props: PostContentProps) {
                 <div className="actionsContainer">
                   <PermissionsGate scopes={[SCOPES.canVote]}>
                     <Votes
+                      forumData={forumData}
+                      update={update}
                       post={post}
                       onDownVotePost={() =>
                         forum.voteDownForumPost(post, forumData.collectionId)

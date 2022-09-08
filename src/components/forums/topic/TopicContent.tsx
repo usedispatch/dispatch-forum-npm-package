@@ -334,6 +334,7 @@ export function TopicContent(props: TopicContentProps) {
           <TopicHeader
             topic={topic}
             forum={forum}
+            participatingModerators={participatingModerators}
             isGated={currentForumAccessToken.length > 0}
           />
           <div className="moderatorToolsContainer">
@@ -446,11 +447,12 @@ export function TopicContent(props: TopicContentProps) {
 interface TopicHeaderProps {
   topic: ForumPost;
   forum: DispatchForum;
+  participatingModerators: PublicKey[] | null;
   isGated: boolean;
 }
 
 function TopicHeader(props: TopicHeaderProps) {
-  const { isGated, topic, forum } = props;
+  const { isGated, topic, forum, participatingModerators } = props;
 
   const postedAt = topic
     ? `${topic.data.ts.toLocaleDateString(undefined, {
@@ -473,6 +475,21 @@ function TopicHeader(props: TopicHeaderProps) {
               <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
             </div>
             <div className="posterId">{topic.poster.toBase58()}</div>
+            &nbsp;
+            {(() => {
+              if (
+                participatingModerators &&
+                participatingModerators.some(
+                  key => key.equals(topic.poster)
+                )
+              ) {
+                return <div className={
+                  `roleLabel mod`
+                }>mod</div>
+              } else {
+                return null;
+              }
+            })()}
           </div>
           <div className="postedAt">
             Posted at: {postedAt}

@@ -14,17 +14,19 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import {
   ForumData,
   isForumPost,
-  isLocalPost,
-  LocalPost,
+  isCreatedPost,
+  CreatedPost,
+  ClientPost
 } from "../../../utils/hooks";
 
 interface PostRepliesProps {
   forumData: ForumData;
   participatingModerators: PublicKey[] | null;
   userRole: UserRoleType;
+  replies: ClientPost[];
   topicOwnerId: PublicKey;
-  replies: (LocalPost | ForumPost)[];
   update: () => Promise<void>;
+  editPost: (post: ForumPost, newText: string) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
@@ -43,11 +45,12 @@ export function PostReplies(props: PostRepliesProps) {
     onUpVotePost,
     onAwardReply,
     update,
+    editPost
   } = props;
   const forum = useForum();
   const permission = forum.permission;
 
-  const postedAt = (reply: LocalPost | ForumPost) =>
+  const postedAt = (reply: ClientPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
       year: "numeric",
       month: "numeric",
@@ -132,7 +135,7 @@ export function PostReplies(props: PostRepliesProps) {
               <div className="replyActionsContainer">
                 <div className="leftBox">
                   {/* Only show votes if post is confirmed */}
-                  {"upVotes" in reply && (
+                  {isForumPost(reply) && (
                     <PermissionsGate scopes={[SCOPES.canVote]}>
                       <Votes
                         updateVotes={(upVoted) => updateVotes(upVoted, reply)}
@@ -143,17 +146,18 @@ export function PostReplies(props: PostRepliesProps) {
                     </PermissionsGate>
                   )}
                   {/* Only show edit dialog if post is confirmed */}
-                  {"address" in reply && (
+                  {isForumPost(reply) && (
                     <EditPost
                       post={reply}
                       forumData={forumData}
                       update={() => update()}
+                      editPostLocal={editPost}
                       showDividers={{ leftDivider: true, rightDivider: false }}
                     />
                   )}
                 </div>
                 {/* Only show delete, reply, and award if post is confirmed */}
-                {"address" in reply && (
+                {isForumPost(reply) && (
                   <div className="rightBox">
                     <PermissionsGate
                       scopes={[SCOPES.canDeleteReply]}

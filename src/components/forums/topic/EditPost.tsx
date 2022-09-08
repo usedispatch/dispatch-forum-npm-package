@@ -20,11 +20,12 @@ interface EditPostProps {
   post: ForumPost;
   forumData: ForumData;
   showDividers: { leftDivider: boolean; rightDivider: boolean };
+  editPostLocal: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
 }
 
 export function EditPost(props: EditPostProps) {
-  const { post, forumData, update, showDividers } = props;
+  const { post, forumData, update, showDividers, editPostLocal } = props;
   const forumObject = useForum();
   const { permission, wallet } = forumObject;
 
@@ -67,13 +68,13 @@ export function EditPost(props: EditPostProps) {
         meta: post.data.meta,
       });
 
-      await update();
       setEditPost({
         show: false,
         loading: false,
         body: editPost.body,
         subj: editPost.subj,
       });
+
       setNotificationContent({
         isHidden: false,
         type: MessageType.success,
@@ -84,6 +85,15 @@ export function EditPost(props: EditPostProps) {
           </>
         ),
       });
+
+      // Edit the local post
+      editPostLocal(post, editPost.body, editPost.subj);
+
+      // When the transaction is confirmed, update for real
+      forumObject.connection
+        .confirmTransaction(tx)
+        .then(() => update());
+
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
         NOTIFICATION_BANNER_TIMEOUT

@@ -6,7 +6,14 @@ import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
 
-import { useForumData, useModal, useParticipatingModerators } from "../../utils/hooks";
+import {
+  useForumData,
+  useModal,
+  useParticipatingModerators,
+  isForumPost,
+  isEditedPost,
+  EditedPost
+} from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
 import { MessageType, Spinner, Link } from "../../components/common";
@@ -50,28 +57,31 @@ export const TopicView = (props: Props) => {
       return null;
     }
   }, [collectionId]);
-
- const { forumData, update, addPost, deletePost } = useForumData(
+ 
+ const { forumData, update, addPost, editPost, deletePost } = useForumData(
     collectionPublicKey,
     forum
   );
  const participatingModerators = useParticipatingModerators(forumData, forum);
- 
-  const topic: Loading<ForumPost> = useMemo(() => {
+
+  const topic: Loading<ForumPost | EditedPost> = useMemo(() => {
     if (isSuccess(forumData)) {
       const post = forumData.posts.find((post) => {
         // This conditional only evaluates to true if `post` is a
         // ForumPost and not a LocalPost-- that is, if it exists
         // on-chain
         if ("postId" in post) {
-          return post.isTopic && post.postId === topicId;
+          return (isForumPost(post) || isEditedPost(post)) &&
+            post.isTopic &&
+            post.postId === topicId;
         } else {
           return false;
         }
         // The above function only returns true if the post in
-        // question is a ForumPost. But the TypeScript checker
-        // can't recognize that, so we cast here
-      }) as ForumPost;
+        // question is a ForumPost or an EditedPost. But the
+        // TypeScript checker can't recognize that, so we cast
+        // here
+      }) as ForumPost | EditedPost;
       if (post) {
         return post;
       } else {
@@ -194,6 +204,7 @@ export const TopicView = (props: Props) => {
                           userRole={role.role}
                           update={update}
                           addPost={addPost}
+                          editPost={editPost}
                           deletePost={deletePost}
                           updateVotes={(upVoted) => updateVotes(upVoted)}
                         />

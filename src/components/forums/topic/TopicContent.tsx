@@ -14,6 +14,7 @@ import {
   PopUpModal,
   PermissionsGate,
   TransactionLink,
+  Spinner
 } from "../../common";
 import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
 import { EditPost } from "./EditPost";
@@ -25,7 +26,12 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { ForumData, LocalPost } from "../../../utils/hooks";
+import {
+  ForumData,
+  CreatedPost,
+  EditedPost,
+  isEditedPost
+} from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -36,15 +42,16 @@ interface TopicContentProps {
   forumData: ForumData;
   participatingModerators: PublicKey[] | null;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
+  editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   deletePost: (post: ForumPost) => void;
-  topic: ForumPost;
+  topic: ForumPost | EditedPost;
   userRole: UserRoleType;
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, addPost, deletePost, updateVotes, topic, participatingModerators } = props;
+  const { forum, forumData, userRole, update, addPost, editPost, deletePost, updateVotes, topic, participatingModerators } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -348,6 +355,7 @@ export function TopicContent(props: TopicContentProps) {
                 post={topic}
                 forumData={forumData}
                 update={() => update()}
+                editPostLocal={editPost}
                 showDividers={{ leftDivider: false, rightDivider: true }}
               />
               <div className="lock">
@@ -407,6 +415,7 @@ export function TopicContent(props: TopicContentProps) {
         participatingModerators={participatingModerators}
         update={update}
         addPost={addPost}
+        editPost={editPost}
         deletePost={deletePost}
         topic={topic}
         onDeletePost={async (tx) => {
@@ -477,18 +486,21 @@ function TopicHeader(props: TopicHeaderProps) {
             </div>
           </div>
         </div>
-        <div className="subj">
-          {isGated && (
-            <div className="gatedTopic">
-              <Lock />
-            </div>
-          )}
-          <Markdown>{topic?.data.subj ?? "subject"}</Markdown>
-        </div>
+        { !isEditedPost(topic) ?
+          <div className="subj">
+            {isGated && (
+              <div className="gatedTopic">
+                <Lock />
+              </div>
+            )}
+            <Markdown>{topic?.data.subj ?? "subject"}</Markdown>
+          </div> :
+            <Spinner />
+        }
       </div>
-      <div className="topicBody">
-        <Markdown>{topic?.data.body ?? "body of the topic"}</Markdown>
-      </div>
+      { !isEditedPost(topic) &&
+        <div className="topicBody"><Markdown>{topic?.data.body ?? "body of the topic"}</Markdown></div>
+      }
     </div>
   );
 }

@@ -22,22 +22,25 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import {
   ForumData,
-  LocalPost,
+  CreatedPost,
   isForumPost,
-  isLocalPost,
+  isEditedPost,
+  isCreatedPost,
+  ClientPost
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
+  post: ClientPost;
   participatingModerators: PublicKey[] | null;
-  post: LocalPost | ForumPost;
   userRole: UserRoleType;
   topicPosterId: PublicKey;
   postInFlight: boolean;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
   setPostInFlight: (postInFlight: boolean) => void;
@@ -52,6 +55,7 @@ export function PostContent(props: PostContentProps) {
     onDeletePost,
     update,
     addPost,
+    editPost,
     deletePost,
     postInFlight,
     setPostInFlight,
@@ -133,7 +137,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.info,
       });
 
-      const localPost: LocalPost = {
+      const localPost: CreatedPost = {
         data: {
           body: reply,
           ts: new Date(),
@@ -141,6 +145,7 @@ export function PostContent(props: PostContentProps) {
         poster: forum.wallet.publicKey!,
         isTopic: false,
         replyTo: post.address,
+        state: 'created'
       };
       addPost(localPost);
 
@@ -237,7 +242,7 @@ export function PostContent(props: PostContentProps) {
   //   ? forumData.moderators.map((m) => m.toBase58())
   //   : [];
 
-  const isLocal = isLocalPost(post);
+  const isLocal = isCreatedPost(post);
 
   return (
     <>
@@ -342,26 +347,46 @@ export function PostContent(props: PostContentProps) {
                   </div>
                 </div>
                 <div className="postedAt">
-                  {isForumPost(post) ? (
-                    <>
-                      Posted at: {postedAt}
-                      <div className="accountInfo">
-                        <a
-                          href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
-                          className="transactionLink"
-                          target="_blank">
-                          <Info />
-                        </a>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      Posting
-                      <div className="posting">
-                        <Spinner />
-                      </div>
-                    </>
-                  )}
+                  {(() => {
+                    if (isForumPost(post)) {
+                      return (
+                        <>
+                          Posted at: {postedAt}
+                          <div className="accountInfo">
+                            <a
+                              href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                              className="transactionLink"
+                              target="_blank">
+                              <Info />
+                            </a>
+                          </div>
+                        </>
+                      );
+                    } else if(isEditedPost(post)) {
+                      return (
+                        <>
+                          Confirming edit
+                          <div className="posting">
+                            <Spinner />
+                          </div>
+                        </>
+                      );
+                    } else if(isCreatedPost(post)) {
+                      return (
+                        <>
+                          Posting
+                          <div className="posting">
+                            <Spinner />
+                          </div>
+                        </>
+                      );
+                    } else {
+                      // ForumPost, CreatedPost, and EditedPost
+                      // are the three kinds of ClientPost, so we
+                      // should never get here
+                      return null;
+                    }
+                  })()}
                 </div>
               </div>
               <div className="postBody">
@@ -385,6 +410,7 @@ export function PostContent(props: PostContentProps) {
                     post={post}
                     forumData={forumData}
                     update={() => update()}
+                    editPostLocal={editPost}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
                   <PermissionsGate scopes={[SCOPES.canCreateReply]}>
@@ -436,6 +462,7 @@ export function PostContent(props: PostContentProps) {
                 userRole={userRole}
                 topicOwnerId={topicPosterId}
                 update={() => update()}
+                editPost={editPost}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);

@@ -43,7 +43,7 @@ interface TopicContentProps {
   participatingModerators: PublicKey[] | null;
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
-  editPost: (post: ForumPost, newText: string) => void;
+  editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost | EditedPost;
   userRole: UserRoleType;

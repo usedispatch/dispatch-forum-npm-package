@@ -109,7 +109,7 @@ export function useForumData(
   forumData: Loading<ForumData>;
   addPost: (post: CreatedPost) => void;
   deletePost: (post: ForumPost) => void;
-  editPost: (post: ForumPost, newText: string) => void;
+  editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
@@ -220,7 +220,9 @@ export function useForumData(
   }
 
   function editPost(
-    post: ForumPost, newText: string
+    post: ForumPost,
+    newBody: string,
+    newSubj?: string
   ) {
     if (isSuccess(forumData)) {
       const { posts } = forumData;
@@ -250,8 +252,9 @@ export function useForumData(
       const editedPost: EditedPost = {
         ...postToEdit,
         data: {
-          body: newText,
-          ts: postToEdit.data.ts
+          ts: postToEdit.data.ts,
+          body: newBody,
+          subj: newSubj
         },
         state: 'edited'
       };

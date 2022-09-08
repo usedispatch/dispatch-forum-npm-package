@@ -20,7 +20,7 @@ interface EditPostProps {
   post: ForumPost;
   forumData: ForumData;
   showDividers: { leftDivider: boolean; rightDivider: boolean };
-  editPostLocal: (post: ForumPost, newText: string) => void;
+  editPostLocal: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
 }
 
@@ -87,7 +87,7 @@ export function EditPost(props: EditPostProps) {
       });
 
       // Edit the local post
-      editPostLocal(post, editPost.body);
+      editPostLocal(post, editPost.body, editPost.subj);
 
       // When the transaction is confirmed, update for real
       forumObject.connection

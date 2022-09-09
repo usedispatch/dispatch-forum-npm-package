@@ -209,6 +209,10 @@
       }
     }
 
+    .votePostContainer .votePostContent .currentVotes {
+      color: white;
+    }
+
     .awardContent {
       .typeSelector .nftType {
         background: #141313;
@@ -230,7 +234,6 @@
       background: #1d1c1c;
       font-family: "Gotham", "sans-serif";
 
-      .currentVotes,
       .commentsContainer,
       .headerAndActions .topicHeader .posted .posterId,
       .headerAndActions .topicHeader .topicBody {
@@ -292,6 +295,37 @@
       color: white;
       background: #1d1c1c;
       font-family: "Gotham", "sans-serif";
+    }
+
+    .postContentBox {
+      .box .postHeader .walletId {
+        color: white;
+      }
+
+      .box .postBody {
+        color: white;
+      }
+
+      .actionsContainer {
+        .replyButton {
+          color: #b0b0b0;
+
+          svg path {
+            fill: #b0b0b0;
+          }
+        }
+
+        .awardButton {
+          color: #b0b0b0;
+          svg path {
+            stroke: #b0b0b0;
+          }
+        }
+
+        .deleteButton svg path {
+          fill: #b0b0b0;
+        }
+      }
     }
   }
 }

@@ -31,7 +31,9 @@ import {
   CreatedPost,
   EditedPost,
   isEditedPost,
-  useUserIsMod
+  useUserIsMod,
+  useForumIdentity,
+  ForumIdentity
 } from "../../../utils/hooks";
 import {
   restrictionListToString,
@@ -84,6 +86,8 @@ export function TopicContent(props: TopicContentProps) {
     // TODO(andrew): maybe a better way to mock this up
     forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
   );
+
+  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>("");
@@ -379,7 +383,11 @@ export function TopicContent(props: TopicContentProps) {
                 Manage post access
               </button>
             </div>
-            { userIsMod &&
+            {(// The gifting UI should be hidden on the apes forum for non-mods.
+              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+              forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+              userIsMod
+            ) &&
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <button
                 className="awardButton"

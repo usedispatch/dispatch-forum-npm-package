@@ -27,7 +27,9 @@ import {
   isEditedPost,
   isCreatedPost,
   ClientPost,
-  useUserIsMod
+  useUserIsMod,
+  useForumIdentity,
+  ForumIdentity
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
@@ -69,6 +71,10 @@ export function PostContent(props: PostContentProps) {
     forumData.collectionId,
     forum,
     forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
+  );
+
+  const forumIdentity = useForumIdentity(
+    forumData.collectionId
   );
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
@@ -438,20 +444,23 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {
-                        userIsMod &&
-                          <>
-                            <button
-                              className="awardButton"
-                              disabled={!permission.readAndWrite}
-                              onClick={() => {
-                                setPostToAward(post);
-                                setShowGiveAward(true);
-                              }}>
-                              <Gift /> Send Token
-                            </button>
-                            <div className="actionDivider" />
-                          </>
+                      {(// The gifting UI should be hidden on the apes forum for non-mods.
+                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                        forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                        userIsMod
+                       ) &&
+                         <>
+                           <button
+                             className="awardButton"
+                             disabled={!permission.readAndWrite}
+                             onClick={() => {
+                               setPostToAward(post);
+                               setShowGiveAward(true);
+                             }}>
+                             <Gift /> Send Token
+                           </button>
+                           <div className="actionDivider" />
+                         </>
                       }
                       <button
                         className="replyButton"

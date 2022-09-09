@@ -16,7 +16,7 @@ export const TransactionLink = (props: TransactionLinkProps) => {
     <div className="transactionLinkContainer">
       Transaction:
       <a
-        href={`https://solscan.io/tx/${transaction}?cluster=${cluster}`}
+        href={`https://solscan.io/tx/${transaction}` + (cluster === 'devnet' && `?cluster=${cluster}`)}
         className="transactionLink"
         target="_blank"
       >

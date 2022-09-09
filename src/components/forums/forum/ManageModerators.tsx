@@ -114,51 +114,6 @@ export function ManageModerators(props: ManageModeratorsProps) {
 
   const moderatorsFetched = isSuccess(moderators);
 
-  const BodyContent = () => {
-    // If the moderators were successfully fetched and currentMods was set...
-    if (moderatorsFetched) {
-      const moderatorList = moderators.map((pubkey) => {
-        const m = pubkey.toBase58();
-        return (
-          <li key={m} className="currentModerators">
-            <>
-              <div className="iconContainer">
-                <Jdenticon value={m} alt="moderatorId" />
-              </div>
-              {m}
-            </>
-          </li>
-        );
-      });
-
-      return (
-        <>
-          <label className="manageModeratorsLabel">Current moderators</label>
-          <ul>{moderatorList}</ul>
-          <label className="manageModeratorsLabel">Add new</label>
-          <input
-            placeholder="Add moderator's wallet ID here"
-            className="manageModeratorsInput"
-            maxLength={800}
-            value={manageModerators.newModerator}
-            onChange={(e) =>
-              setManageModerators({
-                ...manageModerators,
-                newModerator: e.target.value,
-              })
-            }
-          />
-        </>
-      );
-    } else {
-      return (
-        <div className="emptyList">
-          Click to load the list of current moderators
-        </div>
-      );
-    }
-  };
-
   return (
     <div className="dsp- ">
       <div className="manageModeratorsContainer">
@@ -175,7 +130,45 @@ export function ManageModerators(props: ManageModeratorsProps) {
             title={"Manage moderators"}
             body={
               <div className="manageModeratorsBody">
-                <BodyContent />
+                {moderatorsFetched ? (
+                  <>
+                    <label className="manageModeratorsLabel">
+                      Current moderators
+                    </label>
+                    <ul>
+                      {moderators.map((pubkey) => {
+                        const m = pubkey.toBase58();
+                        return (
+                          <li key={m} className="currentModerators">
+                            <>
+                              <div className="iconContainer">
+                                <Jdenticon value={m} alt="moderatorId" />
+                              </div>
+                              {m}
+                            </>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <label className="manageModeratorsLabel">Add new</label>
+                    <input
+                      placeholder="Add moderator's wallet ID here"
+                      className="manageModeratorsInput"
+                      maxLength={800}
+                      value={manageModerators.newModerator}
+                      onChange={(e) =>
+                        setManageModerators({
+                          ...manageModerators,
+                          newModerator: e.target.value,
+                        })
+                      }
+                    />
+                  </>
+                ) : (
+                  <div className="emptyList">
+                    Click to load the list of current moderators
+                  </div>
+                )}
               </div>
             }
             loading={manageModerators.addingNewModerator}

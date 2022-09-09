@@ -1,0 +1,118 @@
+@layer components {
+  .degenApeAcademy {
+    /* NOTIFICATION */
+    .alertContainer {
+      background: #30302e;
+      border: 1px solid #999999;
+
+      .alertText {
+        color: white;
+      }
+    }
+    .notificationContainer {
+      .closeContainer svg path {
+        stroke: white;
+        fill: white;
+      }
+
+      &.info,
+      &.error,
+      &.warning,
+      &.success {
+        background: #30302e;
+      }
+    }
+
+    .notificationText {
+      font-weight: 500;
+      font-size: 14px;
+      color: white;
+    }
+
+    /* FORUM */
+    .forumView,
+    .forumViewContainer {
+      background: #141313;
+      font-family: "Gotham", "sans-serif";
+    }
+
+    .forumContentBox {
+      background: #1d1c1c;
+
+      .titleBox,
+      .description {
+        color: #ffffff;
+      }
+
+      .description {
+        font-family: "Gotham", "sans-serif";
+      }
+
+      .moderatorToolsContainer {
+        border-top: 1px solid white;
+        color: #999999;
+
+        .manageOwnersButton,
+        .manageModeratorsButton,
+        .moderatorTool,
+        .editForumButton {
+          color: #d1d1d1;
+        }
+
+        .actionDivider {
+          background: white;
+        }
+      }
+    }
+
+    .createTopicButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      font-style: normal;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .gatedForum,
+    .lock,
+    .editForumButton {
+      svg path {
+        stroke: white;
+      }
+    }
+
+    /* TOPIC LIST */
+    .topicListContainer,
+    .emptyTopicList {
+      background: #1d1c1c;
+    }
+
+    .tableHeader {
+      border-color: white;
+    }
+
+    .topicListContainer .tableHeader .tableHeaderTitle {
+      color: white;
+    }
+
+    .row {
+      border-bottom: 1px solid white;
+      font-family: "Gotham", "sans-serif";
+      font-weight: 400;
+      font-size: 14px;
+
+      .rowSubj {
+        font-weight: 400;
+      }
+
+      &:hover {
+        background: #3c3c3c;
+      }
+
+      a {
+        color: white;
+      }
+    }
+  }
+}

@@ -21,6 +21,7 @@ import {
   isNotFound,
 } from "../../utils/loading";
 import { useForumData, useModal } from "../../utils/hooks";
+import { getCustomStyles } from "../../utils/getCustomStyles";
 
 interface ForumViewProps {
   collectionId: string;
@@ -91,6 +92,8 @@ export const ForumView = (props: ForumViewProps) => {
     }
   }, [collectionId]);
 
+  const customStyle = getCustomStyles(collectionId);
+
   const mount = useRef(false);
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
@@ -113,52 +116,54 @@ export const ForumView = (props: ForumViewProps) => {
 
   return (
     <div className="dsp-">
-      <Helmet>
-        <meta charSet="utf-8" />
-        {isNotFound(forumData) && (
-          <title>Create Forum for {collectionId}</title>
-        )}
-        {isSuccess(forumData) && (
-          <title>{forumData.description.title} -- Forum</title>
-        )}
-      </Helmet>
-      <div className="forumView">
-        {modal}
+      <div className={customStyle}>
+        <Helmet>
+          <meta charSet="utf-8" />
+          {isNotFound(forumData) && (
+            <title>Create Forum for {collectionId}</title>
+          )}
+          {isSuccess(forumData) && (
+            <title>{forumData.description.title} -- Forum</title>
+          )}
+        </Helmet>
+        <div className="forumView">
+          {modal}
 
-        {!permission.readAndWrite && <ConnectionAlert />}
-        <div className="forumViewContainer">
-          <div className="forumViewContent">
-            {(() => {
-              if (isSuccess(forumData)) {
-                return (
-                  <ForumContent
-                    forumObject={forumObject}
-                    forumData={forumData}
-                    update={update}
-                  />
-                );
-              } else if (isInitial(forumData) || isPending(forumData)) {
-                return (
-                  <div className="forumLoading">
-                    <Spinner />
-                  </div>
-                );
-              } else if (isNotFound(forumData)) {
-                return (
-                  <CreateForum
-                    forumObject={forumObject}
-                    collectionId={collectionId}
-                    update={update}
-                  />
-                );
-              } else {
-                // TODO(andrew) better, more detailed error
-                // view here
-                return disconnectedView;
-              }
-            })()}
+          {!permission.readAndWrite && <ConnectionAlert />}
+          <div className="forumViewContainer">
+            <div className="forumViewContent">
+              {(() => {
+                if (isSuccess(forumData)) {
+                  return (
+                    <ForumContent
+                      forumObject={forumObject}
+                      forumData={forumData}
+                      update={update}
+                    />
+                  );
+                } else if (isInitial(forumData) || isPending(forumData)) {
+                  return (
+                    <div className="forumLoading">
+                      <Spinner />
+                    </div>
+                  );
+                } else if (isNotFound(forumData)) {
+                  return (
+                    <CreateForum
+                      forumObject={forumObject}
+                      collectionId={collectionId}
+                      update={update}
+                    />
+                  );
+                } else {
+                  // TODO(andrew) better, more detailed error
+                  // view here
+                  return disconnectedView;
+                }
+              })()}
+            </div>
+            <PoweredByDispatch />
           </div>
-          <PoweredByDispatch />
         </div>
       </div>
     </div>

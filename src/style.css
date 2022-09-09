@@ -38,6 +38,9 @@
 @import "./styles/ForumView.css";
 @import "./styles/TopicView.css";
 
+/* Customizations */
+@import "styles/customizations/DegenApeAcademy.css";
+
 @import "tailwindcss/utilities";
 
 @layer base {

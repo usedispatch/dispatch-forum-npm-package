@@ -12,7 +12,7 @@ import {
   useParticipatingModerators,
   isForumPost,
   isEditedPost,
-  EditedPost
+  EditedPost,
 } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
@@ -34,6 +34,8 @@ import {
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
+import { getCustomStyles } from "../../utils/getCustomStyles";
+
 interface Props {
   topicId: number;
   collectionId: string;
@@ -57,12 +59,12 @@ export const TopicView = (props: Props) => {
       return null;
     }
   }, [collectionId]);
- 
- const { forumData, update, addPost, editPost, deletePost } = useForumData(
+
+  const { forumData, update, addPost, editPost, deletePost } = useForumData(
     collectionPublicKey,
     forum
   );
- const participatingModerators = useParticipatingModerators(forumData, forum);
+  const participatingModerators = useParticipatingModerators(forumData, forum);
 
   const topic: Loading<ForumPost | EditedPost> = useMemo(() => {
     if (isSuccess(forumData)) {
@@ -71,9 +73,11 @@ export const TopicView = (props: Props) => {
         // ForumPost and not a LocalPost-- that is, if it exists
         // on-chain
         if ("postId" in post) {
-          return (isForumPost(post) || isEditedPost(post)) &&
+          return (
+            (isForumPost(post) || isEditedPost(post)) &&
             post.isTopic &&
-            post.postId === topicId;
+            post.postId === topicId
+          );
         } else {
           return false;
         }
@@ -161,67 +165,70 @@ export const TopicView = (props: Props) => {
     </div>
   );
 
+  const customStyle = getCustomStyles(collectionId);
+
   return (
     <div className="dsp- ">
-      <Helmet>
-        <meta charSet="utf-8" />
-        {isSuccess(topic) && <title>{topic.data.subj} -- Topic </title>}
-      </Helmet>
-      <div className="topicView">
-        {modal}
-        {!permission.readAndWrite && <ConnectionAlert />}
-        <div className="topicViewContainer">
-          <div className="topicViewContent">
-            <main>
-              <div>
-                {(() => {
-                  if (
-                    (collectionPublicKey && isInitial(topic)) ||
-                    isPending(topic)
-                  ) {
-                    return (
-                      <div className="topicViewLoading">
-                        <Spinner />
-                      </div>
-                    );
-                  } else if (
-                    collectionPublicKey &&
-                    isSuccess(forumData) &&
-                    isSuccess(topic)
-                  ) {
-                    return (
-                      <>
-                        <Breadcrumb
-                          navigateTo={forumPath}
-                          parent={forumData.description.title}
-                          current={topic.data.subj!}
-                        />
-                        <TopicContent
-                          forumData={forumData}
-                          participatingModerators={participatingModerators}
-                          forum={forum}
-                          topic={topic}
-                          userRoles={role.roles}
-                          update={update}
-                          addPost={addPost}
-                          editPost={editPost}
-                          deletePost={deletePost}
-                          updateVotes={(upVoted) => updateVotes(upVoted)}
-                        />
-                      </>
-                    );
-                  } else if (_.isNull(collectionPublicKey)) {
-                    return invalidPublicKeyView;
-                  } else {
-                    // TODO(andrew) more sophisticated error
-                    // handling here
-                    return disconnectedView;
-                  }
-                })()}
-              </div>
-            </main>
+      <div className={customStyle}>
+        <Helmet>
+          <meta charSet="utf-8" />
+          {isSuccess(topic) && <title>{topic.data.subj} -- Topic </title>}
+        </Helmet>
+        <div className="topicView">
+          {modal}
+          {!permission.readAndWrite && <ConnectionAlert />}
+          <div className="topicViewContainer">
+            <div className="topicViewContent">
+              <main>
+                <div>
+                  {(() => {
+                    if (
+                      (collectionPublicKey && isInitial(topic)) ||
+                      isPending(topic)
+                    ) {
+                      return (
+                        <div className="topicViewLoading">
+                          <Spinner />
+                        </div>
+                      );
+                    } else if (
+                      collectionPublicKey &&
+                      isSuccess(forumData) &&
+                      isSuccess(topic)
+                    ) {
+                      return (
+                        <>
+                          <Breadcrumb
+                            navigateTo={forumPath}
+                            parent={forumData.description.title}
+                            current={topic.data.subj!}
+                          />
+                          <TopicContent
+                            forumData={forumData}
+                            participatingModerators={participatingModerators}
+                            forum={forum}
+                            topic={topic}
+                            userRoles={role.roles}
+                            update={update}
+                            addPost={addPost}
+                            editPost={editPost}
+                            deletePost={deletePost}
+                            updateVotes={(upVoted) => updateVotes(upVoted)}
+                          />
+                        </>
+                      );
+                    } else if (_.isNull(collectionPublicKey)) {
+                      return invalidPublicKeyView;
+                    } else {
+                      // TODO(andrew) more sophisticated error
+                      // handling here
+                      return disconnectedView;
+                    }
+                  })()}
+                </div>
+              </main>
+            </div>
           </div>
-          <PoweredByDispatch />
         </div>
       </div>
     </div>

@@ -51,25 +51,19 @@
         SCOPES.canRemoveTopicRestriction
       ],
     [UserRoleType.Owner]: [
-      SCOPES.canView,
-      SCOPES.canCreateForum,
-      SCOPES.canDeleteForum,
-      SCOPES.canEditMods,
-      SCOPES.canEditForum,
-      SCOPES.canClaimForum,
-      SCOPES.canAddOwner,
-      SCOPES.canDeleteOwner,
-      SCOPES.canCreateTopic,
-      SCOPES.canDeleteTopic,
-      SCOPES.canVote,
-      SCOPES.canAddForumRestriction,
-      SCOPES.canRemoveForumRestriction,
-      SCOPES.canAddTopicRestriction,
-      SCOPES.canRemoveTopicRestriction,
-      SCOPES.canCreatePost,
-      SCOPES.canDeletePost,
-      SCOPES.canCreateReply,
-      SCOPES.canDeleteReply
+        SCOPES.canVote,
+        SCOPES.canCreateTopic,
+        SCOPES.canCreatePost,
+        SCOPES.canCreateReply,
+        SCOPES.canEditMods,
+        SCOPES.canAddForumRestriction,
+        SCOPES.canRemoveForumRestriction,
+        SCOPES.canAddTopicRestriction,
+        SCOPES.canRemoveTopicRestriction,
+        SCOPES.canAddOwner,
+        SCOPES.canDeleteOwner,
+        SCOPES.canClaimForum,
+        SCOPES.canEditForum
     ]
   };
 

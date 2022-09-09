@@ -20,6 +20,7 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { getIdentity } from '../../../utils/identity';
 import {
   ForumData,
   CreatedPost,
@@ -257,6 +258,8 @@ export function PostContent(props: PostContentProps) {
 
   const isLocal = isCreatedPost(post);
 
+  const identity = getIdentity(post.poster);
+
   return (
     <>
       <div
@@ -348,10 +351,19 @@ export function PostContent(props: PostContentProps) {
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
-                    <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
+                    { identity ?
+                      <img
+                        src={identity.profilePicture.href}
+                        style={{ borderRadius: '50%' }}
+                      /> :
+                      <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
+                    }
                   </div>
                   <div className="walletId">
-                    {post.poster.toBase58()}
+                    { identity ?
+                      identity.displayName :
+                      post.poster.toBase58()
+                    }
                     <RoleLabel
                       topicOwnerId={topicPosterId}
                       posterId={post?.poster}

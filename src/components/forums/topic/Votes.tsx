@@ -13,9 +13,13 @@ import {
 import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { ForumData } from "../../../utils/hooks";
+import { isSuccess } from "../../../utils/loading";
 
 interface VotesProps {
   post: ForumPost;
+  forumData: ForumData;
+  update: () => Promise<void>;
   onUpVotePost: () => Promise<string>;
   onDownVotePost: () => Promise<string>;
   updateVotes: (upVoted: boolean) => void;
@@ -24,7 +28,7 @@ interface VotesProps {
 export function Votes(props: VotesProps) {
   const Forum = useForum();
   const permission = Forum.permission;
-  const { post, onDownVotePost, onUpVotePost, updateVotes } = props;
+  const { post, onDownVotePost, onUpVotePost, updateVotes, update, forumData } = props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
@@ -33,7 +37,8 @@ export function Votes(props: VotesProps) {
   }>();
 
   const [loading, setLoading] = useState(false);
-  const [alreadyVoted, setAlreadyVoted] = useState(false);
+  const [alreadyUpVoted, setAlreadyUpVoted] = useState(false);
+  const [alreadyDownVoted, setAlreadyDownVoted] = useState(false);
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
@@ -42,13 +47,29 @@ export function Votes(props: VotesProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
+  const setVotes = async () => {
+    if (isSuccess(forumData.votes)) {
+    const vote = forumData.votes.find((v) => v.postId === post.postId);
+      if (vote?.upVote === true) {
+        setAlreadyUpVoted(true);
+      } else if (vote?.upVote === false) {
+        setAlreadyDownVoted(true);
+      }
+    }
+  }
+
+  useEffect(() => { 
+    setVotes()
+  }, [forumData.votes]);
+
   const upVotePost = async () => {
     setLoading(true);
 
     try {
       const tx = await onUpVotePost();
       updateVotes(true);
-      setAlreadyVoted(true);
+      setAlreadyUpVoted(true);
+      setAlreadyDownVoted(false);
       setLoading(false);
       setIsNotificationHidden(false);
       setNotificationContent({
@@ -91,7 +112,8 @@ export function Votes(props: VotesProps) {
     try {
       const tx = await onDownVotePost();
       updateVotes(false);
-      setAlreadyVoted(true);
+      setAlreadyDownVoted(true);
+      setAlreadyUpVoted(false);
       setIsNotificationHidden(false);
       setNotificationContent({
         content: (
@@ -154,8 +176,8 @@ export function Votes(props: VotesProps) {
         />
         <div className="votePostContent">
           <button
-            className="votePostButton upVote"
-            disabled={alreadyVoted || !permission.readAndWrite}
+            className={`votePostButton upVote` + (alreadyUpVoted ? "d" : "")}
+            disabled={alreadyUpVoted || !permission.readAndWrite}
             onClick={upVotePost}>
             <Vote isUpVote />
           </button>
@@ -167,8 +189,8 @@ export function Votes(props: VotesProps) {
             <div className="currentVotes">{post.upVotes - post.downVotes}</div>
           )}
           <button
-            className="votePostButton downVote"
-            disabled={alreadyVoted || !permission.readAndWrite}
+            className={`votePostButton downVote`+ (alreadyDownVoted ? "d" : "")}
+            disabled={alreadyDownVoted || !permission.readAndWrite}
             onClick={downVotePost}>
             <Vote />
           </button>

@@ -8,7 +8,8 @@ import {
   PostRestriction,
   getMintsForOwner,
   getMetadataForOwner,
-  getMetadataForMints
+  VoteType,
+  ChainVoteEntry,
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -160,6 +161,10 @@ export interface IForum {
   canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
 
   canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
+
+  getVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean | undefined>;
+
+  getVotes(collectionId: web3.PublicKey): Promise<ChainVoteEntry[] | undefined>;
 
   getNFTsForCurrentUser(): Promise<web3.PublicKey[]>;
 
@@ -745,6 +750,39 @@ export class DispatchForum implements IForum {
       throw(parseError(error))
     }
   };
+
+  getVote = async(collectionId: web3.PublicKey, post: ForumPost) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
+      const vote = await forum.getVote(post);
+      if (vote == VoteType.down) {
+        return false;
+      } else if (vote == VoteType.up) {
+        return true;
+      } else {
+        return vote;
+      }
+    } catch (error) {
+      throw(parseError(error))
+    }
+
+  }
+
+  getVotes = async(collectionId: web3.PublicKey) => {
+    const wallet = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
+      const votes = await forum.getVotes();
+      return votes;
+    } catch (error) {
+      throw(parseError(error))
+    }
+  }
 
   getNFTsForCurrentUser = async() => {
     const wallet = this.wallet;

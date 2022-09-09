@@ -313,6 +313,8 @@ export function TopicContent(props: TopicContentProps) {
         <div className="activityInfo">
           <PermissionsGate scopes={[SCOPES.canVote]}>
             <Votes
+              forumData={forumData}
+              update={update}
               onDownVotePost={() =>
                 forum.voteDownForumPost(topic, forumData.collectionId)
               }

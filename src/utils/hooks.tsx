@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, ReactNode } from "react";
 import { PublicKey, AccountInfo } from "@solana/web3.js";
-import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated } from "@usedispatch/client";
+import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated, ChainVoteEntry } from "@usedispatch/client";
 import { uniqBy, zip, isNil } from 'lodash';
 import {
   getAssociatedTokenAddress,
@@ -98,6 +98,7 @@ export interface ForumData {
   posts: ClientPost[];
   restriction: LoadingResult<PostRestriction>;
   moderatorMint: PublicKey;
+  votes: LoadingResult<ChainVoteEntry[]>;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -184,6 +185,23 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
+  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
+    if (collectionId) {
+      try {
+        const fetchData = await forum.getVotes(collectionId);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+  
 
   async function fetchForumPostRestriction(): Promise<
     LoadingResult<PostRestriction>
@@ -298,13 +316,14 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, description, posts, restriction, moderatorMint] =
+        const [owners, description, posts, restriction, moderatorMint, votes] =
           await Promise.all([
             fetchOwners(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
             fetchModeratorMint(),
+            fetchVotes(),
           ]);
 
         // TODO(andrew) perhaps allow the page to load even if
@@ -318,7 +337,8 @@ export function useForumData(
             description,
             posts,
             restriction,
-            moderatorMint
+            moderatorMint,
+            votes
           });
         } else {
           // We already confirmed the forum existed, so assume

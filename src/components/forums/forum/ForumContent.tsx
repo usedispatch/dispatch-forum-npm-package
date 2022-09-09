@@ -406,6 +406,10 @@ export function ForumContent(props: ForumContentProps) {
                     id="create-topic"
                     title="You are not authorized"
                     body={
+                      (isSuccess(forumData.restriction) &&
+                      forumData.restriction.tokenOwnership?.mint
+                        .equals(forumData.moderatorMint)) ?
+                      "Oops! Only moderators can create new topics at this time." :
                       "Oops! You need a token to participate. Please contact the forum’s moderators."
                     }
                     visible

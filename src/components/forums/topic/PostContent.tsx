@@ -35,7 +35,7 @@ interface PostContentProps {
   forumData: ForumData;
   post: ClientPost;
   participatingModerators: PublicKey[] | null;
-  userRole: UserRoleType;
+  userRoles: UserRoleType[];
   topicPosterId: PublicKey;
   postInFlight: boolean;
   update: () => Promise<void>;
@@ -50,7 +50,7 @@ export function PostContent(props: PostContentProps) {
   const {
     forumData,
     forum,
-    userRole,
+    userRoles,
     topicPosterId,
     onDeletePost,
     update,
@@ -192,7 +192,7 @@ export function PostContent(props: PostContentProps) {
       const tx = await forum.deleteForumPost(
         postToDelete,
         forumData.collectionId,
-        userRole === UserRoleType.Moderator
+        userRoles.includes(UserRoleType.Moderator)
       );
       deletePost(postToDelete);
       onDeletePost(tx);
@@ -461,7 +461,7 @@ export function PostContent(props: PostContentProps) {
                 forumData={forumData}
                 participatingModerators={participatingModerators}
                 replies={replies}
-                userRole={userRole}
+                userRoles={userRoles}
                 topicOwnerId={topicPosterId}
                 update={() => update()}
                 editPost={editPost}

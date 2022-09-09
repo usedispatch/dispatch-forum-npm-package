@@ -22,7 +22,7 @@ import {
 interface PostRepliesProps {
   forumData: ForumData;
   participatingModerators: PublicKey[] | null;
-  userRole: UserRoleType;
+  userRoles: UserRoleType[];
   replies: ClientPost[];
   topicOwnerId: PublicKey;
   update: () => Promise<void>;

@@ -12,7 +12,7 @@ interface PostListProps {
   forum: DispatchForum;
   forumData: ForumData;
   participatingModerators: web3.PublicKey[] | null;
-  userRole: UserRoleType;
+  userRoles: UserRoleType[];
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
   editPost: (post: ForumPost, newText: string) => void;
@@ -24,7 +24,7 @@ interface PostListProps {
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update, editPost, addPost, deletePost, postInFlight, setPostInFlight, participatingModerators } = props;
+  const { forumData, forum, userRoles, onDeletePost, topic, update, editPost, addPost, deletePost, postInFlight, setPostInFlight, participatingModerators } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
@@ -48,7 +48,7 @@ export function PostList(props: PostListProps) {
                   forum={forum}
                   forumData={forumData}
                   post={post}
-                  userRole={userRole}
+                  userRoles={userRoles}
                   topicPosterId={topic.poster}
                   onDeletePost={onDeletePost}
                   update={update}

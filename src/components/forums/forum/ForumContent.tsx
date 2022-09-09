@@ -34,7 +34,7 @@ interface ForumContentProps {
 
 export function ForumContent(props: ForumContentProps) {
   const { forumData, forumObject, update } = props;
-  const { role } = useRole();
+  const { roles } = useRole();
   const { permission } = forumObject;
 
   const [newTopic, setNewTopic] = useState<{
@@ -501,7 +501,7 @@ export function ForumContent(props: ForumContentProps) {
           )}
           {(() => {
             if (showNewTopicModal && _.isNil(modalInfo)) {
-              if (role === UserRoleType.Viewer) {
+              if (roles.includes(UserRoleType.Viewer)) {
                 return (
                   <PopUpModal
                     id="create-topic"

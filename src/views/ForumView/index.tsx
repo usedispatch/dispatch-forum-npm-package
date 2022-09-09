@@ -162,7 +162,7 @@ export const ForumView = (props: ForumViewProps) => {
                 }
               })()}
             </div>
-            <PoweredByDispatch />
+            <PoweredByDispatch customStyle={customStyle} />
           </div>
         </div>
       </div>

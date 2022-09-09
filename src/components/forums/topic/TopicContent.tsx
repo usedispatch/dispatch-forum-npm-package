@@ -496,7 +496,10 @@ function TopicHeader(props: TopicHeaderProps) {
             By
             <div className="icon">
               { identity ?
-                <img src={identity.profilePicture.href} /> :
+                <img
+                  src={identity.profilePicture.href}
+                  style={{ borderRadius: '50%' }}
+                /> :
                 <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
               }
             </div>

@@ -352,7 +352,10 @@ export function PostContent(props: PostContentProps) {
                 <div className="posterId">
                   <div className="icon">
                     { identity ?
-                      <img src={identity.profilePicture.href} /> :
+                      <img
+                        src={identity.profilePicture.href}
+                        style={{ borderRadius: '50%' }}
+                      /> :
                       <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
                     }
                   </div>

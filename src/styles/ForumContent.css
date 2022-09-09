@@ -202,10 +202,6 @@
     background: transparent;
     color: #3f1d96;
 
-    &.owners {
-      margin-left: 0;
-    }
-
     &:hover {
       opacity: 0.85;
     }

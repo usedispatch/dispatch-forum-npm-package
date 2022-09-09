@@ -68,7 +68,7 @@ export function PostContent(props: PostContentProps) {
   const userIsMod = useUserIsMod(
     forumData.collectionId,
     forum,
-    forum.wallet.publicKey!
+    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
   );
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);

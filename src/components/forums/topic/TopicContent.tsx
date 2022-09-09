@@ -30,7 +30,8 @@ import {
   ForumData,
   CreatedPost,
   EditedPost,
-  isEditedPost
+  isEditedPost,
+  useUserIsMod
 } from "../../../utils/hooks";
 import {
   restrictionListToString,
@@ -76,6 +77,13 @@ export function TopicContent(props: TopicContentProps) {
     content: string | ReactNode;
     type: MessageType;
   }>();
+
+  const userIsMod = useUserIsMod(
+    forumData.collectionId,
+    forum,
+    // TODO(andrew): maybe a better way to mock this up
+    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
+  );
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
   const [accessToken, setAccessToken] = useState<string>("");
@@ -371,6 +379,7 @@ export function TopicContent(props: TopicContentProps) {
                 Manage post access
               </button>
             </div>
+            { userIsMod &&
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <button
                 className="awardButton"
@@ -379,6 +388,7 @@ export function TopicContent(props: TopicContentProps) {
                 <Gift /> Send Token
               </button>
             </PermissionsGate>
+            }
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost

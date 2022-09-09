@@ -26,7 +26,8 @@ import {
   isForumPost,
   isEditedPost,
   isCreatedPost,
-  ClientPost
+  ClientPost,
+  useUserIsMod
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
@@ -63,6 +64,12 @@ export function PostContent(props: PostContentProps) {
   } = props;
 
   const permission = forum.permission;
+
+  const userIsMod = useUserIsMod(
+    forumData.collectionId,
+    forum,
+    forum.wallet.publicKey!
+  );
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
@@ -431,16 +438,21 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      <button
-                        className="awardButton"
-                        disabled={!permission.readAndWrite}
-                        onClick={() => {
-                          setPostToAward(post);
-                          setShowGiveAward(true);
-                        }}>
-                        <Gift /> Send Token
-                      </button>
-                      <div className="actionDivider" />
+                      {
+                        userIsMod &&
+                          <>
+                            <button
+                              className="awardButton"
+                              disabled={!permission.readAndWrite}
+                              onClick={() => {
+                                setPostToAward(post);
+                                setShowGiveAward(true);
+                              }}>
+                              <Gift /> Send Token
+                            </button>
+                            <div className="actionDivider" />
+                          </>
+                      }
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}

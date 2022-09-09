@@ -134,6 +134,11 @@
       }
     }
 
+    .editForumContainer .editForumBody .editForumInput,
+    .editForumContainer .editForumBody .editForumInput.description {
+      color: black;
+    }
+
     .manageOwnersInput,
     .manageModeratorsInput {
       color: black;
@@ -148,6 +153,7 @@
     .currentToken svg path {
       fill: #b0b0b0;
     }
+
     /* TOPIC LIST */
     .topicListContainer,
     .emptyTopicList {

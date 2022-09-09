@@ -29,6 +29,21 @@
       color: white;
     }
 
+    /* POPUP MODAL */
+    .popUpModal {
+      .modalContainer .modalBox {
+        color: white;
+        background: #30302e;
+        border: 1px solid #999999;
+      }
+
+      .modalClose .closeIcon {
+        svg path {
+          fill: white;
+        }
+      }
+    }
+
     /* FORUM */
     .forumView,
     .forumViewContainer {
@@ -74,6 +89,11 @@
       text-transform: uppercase;
     }
 
+    .newAccessToken,
+    .createTopicTitleInput {
+      color: black;
+    }
+
     .gatedForum,
     .lock,
     .editForumButton {
@@ -82,10 +102,34 @@
       }
     }
 
+    .forumContent {
+      .cancelButton {
+        border-color: black;
+        background: white;
+        color: #141313;
+      }
+      .okButton {
+        background: #141313;
+        border: 1px solid white;
+        color: white;
+      }
+    }
+
+    .manageOwnersInput,
+    .manageModeratorsInput {
+      color: black;
+    }
+
+    .manageModeratorsContainer .currentModerators,
+    .manageOwnersContainer .currentOwners {
+      color: #999;
+    }
+
     /* TOPIC LIST */
     .topicListContainer,
     .emptyTopicList {
       background: #1d1c1c;
+      color: white;
     }
 
     .tableHeader {

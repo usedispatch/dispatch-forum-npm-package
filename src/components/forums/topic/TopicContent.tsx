@@ -26,6 +26,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
+import { getIdentity } from '../../../utils/identity';
 import {
   ForumData,
   CreatedPost,
@@ -485,6 +486,8 @@ function TopicHeader(props: TopicHeaderProps) {
       })}`
     : "-";
 
+  const identity = getIdentity(topic.poster);
+
   return (
     <div className="topicHeader">
       <div className="topicTitle">
@@ -492,9 +495,16 @@ function TopicHeader(props: TopicHeaderProps) {
           <div className="postedBy">
             By
             <div className="icon">
-              <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
+              { identity ?
+                <img src={identity.profilePicture.href} /> :
+                <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
+              }
             </div>
-            <div className="posterId">{topic.poster.toBase58()}</div>
+            <div className="posterId">
+              { identity ?
+                identity.displayName :
+                topic.poster.toBase58()}
+            </div>
             &nbsp;
             {(() => {
               if (

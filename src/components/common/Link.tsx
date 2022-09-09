@@ -11,10 +11,6 @@ export function Link({ className, href, children }) {
 
     const navEvent = new PopStateEvent("popstate");
     window.dispatchEvent(navEvent);
-
-    const search = window.location.search;
-    const params = new URLSearchParams(search).toString();
-    const path = href + (params ? `?${params}` : "");
   };
 
   return (

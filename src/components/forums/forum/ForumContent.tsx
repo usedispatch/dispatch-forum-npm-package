@@ -1,4 +1,5 @@
 import * as _ from "lodash";
+import { PublicKey } from '@solana/web3.js';
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
@@ -18,7 +19,11 @@ import { useRole } from "../../../contexts/DispatchProvider";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
-import { ForumData } from "../../../utils/hooks";
+import {
+  ForumData,
+  useForumIdentity,
+  ForumIdentity
+} from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -34,6 +39,8 @@ export function ForumContent(props: ForumContentProps) {
   const { forumData, forumObject, update } = props;
   const { roles } = useRole();
   const { permission } = forumObject;
+
+  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [newTopic, setNewTopic] = useState<{
     title: string;
@@ -524,14 +531,18 @@ export function ForumContent(props: ForumContentProps) {
                 </div>
                 <ManageOwners forumData={forumData} />
                 <ManageModerators forumData={forumData} />
-                <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                  <button
-                    className="moderatorTool"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowManageAccessToken(true)}>
-                    Manage forum access
-                  </button>
-                </PermissionsGate>
+                {(// The manage users UI should be hidden for DAA
+                  forumIdentity !== ForumIdentity.DegenerateApeAcademy
+                ) &&
+                  <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                    <button
+                      className="moderatorTool"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowManageAccessToken(true)}>
+                      Manage forum access
+                    </button>
+                  </PermissionsGate>
+                }
                 <EditForum forumData={forumData} update={update} />
               </div>
             </PermissionsGate>

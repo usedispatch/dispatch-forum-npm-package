@@ -42,6 +42,24 @@
           fill: white;
         }
       }
+
+      .modalActionsContainer .acceptAction .okButton {
+        background: #141313;
+        border: 1px solid white;
+        color: white;
+      }
+    }
+
+    .collapsibleContainer {
+      background: #d9d9d9;
+      color: #30302e;
+      border: 1px solid #999999;
+
+      .visibilityButton {
+        svg path {
+          stroke: #30302e;
+        }
+      }
     }
 
     /* FORUM */
@@ -157,6 +175,123 @@
       a {
         color: white;
       }
+    }
+
+    /* TOPIC */
+    .topicView,
+    .topicViewContainer {
+      color: white;
+      background: #141313;
+      font-family: "Gotham", "sans-serif";
+    }
+
+    .breadcrumbContainer,
+    .parent {
+      color: #999999;
+
+      svg path {
+        stroke: #999999;
+      }
+    }
+
+    .topicHeader {
+      font-family: "Gotham", "sans-serif";
+    }
+
+    .editPostContainer .editPostBody .editPostInput {
+      color: black;
+    }
+
+    .editPostButton {
+      color: #b0b0b0;
+      svg path {
+        stroke: #b0b0b0;
+      }
+    }
+
+    .awardContent {
+      .typeSelector .nftType {
+        background: #141313;
+        border: 1px solid white;
+        color: white;
+
+        svg path {
+          fill: #191919;
+        }
+      }
+
+      .amountInput {
+        color: black;
+      }
+    }
+
+    .topicContentBox {
+      color: white;
+      background: #1d1c1c;
+      font-family: "Gotham", "sans-serif";
+
+      .currentVotes,
+      .commentsContainer,
+      .headerAndActions .topicHeader .posted .posterId,
+      .headerAndActions .topicHeader .topicBody {
+        color: white;
+      }
+
+      .headerAndActions .moderatorToolsContainer {
+        .actionDivider {
+          background: white;
+        }
+
+        .moderatorTool,
+        .awardButton {
+          color: #b0b0b0;
+        }
+
+        .awardButton {
+          svg path {
+            stroke: #b0b0b0;
+          }
+        }
+
+        .delete svg path {
+          fill: #b0b0b0;
+        }
+
+        .lock svg path {
+          stroke: #b0b0b0;
+        }
+      }
+    }
+
+    .okButton,
+    .acceptDeleteTopicButton {
+      background: #141313;
+      border: 1px solid white;
+      color: white;
+    }
+
+    .createPostButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .createPostContent .postContent {
+      background: #d9d9d9;
+      color: black;
+
+      &::placeholder {
+        color: #5f5f5f;
+      }
+    }
+
+    /* POSTS  */
+    .postContentContainer {
+      color: white;
+      background: #1d1c1c;
+      font-family: "Gotham", "sans-serif";
     }
   }
 }

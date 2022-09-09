@@ -43,7 +43,8 @@
         }
       }
 
-      .modalActionsContainer .acceptAction .okButton {
+      .modalActionsContainer .acceptAction .okButton,
+      .modalActionsContainer .acceptAction .okInfoButton {
         background: #141313;
         border: 1px solid white;
         color: white;
@@ -139,10 +140,14 @@
     }
 
     .manageModeratorsContainer .currentModerators,
-    .manageOwnersContainer .currentOwners {
+    .manageOwnersContainer .currentOwners,
+    .currentToken {
       color: #999;
     }
 
+    .currentToken svg path {
+      fill: #b0b0b0;
+    }
     /* TOPIC LIST */
     .topicListContainer,
     .emptyTopicList {
@@ -220,8 +225,13 @@
         color: white;
 
         svg path {
-          fill: #191919;
+          fill: white;
         }
+      }
+
+      .giftsContainer .giftsGrid .selectedNFT {
+        color: white;
+        border: 1px solid white;
       }
 
       .amountInput {
@@ -297,6 +307,13 @@
       font-family: "Gotham", "sans-serif";
     }
 
+    .acceptDeletePostButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      color: white;
+    }
+
     .postContentBox {
       .box .postHeader .walletId {
         color: white;
@@ -325,6 +342,70 @@
         .deleteButton svg path {
           fill: #b0b0b0;
         }
+      }
+    }
+
+    /* REPLIES  */
+    .repliesContainer {
+      color: white;
+      font-family: "Gotham", "sans-serif";
+    }
+
+    .replyHeader {
+      .walletId {
+        color: white;
+      }
+    }
+
+    .replyBody {
+      color: white;
+    }
+
+    .replyActionsContainer {
+      .replyButton {
+        color: #b0b0b0;
+
+        svg path {
+          fill: #b0b0b0;
+        }
+      }
+
+      .awardButton {
+        color: #b0b0b0;
+        svg path {
+          stroke: #b0b0b0;
+        }
+      }
+
+      .deleteButton svg path {
+        fill: #b0b0b0;
+      }
+    }
+
+    .replyTextArea {
+      background: #d9d9d9;
+      color: black;
+      border-width: 0;
+
+      &::placeholder {
+        color: #5f5f5f;
+      }
+    }
+
+    .repliesSection {
+      .cancelReplyButton {
+        border-color: black;
+        background: white;
+        color: #141313;
+        text-transform: uppercase;
+      }
+
+      .postReplyButton {
+        background: #141313;
+        border: 2px solid #f2f2f0;
+
+        color: white;
+        text-transform: uppercase;
       }
     }
   }

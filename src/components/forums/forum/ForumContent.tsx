@@ -21,11 +21,9 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
 import {
   ForumData,
-  useModerators,
   useForumIdentity,
   ForumIdentity
 } from "../../../utils/hooks";
-import { ForumData } from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,

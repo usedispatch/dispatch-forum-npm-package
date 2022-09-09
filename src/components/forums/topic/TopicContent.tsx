@@ -46,12 +46,12 @@ interface TopicContentProps {
   editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost | EditedPost;
-  userRole: UserRoleType;
+  userRoles: UserRoleType[];
   updateVotes: (upVoted: boolean) => void;
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRole, update, addPost, editPost, deletePost, updateVotes, topic, participatingModerators } = props;
+  const { forum, forumData, userRoles, update, addPost, editPost, deletePost, updateVotes, topic, participatingModerators } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -145,7 +145,7 @@ export function TopicContent(props: TopicContentProps) {
       const tx = await forum.deleteForumPost(
         topic,
         forumData.collectionId,
-        userRole === UserRoleType.Moderator
+        userRoles.includes(UserRoleType.Moderator)
       );
       setModalInfo({
         title: "Success!",
@@ -438,7 +438,7 @@ export function TopicContent(props: TopicContentProps) {
           );
           // TODO refresh here
         }}
-        userRole={userRole}
+        userRoles={userRoles}
         postInFlight={postInFlight}
         setPostInFlight={setPostInFlight}
       />

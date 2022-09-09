@@ -17,27 +17,27 @@ export const getUserRole = async (
       forum.isOwner(collectionId),
       forum.canCreateTopic(collectionId),
     ]);
-    const value = isOwner
-      ? UserRoleType.Owner
-      : isMod
-      ? UserRoleType.Moderator
-      : canCreateTopic
-      ? UserRoleType.Poster
-      : UserRoleType.Viewer;
-    roleContext.setRole(value);
+    let roles = <UserRoleType[]>[];
+    isOwner && roles.push(UserRoleType.Owner)
+    isMod && roles.push(UserRoleType.Moderator)
+    canCreateTopic && roles.push(UserRoleType.Poster)
+    if (roles.length === 0) {
+      roles.push(UserRoleType.Viewer)
+    }
+    roleContext.setRoles(roles);
   } else {
     const [isMod, isOwner, canPost] = await Promise.all([
       forum.isModerator(collectionId),
       forum.isOwner(collectionId),
       forum.canPost(collectionId, topic),
     ]);
-    const value = isOwner
-      ? UserRoleType.Owner
-      : isMod
-      ? UserRoleType.Moderator
-      : canPost
-      ? UserRoleType.Poster
-      : UserRoleType.Viewer;
-    roleContext.setRole(value);
+    let roles = <UserRoleType[]>[];
+    isOwner && roles.push(UserRoleType.Owner)
+    isMod && roles.push(UserRoleType.Moderator)
+    canPost && roles.push(UserRoleType.Poster)
+    if (roles.length === 0) {
+      roles.push(UserRoleType.Viewer)
+    }
+    roleContext.setRoles(roles);
   }
 };

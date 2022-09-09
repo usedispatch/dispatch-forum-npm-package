@@ -201,7 +201,7 @@ export const TopicView = (props: Props) => {
                           participatingModerators={participatingModerators}
                           forum={forum}
                           topic={topic}
-                          userRole={role.role}
+                          userRoles={role.roles}
                           update={update}
                           addPost={addPost}
                           editPost={editPost}

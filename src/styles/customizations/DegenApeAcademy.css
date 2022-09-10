@@ -1,4 +1,12 @@
 @layer components {
+
+  @font-face {
+    font-family: 'BN BOOP';
+    font-style: normal;
+    font-weight: normal;
+    src: 
+      url('./assets/BNBoop.otf') format('opentype');
+  }
   .degenApeAcademy {
     /* NOTIFICATION */
     .alertContainer {
@@ -76,6 +84,7 @@
       .titleBox,
       .description {
         color: #ffffff;
+        font-family: "BN BOOP", "sans-serif";
       }
 
       .description {
@@ -174,6 +183,7 @@
 
     .tableHeader {
       border-color: white;
+      font-family: "BN BOOP", "sans-serif";
     }
 
     .topicListContainer .tableHeader .tableHeaderTitle {

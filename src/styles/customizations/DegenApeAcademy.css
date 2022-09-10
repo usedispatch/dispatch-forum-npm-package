@@ -75,7 +75,7 @@
     .forumView,
     .forumViewContainer {
       background: #141313;
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
     }
 
     .forumContentBox {
@@ -88,7 +88,7 @@
       }
 
       .description {
-        font-family: "Gotham", "sans-serif";
+        font-family: "Raleway", "sans-serif";
       }
 
       .moderatorToolsContainer {
@@ -111,7 +111,7 @@
     .forumContentHeader {
 
       .descriptionBox {
-        font: Gotham;
+        font: "Raleway", "sans-serif";
       }
     }
 
@@ -192,7 +192,7 @@
 
     .row {
       border-bottom: 1px solid white;
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
       font-weight: 400;
       font-size: 14px;
 
@@ -215,7 +215,7 @@
     .topicViewContainer {
       color: white;
       background: #141313;
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
       font-weight: 500;
     }
 
@@ -234,7 +234,8 @@
     }
 
     .topicHeader {
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
+      font-size:24px;
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -276,7 +277,7 @@
     .topicContentBox {
       color: white;
       background: #1d1c1c;
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
 
       .commentsContainer,
       .headerAndActions .topicHeader .posted .postedBy .posterId,
@@ -339,7 +340,7 @@
     .postContentContainer {
       color: white;
       background: #1d1c1c;
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
     }
 
     .acceptDeletePostButton {
@@ -383,7 +384,7 @@
     /* REPLIES  */
     .repliesContainer {
       color: white;
-      font-family: "Gotham", "sans-serif";
+      font-family: "Raleway", "sans-serif";
     }
 
     .replyHeader {

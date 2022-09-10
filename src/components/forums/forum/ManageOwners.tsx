@@ -13,6 +13,7 @@ import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
+import { getIdentity } from '../../../utils/identity';
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
@@ -160,12 +161,21 @@ export function ManageOwners(props: ManageOwnersProps) {
                 <label className="manageOwnersLabel">Current owners</label>
                 <ul>
                   {manageOwners.currentOwners.map((m) => {
+                    // TODO error checking on this newPublicKey
+                    // call?
+                    const identity = getIdentity(newPublicKey(m));
                     return (
                       <li key={m} className="currentOwners">
                         <div className="iconContainer">
-                          <Jdenticon value={m} alt="ownerId" />
+                          { identity ?
+                            <img
+                              src={identity.profilePicture.href}
+                              style={{ borderRadius: '50%' }}
+                            /> :
+                            <Jdenticon value={m} alt="ownerId" />
+                          }
                         </div>
-                        {m}
+                        { identity ? identity.displayName : m }
                       </li>
                     );
                   })}

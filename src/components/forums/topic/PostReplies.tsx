@@ -18,6 +18,7 @@ import {
   CreatedPost,
   ClientPost
 } from "../../../utils/hooks";
+import { getIdentity } from '../../../utils/identity';
 
 interface PostRepliesProps {
   forumData: ForumData;
@@ -88,16 +89,25 @@ export function PostReplies(props: PostRepliesProps) {
       {replies.map((reply, index) => {
         const isPost = isForumPost(reply);
 
+        const posterIdentity = getIdentity(reply.poster);
+
         return (
           <div key={index}>
             <div className={`replyContent  ${!isPost ? "inFlight" : ""}`}>
               <div className="replyHeader">
                 <div className="posterId">
                   <div className="icon">
-                    <Jdenticon value={reply.poster.toBase58()} alt="posterID" />
+                    {
+                      posterIdentity ?
+                        <img
+                          src={posterIdentity.profilePicture.href}
+                          style={{ borderRadius: '50%' }}
+                        /> :
+                          <Jdenticon value={reply.poster.toBase58()} alt="posterID" />
+                    }
                   </div>
                   <div className="walletId">
-                    {reply.poster.toBase58()}
+                    { posterIdentity ? posterIdentity.displayName : reply.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
                       posterId={reply.poster}

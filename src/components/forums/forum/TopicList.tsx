@@ -12,6 +12,8 @@ import {
   sortByVotes,
   selectForumPosts,
 } from "../../../utils/posts";
+import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
+import { getIdentity } from '../../../utils/identity';
 import { ForumData } from "../../../utils/hooks";
 
 interface TopicListProps {
@@ -106,11 +108,22 @@ function RowContent(props: RowContentProps) {
 
       return (
         <div className="rowContentIcons">
-          {ids.map((id, index) => (
-            <div key={index} className="icon">
-              <Jdenticon value={id} alt="posterID" />
-            </div>
-          ))}
+          {ids.map((id, index) => {
+            // TODO(andrew) better error-checking on this
+            // newPublicKey call?
+            const identity = getIdentity(newPublicKey(id));
+            return (
+              <div key={index} className="icon">
+                { identity ?
+                  <img
+                    src={identity.profilePicture.href}
+                    style={{ borderRadius: '50%' }}
+                  /> :
+                  <Jdenticon value={id} alt="posterID" />
+                }
+              </div>
+            );
+          })}
           {posts.length > 8 ? "..." : null}
         </div>
       );

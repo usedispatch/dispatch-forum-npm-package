@@ -1,0 +1,448 @@
+@layer components {
+
+  @font-face {
+    font-family: 'BN BOOP';
+    font-style: normal;
+    font-weight: normal;
+    src: 
+      url('./assets/BNBoop.otf') format('opentype');
+  }
+  .degenApeAcademy {
+    /* NOTIFICATION */
+    .alertContainer {
+      background: #30302e;
+      border: 1px solid #999999;
+
+      .alertText {
+        color: white;
+      }
+    }
+    .notificationContainer {
+      .closeContainer svg path {
+        stroke: white;
+        fill: white;
+      }
+
+      &.info,
+      &.error,
+      &.warning,
+      &.success {
+        background: #30302e;
+      }
+    }
+
+    .notificationText {
+      font-weight: 500;
+      font-size: 14px;
+      color: white;
+    }
+
+    /* POPUP MODAL */
+    .popUpModal {
+      .modalContainer .modalBox {
+        color: white;
+        background: #30302e;
+        border: 1px solid #999999;
+      }
+
+      .modalClose .closeIcon {
+        svg path {
+          fill: white;
+        }
+      }
+
+      .modalActionsContainer .acceptAction .okButton,
+      .modalActionsContainer .acceptAction .okInfoButton {
+        background: #141313;
+        border: 1px solid white;
+        color: white;
+      }
+    }
+
+    .collapsibleContainer {
+      background: #d9d9d9;
+      color: #30302e;
+      border: 1px solid #999999;
+
+      .visibilityButton {
+        svg path {
+          stroke: #30302e;
+        }
+      }
+    }
+
+    /* FORUM */
+    .forumView,
+    .forumViewContainer {
+      background: #141313;
+      font-family: "Raleway", "sans-serif";
+    }
+
+    .forumContentBox {
+      background: #1d1c1c;
+
+      .titleBox,
+      .description {
+        color: #ffffff;
+        font-family: "BN BOOP", "sans-serif";
+      }
+
+      .description {
+        font-family: "Raleway", "sans-serif";
+      }
+
+      .moderatorToolsContainer {
+        border-top: 1px solid white;
+        color: #999999;
+
+        .manageOwnersButton,
+        .manageModeratorsButton,
+        .moderatorTool,
+        .editForumButton {
+          color: #d1d1d1;
+        }
+
+        .actionDivider {
+          background: white;
+        }
+      }
+    }
+
+    .forumContentHeader {
+
+      .descriptionBox {
+        font: "Raleway", "sans-serif";
+      }
+    }
+
+    .createTopicButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      font-style: normal;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+
+    .newAccessToken,
+    .createTopicTitleInput {
+      color: black;
+    }
+
+    .gatedForum,
+    .lock,
+    .editForumButton {
+      svg path {
+        stroke: white;
+      }
+    }
+
+    .forumContent {
+      .cancelButton {
+        border-color: black;
+        background: white;
+        color: #141313;
+      }
+      .okButton {
+        background: #141313;
+        border: 1px solid white;
+        color: white;
+      }
+    }
+
+    .editForumContainer .editForumBody .editForumInput,
+    .editForumContainer .editForumBody .editForumInput.description {
+      color: black;
+    }
+
+    .manageOwnersInput,
+    .manageModeratorsInput {
+      color: black;
+    }
+
+    .manageModeratorsContainer .currentModerators,
+    .manageOwnersContainer .currentOwners,
+    .currentToken {
+      color: #999;
+    }
+
+    .currentToken svg path {
+      fill: #b0b0b0;
+    }
+
+    /* TOPIC LIST */
+    .topicListContainer,
+    .emptyTopicList {
+      background: #1d1c1c;
+      color: white;
+    }
+
+    .current {
+      display: flex; 
+    }
+
+    .tableHeader {
+      border-color: white;
+      font-family: "BN BOOP", "sans-serif";
+    }
+
+    .topicListContainer .tableHeader .tableHeaderTitle {
+      color: white;
+    }
+
+    .row {
+      border-bottom: 1px solid white;
+      font-family: "Raleway", "sans-serif";
+      font-weight: 400;
+      font-size: 14px;
+
+      .rowSubj {
+        font-weight: 400;
+        line-height: 2;
+      }
+
+      &:hover {
+        background: #a79854;
+      }
+
+      a {
+        color: white;
+      }
+    }
+
+    /* TOPIC */
+    .topicView,
+    .topicViewContainer {
+      color: white;
+      background: #141313;
+      font-family: "Raleway", "sans-serif";
+      font-weight: 500;
+    }
+
+    .posted {
+      color:white;   
+    }
+
+    .breadcrumbContainer,
+    .parent {
+      color: #999999;
+      font-weight: 500;
+
+      svg path {
+        stroke: #999999;
+      }
+    }
+
+    .topicHeader {
+      font-family: "Raleway", "sans-serif";
+      font-size:24px;
+    }
+
+    .editPostContainer .editPostBody .editPostInput {
+      color: black;
+    }
+
+    .editPostButton {
+      color: #b0b0b0;
+      svg path {
+        stroke: #b0b0b0;
+      }
+    }
+
+    .votePostContainer .votePostContent .currentVotes {
+      color: white;
+    }
+
+    .awardContent {
+      .typeSelector .nftType {
+        background: #141313;
+        border: 1px solid white;
+        color: white;
+
+        svg path {
+          fill: white;
+        }
+      }
+
+      .giftsContainer .giftsGrid .selectedNFT {
+        color: white;
+        border: 1px solid white;
+      }
+
+      .amountInput {
+        color: black;
+      }
+    }
+
+    .topicContentBox {
+      color: white;
+      background: #1d1c1c;
+      font-family: "Raleway", "sans-serif";
+
+      .commentsContainer,
+      .headerAndActions .topicHeader .posted .postedBy .posterId,
+      .headerAndActions .topicHeader .topicBody {
+        color: white;
+        font-weight: 500;
+      }
+
+      .headerAndActions .moderatorToolsContainer {
+        .actionDivider {
+          background: white;
+        }
+
+        .moderatorTool,
+        .awardButton {
+          color: #b0b0b0;
+        }
+
+        .awardButton {
+          svg path {
+            stroke: #b0b0b0;
+          }
+        }
+
+        .delete svg path {
+          fill: #b0b0b0;
+        }
+
+        .lock svg path {
+          stroke: #b0b0b0;
+        }
+      }
+    }
+
+    .okButton,
+    .acceptDeleteTopicButton {
+      background: #141313;
+      border: 1px solid white;
+      color: white;
+    }
+
+    .createPostButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      color: white;
+      text-transform: uppercase;
+    }
+
+    .createPostContent .postContent {
+      background: #d9d9d9;
+      color: black;
+
+      &::placeholder {
+        color: #5f5f5f;
+      }
+    }
+
+    /* POSTS  */
+    .postContentContainer {
+      color: white;
+      background: #1d1c1c;
+      font-family: "Raleway", "sans-serif";
+    }
+
+    .acceptDeletePostButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      color: white;
+    }
+
+    .postContentBox {
+      .box .postHeader .walletId {
+        color: white;
+      }
+
+      .box .postBody {
+        color: white;
+      }
+
+      .actionsContainer {
+        .replyButton {
+          color: #b0b0b0;
+
+          svg path {
+            fill: #b0b0b0;
+          }
+        }
+
+        .awardButton {
+          color: #b0b0b0;
+          svg path {
+            stroke: #b0b0b0;
+          }
+        }
+
+        .deleteButton svg path {
+          fill: #b0b0b0;
+        }
+      }
+    }
+
+    /* REPLIES  */
+    .repliesContainer {
+      color: white;
+      font-family: "Raleway", "sans-serif";
+    }
+
+    .replyHeader {
+      .walletId {
+        color: white;
+      }
+    }
+
+    .replyBody {
+      color: white;
+    }
+
+    .replyActionsContainer {
+      .replyButton {
+        color: #b0b0b0;
+
+        svg path {
+          fill: #b0b0b0;
+        }
+      }
+
+      .awardButton {
+        color: #b0b0b0;
+        svg path {
+          stroke: #b0b0b0;
+        }
+      }
+
+      .deleteButton svg path {
+        fill: #b0b0b0;
+      }
+    }
+
+    .replyTextArea {
+      background: #d9d9d9;
+      color: black;
+      border-width: 0;
+
+      &::placeholder {
+        color: #5f5f5f;
+      }
+    }
+
+    .repliesSection {
+      .cancelReplyButton {
+        border-color: black;
+        background: white;
+        color: #141313;
+        text-transform: uppercase;
+      }
+
+      .postReplyButton {
+        background: #141313;
+        border: 2px solid #f2f2f0;
+
+        color: white;
+        text-transform: uppercase;
+      }
+    }
+  }
+}

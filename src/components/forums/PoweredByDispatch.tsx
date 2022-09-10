@@ -1,6 +1,9 @@
 import { DispatchLogo } from "../../assets";
 
-export function PoweredByDispatch(props: any) {
+interface PoweredByDispatchProps {
+  customStyle: string;
+}
+export function PoweredByDispatch(props: PoweredByDispatchProps) {
   return (
     <div className="dsp-">
       <div className="poweredByDispatch">
@@ -8,8 +11,7 @@ export function PoweredByDispatch(props: any) {
           href="https://twitter.com/usedispatch"
           rel="noopener noreferrer"
           target="_blank">
-          <div>powered by</div>
-          <DispatchLogo />
+          <DispatchLogo customStyle={props.customStyle} />
         </a>
       </div>
     </div>

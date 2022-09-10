@@ -20,7 +20,8 @@ module.exports = {
       // }
       fontFamily: {
         'raleway': ['Raleway', 'sans-serif'],
-        'manrope': ['Manrope', 'sans-serif']
+        'manrope': ['Manrope', 'sans-serif'],
+        'gotham' : ['Gotham', 'sans-serif']
       },
     },
   },

@@ -12,8 +12,16 @@ export function RoleLabel(props: RoleLabelProps) {
 
   const isModerator = !isNil(moderators) && moderators.some((m) => m.equals(posterId));
 
-  const label =
-    topicOwnerId.equals(posterId) ? "op" : isModerator ? "mod" : undefined;
+  const isOp = topicOwnerId.equals(posterId);
 
-  return <div className={`roleLabel ${label}`}>{label}</div>;
+  return (
+    <>
+      { isOp &&
+        <div className={'roleLabel op'}>op</div>
+      }
+      { isModerator &&
+        <div className={'roleLabel mod'}>mod</div>
+      }
+    </>
+  );
 }

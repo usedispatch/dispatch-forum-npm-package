@@ -18,6 +18,7 @@ import {
 } from "../../common";
 import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
 import { EditPost } from "./EditPost";
+import { RoleLabel } from './RoleLabel';
 
 import { usePath } from "../../../contexts/DispatchProvider";
 
@@ -509,20 +510,14 @@ function TopicHeader(props: TopicHeaderProps) {
                 topic.poster.toBase58()}
             </div>
             &nbsp;
-            {(() => {
-              if (
-                participatingModerators &&
-                participatingModerators.some(
-                  key => key.equals(topic.poster)
-                )
-              ) {
-                return <div className={
-                  `roleLabel mod`
-                }>mod</div>
-              } else {
-                return null;
-              }
-            })()}
+            {/* TODO is it right to show an OP when the topic
+            poster is obviously OP? if not, set the topicOwnerId
+            prop to an unrelated key */}
+            <RoleLabel
+              topicOwnerId={topic.poster}
+              posterId={topic.poster}
+              moderators={participatingModerators}
+            />
           </div>
           <div className="postedAt">
             Posted at: {postedAt}

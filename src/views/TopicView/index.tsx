@@ -35,6 +35,7 @@ import {
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
 import { getCustomStyles } from "../../utils/getCustomStyles";
+import { StarsAlert } from "../../components/forums/StarsAlert";
 
 interface Props {
   topicId: number;
@@ -177,6 +178,7 @@ export const TopicView = (props: Props) => {
         <div className="topicView">
           {modal}
           {!permission.readAndWrite && <ConnectionAlert />}
+          {collectionId === "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert/>}
           <div className="topicViewContainer">
             <div className="topicViewContent">
               <main>

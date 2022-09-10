@@ -17,6 +17,16 @@ export const identities: Identity[] = [
     displayName: 'Sea_Eoh',
     profilePicture: new URL('https://raw.githubusercontent.com/usedispatch/assets/main/img/degenapes/Sea_Eoh.jpeg')
   },
+  {
+    publicKey: new PublicKey('8BniKCvVuCPP798zWBKCwPjwTtK99BNs2X1onpbAXFKp'),
+    displayName: 'crass-host',
+    profilePicture: new URL('https://raw.githubusercontent.com/usedispatch/assets/main/img/degenapes/Crasskitty.png')
+  },
+  {
+    publicKey: new PublicKey('2qoTQ69Af49e1rW3KP5EkHbhgeXmaRowuL21Q5jJL9rD'),
+    displayName: 'nicky-host',
+    profilePicture: new URL('https://raw.githubusercontent.com/usedispatch/assets/main/img/degenapes/NickyScanz.png')
+  },
   // TODO Monoliff
   {
     publicKey: new PublicKey('E7MwrNbFtDaymDxa5ah69z1EyynFkWKrWnrGNSuL8BUo'),

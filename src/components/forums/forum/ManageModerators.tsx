@@ -17,6 +17,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
+import { getIdentity } from '../../../utils/identity';
 
 interface ManageModeratorsProps {
   forumData: ForumData;
@@ -137,14 +138,21 @@ export function ManageModerators(props: ManageModeratorsProps) {
                     </label>
                     <ul>
                       {moderators.map((pubkey) => {
+                        const identity = getIdentity(pubkey);
                         const m = pubkey.toBase58();
                         return (
                           <li key={m} className="currentModerators">
                             <>
                               <div className="iconContainer">
-                                <Jdenticon value={m} alt="moderatorId" />
+                                { identity ?
+                                  <img
+                                    src={identity.profilePicture.href}
+                                    style={{ borderRadius: '50%' }}
+                                  /> :
+                                    <Jdenticon value={m} alt="moderatorId" />
+                                }
                               </div>
-                              {m}
+                              { identity ? identity.displayName : m }
                             </>
                           </li>
                         );

@@ -7,10 +7,16 @@
     padding-top: 24px;
   }
 
-  .emptyList {
+  .emptyPostsList {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    background: white;
+    box-shadow: 0px 4px 12px rgb(0 0 0 / 16%);
+    border-radius: 12px;
+    margin: 40px 0;
+    padding: 24px;
 
     .text {
       font-family: Manrope, sans-serif;
@@ -18,7 +24,6 @@
       font-size: 20px;
       font-weight: 500;
       width: 650px;
-      padding-top: 28px;
     }
   }
 }

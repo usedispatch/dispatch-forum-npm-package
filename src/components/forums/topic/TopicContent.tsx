@@ -391,7 +391,7 @@ export function TopicContent(props: TopicContentProps) {
               // Therefore, show it if the forum is NOT degen apes, or the user is a mod
               (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
                 userIsMod) && 
-                topic.poster.toBase58() != forum.wallet.publicKey?.toBase58()
+                !forum.wallet.publicKey?.equals(topic.poster)
             ) &&
             <PermissionsGate scopes={[SCOPES.canCreateReply]}>
               <button

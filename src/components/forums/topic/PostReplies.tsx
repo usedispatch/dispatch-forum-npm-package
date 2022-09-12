@@ -183,7 +183,7 @@ export function PostReplies(props: PostRepliesProps) {
                       <div className="actionDivider" />
                     </PermissionsGate>
                     <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                      {reply.poster.toBase58() != forum.wallet.publicKey?.toBase58() &&
+                      {!forum.wallet.publicKey?.equals(reply.poster) &&
                         <>
                           <button
                             className="awardButton"

@@ -460,7 +460,7 @@ export function PostContent(props: PostContentProps) {
                         // Therefore, show it if the forum is NOT degen apes, or the user is a mod
                         (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
                         userIsMod) && 
-                        post.poster.toBase58() != forum.wallet.publicKey?.toBase58()
+                        !forum.wallet.publicKey?.equals(post.poster)
                        ) &&
                          <>
                            <button

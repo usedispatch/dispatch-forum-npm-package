@@ -42,7 +42,7 @@
   .newAccessToken {
     width: 100%;
     padding: 12px;
-    margin: 16px 0 24px;
+    margin: 4px 0 24px;
 
     font-size: 14px;
     border-width: 1px;
@@ -58,7 +58,12 @@
   .gateCheckbox {
     display: flex;
     align-items: center;
+    gap: 3px;
     padding-bottom: 16px;
+
+    input {
+      margin-top: 2px;
+    }
   }
 
   .noRestriction {
@@ -231,6 +236,7 @@
     font-size: 14px;
 
     ul {
+      padding-left: 0;
       max-height: 260px;
       overflow-y: overlay;
     }

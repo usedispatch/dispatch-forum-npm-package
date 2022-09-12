@@ -63,8 +63,13 @@
   }
 
   .accountInfo {
-    max-width: 15px;
+    display: flex;
+    align-items: center;
     padding-left: 5px;
+
+    svg {
+      height: 14px;
+    }
   }
 
   .replyBody {

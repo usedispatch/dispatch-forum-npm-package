@@ -24,26 +24,22 @@
     align-items: center;
 
     &.upVote:hover {
-      svg path {
-        stroke: #84b971;
+      svg {
+        fill: #84b971;
+
+        path {
+          stroke: white;
+        }
       }
     }
 
     &.downVote:hover {
-      svg path {
-        stroke: #e86143;
-      }
-    }
+      svg {
+        fill: #e86143;
 
-    &.upVoted {
-      svg path {
-        stroke: #84b971;
-      }
-    }
-
-    &.downVoted {
-      svg path {
-        stroke: #e86143;
+        path {
+          stroke: white;
+        }
       }
     }
 

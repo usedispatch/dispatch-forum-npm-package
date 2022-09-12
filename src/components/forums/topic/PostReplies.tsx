@@ -184,7 +184,7 @@ export function PostReplies(props: PostRepliesProps) {
                         className="awardButton"
                         disabled={!permission.readAndWrite}
                         onClick={() => onAwardReply(reply)}>
-                        <Gift /> Send Token
+                        Send Token <Gift />
                       </button>
                     </PermissionsGate>
                   </div>

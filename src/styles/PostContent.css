@@ -342,15 +342,20 @@
       text-transform: capitalize;
       font-weight: 600;
 
+      &.inFlight {
+        cursor: not-allowed;
+        background: #ededed57;
+        border: 1px solid #9ca3af;
+        color: #9ca3af;
+      }
+
       &:hover {
         opacity: 0.85;
       }
 
       &:disabled {
         cursor: not-allowed;
-        background: #ededed57;
-        border: 1px solid #9ca3af;
-        color: #9ca3af;
+        opacity: 0.6;
       }
     }
 

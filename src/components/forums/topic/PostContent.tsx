@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { ReactNode, useMemo, useState } from "react";
 import Jdenticon from "react-jdenticon";
@@ -20,7 +20,7 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 import {
   ForumData,
   CreatedPost,
@@ -30,7 +30,7 @@ import {
   ClientPost,
   useUserIsMod,
   useForumIdentity,
-  ForumIdentity
+  ForumIdentity,
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
@@ -63,7 +63,7 @@ export function PostContent(props: PostContentProps) {
     deletePost,
     postInFlight,
     setPostInFlight,
-    participatingModerators
+    participatingModerators,
   } = props;
 
   const permission = forum.permission;
@@ -71,12 +71,10 @@ export function PostContent(props: PostContentProps) {
   const userIsMod = useUserIsMod(
     forumData.collectionId,
     forum,
-    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
+    forum.wallet.publicKey || new PublicKey("11111111111111111111111111111111")
   );
 
-  const forumIdentity = useForumIdentity(
-    forumData.collectionId
-  );
+  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
@@ -159,7 +157,7 @@ export function PostContent(props: PostContentProps) {
         poster: forum.wallet.publicKey!,
         isTopic: false,
         replyTo: post.address,
-        state: 'created'
+        state: "created",
       };
       addPost(localPost);
 
@@ -351,19 +349,20 @@ export function PostContent(props: PostContentProps) {
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
-                    { identity ?
+                    {identity ? (
                       <img
                         src={identity.profilePicture.href}
-                        style={{ borderRadius: '50%' }}
-                      /> :
-                      <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
-                    }
+                        style={{ borderRadius: "50%" }}
+                      />
+                    ) : (
+                      <Jdenticon
+                        value={post?.poster.toBase58()}
+                        alt="posterID"
+                      />
+                    )}
                   </div>
                   <div className="walletId">
-                    { identity ?
-                      identity.displayName :
-                      post.poster.toBase58()
-                    }
+                    {identity ? identity.displayName : post.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicPosterId}
                       posterId={post?.poster}
@@ -387,7 +386,7 @@ export function PostContent(props: PostContentProps) {
                           </div>
                         </>
                       );
-                    } else if(isEditedPost(post)) {
+                    } else if (isEditedPost(post)) {
                       return (
                         <>
                           Confirming edit
@@ -396,7 +395,7 @@ export function PostContent(props: PostContentProps) {
                           </div>
                         </>
                       );
-                    } else if(isCreatedPost(post)) {
+                    } else if (isCreatedPost(post)) {
                       return (
                         <>
                           Posting
@@ -456,24 +455,23 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {(// The gifting UI should be hidden on the apes forum for non-mods.
-                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                        forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                        userIsMod
-                       ) &&
-                         <>
-                           <button
-                             className="awardButton"
-                             disabled={!permission.readAndWrite}
-                             onClick={() => {
-                               setPostToAward(post);
-                               setShowGiveAward(true);
-                             }}>
-                             <Gift /> Send Token
-                           </button>
-                           <div className="actionDivider" />
-                         </>
-                      }
+                      {// The gifting UI should be hidden on the apes forum for non-mods.
+                      // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                      (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                        userIsMod) && (
+                        <>
+                          <button
+                            className="awardButton"
+                            disabled={!permission.readAndWrite}
+                            onClick={() => {
+                              setPostToAward(post);
+                              setShowGiveAward(true);
+                            }}>
+                            <Gift /> Send Token
+                          </button>
+                          <div className="actionDivider" />
+                        </>
+                      )}
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
@@ -508,7 +506,6 @@ export function PostContent(props: PostContentProps) {
                 onUpVotePost={(reply) =>
                   forum.voteUpForumPost(reply, forumData.collectionId)
                 }
-                onReplyClick={() => setShowReplyBox(true)}
                 onAwardReply={(reply) => {
                   setPostToAward(reply);
                   setShowGiveAward(true);

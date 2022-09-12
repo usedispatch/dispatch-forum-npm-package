@@ -457,23 +457,25 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {// The gifting UI should be hidden on the apes forum for non-mods.
-                      // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                      (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                        userIsMod) && (
-                        <>
-                          <button
-                            className="awardButton"
-                            disabled={!permission.readAndWrite}
-                            onClick={() => {
-                              setPostToAward(post);
-                              setShowGiveAward(true);
-                            }}>
-                            <Gift /> Send Token
-                          </button>
-                          <div className="actionDivider" />
-                        </>
-                      )}
+                      {(// The gifting UI should be hidden on the apes forum for non-mods.
+                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                        (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                        userIsMod) && 
+                        !forum.wallet.publicKey?.equals(post.poster)
+                       ) &&
+                         <>
+                           <button
+                             className="awardButton"
+                             disabled={!permission.readAndWrite}
+                             onClick={() => {
+                               setPostToAward(post);
+                               setShowGiveAward(true);
+                             }}>
+                             Send Token <Gift />
+                           </button>
+                           <div className="actionDivider" />
+                         </>
+                      }
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}

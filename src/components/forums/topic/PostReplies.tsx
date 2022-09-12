@@ -180,12 +180,14 @@ export function PostReplies(props: PostRepliesProps) {
                       <div className="actionDivider" />
                     </PermissionsGate>
                     <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                      <button
-                        className="awardButton"
-                        disabled={!permission.readAndWrite}
-                        onClick={() => onAwardReply(reply)}>
-                        Send Token <Gift />
-                      </button>
+                      {!forum.wallet.publicKey?.equals(reply.poster) &&
+                        <button
+                          className="awardButton"
+                          disabled={!permission.readAndWrite}
+                          onClick={() => onAwardReply(reply)}>
+                         Send Token <Gift />
+                        </button>
+                      }
                     </PermissionsGate>
                   </div>
                 )}

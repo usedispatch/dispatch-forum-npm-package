@@ -458,8 +458,9 @@ export function PostContent(props: PostContentProps) {
                       </PermissionsGate>
                       {(// The gifting UI should be hidden on the apes forum for non-mods.
                         // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                        forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                        userIsMod
+                        (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                        userIsMod) && 
+                        post.poster.toBase58() != forum.wallet.publicKey?.toBase58()
                        ) &&
                          <>
                            <button

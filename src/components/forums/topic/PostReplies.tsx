@@ -183,13 +183,17 @@ export function PostReplies(props: PostRepliesProps) {
                       <div className="actionDivider" />
                     </PermissionsGate>
                     <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                      <button
-                        className="awardButton"
-                        disabled={!permission.readAndWrite}
-                        onClick={() => onAwardReply(reply)}>
-                        <Gift /> Send Token
-                      </button>
-                      <div className="actionDivider" />
+                      {reply.poster.toBase58() != forum.wallet.publicKey?.toBase58() &&
+                        <>
+                          <button
+                            className="awardButton"
+                            disabled={!permission.readAndWrite}
+                            onClick={() => onAwardReply(reply)}>
+                            <Gift /> Send Token
+                          </button>
+                          <div className="actionDivider" />
+                        </>
+                      }
                       <button
                         className="replyButton"
                         onClick={onReplyClick}

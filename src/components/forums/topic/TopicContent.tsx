@@ -178,7 +178,9 @@ export function TopicContent(props: TopicContentProps) {
         // parent URL (the main forum)
         await forum.connection
           .confirmTransaction(tx)
-          .then(() => location.assign('..'));
+          .then(() => {
+            location.assign(`..${location.search}`);
+          });
       }
       setDeletingTopic(false);
       return tx;

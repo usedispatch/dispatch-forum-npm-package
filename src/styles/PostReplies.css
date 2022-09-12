@@ -118,32 +118,6 @@
         }
       }
 
-      .replyButton {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        height: 24px;
-        max-height: 24px;
-
-        color: #3f1d96;
-        font-weight: 600;
-
-        svg {
-          height: 12px;
-          width: 12px;
-
-          path {
-            fill: #3f1d96;
-          }
-        }
-
-        &:disabled {
-          cursor: not-allowed;
-          opacity: 0.65;
-        }
-      }
-
       .awardButton {
         display: flex;
         align-items: center;

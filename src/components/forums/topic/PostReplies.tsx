@@ -5,20 +5,14 @@ import { PublicKey } from "@solana/web3.js";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
-import { Gift, Info, Reply, Trash } from "../../../assets";
+import { Gift, Info, Trash } from "../../../assets";
 import { PermissionsGate, Spinner } from "../../../components/common";
 import { EditPost, RoleLabel, Votes } from "../index";
 
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import {
-  ForumData,
-  isForumPost,
-  isCreatedPost,
-  CreatedPost,
-  ClientPost
-} from "../../../utils/hooks";
-import { getIdentity } from '../../../utils/identity';
+import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
+import { getIdentity } from "../../../utils/identity";
 
 interface PostRepliesProps {
   forumData: ForumData;
@@ -31,7 +25,6 @@ interface PostRepliesProps {
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
   onUpVotePost: (post: ForumPost) => Promise<string>;
   onDownVotePost: (post: ForumPost) => Promise<string>;
-  onReplyClick: () => void;
   onAwardReply: (post: ForumPost) => void;
 }
 
@@ -41,12 +34,11 @@ export function PostReplies(props: PostRepliesProps) {
     participatingModerators,
     topicOwnerId,
     onDeletePost,
-    onReplyClick,
     onDownVotePost,
     onUpVotePost,
     onAwardReply,
     update,
-    editPost
+    editPost,
   } = props;
   const forum = useForum();
   const permission = forum.permission;
@@ -97,17 +89,22 @@ export function PostReplies(props: PostRepliesProps) {
               <div className="replyHeader">
                 <div className="posterId">
                   <div className="icon">
-                    {
-                      posterIdentity ?
-                        <img
-                          src={posterIdentity.profilePicture.href}
-                          style={{ borderRadius: '50%' }}
-                        /> :
-                          <Jdenticon value={reply.poster.toBase58()} alt="posterID" />
-                    }
+                    {posterIdentity ? (
+                      <img
+                        src={posterIdentity.profilePicture.href}
+                        style={{ borderRadius: "50%" }}
+                      />
+                    ) : (
+                      <Jdenticon
+                        value={reply.poster.toBase58()}
+                        alt="posterID"
+                      />
+                    )}
                   </div>
                   <div className="walletId">
-                    { posterIdentity ? posterIdentity.displayName : reply.poster.toBase58()}
+                    {posterIdentity
+                      ? posterIdentity.displayName
+                      : reply.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
                       posterId={reply.poster}
@@ -188,13 +185,6 @@ export function PostReplies(props: PostRepliesProps) {
                         disabled={!permission.readAndWrite}
                         onClick={() => onAwardReply(reply)}>
                         Send Token <Gift />
-                      </button>
-                      <div className="actionDivider" />
-                      <button
-                        className="replyButton"
-                        onClick={onReplyClick}
-                        disabled={!permission.readAndWrite}>
-                        Reply <Reply />
                       </button>
                     </PermissionsGate>
                   </div>

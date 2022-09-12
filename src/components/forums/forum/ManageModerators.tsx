@@ -17,7 +17,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 
 interface ManageModeratorsProps {
   forumData: ForumData;
@@ -133,31 +133,6 @@ export function ManageModerators(props: ManageModeratorsProps) {
               <div className="manageModeratorsBody">
                 {moderatorsFetched ? (
                   <>
-                    <label className="manageModeratorsLabel">
-                      Current moderators
-                    </label>
-                    <ul>
-                      {moderators.map((pubkey) => {
-                        const identity = getIdentity(pubkey);
-                        const m = pubkey.toBase58();
-                        return (
-                          <li key={m} className="currentModerators">
-                            <>
-                              <div className="iconContainer">
-                                { identity ?
-                                  <img
-                                    src={identity.profilePicture.href}
-                                    style={{ borderRadius: '50%' }}
-                                  /> :
-                                    <Jdenticon value={m} alt="moderatorId" />
-                                }
-                              </div>
-                              { identity ? identity.displayName : m }
-                            </>
-                          </li>
-                        );
-                      })}
-                    </ul>
                     <label className="manageModeratorsLabel">Add new</label>
                     <input
                       placeholder="Add moderator's wallet ID here"
@@ -171,6 +146,32 @@ export function ManageModerators(props: ManageModeratorsProps) {
                         })
                       }
                     />
+                    <label className="manageModeratorsLabel">
+                      Current moderators
+                    </label>
+                    <ul>
+                      {moderators.map((pubkey) => {
+                        const identity = getIdentity(pubkey);
+                        const m = pubkey.toBase58();
+                        return (
+                          <li key={m} className="currentModerators">
+                            <>
+                              <div className="iconContainer">
+                                {identity ? (
+                                  <img
+                                    src={identity.profilePicture.href}
+                                    style={{ borderRadius: "50%" }}
+                                  />
+                                ) : (
+                                  <Jdenticon value={m} alt="moderatorId" />
+                                )}
+                              </div>
+                              {identity ? identity.displayName : m}
+                            </>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </>
                 ) : (
                   <div className="emptyList">

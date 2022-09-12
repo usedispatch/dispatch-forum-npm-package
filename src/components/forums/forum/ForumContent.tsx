@@ -431,7 +431,7 @@ export function ForumContent(props: ForumContentProps) {
                     body={
                       <div className="createTopicBody">
                         <>
-                          <span className="createTopicLabel">Topic Title</span>
+                          <span className="createTopicLabel">Topic title</span>
                           <input
                             type="text"
                             placeholder="Title"
@@ -449,7 +449,7 @@ export function ForumContent(props: ForumContentProps) {
                         </>
                         <>
                           <span className="createTopicLabel">
-                            Topic Description
+                            Topic description
                           </span>
                           <textarea
                             placeholder="Description"
@@ -467,21 +467,6 @@ export function ForumContent(props: ForumContentProps) {
                         <PermissionsGate
                           scopes={[SCOPES.canAddTopicRestriction]}>
                           <>
-                            {currentForumAccessToken.length > 0 && (
-                              <div className="gateCheckbox">
-                                <input
-                                  type="checkbox"
-                                  checked={keepGates}
-                                  onChange={(e) => {
-                                    setKeepGates(e.target.checked);
-                                  }}
-                                />
-                                <div className="createTopicLabel">
-                                  Keep Existing Forum Gates on Topic
-                                </div>
-                              </div>
-                            )}
-                            {isSuccess(forumData.restriction) && <div></div>}
                             <span className="createTopicLabel">
                               Limit post access
                             </span>
@@ -498,6 +483,20 @@ export function ForumContent(props: ForumContentProps) {
                                 })
                               }
                             />
+                            {currentForumAccessToken.length > 0 && (
+                              <div className="gateCheckbox">
+                                <div className="createTopicLabel">
+                                  Keep existing forum gates on topic
+                                </div>
+                                <input
+                                  type="checkbox"
+                                  checked={keepGates}
+                                  onChange={(e) => {
+                                    setKeepGates(e.target.checked);
+                                  }}
+                                />
+                              </div>
+                            )}
                           </>
                         </PermissionsGate>
                       </div>

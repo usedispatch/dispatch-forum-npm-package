@@ -33,7 +33,27 @@
       }
     }
 
+    &.upVoted {
+      svg {
+        fill: #84b971;
+
+        path {
+          stroke: white;
+        }
+      }
+    }
+
     &.downVote:hover {
+      svg {
+        fill: #e86143;
+
+        path {
+          stroke: white;
+        }
+      }
+    }
+
+    &.downVoted {
       svg {
         fill: #e86143;
 

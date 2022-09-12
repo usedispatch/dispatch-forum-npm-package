@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import Markdown from "markdown-to-jsx";
 import { useMemo } from "react";
-import { PublicKey } from '@solana/web3.js'
+import { PublicKey } from "@solana/web3.js";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -187,7 +187,7 @@ export function PostReplies(props: PostRepliesProps) {
                         className="awardButton"
                         disabled={!permission.readAndWrite}
                         onClick={() => onAwardReply(reply)}>
-                        <Gift /> Send Token
+                        Send Token <Gift />
                       </button>
                       <div className="actionDivider" />
                       <button

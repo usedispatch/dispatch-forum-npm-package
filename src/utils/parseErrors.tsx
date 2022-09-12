@@ -22,22 +22,77 @@ const postboxErrorCode = {
 
 const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
-export function parseError(error: any) {
-  let result = { ...error, message: JSON.stringify(error) };
+export type DispatchError
+  = WalletError
+  | ContractError
+  | RateLimitingError
+  | UnknownError;
+
+/**
+ * An error we caught from Phantom during transaction send
+ */
+export interface WalletError {
+  kind: 'Wallet';
+  message: string;
+  suggestion?: string;
+}
+
+/**
+ * An error thrown by one of our Contracts, due to something like
+ * improper permissions or badly-formatted data
+ */
+export interface ContractError {
+  kind: 'Contract';
+  code: number;
+  message: string;
+  suggestion?: string;
+}
+
+/**
+ * An error that indicates that we have exhausted the RPC node
+ * and need to wait a few minutes
+ */
+export interface RateLimitingError {
+  kind: 'RateLimiting';
+  message: string;
+  suggestion?: string;
+}
+
+/**
+ * An unknown or uncategorized kind of error
+ */
+export interface UnknownError {
+  kind: 'Unknown',
+  error: any
+}
+
+export function parseError(error: any): DispatchError {
   if (error.message != undefined) {
     const hexIndex = (error.message as string).indexOf("0x");
     if (hexIndex >= 0) {
       const hexString = (error.message as string).substring(hexIndex + 2);
       const decimal = hexToDecimal(hexString) - 6000;
       const message = postboxErrorCode[decimal];
-      if (!_.isNil(result)) {
-        result = { code: decimal, message };
-      }
+      return {
+        kind: 'Contract',
+        code: decimal,
+        message,
+      };
     } else {
+<<<<<<< HEAD
       const str = error.toString() as string;
       if (str.includes('WalletSendTransactionError')) {
         return {
           message: `Error with wallet: ${str}`
+=======
+      // Check for Wallet issue
+      const str = error.toString() as string;
+      if (str.includes('WalletSendTransactionError')) {
+        return {
+          kind: 'Wallet',
+          message: `${str}`,
+          suggestion: 'Make sure you are using the correct network, devnet or mainnet, and try again'
+>>>>>>> ecff071 (feat: type the parseError function)
         };
       }
       // TODO(andrew) these two lines produce a "cannot find
@@ -47,10 +102,22 @@ export function parseError(error: any) {
       const json = str.match(/(?:.*  )(.*)/)!;
       const errJson = JSON.parse(json[1]);
       if (errJson.error.code === 429)  {
-        result = { code: 429, message: JSON.stringify("The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds." )};
+        return {
+          kind: 'RateLimiting',
+          message: JSON.stringify('HTTP 429 Rate limited'),
+          suggestion: 'The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds.'
+        };
+      } else {
+        return {
+          kind: 'Unknown',
+          error
+        }
       }
     }
+  } else {
+    return {
+      kind: 'Unknown',
+      error
+    }
   }
-  return result;
 }
- 

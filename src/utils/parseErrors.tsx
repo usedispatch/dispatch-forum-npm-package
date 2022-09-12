@@ -34,7 +34,17 @@ export function parseError(error: any) {
         result = { code: decimal, message };
       }
     } else {
-      const json = error.toString().match(/(?:.*  )(.*)/);
+      const str = error.toString() as string;
+      if (str.includes('WalletSendTransactionError')) {
+        return {
+          message: `Error with wallet: ${str}`
+        };
+      }
+      // TODO(andrew) these two lines produce a "cannot find
+      // property 1 of null" error when the string doesn't match
+      // the given regex. Should make error-handling more study
+      // overall
+      const json = str.match(/(?:.*  )(.*)/)!;
       const errJson = JSON.parse(json[1]);
       if (errJson.error.code === 429)  {
         result = { code: 429, message: JSON.stringify("The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds." )};

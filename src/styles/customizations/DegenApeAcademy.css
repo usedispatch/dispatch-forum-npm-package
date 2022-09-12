@@ -1,11 +1,9 @@
 @layer components {
-
   @font-face {
-    font-family: 'BN BOOP';
+    font-family: "BN BOOP";
     font-style: normal;
     font-weight: normal;
-    src: 
-      url('./assets/BNBoop.otf') format('opentype');
+    src: url("./assets/BNBoop.otf") format("opentype");
   }
   .degenApeAcademy {
     /* NOTIFICATION */
@@ -109,7 +107,6 @@
     }
 
     .forumContentHeader {
-
       .descriptionBox {
         font: "Raleway", "sans-serif";
       }
@@ -178,7 +175,7 @@
     }
 
     .current {
-      display: flex; 
+      display: flex;
     }
 
     .tableHeader {
@@ -219,8 +216,13 @@
       font-weight: 500;
     }
 
+    .disconnectedTopicView {
+      font-family: "Raleway", "sans-serif";
+      background: #1d1c1c;
+    }
+
     .posted {
-      color:white;   
+      color: white;
     }
 
     .breadcrumbContainer,
@@ -235,7 +237,7 @@
 
     .topicHeader {
       font-family: "Raleway", "sans-serif";
-      font-size:24px;
+      font-size: 24px;
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -337,6 +339,14 @@
     }
 
     /* POSTS  */
+    .emptyPostsList {
+      background: #1d1c1c;
+
+      .text {
+        font-family: "Raleway", "sans-serif";
+      }
+    }
+
     .postContentContainer {
       color: white;
       background: #1d1c1c;

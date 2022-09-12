@@ -24,14 +24,27 @@ interface PostListProps {
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRoles, onDeletePost, topic, update, editPost, addPost, deletePost, postInFlight, setPostInFlight, participatingModerators } = props;
+  const {
+    forumData,
+    forum,
+    userRoles,
+    onDeletePost,
+    topic,
+    update,
+    editPost,
+    addPost,
+    deletePost,
+    postInFlight,
+    setPostInFlight,
+    participatingModerators,
+  } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
   }, [forumData]);
 
   const emptyList = (
-    <div className="emptyList">
+    <div className="emptyPostsList">
       <div className="text">The topic has no comments</div>
     </div>
   );

@@ -5,10 +5,9 @@
     align-items: center;
     justify-content: flex-start;
 
-    height: 64px;
     max-width: 1280px;
     margin: 0 auto 8px;
-    padding: 24px;
+    padding: 12px 24px;
 
     background: #fff8ed;
     border-radius: 12px;

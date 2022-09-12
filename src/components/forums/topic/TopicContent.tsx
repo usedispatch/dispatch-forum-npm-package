@@ -166,11 +166,14 @@ export function TopicContent(props: TopicContentProps) {
         type: MessageType.success,
         body: (
           <div className="successBody">
-            <div>The topic and all its posts were deleted</div>
+            <div>
+              The topic is being deleted and you will be
+              redirected back to the forum momentarily
+            </div>
             <TransactionLink transaction={tx} />
           </div>
         ),
-        okPath: forumPath,
+        okPath: forumPath
       });
       setShowDeleteConfirmation(false);
       if (tx) {
@@ -179,7 +182,7 @@ export function TopicContent(props: TopicContentProps) {
         await forum.connection
           .confirmTransaction(tx)
           .then(() => {
-            location.assign(`..${location.search}`);
+            location.assign(`${forumPath}${location.search}`);
           });
       }
       setDeletingTopic(false);
@@ -215,12 +218,12 @@ export function TopicContent(props: TopicContentProps) {
           body={modalInfo.body}
           collapsible={modalInfo.collapsible}
           okButton={
-            <a
+            <button
               className="okButton"
-              href={modalInfo.okPath}
-              onClick={() => setModalInfo(null)}>
+              onClick={() => setModalInfo(null)}
+            >
               OK
-            </a>
+            </button>
           }
         />
       )}

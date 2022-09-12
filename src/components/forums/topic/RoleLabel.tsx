@@ -1,5 +1,5 @@
 import { isNil } from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 
 interface RoleLabelProps {
   topicOwnerId: PublicKey;
@@ -10,18 +10,15 @@ interface RoleLabelProps {
 export function RoleLabel(props: RoleLabelProps) {
   const { topicOwnerId, posterId, moderators } = props;
 
-  const isModerator = !isNil(moderators) && moderators.some((m) => m.equals(posterId));
+  const isModerator =
+    !isNil(moderators) && moderators.some((m) => m.equals(posterId));
 
   const isOp = topicOwnerId.equals(posterId);
 
   return (
-    <>
-      { isOp &&
-        <div className={'roleLabel op'}>op</div>
-      }
-      { isModerator &&
-        <div className={'roleLabel mod'}>mod</div>
-      }
-    </>
+    <div className="roleLabelContainer">
+      {isOp && <div className={"roleLabel op"}>op</div>}
+      {isModerator && <div className={"roleLabel mod"}>mod</div>}
+    </div>
   );
 }

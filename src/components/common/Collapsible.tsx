@@ -8,7 +8,7 @@ export interface CollapsibleProps {
 
 export const Collapsible = (props: CollapsibleProps) => {
   const { header, content } = props;
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   return (
     <div className="collapsibleContainer">

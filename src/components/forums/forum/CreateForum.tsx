@@ -214,7 +214,7 @@ export function CreateForum(props: CreateForumProps) {
     <div>
       <div className="formSection">
         <span className="formLabel">
-          Add Moderators
+          Add moderators
           <Tooltip
             content={
               <div className="labelTooltip">
@@ -259,7 +259,7 @@ export function CreateForum(props: CreateForumProps) {
       </div>
       <div className="formSection">
         <span className="formLabel">
-          Add Owners
+          Add owners
           <Tooltip
             content={
               <div className="labelTooltip">

@@ -1,7 +1,7 @@
 import * as _ from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -20,7 +20,7 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 import {
   ForumData,
   CreatedPost,
@@ -30,7 +30,7 @@ import {
   ClientPost,
   useUserIsMod,
   useForumIdentity,
-  ForumIdentity
+  ForumIdentity,
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
@@ -63,7 +63,7 @@ export function PostContent(props: PostContentProps) {
     deletePost,
     postInFlight,
     setPostInFlight,
-    participatingModerators
+    participatingModerators,
   } = props;
 
   const permission = forum.permission;
@@ -71,12 +71,10 @@ export function PostContent(props: PostContentProps) {
   const userIsMod = useUserIsMod(
     forumData.collectionId,
     forum,
-    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
+    forum.wallet.publicKey || new PublicKey("11111111111111111111111111111111")
   );
 
-  const forumIdentity = useForumIdentity(
-    forumData.collectionId
-  );
+  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
@@ -116,6 +114,8 @@ export function PostContent(props: PostContentProps) {
       return [];
     }
   }, [forumData, post]);
+
+  const replyAreaRef = useRef<HTMLDivElement>(null);
 
   const updateVotes = (upVoted: boolean) => {
     if (isForumPost(post)) {
@@ -159,7 +159,7 @@ export function PostContent(props: PostContentProps) {
         poster: forum.wallet.publicKey!,
         isTopic: false,
         replyTo: post.address,
-        state: 'created'
+        state: "created",
       };
       addPost(localPost);
 
@@ -351,19 +351,20 @@ export function PostContent(props: PostContentProps) {
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
-                    { identity ?
+                    {identity ? (
                       <img
                         src={identity.profilePicture.href}
-                        style={{ borderRadius: '50%' }}
-                      /> :
-                      <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
-                    }
+                        style={{ borderRadius: "50%" }}
+                      />
+                    ) : (
+                      <Jdenticon
+                        value={post?.poster.toBase58()}
+                        alt="posterID"
+                      />
+                    )}
                   </div>
                   <div className="walletId">
-                    { identity ?
-                      identity.displayName :
-                      post.poster.toBase58()
-                    }
+                    {identity ? identity.displayName : post.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicPosterId}
                       posterId={post?.poster}
@@ -387,7 +388,7 @@ export function PostContent(props: PostContentProps) {
                           </div>
                         </>
                       );
-                    } else if(isEditedPost(post)) {
+                    } else if (isEditedPost(post)) {
                       return (
                         <>
                           Confirming edit
@@ -396,7 +397,7 @@ export function PostContent(props: PostContentProps) {
                           </div>
                         </>
                       );
-                    } else if(isCreatedPost(post)) {
+                    } else if (isCreatedPost(post)) {
                       return (
                         <>
                           Posting
@@ -470,7 +471,7 @@ export function PostContent(props: PostContentProps) {
                                setPostToAward(post);
                                setShowGiveAward(true);
                              }}>
-                             <Gift /> Send Token
+                             Send Token <Gift />
                            </button>
                            <div className="actionDivider" />
                          </>
@@ -478,7 +479,13 @@ export function PostContent(props: PostContentProps) {
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
-                        onClick={() => setShowReplyBox(true)}>
+                        onClick={() => {
+                          setShowReplyBox(true);
+                          replyAreaRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                          });
+                        }}>
                         Reply <Reply />
                       </button>
                     </div>
@@ -509,47 +516,50 @@ export function PostContent(props: PostContentProps) {
                 onUpVotePost={(reply) =>
                   forum.voteUpForumPost(reply, forumData.collectionId)
                 }
-                onReplyClick={() => setShowReplyBox(true)}
                 onAwardReply={(reply) => {
                   setPostToAward(reply);
                   setShowGiveAward(true);
                 }}
               />
             </div>
-            {showReplyBox &&
-              (sendingReply ? (
-                <Spinner />
-              ) : (
-                <form onSubmit={onReplyToPost} className="replyForm">
-                  <textarea
-                    placeholder="Type your reply here"
-                    className="replyTextArea"
+            {showReplyBox && sendingReply && <Spinner />}
+            <div
+              ref={replyAreaRef}
+              className={`replyFormContainer ${
+                showReplyBox && !sendingReply ? "visible" : ""
+              }`}>
+              <div className="replyForm">
+                <textarea
+                  placeholder="Type your reply here"
+                  className="replyTextArea"
+                  disabled={postInFlight}
+                  maxLength={800}
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                />
+                <div className="textSize"> {replySize}/800 </div>
+                <div className="buttonsContainer">
+                  <button
+                    className="cancelReplyButton"
                     disabled={postInFlight}
-                    maxLength={800}
-                    value={reply}
-                    required
-                    onChange={(e) => setReply(e.target.value)}
-                  />
-                  <div className="textSize"> {replySize}/800 </div>
-                  <div className="buttonsContainer">
-                    <button
-                      className="cancelReplyButton"
-                      disabled={postInFlight}
-                      onClick={() => {
-                        setShowReplyBox(false);
-                        new Buffer(reply, "utf-8").byteLength;
-                      }}>
-                      Cancel
-                    </button>
-                    <button
-                      className="postReplyButton"
-                      type="submit"
-                      disabled={postInFlight}>
-                      Reply
-                    </button>
-                  </div>
-                </form>
-              ))}
+                    onClick={() => {
+                      setShowReplyBox(false);
+                      new Buffer(reply, "utf-8").byteLength;
+                    }}>
+                    Cancel
+                  </button>
+                  <button
+                    className={`postReplyButton ${
+                      postInFlight ? "inFlight" : ""
+                    }`}
+                    type="submit"
+                    disabled={reply.length === 0}
+                    onClick={onReplyToPost}>
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </>
       </div>

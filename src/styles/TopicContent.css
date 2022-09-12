@@ -183,6 +183,7 @@
           .posterId {
             color: #1e1e26;
             font-weight: 400;
+            margin-right: 10px;
           }
 
           @media only screen and (max-width: 480px) {

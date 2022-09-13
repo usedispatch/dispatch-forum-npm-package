@@ -1,58 +1,24 @@
 export function Success(props: any) {
-	return (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256 256"
-    xmlSpace="preserve"
-    {...props}
-  >
-    <g>
-      <g
-        style={{
-          stroke: "none",
-          strokeWidth: 0,
-          strokeDasharray: "none",
-          strokeLinecap: "butt",
-          strokeLinejoin: "miter",
-          strokeMiterlimit: 10,
-          fill: "none",
-          fillRule: "nonzero",
-          opacity: 1,
-        }}
-      >
-        <path
-          d="M45 90C20.187 90 0 69.813 0 45S20.187 0 45 0s45 20.187 45 45-20.187 45-45 45zm0-83C24.047 7 7 24.047 7 45s17.047 38 38 38 38-17.047 38-38S65.953 7 45 7z"
-          style={{
-            stroke: "none",
-            strokeWidth: 1,
-            strokeDasharray: "none",
-            strokeLinecap: "butt",
-            strokeLinejoin: "miter",
-            strokeMiterlimit: 10,
-            fill: "#25b235",
-            fillRule: "nonzero",
-            opacity: 1,
-          }}
-          transform="translate(1.964 1.964) scale(2.8008)"
-        />
-        <path
-          d="M42.245 62.755a3.496 3.496 0 0 1-2.657-1.222L22.121 41.159a3.5 3.5 0 1 1 5.314-4.557L42.162 53.78l20.334-25.231a3.5 3.5 0 0 1 5.451 4.393L44.97 61.451a3.505 3.505 0 0 1-2.672 1.304h-.053z"
-          style={{
-            stroke: "none",
-            strokeWidth: 1,
-            strokeDasharray: "none",
-            strokeLinecap: "butt",
-            strokeLinejoin: "miter",
-            strokeMiterlimit: 10,
-            fill: "#25b235",
-            fillRule: "nonzero",
-            opacity: 1,
-          }}
-          transform="translate(1.964 1.964) scale(2.8008)"
-        />
-      </g>
-    </g>
-  </svg>
-);
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
+        stroke="#84B971"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M17.821 8.18024C18.0597 8.42056 18.0597 8.8102 17.821 9.05053L11.0988 15.8198C10.8601 16.0601 10.4732 16.0601 10.2345 15.8198L7.17899 12.7428C6.94034 12.5025 6.94034 12.1129 7.17899 11.8726C7.41764 11.6322 7.80458 11.6322 8.04323 11.8726L10.6667 14.5143L16.9568 8.18024C17.1954 7.93992 17.5824 7.93992 17.821 8.18024Z"
+        fill="#84B971"
+      />
+    </svg>
+  );
 }
-

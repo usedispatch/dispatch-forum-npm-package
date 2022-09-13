@@ -5,9 +5,10 @@
     font-weight: normal;
     src: url("./assets/BNBoop.otf") format("opentype");
   }
+
   .degenApeAcademy {
     /* NOTIFICATION */
-    .alertContainer {
+    .alertContent {
       background: #30302e;
       border: 1px solid #999999;
 
@@ -15,17 +16,31 @@
         color: white;
       }
     }
+
     .notificationContainer {
       .closeContainer svg path {
         stroke: white;
         fill: white;
       }
 
-      &.info,
-      &.error,
-      &.warning,
+      &.info {
+        background: #30302e;
+        border: 1px solid #397bad;
+      }
+
+      &.error {
+        background: #30302e;
+        border: 1px solid #e86143;
+      }
+
+      &.warning {
+        background: #30302e;
+        border: 1px solid #ffb549;
+      }
+
       &.success {
         background: #30302e;
+        border: 1px solid #84b971;
       }
     }
 

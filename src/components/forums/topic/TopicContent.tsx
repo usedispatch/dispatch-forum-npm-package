@@ -396,20 +396,22 @@ export function TopicContent(props: TopicContentProps) {
                 Manage post access
               </button>
             </div>
-            {// The gifting UI should be hidden on the apes forum for non-mods.
-            // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-            (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-              userIsMod) &&
-              !forum.wallet.publicKey?.equals(topic.poster) && (
-                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <button
-                    className="awardButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowGiveAward(true)}>
-                    Send Token <Gift />
-                  </button>
-                </PermissionsGate>
-              )}
+            {
+              // The gifting UI should be hidden on the apes forum for non-mods.
+              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+              (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                userIsMod) &&
+                !forum.wallet.publicKey?.equals(topic.poster) && (
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <button
+                      className="awardButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowGiveAward(true)}>
+                      Send Token <Gift />
+                    </button>
+                  </PermissionsGate>
+                )
+            }
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
@@ -505,21 +507,22 @@ function TopicHeader(props: TopicHeaderProps) {
       <div className="topicTitle">
         <div className="posted">
           <div className="postedBy">
-            By
-            <div className="icon">
-              {identity ? (
-                <img
-                  src={identity.profilePicture.href}
-                  style={{ borderRadius: "50%" }}
-                />
-              ) : (
-                <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
-              )}
+            <div>
+              By
+              <div className="icon">
+                {identity ? (
+                  <img
+                    src={identity.profilePicture.href}
+                    style={{ borderRadius: "50%" }}
+                  />
+                ) : (
+                  <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
+                )}
+              </div>
+              <div className="posterId">
+                {identity ? identity.displayName : topic.poster.toBase58()}
+              </div>
             </div>
-            <div className="posterId">
-              {identity ? identity.displayName : topic.poster.toBase58()}
-            </div>
-            &nbsp;
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId
             prop to an unrelated key */}

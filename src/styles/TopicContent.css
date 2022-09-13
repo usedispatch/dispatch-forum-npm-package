@@ -185,11 +185,6 @@
             font-weight: 400;
             margin-right: 10px;
           }
-
-          @media only screen and (max-width: 480px) {
-            flex-direction: column;
-            align-items: flex-start;
-          }
         }
 
         .subj {
@@ -316,6 +311,29 @@
 
           background: #b8b9dc;
         }
+      }
+    }
+
+    @media only screen and (max-width: 570px) {
+      flex-direction: column;
+
+      .activityInfo,
+      .activityInfo .votePostContent,
+      .commentsContainer {
+        flex-direction: row;
+      }
+
+      .posted {
+        flex-direction: column;
+        align-items: flex-start;
+
+        .postedBy {
+          flex-direction: column;
+        }
+      }
+
+      .topicContentBox {
+        flex-direction: column-reverse;
       }
     }
   }

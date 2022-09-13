@@ -96,6 +96,11 @@
     align-items: center;
     justify-content: space-between;
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+      padding: 0 22px 24px;
+    }
+
     .topicViewContent {
       width: 100%;
       padding: 0 42px 24px;
@@ -103,11 +108,6 @@
       .topicViewLoading {
         padding-top: 192px;
       }
-    }
-
-    @media only screen and (max-width: 480px) {
-      margin: 0 8px;
-      width: fit-content;
     }
   }
 }

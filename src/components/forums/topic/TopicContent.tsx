@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import { ReactNode, useEffect, useMemo, useState } from "react";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
 import { ForumPost, PostRestriction } from "@usedispatch/client";
@@ -14,11 +14,11 @@ import {
   PopUpModal,
   PermissionsGate,
   TransactionLink,
-  Spinner
+  Spinner,
 } from "../../common";
 import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
 import { EditPost } from "./EditPost";
-import { RoleLabel } from './RoleLabel';
+import { RoleLabel } from "./RoleLabel";
 
 import { usePath } from "../../../contexts/DispatchProvider";
 
@@ -27,7 +27,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 import {
   ForumData,
   CreatedPost,
@@ -35,7 +35,7 @@ import {
   isEditedPost,
   useUserIsMod,
   useForumIdentity,
-  ForumIdentity
+  ForumIdentity,
 } from "../../../utils/hooks";
 import {
   restrictionListToString,
@@ -56,7 +56,18 @@ interface TopicContentProps {
 }
 
 export function TopicContent(props: TopicContentProps) {
-  const { forum, forumData, userRoles, update, addPost, editPost, deletePost, updateVotes, topic, participatingModerators } = props;
+  const {
+    forum,
+    forumData,
+    userRoles,
+    update,
+    addPost,
+    editPost,
+    deletePost,
+    updateVotes,
+    topic,
+    participatingModerators,
+  } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
@@ -86,7 +97,7 @@ export function TopicContent(props: TopicContentProps) {
     forumData.collectionId,
     forum,
     // TODO(andrew): maybe a better way to mock this up
-    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111')
+    forum.wallet.publicKey || new PublicKey("11111111111111111111111111111111")
   );
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
@@ -167,23 +178,21 @@ export function TopicContent(props: TopicContentProps) {
         body: (
           <div className="successBody">
             <div>
-              The topic is being deleted and you will be
-              redirected back to the forum momentarily
+              The topic is being deleted and you will be redirected back to the
+              forum momentarily
             </div>
             <TransactionLink transaction={tx} />
           </div>
         ),
-        okPath: forumPath
+        okPath: forumPath,
       });
       setShowDeleteConfirmation(false);
       if (tx) {
         // When the topic is confirmed deleted, redirect to the
         // parent URL (the main forum)
-        await forum.connection
-          .confirmTransaction(tx)
-          .then(() => {
-            location.assign(`${forumPath}${location.search}`);
-          });
+        await forum.connection.confirmTransaction(tx).then(() => {
+          location.assign(`${forumPath}${location.search}`);
+        });
       }
       setDeletingTopic(false);
       return tx;
@@ -218,10 +227,7 @@ export function TopicContent(props: TopicContentProps) {
           body={modalInfo.body}
           collapsible={modalInfo.collapsible}
           okButton={
-            <button
-              className="okButton"
-              onClick={() => setModalInfo(null)}
-            >
+            <button className="okButton" onClick={() => setModalInfo(null)}>
               OK
             </button>
           }
@@ -390,21 +396,20 @@ export function TopicContent(props: TopicContentProps) {
                 Manage post access
               </button>
             </div>
-            {(// The gifting UI should be hidden on the apes forum for non-mods.
-              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-              (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                userIsMod) && 
-                !forum.wallet.publicKey?.equals(topic.poster)
-            ) &&
-            <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-              <button
-                className="awardButton"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowGiveAward(true)}>
-                Send Token <Gift />
-              </button>
-            </PermissionsGate>
-            }
+            {// The gifting UI should be hidden on the apes forum for non-mods.
+            // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+            (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+              userIsMod) &&
+              !forum.wallet.publicKey?.equals(topic.poster) && (
+                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                  <button
+                    className="awardButton"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => setShowGiveAward(true)}>
+                    Send Token <Gift />
+                  </button>
+                </PermissionsGate>
+              )}
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
@@ -502,18 +507,17 @@ function TopicHeader(props: TopicHeaderProps) {
           <div className="postedBy">
             By
             <div className="icon">
-              { identity ?
+              {identity ? (
                 <img
                   src={identity.profilePicture.href}
-                  style={{ borderRadius: '50%' }}
-                /> :
+                  style={{ borderRadius: "50%" }}
+                />
+              ) : (
                 <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
-              }
+              )}
             </div>
             <div className="posterId">
-              { identity ?
-                identity.displayName :
-                topic.poster.toBase58()}
+              {identity ? identity.displayName : topic.poster.toBase58()}
             </div>
             &nbsp;
             {/* TODO is it right to show an OP when the topic
@@ -526,7 +530,7 @@ function TopicHeader(props: TopicHeaderProps) {
             />
           </div>
           <div className="postedAt">
-            Posted at: {postedAt}
+            {postedAt}
             <div className="accountInfo">
               <a
                 href={`https://solscan.io/account/${topic.address}?cluster=${forum.cluster}`}
@@ -537,7 +541,7 @@ function TopicHeader(props: TopicHeaderProps) {
             </div>
           </div>
         </div>
-        { !isEditedPost(topic) ?
+        {!isEditedPost(topic) ? (
           <div className="subj">
             {isGated && (
               <div className="gatedTopic">
@@ -545,13 +549,16 @@ function TopicHeader(props: TopicHeaderProps) {
               </div>
             )}
             <Markdown>{topic?.data.subj ?? "subject"}</Markdown>
-          </div> :
-            <Spinner />
-        }
+          </div>
+        ) : (
+          <Spinner />
+        )}
       </div>
-      { !isEditedPost(topic) &&
-        <div className="topicBody"><Markdown>{topic?.data.body ?? "body of the topic"}</Markdown></div>
-      }
+      {!isEditedPost(topic) && (
+        <div className="topicBody">
+          <Markdown>{topic?.data.body ?? "body of the topic"}</Markdown>
+        </div>
+      )}
     </div>
   );
 }

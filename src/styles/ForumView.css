@@ -118,6 +118,7 @@
 
       @media only screen and (max-width: 480px) {
         margin: 0 8px;
+        padding: 0 22px;
       }
     }
   }

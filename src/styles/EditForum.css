@@ -21,6 +21,7 @@
 
       background: transparent;
       color: #3f1d96;
+      text-align: left;
 
       &:hover {
         opacity: 0.85;

@@ -31,6 +31,7 @@ export function Vote(props: { isUpVote?: true }) {
       </svg>
     );
   }
+
   return (
     <svg
       width="24"

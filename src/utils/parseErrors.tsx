@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 
 const postboxErrorCode = {
   // Create post errors
@@ -30,7 +30,7 @@ export function parseError(error: any) {
       const hexString = (error.message as string).substring(hexIndex + 2);
       const decimal = hexToDecimal(hexString) - 6000;
       const message = postboxErrorCode[decimal];
-      if (!_.isNil(result)) {
+      if (!isNil(result)) {
         result = { code: decimal, message };
       }
     } else {

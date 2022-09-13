@@ -1,4 +1,4 @@
-import _ from "lodash";
+import isNil from 'lodash/isNil';
 import { ReactNode, useRef } from "react";
 
 import { Close, Success, Warning, Error, Info } from "../../assets";
@@ -70,7 +70,7 @@ export const PopUpModal = (props: PopUpModalProps) => {
           <div className="modalBox">
             <div className="modalTitle">
               <div className="titleTextIcon">
-                {!_.isNil(props.messageType) && icon}
+                {!isNil(props.messageType) && icon}
                 {props.title}
               </div>
               {props.onClose && (

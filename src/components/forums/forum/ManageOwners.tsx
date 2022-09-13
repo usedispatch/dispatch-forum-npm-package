@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 
@@ -138,7 +138,7 @@ export function ManageOwners(props: ManageOwnersProps) {
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
-        {_.isNil(modalInfo) && manageOwners.show && (
+        {isNil(modalInfo) && manageOwners.show && (
           <PopUpModal
             id="add-owners"
             visible
@@ -194,7 +194,7 @@ export function ManageOwners(props: ManageOwnersProps) {
             onClose={() => resetInitialValues()}
           />
         )}
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="manage-owners-info"
             visible

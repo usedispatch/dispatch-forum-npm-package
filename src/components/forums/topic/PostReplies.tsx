@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import Markdown from "markdown-to-jsx";
 import { useMemo } from "react";
 import { PublicKey } from "@solana/web3.js";

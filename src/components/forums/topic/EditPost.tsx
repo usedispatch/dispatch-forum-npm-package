@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode } from "react";
 import { ForumPost } from "@usedispatch/client";
 
@@ -125,7 +125,7 @@ export function EditPost(props: EditPostProps) {
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
-        {editPost.show && _.isNil(modalInfo) && (
+        {editPost.show && isNil(modalInfo) && (
           <PopUpModal
             id="edit-post"
             visible
@@ -184,7 +184,7 @@ export function EditPost(props: EditPostProps) {
             }
           />
         )}
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="edit-post-info"
             visible

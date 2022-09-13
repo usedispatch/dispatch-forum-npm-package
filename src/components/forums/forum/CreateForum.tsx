@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, useMemo, ReactNode } from "react";
 import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
@@ -172,7 +172,7 @@ export function CreateForum(props: CreateForumProps) {
 
       const res = await forumObject.createForum(forum);
 
-      if (!_.isNil(res?.forum)) {
+      if (!isNil(res?.forum)) {
         showModal({
           title: `Success!`,
           body: (

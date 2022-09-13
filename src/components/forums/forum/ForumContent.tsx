@@ -1,5 +1,4 @@
-import * as _ from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import isNil from 'lodash/isNil';
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
@@ -207,7 +206,7 @@ export function ForumContent(props: ForumContentProps) {
         forumData.collectionId,
         restriction
       );
-      if (!_.isNil(tx)) {
+      if (!isNil(tx)) {
         setCreatingNewTopic(false);
         setNewTopicInFlight(true);
         setModalInfo({
@@ -295,7 +294,7 @@ export function ForumContent(props: ForumContentProps) {
         <>
           {ReactGA.send("pageview")}
 
-          {!_.isNil(modalInfo) && (
+          {!isNil(modalInfo) && (
             <PopUpModal
               id="create-topic-info"
               visible
@@ -310,7 +309,7 @@ export function ForumContent(props: ForumContentProps) {
               }
             />
           )}
-          {showManageAccessToken && _.isNil(modalInfo) && (
+          {showManageAccessToken && isNil(modalInfo) && (
             <PopUpModal
               id="add-access-token"
               visible
@@ -372,7 +371,7 @@ export function ForumContent(props: ForumContentProps) {
               }
             />
           )}
-          {removeAccessToken.show && _.isNil(modalInfo) && (
+          {removeAccessToken.show && isNil(modalInfo) && (
             <PopUpModal
               id="remove-access-token"
               visible
@@ -399,7 +398,7 @@ export function ForumContent(props: ForumContentProps) {
             />
           )}
           {(() => {
-            if (showNewTopicModal && _.isNil(modalInfo)) {
+            if (showNewTopicModal && isNil(modalInfo)) {
               if (roles.includes(UserRoleType.Viewer)) {
                 return (
                   <PopUpModal
@@ -553,7 +552,7 @@ export function ForumContent(props: ForumContentProps) {
           {(() => {
             if (newTopicInFlight) {
               return <Spinner />;
-            } else if (!_.isNil(forumData.collectionId)) {
+            } else if (!isNil(forumData.collectionId)) {
               return <TopicList forumData={forumData} />;
             }
           })()}

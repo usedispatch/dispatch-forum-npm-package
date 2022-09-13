@@ -1,7 +1,9 @@
 import { useMemo, useState, useEffect, ReactNode } from "react";
 import { PublicKey, AccountInfo } from "@solana/web3.js";
 import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated, ChainVoteEntry } from "@usedispatch/client";
-import { uniqBy, zip, isNil } from 'lodash';
+import uniqBy from 'lodash/uniqBy';
+import zip from 'lodash/zip';
+import isNil from 'lodash/isNil';
 import {
   getAssociatedTokenAddress,
   unpackAccount,

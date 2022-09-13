@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from "react";
 
 import { Edit } from "../../../assets";
@@ -108,7 +108,7 @@ export function EditForum(props: EditForumProps) {
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
-        {editForum.show && _.isNil(modalInfo) && (
+        {editForum.show && isNil(modalInfo) && (
           <PopUpModal
             id="edit-forum"
             visible
@@ -174,7 +174,7 @@ export function EditForum(props: EditForumProps) {
             }
           />
         )}
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="edit-forum-info"
             visible

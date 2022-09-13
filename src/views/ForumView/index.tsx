@@ -1,5 +1,4 @@
 import "./../../style.css";
-import * as _ from "lodash";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet";
 import * as web3 from "@solana/web3.js";

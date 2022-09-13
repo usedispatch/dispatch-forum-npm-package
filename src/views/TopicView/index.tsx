@@ -1,5 +1,6 @@
 import "./../../style.css";
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
+import isNull from 'lodash/isNull';
 import Markdown from "markdown-to-jsx";
 import { useEffect, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
@@ -145,8 +146,8 @@ export const TopicView = (props: Props) => {
 
   useEffect(() => {
     if (
-      !_.isNil(collectionPublicKey) &&
-      !_.isNil(topic) &&
+      !isNil(collectionPublicKey) &&
+      !isNil(topic) &&
       forum.wallet.publicKey &&
       isSuccess(topic)
     ) {
@@ -219,7 +220,7 @@ export const TopicView = (props: Props) => {
                           />
                         </>
                       );
-                    } else if (_.isNull(collectionPublicKey)) {
+                    } else if (isNull(collectionPublicKey)) {
                       return invalidPublicKeyView;
                     } else {
                       // TODO(andrew) more sophisticated error

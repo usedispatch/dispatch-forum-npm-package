@@ -1,7 +1,8 @@
 import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
-import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
+import {NATIVE_MINT, getAssociatedTokenAddress} from "@solana/spl-token";
+import { ForumPost, WalletAdapterInterface, Mailbox } from "@usedispatch/client";
 
 import {
   CollapsibleProps,
@@ -52,13 +53,34 @@ export function GiveAward(props: GiveAwardProps) {
     setLoading(true);
 
     try {
-      const tx = await transferSOL({
-        wallet: Forum.wallet,
-        posterId: post.poster,
-        collectionId: collectionId,
-        amount: selectedAmount,
-        connection: Forum.connection,
-      });
+      const mailbox = new Mailbox(Forum.connection, Forum.wallet);
+      const ata = await 
+      getAssociatedTokenAddress(NATIVE_MINT, Forum.wallet.publicKey!);
+
+      if (ata) {
+        const tx = await mailbox.sendMessage(
+          "You've received a Dispatch SOL Award!",
+          `You've received an award from ${Forum.wallet.publicKey!.toBase58()}!`,
+          post.poster,
+          {
+            incentive: {
+              mint: NATIVE_MINT,
+              amount: selectedAmount,
+              payerAccount: ata,
+            }
+          }
+        )
+      } else {
+        const sendTx = new web3.Transaction();
+        
+      }
+      // const tx = await transferSOL({
+      //   wallet: Forum.wallet,
+      //   posterId: post.poster,
+      //   collectionId: collectionId,
+      //   amount: selectedAmount,
+      //   connection: Forum.connection,
+      // });
       setLoading(false);
       onSuccess(
         <>
@@ -82,6 +104,7 @@ export function GiveAward(props: GiveAwardProps) {
         selectedNFT?.mint!,
         Forum.wallet.sendTransaction
       );
+
 
       setLoading(false);
       onSuccess(

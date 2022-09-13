@@ -10,6 +10,7 @@ import {
   getMetadataForOwner,
   VoteType,
   ChainVoteEntry,
+  Mailbox,
 } from "@usedispatch/client";
 import * as web3 from "@solana/web3.js";
 
@@ -896,36 +897,50 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
+      const mailbox = new Mailbox(conn, wallet);
       let receiverAcc = await getAssociatedTokenAddress(mint, receiverId);
-      let txn = new web3.Transaction();
+      // let txn = new web3.Transaction();
       try {
         await getAccount(conn, receiverAcc);
       } catch (error: any) {
 
-        txn.add(
-          createAssociatedTokenAccountInstruction(
-            wallet.publicKey!, // payer
-            receiverAcc, // ata
-            receiverId, // owner
-            mint // mint
-          )
-        );
+        // txn.add(
+        //   createAssociatedTokenAccountInstruction(
+        //     wallet.publicKey!, // payer
+        //     receiverAcc, // ata
+        //     receiverId, // owner
+        //     mint // mint
+        //   )
+        // );
 
       }
       const ownerAcc = await getAssociatedTokenAddress(mint, wallet.publicKey!);
 
-      txn.add(
-        createTransferCheckedInstruction(
-          ownerAcc, // from (should be a token account)
-          mint, // mint
-          receiverAcc, // to (should be a token account)
-          wallet.publicKey!, // from's owner
-          //TODO[zfaizal2] : get amount and decimals from tokenAccount
-          1, // amount, if your deciamls is 8, send 10^8 for 1 token
-          0 // decimals
-        )
-      );
-      const result = sendTransaction(txn, conn);
+      const result = await mailbox.sendMessage(
+        "You've received a new NFT!",
+        `You've received an award from ${wallet.publicKey!.toBase58()}!`,
+        receiverId,
+        {
+          incentive: {
+            mint: mint,
+            amount: 1,
+            payerAccount: wallet.publicKey!
+          }
+        }
+      )
+
+      // txn.add(
+      //   createTransferCheckedInstruction(
+      //     ownerAcc, // from (should be a token account)
+      //     mint, // mint
+      //     receiverAcc, // to (should be a token account)
+      //     wallet.publicKey!, // from's owner
+      //     //TODO[zfaizal2] : get amount and decimals from tokenAccount
+      //     1, // amount, if your deciamls is 8, send 10^8 for 1 token
+      //     0 // decimals
+      //   )
+      // );
+      // const result = sendTransaction(txn, conn);
 
       return result;
     } catch (error) {

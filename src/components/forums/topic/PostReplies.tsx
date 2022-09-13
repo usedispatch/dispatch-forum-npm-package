@@ -177,17 +177,19 @@ export function PostReplies(props: PostRepliesProps) {
                         onClick={() => onDeletePost(reply)}>
                         <Trash />
                       </button>
-                      <div className="actionDivider" />
                     </PermissionsGate>
                     <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                      {!forum.wallet.publicKey?.equals(reply.poster) &&
-                        <button
-                          className="awardButton"
-                          disabled={!permission.readAndWrite}
-                          onClick={() => onAwardReply(reply)}>
-                         Send Token <Gift />
-                        </button>
-                      }
+                      {!forum.wallet.publicKey?.equals(reply.poster) && (
+                        <>
+                          <div className="actionDivider" />
+                          <button
+                            className="awardButton"
+                            disabled={!permission.readAndWrite}
+                            onClick={() => onAwardReply(reply)}>
+                            Send Token <Gift />
+                          </button>
+                        </>
+                      )}
                     </PermissionsGate>
                   </div>
                 )}

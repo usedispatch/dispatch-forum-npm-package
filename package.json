@@ -30,7 +30,6 @@
     "assert": "^2.0.0",
     "async": "^3.2.4",
     "autoprefixer": "^10.4.0",
-    "browserify-zlib": "^0.2.0",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
     "daisyui": "^1.16.2",

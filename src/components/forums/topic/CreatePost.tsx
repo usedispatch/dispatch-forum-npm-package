@@ -1,6 +1,6 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from "react";
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { CreatedPost } from "../../../utils/hooks";
 
@@ -17,7 +17,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface CreatePostProps {
   topic: ForumPost;
-  collectionId: web3.PublicKey;
+  collectionId: PublicKey;
   createForumPost: (
     post: {
       subj?: string | undefined;
@@ -25,7 +25,7 @@ interface CreatePostProps {
       meta?: any;
     },
     topicId: number,
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ) => Promise<string | undefined>;
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;

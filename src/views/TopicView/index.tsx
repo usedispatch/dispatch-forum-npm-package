@@ -2,8 +2,8 @@ import "./../../style.css";
 import isNil from 'lodash/isNil';
 import isNull from 'lodash/isNull';
 import Markdown from "markdown-to-jsx";
+import { PublicKey } from '@solana/web3.js';
 import { useEffect, useMemo } from "react";
-import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
 
@@ -49,10 +49,10 @@ export const TopicView = (props: Props) => {
   const { permission } = forum;
   const { modal, showModal, setModals } = useModal();
   const { collectionId, topicId } = props;
-  const collectionPublicKey: web3.PublicKey | null = useMemo(() => {
+  const collectionPublicKey: PublicKey | null = useMemo(() => {
     try {
       // TODO show modal if this fails
-      return new web3.PublicKey(collectionId);
+      return new PublicKey(collectionId);
     } catch (error) {
       showModal({
         type: MessageType.error,

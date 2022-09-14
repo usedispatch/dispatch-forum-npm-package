@@ -3,7 +3,7 @@ import { useState, useMemo, ReactNode } from "react";
 import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
 import { ForumInfo } from "@usedispatch/client";
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 import { Info } from "../../../assets";
 import {
@@ -38,9 +38,9 @@ export function CreateForum(props: CreateForumProps) {
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
   const [accessToken, setAccessToken] = useState<string>("");
-  const [modList, setModList] = useState<web3.PublicKey[]>([]);
-  const [ownerList, setOwnerList] = useState<web3.PublicKey[]>([]);
-  const [accessList, setAccessList] = useState<web3.PublicKey[]>([]);
+  const [modList, setModList] = useState<PublicKey[]>([]);
+  const [ownerList, setOwnerList] = useState<PublicKey[]>([]);
+  const [accessList, setAccessList] = useState<PublicKey[]>([]);
   const [bodySize, setBodySize] = useState<number>(0);
 
   const [notification, setNotification] = useState<{
@@ -52,7 +52,7 @@ export function CreateForum(props: CreateForumProps) {
   const { modal, showModal } = useModal();
   const croppedCollectionID = useMemo(() => {
     try {
-      const pubkey = new web3.PublicKey(collectionId);
+      const pubkey = new PublicKey(collectionId);
 
       // TODO(andrew) make croppedCollectionID a useMemo() call as well?
       // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d
@@ -71,7 +71,7 @@ export function CreateForum(props: CreateForumProps) {
 
   const collectionPublicKey = useMemo(() => {
     try {
-      const pubkey = new web3.PublicKey(collectionId);
+      const pubkey = new PublicKey(collectionId);
       return pubkey;
     } catch (error) {
       const message = JSON.stringify(error);

@@ -1,6 +1,6 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode } from "react";
-import * as web3 from "@solana/web3.js";
+import { PublicKey, Transaction, Connection, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
 
 import {
@@ -22,7 +22,7 @@ enum AwardType {
 
 interface GiveAwardProps {
   post: ForumPost;
-  collectionId: web3.PublicKey;
+  collectionId: PublicKey;
   onCancel: () => void;
   onSuccess: (notificationContent: ReactNode) => void;
   onError: (error: any) => void;
@@ -234,20 +234,20 @@ export function GiveAward(props: GiveAwardProps) {
 
 interface TransferSOLProps {
   wallet: WalletAdapterInterface;
-  posterId: web3.PublicKey;
-  collectionId: web3.PublicKey;
+  posterId: PublicKey;
+  collectionId: PublicKey;
   amount: number;
-  connection: web3.Connection;
+  connection: Connection;
 }
 
 async function transferSOL(props: TransferSOLProps) {
   const { posterId, amount, wallet, connection } = props;
 
-  let tx = new web3.Transaction().add(
-    web3.SystemProgram.transfer({
+  let tx = new Transaction().add(
+    SystemProgram.transfer({
       fromPubkey: wallet.publicKey!,
       toPubkey: posterId,
-      lamports: amount * web3.LAMPORTS_PER_SOL,
+      lamports: amount * LAMPORTS_PER_SOL,
     })
   );
 

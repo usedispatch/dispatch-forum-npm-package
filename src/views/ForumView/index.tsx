@@ -1,7 +1,7 @@
 import "./../../style.css";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet";
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from '@solana/web3.js';
 
 import { MessageType, Spinner, TransactionLink } from "../../components/common";
 import {
@@ -70,7 +70,7 @@ export const ForumView = (props: ForumViewProps) => {
   const collectionId = props.collectionId;
   const collectionPublicKey = useMemo(() => {
     try {
-      const pubkey = new web3.PublicKey(collectionId);
+      const pubkey = new PublicKey(collectionId);
 
       // TODO(andrew) make croppedCollectionID a useMemo() call as well?
       // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d

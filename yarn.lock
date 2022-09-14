@@ -1582,27 +1582,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@noble/ed25519@npm:^1.7.0":
-  version: 1.7.1
-  resolution: "@noble/ed25519@npm:1.7.1"
-  checksum: b8e50306ac70f5cecc349111997e72e897b47a28d406b96cf95d0ebe7cbdefb8380d26117d7847d94102281db200aa3a494e520f9fc12e2f292e0762cb0fa333
-  languageName: node
-  linkType: hard
-
-"@noble/hashes@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "@noble/hashes@npm:1.1.2"
-  checksum: 3c2a8cb7c2e053811032f242155d870c5eb98844d924d69702244d48804cb03b42d4a666c49c2b71164420d8229cb9a6f242b972d50d5bb2f1d673b98b041de2
-  languageName: node
-  linkType: hard
-
-"@noble/secp256k1@npm:^1.6.3":
-  version: 1.7.0
-  resolution: "@noble/secp256k1@npm:1.7.0"
-  checksum: 540a2b8e527ee1e5522af1c430e54945ad373883cac983b115136cd0950efa1f2c473ee6a36d8e69b6809b3ee586276de62f5fa705c77a9425721e81bada8116
-  languageName: node
-  linkType: hard
-
 "@nodelib/fs.scandir@npm:2.1.5":
   version: 2.1.5
   resolution: "@nodelib/fs.scandir@npm:2.1.5"
@@ -1774,7 +1753,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@solana/web3.js@npm:^1.21.0, @solana/web3.js@npm:^1.30.2, @solana/web3.js@npm:^1.32.0, @solana/web3.js@npm:^1.35.1, @solana/web3.js@npm:^1.36.0, @solana/web3.js@npm:^1.44.0":
+"@solana/web3.js@npm:1.50.1":
   version: 1.50.1
   resolution: "@solana/web3.js@npm:1.50.1"
   dependencies:
@@ -1796,29 +1775,6 @@ __metadata:
     superstruct: ^0.14.2
     tweetnacl: ^1.0.0
   checksum: 49dca7b9caa776a6184b6008af74907d55b4dde3652babd066d316b585e00f7e2d63d1fb450b7a32591c371dfcee3d4bbfff98409ed80a07216a90dc58c7fb86
-  languageName: node
-  linkType: hard
-
-"@solana/web3.js@npm:^1.61.1":
-  version: 1.61.1
-  resolution: "@solana/web3.js@npm:1.61.1"
-  dependencies:
-    "@babel/runtime": ^7.12.5
-    "@noble/ed25519": ^1.7.0
-    "@noble/hashes": ^1.1.2
-    "@noble/secp256k1": ^1.6.3
-    "@solana/buffer-layout": ^4.0.0
-    bigint-buffer: ^1.1.5
-    bn.js: ^5.0.0
-    borsh: ^0.7.0
-    bs58: ^4.0.1
-    buffer: 6.0.1
-    fast-stable-stringify: ^1.0.0
-    jayson: ^3.4.4
-    node-fetch: 2
-    rpc-websockets: ^7.5.0
-    superstruct: ^0.14.2
-  checksum: a58de722603f784e2cb93863a165644d32c0c1bf1de9fe2153de551c7d725c0f26999983e3af51e97ea602be797cd330078fba0a7f244784d810fcc96f06ef22
   languageName: node
   linkType: hard
 
@@ -2187,7 +2143,7 @@ __metadata:
   resolution: "@usedispatch/forum@workspace:."
   dependencies:
     "@solana/spl-token": ^0.3.1
-    "@solana/web3.js": ^1.61.1
+    "@solana/web3.js": ^1.50.1
     "@svgr/webpack": ^6.2.1
     "@tailwindcss/typography": ^0.5.7
     "@types/lodash": ^4.14.185

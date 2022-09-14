@@ -6,8 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "export NODE_ENV=development && npm run clean && npx webpack && cp README.md ./dist",
-    "build:prod": "export NODE_ENV=production && npm run clean && npx webpack && cp README.md ./dist",
+    "build": "yarn clean && NODE_ENV=development yarn webpack && cp README.md ./dist",
+    "build:prod": "yarn clean && NODE_ENV=production yarn webpack && cp README.md ./dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -62,5 +62,6 @@
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0"
-  }
+  },
+  "packageManager": "yarn@3.2.3"
 }

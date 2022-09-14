@@ -71,7 +71,7 @@
 
     display: flex;
     align-items: center;
-    overflow-y: overlay;
+    flex-wrap: wrap;
 
     svg {
       height: 24px;

@@ -1,7 +1,7 @@
 import * as _ from "lodash";
+import { PublicKey } from '@solana/web3.js';
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
-import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
 
 import { Lock, Plus, Trash } from "../../../assets";
@@ -11,21 +11,24 @@ import {
   PermissionsGate,
   PopUpModal,
   TransactionLink,
-  Spinner
+  Spinner,
 } from "../../common";
-import { EditForum } from "./EditForum";
-import { TopicList } from "..";
+import { TopicList, EditForum, ManageOwners, ManageModerators } from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { isSuccess } from "../../../utils/loading";
-import { ForumData, useModerators } from "../../../utils/hooks";
+import {
+  ForumData,
+  useForumIdentity,
+  ForumIdentity
+} from "../../../utils/hooks";
 import {
   restrictionListToString,
   pubkeysToRestriction,
 } from "../../../utils/restrictionListHelper";
+
 interface ForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
@@ -34,8 +37,10 @@ interface ForumContentProps {
 
 export function ForumContent(props: ForumContentProps) {
   const { forumData, forumObject, update } = props;
-  const { role } = useRole();
+  const { roles } = useRole();
   const { permission } = forumObject;
+
+  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [newTopic, setNewTopic] = useState<{
     title: string;
@@ -43,35 +48,11 @@ export function ForumContent(props: ForumContentProps) {
     accessToken: string;
   }>({ title: "", description: "", accessToken: "" });
 
-  // here, moderators will always refer to the mods as fetched
-  // from the server, which is an immutable value and can only be
-  // changed by calling updateMods(). currentMods is the mutable
-  // value that can be edited client-side
-  const { moderators, update: updateMods } = useModerators(
-    forumData.collectionId,
-    forumObject
-  );
-
-  const [currentOwners, setCurrentOwners] = useState<string[]>(() => {
-    if (isSuccess(forumData.owners)) {
-      return forumData.owners.map((pkey) => pkey.toBase58());
-    } else {
-      // TODO(andrew) show error here for missing owners
-      return [];
-    }
-  });
-
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [newTopicInFlight, setNewTopicInFlight] = useState(false);
   const [keepGates, setKeepGates] = useState(true);
 
-  const [showAddModerators, setShowAddModerators] = useState(false);
-  const [showAddOwners, setShowAddOwners] = useState(false);
-  const [newModerator, setNewModerator] = useState<string>("");
-  const [newOwner, setNewOwner] = useState<string>("");
-  const [addingNewModerator, setAddingNewModerator] = useState(false);
-  const [addingNewOwner, setAddingNewOwner] = useState(false);
   const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
   const [removeAccessToken, setRemoveAccessToken] = useState<{
@@ -103,86 +84,6 @@ export function ForumContent(props: ForumContentProps) {
       setUngatedNewTopic(false);
     }
   }, [newTopic.accessToken, keepGates]);
-
-  // Begin mutating operations
-  const addModerator = async () => {
-    // In order to add moderators, they must have been fetched
-    // successfully at least once. This means that moderators
-    // must be a success type (indicating it was fetched
-    // successfully from server)
-    if (!isSuccess(moderators)) {
-      return;
-    }
-    setAddingNewModerator(true);
-    try {
-      const moderatorId = newPublicKey(newModerator);
-      const tx = await forumObject.addModerator(
-        moderatorId,
-        forumData.collectionId
-      );
-      setNewModerator("");
-      setShowAddModerators(false);
-      setAddingNewModerator(false);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: (
-          <div className="successBody">
-            <div>The moderator was added</div>
-            <TransactionLink transaction={tx!} />
-          </div>
-        ),
-      });
-
-      forumObject.connection.confirmTransaction(tx!).then(() => updateMods());
-    } catch (error: any) {
-      setAddingNewModerator(false);
-      if (error.code !== 4001) {
-        setNewModerator("");
-        setShowAddModerators(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The moderators could not be added`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
-    }
-  };
-
-  const addOwner = async () => {
-    setAddingNewOwner(true);
-    try {
-      const ownerId = newPublicKey(newOwner);
-      const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
-      setCurrentOwners(currentOwners.concat(newOwner));
-      setNewOwner("");
-      setShowAddOwners(false);
-      setAddingNewOwner(false);
-      setModalInfo({
-        title: "Success!",
-        type: MessageType.success,
-        body: (
-          <div className="successBody">
-            <div>The owner was added</div>
-            <TransactionLink transaction={tx!} />
-          </div>
-        ),
-      });
-    } catch (error: any) {
-      setAddingNewOwner(false);
-      if (error.code !== 4001) {
-        setNewOwner("");
-        setShowAddOwners(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The owners could not be added`,
-          collapsible: { header: "Error", content: JSON.stringify(error) },
-        });
-      }
-    }
-  };
 
   const addAccessToken = async () => {
     setAddingAccessToken(true);
@@ -318,12 +219,10 @@ export function ForumContent(props: ForumContentProps) {
         setShowNewTopicModal(false);
 
         // re-load forum in background
-        await forumObject.connection
-          .confirmTransaction(tx)
-          .then(() => {
-            update();
-            setNewTopicInFlight(false);
-          });
+        await forumObject.connection.confirmTransaction(tx).then(() => {
+          update();
+          setNewTopicInFlight(false);
+        });
       } else {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -501,12 +400,16 @@ export function ForumContent(props: ForumContentProps) {
           )}
           {(() => {
             if (showNewTopicModal && _.isNil(modalInfo)) {
-              if (role === UserRoleType.Viewer) {
+              if (roles.includes(UserRoleType.Viewer)) {
                 return (
                   <PopUpModal
                     id="create-topic"
                     title="You are not authorized"
                     body={
+                      (isSuccess(forumData.restriction) &&
+                      forumData.restriction.tokenOwnership?.mint
+                        .equals(forumData.moderatorMint)) ?
+                      "Oops! Only moderators can create new topics at this time." :
                       "Oops! You need a token to participate. Please contact the forum’s moderators."
                     }
                     visible
@@ -528,7 +431,7 @@ export function ForumContent(props: ForumContentProps) {
                     body={
                       <div className="createTopicBody">
                         <>
-                          <span className="createTopicLabel">Topic Title</span>
+                          <span className="createTopicLabel">Topic title</span>
                           <input
                             type="text"
                             placeholder="Title"
@@ -546,7 +449,7 @@ export function ForumContent(props: ForumContentProps) {
                         </>
                         <>
                           <span className="createTopicLabel">
-                            Topic Description
+                            Topic description
                           </span>
                           <textarea
                             placeholder="Description"
@@ -564,21 +467,6 @@ export function ForumContent(props: ForumContentProps) {
                         <PermissionsGate
                           scopes={[SCOPES.canAddTopicRestriction]}>
                           <>
-                            {currentForumAccessToken.length > 0 && (
-                              <div className="gateCheckbox">
-                                <input
-                                  type="checkbox"
-                                  checked={keepGates}
-                                  onChange={(e) => {
-                                    setKeepGates(e.target.checked);
-                                  }}
-                                />
-                                <div className="createTopicLabel">
-                                  Keep Existing Forum Gates on Topic
-                                </div>
-                              </div>
-                            )}
-                            {isSuccess(forumData.restriction) && <div></div>}
                             <span className="createTopicLabel">
                               Limit post access
                             </span>
@@ -595,6 +483,20 @@ export function ForumContent(props: ForumContentProps) {
                                 })
                               }
                             />
+                            {currentForumAccessToken.length > 0 && (
+                              <div className="gateCheckbox">
+                                <div className="createTopicLabel">
+                                  Keep existing forum gates on topic
+                                </div>
+                                <input
+                                  type="checkbox"
+                                  checked={keepGates}
+                                  onChange={(e) => {
+                                    setKeepGates(e.target.checked);
+                                  }}
+                                />
+                              </div>
+                            )}
                           </>
                         </PermissionsGate>
                       </div>
@@ -622,108 +524,6 @@ export function ForumContent(props: ForumContentProps) {
               return null;
             }
           })()}
-          {_.isNil(modalInfo) && showAddModerators && (
-            <PopUpModal
-              id="add-moderators"
-              visible
-              title={"Manage moderators"}
-              body={
-                <div className="addModeratorsBody">
-                  {(() => {
-                    // If the moderators were successfully
-                    // fetched and currentMods was set...
-                    if (isSuccess(moderators)) {
-                      // Display them
-                      const moderatorList = moderators.map((pubkey) => {
-                        const m = pubkey.toBase58();
-                        return (
-                          <li key={m} className="currentModerators">
-                            <>
-                              <div className="iconContainer">
-                                <Jdenticon value={m} alt="moderatorId" />
-                              </div>
-                              {m}
-                            </>
-                          </li>
-                        );
-                      });
-
-                      return (
-                        <>
-                          <label className="addModeratorsLabel">
-                            Current moderators
-                          </label>
-                          <ul>{moderatorList}</ul>
-                          <label className="addModeratorsLabel">Add new</label>
-                          <input
-                            placeholder="Add moderator's wallet ID here"
-                            className="addModeratorsInput"
-                            maxLength={800}
-                            value={newModerator}
-                            onChange={(e) => setNewModerator(e.target.value)}
-                          />
-                          <button
-                            className="okButton"
-                            onClick={() => addModerator()}>
-                            Save
-                          </button>
-                        </>
-                      );
-                    } else {
-                      return (
-                        <button
-                          className="okButton fetchModerators"
-                          onClick={updateMods}>
-                          Fetch moderators
-                        </button>
-                      );
-                    }
-                  })()}
-                </div>
-              }
-              loading={addingNewModerator}
-              onClose={() => setShowAddModerators(false)}
-            />
-          )}
-          {_.isNil(modalInfo) && showAddOwners && (
-            <PopUpModal
-              id="add-owners"
-              visible
-              title={"Manage owners"}
-              body={
-                <div className="addModeratorsBody">
-                  <label className="addModeratorsLabel">Add new</label>
-                  <input
-                    placeholder="Add owners's wallet ID here"
-                    className="addModeratorsInput"
-                    maxLength={800}
-                    value={newOwner}
-                    onChange={(e) => setNewOwner(e.target.value)}
-                  />
-                  <label className="addModeratorsLabel">Current owners</label>
-                  <ul>
-                    {currentOwners.map((m) => {
-                      return (
-                        <li key={m} className="currentModerators">
-                          <div className="iconContainer">
-                            <Jdenticon value={m} alt="moderatorId" />
-                          </div>
-                          {m}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              }
-              loading={addingNewOwner}
-              okButton={
-                <button className="okButton" onClick={() => addOwner()}>
-                  Save
-                </button>
-              }
-              onClose={() => setShowAddOwners(false)}
-            />
-          )}
           <div className="forumContentBox">
             {forumHeader}
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
@@ -732,39 +532,29 @@ export function ForumContent(props: ForumContentProps) {
                 <div className="lock">
                   <Lock />
                 </div>
-                <PermissionsGate scopes={[SCOPES.canAddOwner]}>
-                  <button
-                    className="moderatorTool owners"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowAddOwners(true)}>
-                    Manage owners
-                  </button>
-                </PermissionsGate>
-                <PermissionsGate scopes={[SCOPES.canEditMods]}>
-                  <button
-                    className="moderatorTool"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowAddModerators(true)}>
-                    Manage moderators
-                  </button>
-                </PermissionsGate>
-                <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                  <button
-                    className="moderatorTool"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowManageAccessToken(true)}>
-                    Manage forum access
-                  </button>
-                </PermissionsGate>
+                <ManageOwners forumData={forumData} />
+                <ManageModerators forumData={forumData} />
+                {(// The manage users UI should be hidden for DAA
+                  forumIdentity !== ForumIdentity.DegenerateApeAcademy
+                ) &&
+                  <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                    <button
+                      className="moderatorTool"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowManageAccessToken(true)}>
+                      Manage forum access
+                    </button>
+                  </PermissionsGate>
+                }
                 <EditForum forumData={forumData} update={update} />
               </div>
             </PermissionsGate>
           </div>
           {(() => {
             if (newTopicInFlight) {
-              return <Spinner />
+              return <Spinner />;
             } else if (!_.isNil(forumData.collectionId)) {
-              return <TopicList forumData={forumData} />
+              return <TopicList forumData={forumData} />;
             }
           })()}
         </>

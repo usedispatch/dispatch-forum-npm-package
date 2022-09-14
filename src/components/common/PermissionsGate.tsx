@@ -24,8 +24,11 @@ export function PermissionsGate(props: PermissionsGateProps) {
     return <>{children}</>;
   }
 
-  const { role } = useRole();
-  const permissions = PERMISSIONS[role];
+  const { roles } = useRole();
+  let permissions = [""];
+  roles.forEach((role) => {
+    permissions.push(...PERMISSIONS[role]);
+   });
   const Forum = useForum();
   const wallet = Forum.wallet;
 

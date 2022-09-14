@@ -1,7 +1,7 @@
 import * as _ from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -20,24 +20,31 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { getIdentity } from "../../../utils/identity";
 import {
   ForumData,
-  LocalPost,
+  CreatedPost,
   isForumPost,
-  isLocalPost,
+  isEditedPost,
+  isCreatedPost,
+  ClientPost,
+  useUserIsMod,
+  useForumIdentity,
+  ForumIdentity,
 } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {
   forum: DispatchForum;
   forumData: ForumData;
+  post: ClientPost;
   participatingModerators: PublicKey[] | null;
-  post: LocalPost | ForumPost;
-  userRole: UserRoleType;
+  userRoles: UserRoleType[];
   topicPosterId: PublicKey;
   postInFlight: boolean;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
   setPostInFlight: (postInFlight: boolean) => void;
@@ -47,18 +54,27 @@ export function PostContent(props: PostContentProps) {
   const {
     forumData,
     forum,
-    userRole,
+    userRoles,
     topicPosterId,
     onDeletePost,
     update,
     addPost,
+    editPost,
     deletePost,
     postInFlight,
     setPostInFlight,
-    participatingModerators
+    participatingModerators,
   } = props;
 
   const permission = forum.permission;
+
+  const userIsMod = useUserIsMod(
+    forumData.collectionId,
+    forum,
+    forum.wallet.publicKey || new PublicKey("11111111111111111111111111111111")
+  );
+
+  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
@@ -99,6 +115,8 @@ export function PostContent(props: PostContentProps) {
     }
   }, [forumData, post]);
 
+  const replyAreaRef = useRef<HTMLDivElement>(null);
+
   const updateVotes = (upVoted: boolean) => {
     if (isForumPost(post)) {
       if (upVoted) {
@@ -133,7 +151,7 @@ export function PostContent(props: PostContentProps) {
         type: MessageType.info,
       });
 
-      const localPost: LocalPost = {
+      const localPost: CreatedPost = {
         data: {
           body: reply,
           ts: new Date(),
@@ -141,6 +159,7 @@ export function PostContent(props: PostContentProps) {
         poster: forum.wallet.publicKey!,
         isTopic: false,
         replyTo: post.address,
+        state: "created",
       };
       addPost(localPost);
 
@@ -187,7 +206,7 @@ export function PostContent(props: PostContentProps) {
       const tx = await forum.deleteForumPost(
         postToDelete,
         forumData.collectionId,
-        userRole === UserRoleType.Moderator
+        userRoles.includes(UserRoleType.Moderator)
       );
       deletePost(postToDelete);
       onDeletePost(tx);
@@ -237,7 +256,9 @@ export function PostContent(props: PostContentProps) {
   //   ? forumData.moderators.map((m) => m.toBase58())
   //   : [];
 
-  const isLocal = isLocalPost(post);
+  const isLocal = isCreatedPost(post);
+
+  const identity = getIdentity(post.poster);
 
   return (
     <>
@@ -330,10 +351,20 @@ export function PostContent(props: PostContentProps) {
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
-                    <Jdenticon value={post?.poster.toBase58()} alt="posterID" />
+                    {identity ? (
+                      <img
+                        src={identity.profilePicture.href}
+                        style={{ borderRadius: "50%" }}
+                      />
+                    ) : (
+                      <Jdenticon
+                        value={post?.poster.toBase58()}
+                        alt="posterID"
+                      />
+                    )}
                   </div>
                   <div className="walletId">
-                    {post.poster.toBase58()}
+                    {identity ? identity.displayName : post.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicPosterId}
                       posterId={post?.poster}
@@ -342,26 +373,46 @@ export function PostContent(props: PostContentProps) {
                   </div>
                 </div>
                 <div className="postedAt">
-                  {isForumPost(post) ? (
-                    <>
-                      Posted at: {postedAt}
-                      <div className="accountInfo">
-                        <a
-                          href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
-                          className="transactionLink"
-                          target="_blank">
-                          <Info />
-                        </a>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      Posting
-                      <div className="posting">
-                        <Spinner />
-                      </div>
-                    </>
-                  )}
+                  {(() => {
+                    if (isForumPost(post)) {
+                      return (
+                        <>
+                          {postedAt}
+                          <div className="accountInfo">
+                            <a
+                              href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                              className="transactionLink"
+                              target="_blank">
+                              <Info />
+                            </a>
+                          </div>
+                        </>
+                      );
+                    } else if (isEditedPost(post)) {
+                      return (
+                        <>
+                          Confirming edit
+                          <div className="posting">
+                            <Spinner />
+                          </div>
+                        </>
+                      );
+                    } else if (isCreatedPost(post)) {
+                      return (
+                        <>
+                          Posting
+                          <div className="posting">
+                            <Spinner />
+                          </div>
+                        </>
+                      );
+                    } else {
+                      // ForumPost, CreatedPost, and EditedPost
+                      // are the three kinds of ClientPost, so we
+                      // should never get here
+                      return null;
+                    }
+                  })()}
                 </div>
               </div>
               <div className="postBody">
@@ -371,6 +422,8 @@ export function PostContent(props: PostContentProps) {
                 <div className="actionsContainer">
                   <PermissionsGate scopes={[SCOPES.canVote]}>
                     <Votes
+                      forumData={forumData}
+                      update={update}
                       post={post}
                       onDownVotePost={() =>
                         forum.voteDownForumPost(post, forumData.collectionId)
@@ -385,6 +438,7 @@ export function PostContent(props: PostContentProps) {
                     post={post}
                     forumData={forumData}
                     update={() => update()}
+                    editPostLocal={editPost}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
                   <PermissionsGate scopes={[SCOPES.canCreateReply]}>
@@ -403,20 +457,34 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      <button
-                        className="awardButton"
-                        disabled={!permission.readAndWrite}
-                        onClick={() => {
-                          setPostToAward(post);
-                          setShowGiveAward(true);
-                        }}>
-                        <Gift /> Send Token
-                      </button>
-                      <div className="actionDivider" />
+                      {// The gifting UI should be hidden on the apes forum for non-mods.
+                      // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                      (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                        userIsMod) &&
+                        !forum.wallet.publicKey?.equals(post.poster) && (
+                          <>
+                            <button
+                              className="awardButton"
+                              disabled={!permission.readAndWrite}
+                              onClick={() => {
+                                setPostToAward(post);
+                                setShowGiveAward(true);
+                              }}>
+                              Send Token <Gift />
+                            </button>
+                            <div className="actionDivider" />
+                          </>
+                        )}
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
-                        onClick={() => setShowReplyBox(true)}>
+                        onClick={() => {
+                          setShowReplyBox(true);
+                          replyAreaRef.current?.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                          });
+                        }}>
                         Reply <Reply />
                       </button>
                     </div>
@@ -433,9 +501,10 @@ export function PostContent(props: PostContentProps) {
                 forumData={forumData}
                 participatingModerators={participatingModerators}
                 replies={replies}
-                userRole={userRole}
+                userRoles={userRoles}
                 topicOwnerId={topicPosterId}
                 update={() => update()}
+                editPost={editPost}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);
@@ -446,47 +515,50 @@ export function PostContent(props: PostContentProps) {
                 onUpVotePost={(reply) =>
                   forum.voteUpForumPost(reply, forumData.collectionId)
                 }
-                onReplyClick={() => setShowReplyBox(true)}
                 onAwardReply={(reply) => {
                   setPostToAward(reply);
                   setShowGiveAward(true);
                 }}
               />
             </div>
-            {showReplyBox &&
-              (sendingReply ? (
-                <Spinner />
-              ) : (
-                <form onSubmit={onReplyToPost} className="replyForm">
-                  <textarea
-                    placeholder="Type your reply here"
-                    className="replyTextArea"
+            {showReplyBox && sendingReply && <Spinner />}
+            <div
+              ref={replyAreaRef}
+              className={`replyFormContainer ${
+                showReplyBox && !sendingReply ? "visible" : ""
+              }`}>
+              <div className="replyForm">
+                <textarea
+                  placeholder="Type your reply here"
+                  className="replyTextArea"
+                  disabled={postInFlight}
+                  maxLength={800}
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                />
+                <div className="textSize"> {replySize}/800 </div>
+                <div className="buttonsContainer">
+                  <button
+                    className="cancelReplyButton"
                     disabled={postInFlight}
-                    maxLength={800}
-                    value={reply}
-                    required
-                    onChange={(e) => setReply(e.target.value)}
-                  />
-                  <div className="textSize"> {replySize}/800 </div>
-                  <div className="buttonsContainer">
-                    <button
-                      className="cancelReplyButton"
-                      disabled={postInFlight}
-                      onClick={() => {
-                        setShowReplyBox(false);
-                        new Buffer(reply, "utf-8").byteLength;
-                      }}>
-                      Cancel
-                    </button>
-                    <button
-                      className="postReplyButton"
-                      type="submit"
-                      disabled={postInFlight}>
-                      Reply
-                    </button>
-                  </div>
-                </form>
-              ))}
+                    onClick={() => {
+                      setShowReplyBox(false);
+                      new Buffer(reply, "utf-8").byteLength;
+                    }}>
+                    Cancel
+                  </button>
+                  <button
+                    className={`postReplyButton ${
+                      postInFlight ? "inFlight" : ""
+                    }`}
+                    type="submit"
+                    disabled={reply.length === 0}
+                    onClick={onReplyToPost}>
+                    Reply
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </>
       </div>

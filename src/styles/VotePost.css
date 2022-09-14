@@ -23,15 +23,25 @@
     display: flex;
     align-items: center;
 
-    &.upVote:hover {
-      svg path {
-        stroke: #84b971;
+    &.upVote:hover,
+    &.upVoted {
+      svg {
+        fill: #84b971;
+
+        path:not(:first-child) {
+          stroke: white;
+        }
       }
     }
 
-    &.downVote:hover {
-      svg path {
-        stroke: #e86143;
+    &.downVote:hover,
+    &.downVoted {
+      svg {
+        fill: #e86143;
+
+        path:not(:first-child) {
+          stroke: white;
+        }
       }
     }
 

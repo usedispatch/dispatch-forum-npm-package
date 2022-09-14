@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
-import { LocalPost } from "../../../utils/hooks";
+import { CreatedPost } from "../../../utils/hooks";
 
 import {
   CollapsibleProps,
@@ -28,7 +28,7 @@ interface CreatePostProps {
     collectionId: web3.PublicKey
   ) => Promise<string | undefined>;
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
   onReload: () => void;
   postInFlight: boolean;
   setPostInFlight: (postInFlight: boolean) => void;
@@ -73,7 +73,7 @@ export function CreatePost(props: CreatePostProps) {
     try {
       const tx = await createForumPost(post, topic.postId, collectionId);
 
-      const localPost: LocalPost = {
+      const localPost: CreatedPost = {
         data: {
           body: post.body,
           ts: new Date(),
@@ -81,6 +81,7 @@ export function CreatePost(props: CreatePostProps) {
         poster: Forum.wallet.publicKey!,
         isTopic: false,
         replyTo: topic.address,
+        state: 'created'
       };
       addPost(localPost);
 

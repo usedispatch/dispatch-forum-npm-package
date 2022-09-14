@@ -5,16 +5,17 @@ import { ForumPost } from "@usedispatch/client";
 import { PostContent } from "../../forums";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { UserRoleType } from "../../../utils/permissions";
-import { ForumData, LocalPost } from "../../../utils/hooks";
+import { ForumData, CreatedPost } from "../../../utils/hooks";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostListProps {
   forum: DispatchForum;
   forumData: ForumData;
   participatingModerators: web3.PublicKey[] | null;
-  userRole: UserRoleType;
+  userRoles: UserRoleType[];
   update: () => Promise<void>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
+  editPost: (post: ForumPost, newText: string) => void;
   deletePost: (post: ForumPost) => void;
   topic: ForumPost;
   onDeletePost: (tx: string) => Promise<void>;
@@ -23,14 +24,27 @@ interface PostListProps {
 }
 
 export function PostList(props: PostListProps) {
-  const { forumData, forum, userRole, onDeletePost, topic, update, addPost, deletePost, postInFlight, setPostInFlight, participatingModerators } = props;
+  const {
+    forumData,
+    forum,
+    userRoles,
+    onDeletePost,
+    topic,
+    update,
+    editPost,
+    addPost,
+    deletePost,
+    postInFlight,
+    setPostInFlight,
+    participatingModerators,
+  } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
     return sortByVotes(posts);
   }, [forumData]);
 
   const emptyList = (
-    <div className="emptyList">
+    <div className="emptyPostsList">
       <div className="text">The topic has no comments</div>
     </div>
   );
@@ -47,12 +61,13 @@ export function PostList(props: PostListProps) {
                   forum={forum}
                   forumData={forumData}
                   post={post}
-                  userRole={userRole}
+                  userRoles={userRoles}
                   topicPosterId={topic.poster}
                   onDeletePost={onDeletePost}
                   update={update}
                   participatingModerators={participatingModerators}
                   addPost={addPost}
+                  editPost={editPost}
                   deletePost={deletePost}
                   postInFlight={postInFlight}
                   setPostInFlight={setPostInFlight}

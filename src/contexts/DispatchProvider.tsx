@@ -31,8 +31,8 @@ export interface PathObject {
 }
 
 export interface UserObject {
-  role: UserRoleType;
-  setRole: Function;
+  roles: UserRoleType[];
+  setRoles: Function;
 }
 
 export const ForumContext = createContext<DispatchForum>({} as DispatchForum);
@@ -57,9 +57,9 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
     buildForumPath: buildForumPath,
     buildTopicPath: buildTopicPath,
   };
-  const [role, setRole] = useState(UserRoleType.Viewer);
+  const [roles, setRoles] = useState([UserRoleType.Viewer]);
 
-  const userRole = { role, setRole };
+  const userRole = { roles, setRoles };
   return (
     <ForumContext.Provider value={forum}>
       <PathContext.Provider value={paths}>

@@ -20,6 +20,7 @@ import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
 import { addForum } from "../../../utils/offChainStateController";
+import { getIdentity } from '../../../utils/identity';
 
 interface CreateForumProps {
   forumObject: DispatchForum;
@@ -215,7 +216,7 @@ export function CreateForum(props: CreateForumProps) {
     <div>
       <div className="formSection">
         <span className="formLabel">
-          Add Moderators
+          Add moderators
           <Tooltip
             content={
               <div className="labelTooltip">
@@ -238,13 +239,20 @@ export function CreateForum(props: CreateForumProps) {
         <ul className="idsList">
           {modList.map((pubkey) => {
             const m = pubkey.toBase58();
+            const identity = getIdentity(pubkey);
             return (
               <li key={m} className="addedIds">
                 <>
                   <div className="iconContainer">
-                    <Jdenticon value={m} alt="moderatorId" />
+                    { identity ?
+                      <img
+                        src={identity.profilePicture.href}
+                        style={{ borderRadius: '50%' }}
+                      /> :
+                        <Jdenticon value={m} alt="moderatorId" />
+                    }
                   </div>
-                  {m}
+                  { identity ? identity.displayName : m }
                 </>
               </li>
             );
@@ -253,7 +261,7 @@ export function CreateForum(props: CreateForumProps) {
       </div>
       <div className="formSection">
         <span className="formLabel">
-          Add Owners
+          Add owners
           <Tooltip
             content={
               <div className="labelTooltip">

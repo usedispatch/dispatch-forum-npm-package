@@ -7,14 +7,14 @@ export function Link({ className, href, children }) {
       return;
     }
     event.preventDefault();
-    window.history.pushState({}, "", href);
+    window.history.pushState({}, "", href + window.location.search);
 
     const navEvent = new PopStateEvent("popstate");
     window.dispatchEvent(navEvent);
   };
 
   return (
-    <a className={className} href={href} onClick={pageNav}>
+    <a className={className} href={href + window.location.search} onClick={pageNav}>
       {children}
     </a>
   );

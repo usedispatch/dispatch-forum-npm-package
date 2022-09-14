@@ -13,12 +13,15 @@
 /* Forums */
 @import "./styles/PoweredByDispatch.css";
 @import "./styles/ConnectionAlert.css";
+@import "./styles/StarsAlert.css";
 @import "./styles/Notification.css";
 
 /* Forum */
 @import "./styles/CreateForum.css";
 @import "./styles/EditForum.css";
 @import "./styles/ForumContent.css";
+@import "./styles/ManageOwners.css";
+@import "./styles/ManageModerator.css";
 @import "./styles/TopicList.css";
 
 /* Topic */
@@ -35,6 +38,9 @@
 /* Views */
 @import "./styles/ForumView.css";
 @import "./styles/TopicView.css";
+
+/* Customizations */
+@import "styles/customizations/DegenApeAcademy.css";
 
 @import "tailwindcss/utilities";
 

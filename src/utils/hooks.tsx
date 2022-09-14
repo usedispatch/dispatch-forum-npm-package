@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect, ReactNode } from "react";
 import { PublicKey, AccountInfo } from "@solana/web3.js";
-import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated } from "@usedispatch/client";
+import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated, ChainVoteEntry } from "@usedispatch/client";
 import { uniqBy, zip, isNil } from 'lodash';
 import {
   getAssociatedTokenAddress,
@@ -36,26 +36,56 @@ export interface Description {
  * A post that is created locally, but has not yet been confirmed
  * on-chain. Should not be allowed to be interacted with
  */
-export type LocalPost = Pick<
+export type CreatedPost = Pick<
   ForumPost
   , 'data'
   | 'replyTo'
   | 'isTopic'
   | 'poster'
->;
+> & { state: 'created' };
+
+/**
+ * A post that has been edited locally, but the edit nas not yet
+ * ben confirmed on-chain. Should not be able to be interacted
+ * with. Unlike a CreatedPost, this type has an `address`, which
+ * is the existing address of the post being edited
+ */
+export type EditedPost
+  = ForumPost
+  & { state: 'edited' };
+
+/**
+ * Any kind of post that can be held in the client state. This
+ * can be a full-fledged ForumPost, a CreatedPost that has not
+ * been confirmed yet, or an EditedPost that already exists
+ * on-chain  but has been edited.
+ */
+export type ClientPost
+  = ForumPost
+  | CreatedPost
+  | EditedPost;
 
 export function isForumPost(
-  post: LocalPost | ForumPost
+  post: ClientPost
 ): post is ForumPost {
-  // A post is a LocalPost if it has an address field
+  // A post is a LocalPost if it has an associated parent object
   // TODO(andrew) confirm that this is the best field to check
-  return 'address' in post
+  return !('state' in post);
 }
 
-export function isLocalPost(
-  post: LocalPost | ForumPost
-): post is LocalPost {
-  return !isForumPost(post);
+export function isEditedPost(
+  post: ClientPost
+): post is EditedPost {
+  // A post is an edited post if it's not a ForumPost, but it
+  // does have an address
+  return 'state' in post && post.state === 'edited';
+}
+
+export function isCreatedPost(
+  post: ClientPost
+): post is CreatedPost {
+  // A post is a client post if it doesn't have the address field
+  return 'state' in post && post.state === 'created';
 }
 
 export interface ForumData {
@@ -65,9 +95,10 @@ export interface ForumData {
   // field to the main forum data hook
   // moderators: LoadingResult<PublicKey[]>;
   description: Description;
-  posts: (ForumPost | LocalPost)[];
+  posts: ClientPost[];
   restriction: LoadingResult<PostRestriction>;
   moderatorMint: PublicKey;
+  votes: LoadingResult<ChainVoteEntry[]>;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -77,8 +108,9 @@ export function useForumData(
   forum: DispatchForum
 ): {
   forumData: Loading<ForumData>;
-  addPost: (post: LocalPost) => void;
+  addPost: (post: CreatedPost) => void;
   deletePost: (post: ForumPost) => void;
+  editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
@@ -153,6 +185,23 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
+  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
+    if (collectionId) {
+      try {
+        const fetchData = await forum.getVotes(collectionId);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+  
 
   async function fetchForumPostRestriction(): Promise<
     LoadingResult<PostRestriction>
@@ -177,13 +226,66 @@ export function useForumData(
    * create a post in local state, without sending anything to
    * the network
    */
-  function addPost(post: LocalPost) {
+  function addPost(post: CreatedPost) {
     // We can only add a post if the forum was actually loaded
     // successfully in the first place
     if (isSuccess(forumData)) {
       setForumData({
         ...forumData,
         posts: forumData.posts.concat(post)
+      });
+    }
+  }
+
+  function editPost(
+    post: ForumPost,
+    newBody: string,
+    newSubj?: string
+  ) {
+    if (isSuccess(forumData)) {
+      const { posts } = forumData;
+
+      // Find all posts matching the one we want to edit
+      const matchingPosts = posts.filter(p => {
+        return isForumPost(p) && p.address.equals(post.address)
+        // Cast to ForumPost here because we know p is a
+        // ForumPost, but the typechecker doesn't
+      }) as ForumPost[];
+
+      // Should edit exactly one post
+      if (matchingPosts.length !== 1) {
+        // TODO(andrew) better error handling mechanism here than
+        // throwing a string? Is there a way to report this more
+        // descriptively?
+        throw `Error in edit post: could not find exactly one post to be edited. Found ${matchingPosts.length}`;
+      }
+
+      const postToEdit = matchingPosts[0];
+
+      const filteredPosts = posts.filter(p => {
+        return p !== postToEdit
+      });
+
+      // Add the modified version of the post
+      const editedPost: EditedPost = {
+        ...postToEdit,
+        data: {
+          ts: postToEdit.data.ts,
+          body: newBody,
+          subj: newSubj
+        },
+        state: 'edited'
+      };
+
+      const editedPosts = filteredPosts.concat(editedPost);
+
+      if (editedPosts.length !== posts.length) {
+        throw 'Error in edit post: the same number of posts were not found before and after the posts were edited';
+      }
+
+      setForumData({
+        ...forumData,
+        posts: editedPosts
       });
     }
   }
@@ -214,13 +316,14 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, description, posts, restriction, moderatorMint] =
+        const [owners, description, posts, restriction, moderatorMint, votes] =
           await Promise.all([
             fetchOwners(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
             fetchModeratorMint(),
+            fetchVotes(),
           ]);
 
         // TODO(andrew) perhaps allow the page to load even if
@@ -234,7 +337,8 @@ export function useForumData(
             description,
             posts,
             restriction,
-            moderatorMint
+            moderatorMint,
+            votes
           });
         } else {
           // We already confirmed the forum existed, so assume
@@ -253,6 +357,7 @@ export function useForumData(
     forumData,
     addPost,
     deletePost,
+    editPost,
     update
   };
 }
@@ -420,4 +525,93 @@ export function useParticipatingModerators(
   }, [forumData]);
 
   return moderators;
+}
+
+/**
+ * This hook returns whether the given user is a moderator for a
+ * given forum. The hook returns true if the user is a mod, false
+ * if the user is not a mod, or null if whether the user is a mod
+ * or not has not been confirmed yet.
+ * TODO(andrew): should there be better typing on this?
+ */
+export function useUserIsMod(
+  /** The forum identifier, not to be confused with the collection identifier */
+  forumId: PublicKey,
+  /** The forum object, used for getting the moderator mint */
+  forum: DispatchForum,
+  /** The user's wallet public key */
+  userPublicKey: PublicKey
+): boolean | null {
+
+  // At first, we don't know whether the user is a mod, so set to
+  // null
+  const [userIsMod, setUserIsMod] = useState<boolean | null>(null);
+
+  // We want to check if the user holds the token associated with
+  // the forum
+  async function fetchUserIsMod(): Promise<boolean> {
+    const moderatorMint = await forum.getModeratorMint(forumId);
+    // only continue if the moderator mint is actually defined
+    if (moderatorMint) {
+      const ataAddress = await getAssociatedTokenAddress(moderatorMint, userPublicKey);
+      const ataBinary = await forum.connection.getAccountInfo(ataAddress);
+      if (ataBinary) {
+        const parsedAta = unpackAccount(ataAddress, ataBinary);
+        if (parsedAta.amount > 0) {
+          return true;
+        } else {
+          // If balance is not positive, user is not a mod
+          return false;
+        }
+      } else {
+        // If the account could not be fetched, user is not a mod
+        // TODO(andrew) should this be an error case?
+        return false;
+      }
+    } else {
+      // If the moderator mint is somehow not defined, the user
+      // is not a mod
+      // TODO(andrew) if the moderator mint isn't defined, is
+      // everyone a mod? Or is everyone not a mod?
+      return false;
+    }
+  }
+
+  useEffect(() => {
+    // Fetch whether the user is a mod, then set the state
+    // variable to that value
+    fetchUserIsMod()
+      .then((b) => setUserIsMod(b));
+  }, [forumId, forum, userPublicKey]);
+
+  return userIsMod;
+}
+
+/**
+ * If a forum was created for a particular client, we can keep
+ * track of it here
+ */
+export enum ForumIdentity {
+  DegenerateApeAcademy
+}
+
+/**
+ * Return the identity of a particular forum, or `null` if it
+ * doesn't have one
+ */
+export function useForumIdentity(
+  forumId: PublicKey
+): ForumIdentity | null {
+  return useMemo(() => {
+    if (forumId.equals(
+      // TODO(andrew) put this in a constant somewhere? it is
+      // nice to have it literally specified at the point of use
+      // to avoid confusion
+      new PublicKey('DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD')
+    )) {
+      return ForumIdentity.DegenerateApeAcademy;
+    } else {
+      return null;
+    }
+  }, [forumId]);
 }

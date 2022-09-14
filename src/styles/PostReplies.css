@@ -63,8 +63,13 @@
   }
 
   .accountInfo {
-    max-width: 15px;
+    display: flex;
+    align-items: center;
     padding-left: 5px;
+
+    svg {
+      height: 14px;
+    }
   }
 
   .replyBody {
@@ -104,32 +109,6 @@
 
           path {
             fill: #86878e;
-          }
-        }
-
-        &:disabled {
-          cursor: not-allowed;
-          opacity: 0.65;
-        }
-      }
-
-      .replyButton {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-
-        height: 24px;
-        max-height: 24px;
-
-        color: #3f1d96;
-        font-weight: 600;
-
-        svg {
-          height: 12px;
-          width: 12px;
-
-          path {
-            fill: #3f1d96;
           }
         }
 

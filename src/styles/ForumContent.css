@@ -255,10 +255,6 @@
     &:disabled {
       color: #7c7b7c;
       cursor: not-allowed;
-
-      svg path {
-        fill: #7c7b7c;
-      }
     }
   }
 

@@ -20,12 +20,14 @@ interface EditPostProps {
   post: ForumPost;
   forumData: ForumData;
   showDividers: { leftDivider: boolean; rightDivider: boolean };
+  showText: boolean;
   editPostLocal: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
 }
 
 export function EditPost(props: EditPostProps) {
-  const { post, forumData, update, showDividers, editPostLocal } = props;
+  const { post, forumData, update, showDividers, showText, editPostLocal } =
+    props;
   const forumObject = useForum();
   const { permission, wallet } = forumObject;
 
@@ -90,9 +92,7 @@ export function EditPost(props: EditPostProps) {
       editPostLocal(post, editPost.body, editPost.subj);
 
       // When the transaction is confirmed, update for real
-      forumObject.connection
-        .confirmTransaction(tx)
-        .then(() => update());
+      forumObject.connection.confirmTransaction(tx).then(() => update());
 
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
@@ -204,7 +204,7 @@ export function EditPost(props: EditPostProps) {
           className="editPostButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditPost({ ...editPost, show: true })}>
-          <Edit /> Edit
+          <Edit /> {showText ? "Edit" : ""}
         </button>
         {showDividers.rightDivider && <div className="actionDivider" />}
       </div>

@@ -103,9 +103,14 @@
 
     .postHeader {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       padding-bottom: 16px;
+
+      @media only screen and (max-width: 390px) {
+        align-items: center;
+        flex-wrap: wrap;
+      }
 
       .posterId {
         display: flex;
@@ -116,15 +121,22 @@
         height: 28px;
         width: 28px;
         margin-right: 4px;
+
+        @media only screen and (max-width: 570px) {
+          height: 16px;
+          width: 16px;
+        }
       }
 
       .walletId {
-        display: flex;
-        gap: 10px;
-
         font-size: 14px;
         font-weight: 400;
         color: #86878e;
+        margin-right: 10px;
+
+        @media only screen and (max-width: 570px) {
+          font-size: 12px;
+        }
       }
 
       .postedAt {
@@ -152,11 +164,6 @@
         svg {
           height: 14px;
         }
-      }
-
-      @media only screen and (max-width: 480px) {
-        flex-direction: column;
-        align-items: flex-start;
       }
     }
 

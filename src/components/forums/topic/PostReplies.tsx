@@ -1,6 +1,6 @@
 import * as _ from "lodash";
 import Markdown from "markdown-to-jsx";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
@@ -76,6 +76,19 @@ export function PostReplies(props: PostRepliesProps) {
     return null;
   }
 
+  const [windowSize, setWindowSize] = useState(window.innerWidth);
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowSize(window.innerWidth);
+    }
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
+
   return (
     <div className="repliesContainer">
       {replies.map((reply, index) => {
@@ -104,6 +117,10 @@ export function PostReplies(props: PostRepliesProps) {
                   <div className="walletId">
                     {posterIdentity
                       ? posterIdentity.displayName
+                      : windowSize < 768
+                      ? `${reply.poster.toBase58().slice(0, 4)}...${reply.poster
+                          .toBase58()
+                          .slice(-4)}`
                       : reply.poster.toBase58()}
                     <RoleLabel
                       topicOwnerId={topicOwnerId}
@@ -161,6 +178,7 @@ export function PostReplies(props: PostRepliesProps) {
                       forumData={forumData}
                       update={() => update()}
                       editPostLocal={editPost}
+                      showText={windowSize > 768}
                       showDividers={{ leftDivider: true, rightDivider: false }}
                     />
                   )}
@@ -186,7 +204,8 @@ export function PostReplies(props: PostRepliesProps) {
                             className="awardButton"
                             disabled={!permission.readAndWrite}
                             onClick={() => onAwardReply(reply)}>
-                            Send Token <Gift />
+                            {windowSize > 768 ? "Send Token" : ""}
+                            <Gift />
                           </button>
                         </>
                       )}

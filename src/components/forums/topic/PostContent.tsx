@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
-import { ReactNode, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -259,6 +259,18 @@ export function PostContent(props: PostContentProps) {
   const isLocal = isCreatedPost(post);
 
   const identity = getIdentity(post.poster);
+  const [windowSize, setWindowSize] = useState(window.innerWidth);
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowSize(window.innerWidth);
+    }
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
 
   return (
     <>
@@ -364,13 +376,19 @@ export function PostContent(props: PostContentProps) {
                     )}
                   </div>
                   <div className="walletId">
-                    {identity ? identity.displayName : post.poster.toBase58()}
-                    <RoleLabel
-                      topicOwnerId={topicPosterId}
-                      posterId={post?.poster}
-                      moderators={participatingModerators}
-                    />
+                    {identity
+                      ? identity.displayName
+                      : windowSize < 768
+                      ? `${post.poster.toBase58().slice(0, 4)}...${post.poster
+                          .toBase58()
+                          .slice(-4)}`
+                      : post.poster.toBase58()}
                   </div>
+                  <RoleLabel
+                    topicOwnerId={topicPosterId}
+                    posterId={post?.poster}
+                    moderators={participatingModerators}
+                  />
                 </div>
                 <div className="postedAt">
                   {(() => {
@@ -439,6 +457,7 @@ export function PostContent(props: PostContentProps) {
                     forumData={forumData}
                     update={() => update()}
                     editPostLocal={editPost}
+                    showText={windowSize > 768}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
                   <PermissionsGate scopes={[SCOPES.canCreateReply]}>
@@ -457,24 +476,27 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {// The gifting UI should be hidden on the apes forum for non-mods.
-                      // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                      (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                        userIsMod) &&
-                        !forum.wallet.publicKey?.equals(post.poster) && (
-                          <>
-                            <button
-                              className="awardButton"
-                              disabled={!permission.readAndWrite}
-                              onClick={() => {
-                                setPostToAward(post);
-                                setShowGiveAward(true);
-                              }}>
-                              Send Token <Gift />
-                            </button>
-                            <div className="actionDivider" />
-                          </>
-                        )}
+                      {
+                        // The gifting UI should be hidden on the apes forum for non-mods.
+                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                        (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                          userIsMod) &&
+                          !forum.wallet.publicKey?.equals(post.poster) && (
+                            <>
+                              <button
+                                className="awardButton"
+                                disabled={!permission.readAndWrite}
+                                onClick={() => {
+                                  setPostToAward(post);
+                                  setShowGiveAward(true);
+                                }}>
+                                {windowSize > 768 ? "Send Token" : ""}
+                                <Gift />
+                              </button>
+                              <div className="actionDivider" />
+                            </>
+                          )
+                      }
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
@@ -485,7 +507,7 @@ export function PostContent(props: PostContentProps) {
                             block: "center",
                           });
                         }}>
-                        Reply <Reply />
+                        {windowSize > 768 ? "Reply" : ""} <Reply />
                       </button>
                     </div>
                   </PermissionsGate>

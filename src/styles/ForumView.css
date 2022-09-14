@@ -116,7 +116,7 @@
         padding-top: 192px;
       }
 
-      @media only screen and (max-width: 480px) {
+      @media only screen and (max-width: 570px) {
         margin: 0 8px;
         padding: 0 22px;
       }

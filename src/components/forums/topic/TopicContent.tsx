@@ -216,6 +216,19 @@ export function TopicContent(props: TopicContentProps) {
     }
   };
 
+  const [windowSize, setWindowSize] = useState(window.innerWidth);
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowSize(window.innerWidth);
+    }
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
+
   return (
     <>
       {!_.isNil(modalInfo) && (
@@ -384,16 +397,25 @@ export function TopicContent(props: TopicContentProps) {
                 forumData={forumData}
                 update={() => update()}
                 editPostLocal={editPost}
+                showText={windowSize > 768}
                 showDividers={{ leftDivider: false, rightDivider: true }}
               />
-              <div className="lock">
-                <Lock />
-              </div>
+              {windowSize > 768 && (
+                <div className="lock">
+                  <Lock />
+                </div>
+              )}
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
                 onClick={() => setShowAddAccessToken(true)}>
-                Manage post access
+                {windowSize > 768 ? (
+                  "Manage post access"
+                ) : (
+                  <div className="lock">
+                    <Lock />
+                  </div>
+                )}
               </button>
             </div>
             {
@@ -407,7 +429,8 @@ export function TopicContent(props: TopicContentProps) {
                       className="awardButton"
                       disabled={!permission.readAndWrite}
                       onClick={() => setShowGiveAward(true)}>
-                      Send Token <Gift />
+                      {windowSize > 768 ? "Send Token" : ""}
+                      <Gift />
                     </button>
                   </PermissionsGate>
                 )
@@ -502,26 +525,43 @@ function TopicHeader(props: TopicHeaderProps) {
 
   const identity = getIdentity(topic.poster);
 
+  const [windowSize, setWindowSize] = useState(window.innerWidth);
+  useEffect(() => {
+    function handleWindowResize() {
+      setWindowSize(window.innerWidth);
+    }
+
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
+
   return (
     <div className="topicHeader">
       <div className="topicTitle">
         <div className="posted">
           <div className="postedBy">
-            <div>
-              By
-              <div className="icon">
-                {identity ? (
-                  <img
-                    src={identity.profilePicture.href}
-                    style={{ borderRadius: "50%" }}
-                  />
-                ) : (
-                  <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
-                )}
-              </div>
-              <div className="posterId">
-                {identity ? identity.displayName : topic.poster.toBase58()}
-              </div>
+            By
+            <div className="icon">
+              {identity ? (
+                <img
+                  src={identity.profilePicture.href}
+                  style={{ borderRadius: "50%" }}
+                />
+              ) : (
+                <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
+              )}
+            </div>
+            <div className="posterId">
+              {identity
+                ? identity.displayName
+                : windowSize < 768
+                ? `${topic.poster.toBase58().slice(0, 4)}...${topic.poster
+                    .toBase58()
+                    .slice(-4)}`
+                : topic.poster.toBase58()}
             </div>
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId

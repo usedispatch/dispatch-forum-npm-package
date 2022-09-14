@@ -2051,6 +2051,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.185":
+  version: 4.14.185
+  resolution: "@types/lodash@npm:4.14.185"
+  checksum: f81d13da5ecab110ca9c5c7cc2bedc3c9802a6acf668576aecd1b8f4b134ed81d06c15f1e600fb08f05975098280a0d97d30cddfc2cb39ec1c6b56e971ca53b3
+  languageName: node
+  linkType: hard
+
 "@types/node-fetch@npm:^2.6.1":
   version: 2.6.2
   resolution: "@types/node-fetch@npm:2.6.2"
@@ -2162,6 +2169,7 @@ __metadata:
     "@solana/spl-token": ^0.3.1
     "@svgr/webpack": ^6.2.1
     "@tailwindcss/typography": ^0.5.7
+    "@types/lodash": ^4.14.185
     "@types/node-fetch": ^2.6.1
     "@types/react": ^18.0.12
     "@types/react-alert": ^5.2.1
@@ -2170,6 +2178,7 @@ __metadata:
     async: ^3.2.4
     autoprefixer: ^10.4.0
     browserify-zlib: ^0.2.0
+    buffer: ^6.0.3
     crypto-browserify: ^3.12.0
     css-loader: ^6.7.1
     daisyui: ^1.16.2

@@ -52,7 +52,9 @@
   "dependencies": {
     "@project-serum/anchor": "^0.25.0",
     "@solana/spl-token": "^0.3.1",
+    "@types/lodash": "^4.14.185",
     "@usedispatch/client": "^0.13.0",
+    "buffer": "^6.0.3",
     "lodash": "^4.17.21",
     "lodash.orderby": "^4.6.0",
     "markdown-to-jsx": "^7.1.7",

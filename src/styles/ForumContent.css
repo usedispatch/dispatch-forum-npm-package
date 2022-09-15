@@ -217,6 +217,10 @@
       gap: 14px;
       flex-wrap: wrap;
       justify-content: flex-start;
+
+      .lock {
+        margin: 0;
+      }
     }
 
     .tools {

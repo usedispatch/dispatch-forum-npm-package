@@ -32,9 +32,9 @@
 
   .alertText {
     color: #414149;
-
     font-weight: 400;
     font-size: 14px;
+    word-wrap: anywhere;
 
     margin-left: 24px;
   }

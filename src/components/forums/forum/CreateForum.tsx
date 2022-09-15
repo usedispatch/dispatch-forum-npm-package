@@ -19,7 +19,7 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 
 interface CreateForumProps {
   forumObject: DispatchForum;
@@ -234,28 +234,31 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setNewModerator(e.target.value)}
           onBlur={() => parseModList()}
         />
-        <ul className="idsList">
-          {modList.map((pubkey) => {
-            const m = pubkey.toBase58();
-            const identity = getIdentity(pubkey);
-            return (
-              <li key={m} className="addedIds">
-                <>
-                  <div className="iconContainer">
-                    { identity ?
-                      <img
-                        src={identity.profilePicture.href}
-                        style={{ borderRadius: '50%' }}
-                      /> :
+        {modList.length > 0 && (
+          <ul className="idsList">
+            {modList.map((pubkey) => {
+              const m = pubkey.toBase58();
+              const identity = getIdentity(pubkey);
+              return (
+                <li key={m} className="addedIds">
+                  <>
+                    <div className="iconContainer">
+                      {identity ? (
+                        <img
+                          src={identity.profilePicture.href}
+                          style={{ borderRadius: "50%" }}
+                        />
+                      ) : (
                         <Jdenticon value={m} alt="moderatorId" />
-                    }
-                  </div>
-                  { identity ? identity.displayName : m }
-                </>
-              </li>
-            );
-          })}
-        </ul>
+                      )}
+                    </div>
+                    {identity ? identity.displayName : m}
+                  </>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
       <div className="formSection">
         <span className="formLabel">
@@ -279,21 +282,23 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setNewOwners(e.target.value)}
           onBlur={() => parseOwnerList()}
         />
-        <ul className="idsList">
-          {ownerList.map((pubkey) => {
-            const o = pubkey.toBase58();
-            return (
-              <li key={o} className="addedIds">
-                <>
-                  <div className="iconContainer">
-                    <Jdenticon value={o} alt="ownerId" />
-                  </div>
-                  {o}
-                </>
-              </li>
-            );
-          })}
-        </ul>
+        {ownerList.length > 0 && (
+          <ul className="idsList">
+            {ownerList.map((pubkey) => {
+              const o = pubkey.toBase58();
+              return (
+                <li key={o} className="addedIds">
+                  <>
+                    <div className="iconContainer">
+                      <Jdenticon value={o} alt="ownerId" />
+                    </div>
+                    {o}
+                  </>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
       <div className="formSection">
         <span className="formLabel">
@@ -317,16 +322,18 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setAccessToken(e.target.value)}
           onBlur={() => parseCollectionList()}
         />
-        <ul className="idsList">
-          {accessList.map((pubkey) => {
-            const a = pubkey.toBase58();
-            return (
-              <li key={a} className="addedIds">
-                {a}
-              </li>
-            );
-          })}
-        </ul>
+        {accessList.length > 0 && (
+          <ul className="idsList">
+            {accessList.map((pubkey) => {
+              const a = pubkey.toBase58();
+              return (
+                <li key={a} className="addedIds">
+                  {a}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );

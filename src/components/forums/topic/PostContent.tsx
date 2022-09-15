@@ -1,9 +1,9 @@
 import * as _ from "lodash";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
-import { ReactNode, useMemo, useRef, useState } from "react";
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import Jdenticon from "react-jdenticon";
-import { ForumPost } from "@usedispatch/client";
+import { ForumPost, Mailbox, MessageAccount } from "@usedispatch/client";
 
 import { Gift, Trash, Reply, Info } from "../../../assets";
 import {
@@ -12,6 +12,7 @@ import {
   PermissionsGate,
   PopUpModal,
   Spinner,
+  Tooltip,
   TransactionLink,
 } from "./../../common";
 import { Votes, Notification } from "../../../components/forums";
@@ -67,7 +68,6 @@ export function PostContent(props: PostContentProps) {
   } = props;
 
   const permission = forum.permission;
-
   const userIsMod = useUserIsMod(
     forumData.collectionId,
     forum,
@@ -79,7 +79,8 @@ export function PostContent(props: PostContentProps) {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [postToDelete, setPostToDelete] = useState(props.post);
   const [deleting, setDeleting] = useState(false);
-
+  const [awardGiven, setAwardGiven] = useState(false);
+  const [awards, setAwards] = useState<MessageAccount[]>();
   const [showReplyBox, setShowReplyBox] = useState(false);
   const [reply, setReply] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
@@ -116,6 +117,21 @@ export function PostContent(props: PostContentProps) {
   }, [forumData, post]);
 
   const replyAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+
+    const fetchAwards = async() => {
+        if (isForumPost(post)) {
+        const mailbox = new Mailbox(forum.connection, forum.wallet);
+        const awards = await mailbox.fetchMessagesByAddress(post.address);
+        if (awards.length > 0) {
+          setAwardGiven(true);
+          setAwards(awards);
+        }
+    }
+    };
+    fetchAwards();
+  }, []);
 
   const updateVotes = (upVoted: boolean) => {
     if (isForumPost(post)) {
@@ -371,6 +387,7 @@ export function PostContent(props: PostContentProps) {
                       moderators={participatingModerators}
                     />
                   </div>
+                  {awardGiven && awards && <Tooltip content={<div>🏆</div>} message={awards[0].data.body}/>}
                 </div>
                 <div className="postedAt">
                   {(() => {

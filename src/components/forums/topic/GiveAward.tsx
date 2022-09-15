@@ -1,7 +1,6 @@
 import * as _ from "lodash";
 import { useState, ReactNode } from "react";
 import * as web3 from "@solana/web3.js";
-import {NATIVE_MINT, getAssociatedTokenAddress} from "@solana/spl-token";
 import { ForumPost, WalletAdapterInterface, Mailbox } from "@usedispatch/client";
 
 import {
@@ -54,38 +53,27 @@ export function GiveAward(props: GiveAwardProps) {
 
     try {
       const mailbox = new Mailbox(Forum.connection, Forum.wallet);
-      const ata = await 
-      getAssociatedTokenAddress(NATIVE_MINT, Forum.wallet.publicKey!);
+      const tx = new web3.Transaction();
+      tx.add(web3.SystemProgram.transfer({
+        fromPubkey: Forum.wallet.publicKey!,
+        toPubkey: post.poster,
+        lamports: selectedAmount * web3.LAMPORTS_PER_SOL,
+      }))
+      tx.add(await mailbox.makeSendTx(
+        mailbox.getMessageString("DISPATCH SOL AWARD", `${selectedAmount} SOL from ${Forum.wallet.publicKey!.toBase58()}!`),
+        post.address
+      ))
+      tx.add(await mailbox.makeSendTx(
+        mailbox.getMessageString("DISPATCH SOL AWARD", `You've received an award of ${selectedAmount} SOL from ${Forum.wallet.publicKey!.toBase58()} on the post ${post.data.toString()}!`),
+        post.poster
+      ))
+      const txn = await Forum.wallet.sendTransaction(tx, Forum.connection);
 
-      if (ata) {
-        const tx = await mailbox.sendMessage(
-          "You've received a Dispatch SOL Award!",
-          `You've received an award from ${Forum.wallet.publicKey!.toBase58()}!`,
-          post.poster,
-          {
-            incentive: {
-              mint: NATIVE_MINT,
-              amount: selectedAmount,
-              payerAccount: ata,
-            }
-          }
-        )
-      } else {
-        const sendTx = new web3.Transaction();
-        
-      }
-      // const tx = await transferSOL({
-      //   wallet: Forum.wallet,
-      //   posterId: post.poster,
-      //   collectionId: collectionId,
-      //   amount: selectedAmount,
-      //   connection: Forum.connection,
-      // });
       setLoading(false);
       onSuccess(
         <>
           Award attached successfully.
-          <TransactionLink transaction={tx} />
+          <TransactionLink transaction={txn} />
         </>
       );
     } catch (error: any) {

@@ -42,6 +42,10 @@
     text-transform: capitalize;
     font-weight: 600;
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
+
     &:hover {
       opacity: 0.85;
     }
@@ -330,6 +334,13 @@
       display: flex;
       align-items: center;
       margin-top: 24px;
+      gap: 12px;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+        flex-direction: column-reverse;
+        gap: 12px;
+      }
     }
 
     .postReplyButton {
@@ -348,6 +359,10 @@
       text-align: center;
       text-transform: capitalize;
       font-weight: 600;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
 
       &.inFlight {
         cursor: not-allowed;
@@ -372,7 +387,6 @@
       justify-content: center;
 
       padding: 0 16px;
-      margin-right: 12px;
       height: 48px;
       border-radius: 10px;
       border-width: 1px;
@@ -384,6 +398,10 @@
       font-weight: 600;
       text-align: center;
       text-transform: capitalize;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
 
       &:hover {
         opacity: 0.85;

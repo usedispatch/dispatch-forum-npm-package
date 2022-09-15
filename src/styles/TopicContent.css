@@ -44,6 +44,10 @@
     &:hover {
       opacity: 0.85;
     }
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
   }
 
   .cancelDeleteTopicButton {
@@ -67,6 +71,10 @@
     &:hover {
       opacity: 0.85;
     }
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
   }
 
   .okInfoButton {
@@ -88,6 +96,10 @@
 
     &:hover {
       opacity: 0.85;
+    }
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
     }
   }
 
@@ -315,7 +327,7 @@
     }
 
     @media only screen and (max-width: 570px) {
-      flex-direction: column-reverse;
+      flex-direction: column;
       gap: 12px;
 
       .activityInfo .votePostContent,
@@ -324,8 +336,7 @@
       }
 
       .activityInfo {
-        margin-top: 15px;
-        flex-direction: row-reverse;
+        flex-direction: row;
       }
 
       .topicContentBox {
@@ -335,6 +346,7 @@
       .activityInfo .commentsContainer {
         flex-direction: row-reverse;
         gap: 5px;
+        margin: 0;
       }
     }
 

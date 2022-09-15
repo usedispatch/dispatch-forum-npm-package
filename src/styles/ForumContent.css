@@ -39,7 +39,7 @@
 
       @media only screen and (max-width: 570px) {
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
       }
     }
 
@@ -126,6 +126,10 @@
     text-transform: capitalize;
     font-weight: 600;
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
+
     &:hover {
       opacity: 0.85;
     }
@@ -208,33 +212,26 @@
       margin: 0 0 0 10px;
     }
 
-    @media only screen and (max-width: 480px) {
-      padding: 12px;
-      justify-content: space-between;
-    }
-  }
-
-  .manageToolsContainer {
-    display: flex;
-    align-items: center;
-
     @media only screen and (max-width: 570px) {
-      justify-content: center;
+      padding: 12px;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
     }
 
-    .manageTools {
+    .tools {
+      width: 100%;
       display: flex;
+      gap: 24px;
+      flex-direction: row;
       align-items: center;
+      flex-wrap: wrap;
 
       @media only screen and (max-width: 570px) {
-        flex-direction: column;
-        margin-left: 10px;
-        gap: 5px;
+        gap: 20px;
 
-        .manageModeratorsButton,
-        .manageOwnersButton,
-        .moderatorTool {
-          margin-left: 0;
+        .editForumContainer .editForumButton svg {
+          margin-right: 16px;
         }
       }
     }
@@ -345,6 +342,10 @@
       &.fetchModerators {
         margin: 16px auto 0;
       }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
     }
 
     .cancelButton {
@@ -372,6 +373,10 @@
       &:disabled {
         cursor: not-allowed;
         opacity: 0.6;
+      }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
       }
     }
   }

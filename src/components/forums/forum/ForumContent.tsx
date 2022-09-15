@@ -530,30 +530,27 @@ export function ForumContent(props: ForumContentProps) {
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
               <div className="moderatorToolsContainer">
                 <div>Owner tools: </div>
-                <div className="manageToolsContainer">
+                <div className="tools">
                   <div className="lock">
                     <Lock />
                   </div>
-                  <div className="manageTools">
-                    <ManageOwners forumData={forumData} />
-                    <ManageModerators forumData={forumData} />
-                    {
-                      // The manage users UI should be hidden for DAA
-                      forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
-                        <PermissionsGate
-                          scopes={[SCOPES.canAddForumRestriction]}>
-                          <button
-                            className="moderatorTool"
-                            disabled={!permission.readAndWrite}
-                            onClick={() => setShowManageAccessToken(true)}>
-                            Manage forum access
-                          </button>
-                        </PermissionsGate>
-                      )
-                    }
-                  </div>
+                  <ManageOwners forumData={forumData} />
+                  <ManageModerators forumData={forumData} />
+                  {
+                    // The manage users UI should be hidden for DAA
+                    forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
+                      <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                        <button
+                          className="moderatorTool"
+                          disabled={!permission.readAndWrite}
+                          onClick={() => setShowManageAccessToken(true)}>
+                          Manage forum access
+                        </button>
+                      </PermissionsGate>
+                    )
+                  }
+                  <EditForum forumData={forumData} update={update} />
                 </div>
-                <EditForum forumData={forumData} update={update} />
               </div>
             </PermissionsGate>
           </div>

@@ -30,17 +30,13 @@
     justify-content: center;
 
     min-width: 50%;
-    width: 80%;
-    max-width: 650px;
+    width: 100%;
+    max-width: 750px;
     margin-top: 16px;
 
     background: #fff;
     border-radius: 15px;
     box-shadow: 0 8px 16px #41414933;
-
-    @media only screen and (max-width: 570px) {
-      width: 90%;
-    }
 
     &.creating {
       opacity: 0.65;

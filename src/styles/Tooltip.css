@@ -1,17 +1,32 @@
 @layer components {
   .tooltipContainer {
+    position: relative;
+
+    &.visible {
+      .tooltipMessage {
+        visibility: visible;
+        width: 360px;
+
+        @media only screen and (max-width: 768px) {
+          width: 290px;
+        }
+
+        @media only screen and (max-width: 570px) {
+          width: 250px;
+        }
+
+        @media only screen and (max-width: 480px) {
+          width: 220px;
+          left: -60px;
+          bottom: 17px;
+        }
+      }
+    }
   }
 
   .tooltipContent {
     display: flex;
     align-items: center;
-
-    position: relative;
-
-    &:hover .tooltipMessage {
-      visibility: visible;
-      width: 357px;
-    }
   }
 
   .tooltipMessage {
@@ -29,7 +44,7 @@
     visibility: hidden;
     position: absolute;
     left: 16px;
-    bottom: 10px;
+    bottom: 16px;
     z-index: 1;
   }
 }

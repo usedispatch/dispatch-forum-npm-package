@@ -1,4 +1,3 @@
-import "./../../style.css";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { PublicKey } from '@solana/web3.js';

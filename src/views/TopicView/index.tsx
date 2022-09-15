@@ -1,4 +1,3 @@
-import "./../../style.css";
 import isNil from 'lodash/isNil';
 import isNull from 'lodash/isNull';
 import Markdown from "markdown-to-jsx";

@@ -252,6 +252,22 @@
           color: #86878e;
           font-weight: 600;
 
+          span {
+            @media only screen and (max-width: 768px) {
+              display: none;
+            }
+          }
+
+          .lock {
+            display: none;
+          }
+
+          @media only screen and (max-width: 768px) {
+            .lock {
+              display: unset;
+            }
+          }
+
           &:hover {
             opacity: 0.85;
           }
@@ -289,6 +305,10 @@
               stroke: #86878e;
             }
           }
+
+          @media only screen and (max-width: 768px) {
+            display: none;
+          }
         }
 
         .awardButton {
@@ -313,6 +333,12 @@
           &:disabled {
             cursor: not-allowed;
             opacity: 0.65;
+          }
+
+          span {
+            @media only screen and (max-width: 768px) {
+              display: none;
+            }
           }
         }
 

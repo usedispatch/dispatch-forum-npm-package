@@ -20,14 +20,12 @@ interface EditPostProps {
   post: ForumPost;
   forumData: ForumData;
   showDividers: { leftDivider: boolean; rightDivider: boolean };
-  showText: boolean;
   editPostLocal: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
 }
 
 export function EditPost(props: EditPostProps) {
-  const { post, forumData, update, showDividers, showText, editPostLocal } =
-    props;
+  const { post, forumData, update, showDividers, editPostLocal } = props;
   const forumObject = useForum();
   const { permission, wallet } = forumObject;
 
@@ -204,7 +202,7 @@ export function EditPost(props: EditPostProps) {
           className="editPostButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditPost({ ...editPost, show: true })}>
-          <Edit /> {showText ? "Edit" : ""}
+          <Edit /> <span>Edit</span>
         </button>
         {showDividers.rightDivider && <div className="actionDivider" />}
       </div>

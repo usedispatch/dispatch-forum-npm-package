@@ -236,6 +236,12 @@
             }
           }
 
+          span {
+            @media only screen and (max-width: 768px) {
+              display: none;
+            }
+          }
+
           &:disabled {
             cursor: not-allowed;
             opacity: 0.65;
@@ -251,6 +257,12 @@
           padding: 8px;
 
           font-weight: 600;
+
+          span {
+            @media only screen and (max-width: 768px) {
+              display: none;
+            }
+          }
 
           &:disabled {
             cursor: not-allowed;

@@ -178,7 +178,6 @@ export function PostReplies(props: PostRepliesProps) {
                       forumData={forumData}
                       update={() => update()}
                       editPostLocal={editPost}
-                      showText={windowSize > 768}
                       showDividers={{ leftDivider: true, rightDivider: false }}
                     />
                   )}
@@ -204,7 +203,7 @@ export function PostReplies(props: PostRepliesProps) {
                             className="awardButton"
                             disabled={!permission.readAndWrite}
                             onClick={() => onAwardReply(reply)}>
-                            {windowSize > 768 ? "Send Token" : ""}
+                            <span>Send Token</span>
                             <Gift />
                           </button>
                         </>

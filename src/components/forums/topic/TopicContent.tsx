@@ -216,19 +216,6 @@ export function TopicContent(props: TopicContentProps) {
     }
   };
 
-  const [windowSize, setWindowSize] = useState(window.innerWidth);
-  useEffect(() => {
-    function handleWindowResize() {
-      setWindowSize(window.innerWidth);
-    }
-
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, []);
-
   return (
     <>
       {!_.isNil(modalInfo) && (
@@ -397,25 +384,19 @@ export function TopicContent(props: TopicContentProps) {
                 forumData={forumData}
                 update={() => update()}
                 editPostLocal={editPost}
-                showText={windowSize > 768}
                 showDividers={{ leftDivider: false, rightDivider: true }}
               />
-              {windowSize > 768 && (
-                <div className="lock">
-                  <Lock />
-                </div>
-              )}
+              <div className="lock">
+                <Lock />
+              </div>
               <button
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
                 onClick={() => setShowAddAccessToken(true)}>
-                {windowSize > 768 ? (
-                  "Manage post access"
-                ) : (
-                  <div className="lock">
-                    <Lock />
-                  </div>
-                )}
+                <span>Manage post access</span>
+                <div className="lock">
+                  <Lock />
+                </div>
               </button>
             </div>
             {
@@ -429,7 +410,7 @@ export function TopicContent(props: TopicContentProps) {
                       className="awardButton"
                       disabled={!permission.readAndWrite}
                       onClick={() => setShowGiveAward(true)}>
-                      {windowSize > 768 ? "Send Token" : ""}
+                      <span>Send Token</span>
                       <Gift />
                     </button>
                   </PermissionsGate>

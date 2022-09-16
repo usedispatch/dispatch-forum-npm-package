@@ -457,7 +457,6 @@ export function PostContent(props: PostContentProps) {
                     forumData={forumData}
                     update={() => update()}
                     editPostLocal={editPost}
-                    showText={windowSize > 768}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
                   <PermissionsGate scopes={[SCOPES.canCreateReply]}>
@@ -490,7 +489,7 @@ export function PostContent(props: PostContentProps) {
                                   setPostToAward(post);
                                   setShowGiveAward(true);
                                 }}>
-                                {windowSize > 768 ? "Send Token" : ""}
+                                <span>Send Token</span>
                                 <Gift />
                               </button>
                               <div className="actionDivider" />
@@ -507,7 +506,7 @@ export function PostContent(props: PostContentProps) {
                             block: "center",
                           });
                         }}>
-                        {windowSize > 768 ? "Reply" : ""} <Reply />
+                        <span>Reply</span> <Reply />
                       </button>
                     </div>
                   </PermissionsGate>

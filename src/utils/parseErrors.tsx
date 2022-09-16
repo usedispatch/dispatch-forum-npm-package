@@ -26,15 +26,30 @@ export type DispatchError
   = WalletError
   | ContractError
   | RateLimitingError
+  | NotFoundError
   | UnknownError;
 
 /**
  * An error we caught from Phantom during transaction send
  */
 export interface WalletError {
-  kind: 'Wallet';
+  errorKind: 'Wallet';
   message: string;
   suggestion?: string;
+}
+
+export interface NotFoundError {
+  errorKind: 'NotFound';
+  message: string;
+}
+
+export function notFoundError(
+  message: string
+): NotFoundError {
+  return {
+    errorKind: 'NotFound',
+    message
+  };
 }
 
 /**
@@ -42,7 +57,7 @@ export interface WalletError {
  * improper permissions or badly-formatted data
  */
 export interface ContractError {
-  kind: 'Contract';
+  errorKind: 'Contract';
   code: number;
   message: string;
   suggestion?: string;
@@ -53,7 +68,7 @@ export interface ContractError {
  * and need to wait a few minutes
  */
 export interface RateLimitingError {
-  kind: 'RateLimiting';
+  errorKind: 'RateLimiting';
   message: string;
   suggestion?: string;
 }
@@ -62,7 +77,7 @@ export interface RateLimitingError {
  * An unknown or uncategorized kind of error
  */
 export interface UnknownError {
-  kind: 'Unknown',
+  errorKind: 'Unknown',
   error: any
 }
 
@@ -74,7 +89,7 @@ export function parseError(error: any): DispatchError {
       const decimal = hexToDecimal(hexString) - 6000;
       const message = postboxErrorCode[decimal];
       return {
-        kind: 'Contract',
+        errorKind: 'Contract',
         code: decimal,
         message,
       };
@@ -83,7 +98,7 @@ export function parseError(error: any): DispatchError {
       const str = error.toString() as string;
       if (str.includes('WalletSendTransactionError')) {
         return {
-          kind: 'Wallet',
+          errorKind: 'Wallet',
           message: `${str}`,
           suggestion: 'Make sure you are using the correct network, devnet or mainnet, and try again'
         };
@@ -96,20 +111,20 @@ export function parseError(error: any): DispatchError {
       const errJson = JSON.parse(json[1]);
       if (errJson.error.code === 429)  {
         return {
-          kind: 'RateLimiting',
+          errorKind: 'RateLimiting',
           message: JSON.stringify('HTTP 429 Rate limited'),
           suggestion: 'The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds.'
         };
       } else {
         return {
-          kind: 'Unknown',
+          errorKind: 'Unknown',
           error
         }
       }
     }
   } else {
     return {
-      kind: 'Unknown',
+      errorKind: 'Unknown',
       error
     }
   }

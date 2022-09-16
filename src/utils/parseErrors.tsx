@@ -79,12 +79,6 @@ export function parseError(error: any): DispatchError {
         message,
       };
     } else {
-<<<<<<< HEAD
-      const str = error.toString() as string;
-      if (str.includes('WalletSendTransactionError')) {
-        return {
-          message: `Error with wallet: ${str}`
-=======
       // Check for Wallet issue
       const str = error.toString() as string;
       if (str.includes('WalletSendTransactionError')) {
@@ -92,7 +86,6 @@ export function parseError(error: any): DispatchError {
           kind: 'Wallet',
           message: `${str}`,
           suggestion: 'Make sure you are using the correct network, devnet or mainnet, and try again'
->>>>>>> ecff071 (feat: type the parseError function)
         };
       }
       // TODO(andrew) these two lines produce a "cannot find

@@ -1,7 +1,7 @@
 import * as _ from "lodash";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
-import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 import Jdenticon from "react-jdenticon";
 import { ForumPost } from "@usedispatch/client";
 
@@ -259,18 +259,6 @@ export function PostContent(props: PostContentProps) {
   const isLocal = isCreatedPost(post);
 
   const identity = getIdentity(post.poster);
-  const [windowSize, setWindowSize] = useState(window.innerWidth);
-  useEffect(() => {
-    function handleWindowResize() {
-      setWindowSize(window.innerWidth);
-    }
-
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, []);
 
   return (
     <>
@@ -376,13 +364,7 @@ export function PostContent(props: PostContentProps) {
                     )}
                   </div>
                   <div className="walletId">
-                    {identity
-                      ? identity.displayName
-                      : windowSize < 768
-                      ? `${post.poster.toBase58().slice(0, 4)}...${post.poster
-                          .toBase58()
-                          .slice(-4)}`
-                      : post.poster.toBase58()}
+                    {identity ? identity.displayName : post.poster.toBase58()}
                   </div>
                   <RoleLabel
                     topicOwnerId={topicPosterId}

@@ -138,8 +138,19 @@
         color: #86878e;
         margin-right: 10px;
 
+        @media only screen and (max-width: 768px) {
+          max-width: 120px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
         @media only screen and (max-width: 570px) {
           font-size: 12px;
+        }
+
+        @media only screen and (max-width: 480px) {
+          max-width: 80px;
         }
       }
 

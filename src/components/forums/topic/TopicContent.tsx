@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
@@ -506,19 +506,6 @@ function TopicHeader(props: TopicHeaderProps) {
 
   const identity = getIdentity(topic.poster);
 
-  const [windowSize, setWindowSize] = useState(window.innerWidth);
-  useEffect(() => {
-    function handleWindowResize() {
-      setWindowSize(window.innerWidth);
-    }
-
-    window.addEventListener("resize", handleWindowResize);
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, []);
-
   return (
     <div className="topicHeader">
       <div className="topicTitle">
@@ -536,13 +523,7 @@ function TopicHeader(props: TopicHeaderProps) {
               )}
             </div>
             <div className="posterId">
-              {identity
-                ? identity.displayName
-                : windowSize < 768
-                ? `${topic.poster.toBase58().slice(0, 4)}...${topic.poster
-                    .toBase58()
-                    .slice(-4)}`
-                : topic.poster.toBase58()}
+              {identity ? identity.displayName : topic.poster.toBase58()}
             </div>
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId

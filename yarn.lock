@@ -2132,6 +2132,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@parcel/reporter-bundle-analyzer@npm:^2.7.0":
+  version: 2.7.0
+  resolution: "@parcel/reporter-bundle-analyzer@npm:2.7.0"
+  dependencies:
+    "@parcel/plugin": 2.7.0
+    "@parcel/utils": 2.7.0
+    nullthrows: ^1.1.1
+  checksum: 5122b76835e01fd10be23e148bf5533047f4a9d420fee3134406cf249f898f1d8e3c40f6a505b291685b4af0529cdc94046815d43da13f46987f489724100064
+  languageName: node
+  linkType: hard
+
 "@parcel/reporter-cli@npm:2.7.0":
   version: 2.7.0
   resolution: "@parcel/reporter-cli@npm:2.7.0"
@@ -2999,6 +3010,7 @@ __metadata:
     "@parcel/config-default": ^2.7.0
     "@parcel/core": ^2.7.0
     "@parcel/packager-ts": 2.7.0
+    "@parcel/reporter-bundle-analyzer": ^2.7.0
     "@parcel/transformer-css": ^2.7.0
     "@parcel/transformer-postcss": ^2.7.0
     "@parcel/transformer-typescript-tsc": ^2.7.0

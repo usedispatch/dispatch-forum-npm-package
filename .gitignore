@@ -5,6 +5,7 @@ node_modules
 
 # Parcel
 .parcel-cache
+parcel-bundle-reports
 
 # Yarn
 .pnp.*

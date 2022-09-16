@@ -3,5 +3,8 @@
   "transformers": {
     "*.{ts,tsx}": ["@parcel/transformer-typescript-tsc"],
     "*.css": ["@parcel/transformer-postcss", "@parcel/transformer-css"]
-  }
+  },
+  "reporters": [
+    "@parcel/reporter-bundle-analyzer"
+  ]
 }

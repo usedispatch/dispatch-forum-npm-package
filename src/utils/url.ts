@@ -1,5 +1,5 @@
 import { Result } from '../types/error';
-import { unknownError } from '../utils/error';
+import { uncategorizedError } from '../utils/error';
 
 /**
  * Attempt to parse a URL from a string. On success, return the
@@ -15,6 +15,6 @@ export function stringToURL(text: string): Result<URL> {
     return new URL(text);
   } catch (e) {
     // TODO categorize this
-    return unknownError(e);
+    return uncategorizedError(e);
   }
 }

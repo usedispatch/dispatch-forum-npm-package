@@ -22,13 +22,13 @@ import {
   PoweredByDispatch,
   TopicContent,
 } from "../../components/forums";
-import { Loading, DispatchClientError } from "../../types/loading";
+import { Loading } from "../../types/loading";
+import { DispatchError } from "../../types/error";
+import { notFoundError, isError, isUncategorizedError } from '../../utils/error';
 import {
   isSuccess,
   isInitial,
   isPending,
-  isDispatchClientError,
-  onChainAccountNotFound,
   pending,
 } from "../../utils/loading";
 
@@ -90,13 +90,13 @@ export const TopicView = (props: Props) => {
       if (post) {
         return post;
       } else {
-        return onChainAccountNotFound();
+        return notFoundError('Post not found');
       }
     } else {
       if (isPending(forumData)) {
         return pending();
       } else {
-        return { loadingState: forumData.loadingState };
+        return forumData;
       }
     }
   }, [forumData, topicId]);
@@ -107,16 +107,23 @@ export const TopicView = (props: Props) => {
     if (isSuccess(forumData)) {
       // Filter out all loading components that failed
       const errors = [forumData.owners].filter((loading) =>
-        isDispatchClientError(loading)
-      ) as DispatchClientError[];
+        isError(loading)
+      ) as DispatchError[];
 
       setModals(
-        errors.map(({ error }) => {
-          const message = JSON.stringify(error || {});
+        errors.map((error) => {
+          if (isUncategorizedError(error)) {
+            return {
+              type: MessageType.error,
+              title: `Error loading`,
+              collapsible: { header: "Error", content: JSON.stringify(error.error) },
+            }
+          }
+          // TODO better error display here
           return {
             type: MessageType.error,
-            title: `Error loading ${error?.name || "data"}`,
-            collapsible: { header: "Error", content: message },
+            title: `Error loading ${error.errorKind}`,
+            collapsible: { header: "Error", content: error.message },
           };
         })
       );

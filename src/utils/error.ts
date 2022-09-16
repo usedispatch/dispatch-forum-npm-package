@@ -1,6 +1,6 @@
 import {
   NotFoundError,
-  UnknownError,
+  UncategorizedError,
   Result,
   DispatchError,
   BadInputError
@@ -10,6 +10,12 @@ export function isError<T>(
   value: Result<T>
 ): value is DispatchError {
   return 'errorKind' in value;
+}
+
+export function isUncategorizedError(
+  value: DispatchError
+): value is UncategorizedError {
+  return value.errorKind === 'Uncategorized';
 }
 
 /*
@@ -24,11 +30,11 @@ export function notFoundError(
   };
 }
 
-export function unknownError(
+export function uncategorizedError(
   error: any
-): UnknownError {
+): UncategorizedError {
   return {
-    errorKind: 'Unknown',
+    errorKind: 'Uncategorized',
     error
   };
 }

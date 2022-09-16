@@ -6,7 +6,7 @@ export type DispatchError
   | ContractError
   | RateLimitingError
   | NotFoundError
-  | UnknownError;
+  | UncategorizedError;
 
 /**
  * An error we caught from Phantom during transaction send
@@ -59,7 +59,7 @@ export interface RateLimitingError {
 /**
  * An unknown or uncategorized kind of error
  */
-export interface UnknownError {
-  errorKind: 'Unknown',
+export interface UncategorizedError {
+  errorKind: 'Uncategorized',
   error: any
 }

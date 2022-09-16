@@ -2234,7 +2234,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parcel/transformer-css@npm:2.7.0":
+"@parcel/transformer-css@npm:2.7.0, @parcel/transformer-css@npm:^2.7.0":
   version: 2.7.0
   resolution: "@parcel/transformer-css@npm:2.7.0"
   dependencies:
@@ -2310,7 +2310,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@parcel/transformer-postcss@npm:2.7.0":
+"@parcel/transformer-postcss@npm:2.7.0, @parcel/transformer-postcss@npm:^2.7.0":
   version: 2.7.0
   resolution: "@parcel/transformer-postcss@npm:2.7.0"
   dependencies:
@@ -2977,20 +2977,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@usedispatch/client@portal:/home/nd/work/msg/usedispatch_client::locator=%40usedispatch%2Fforum%40workspace%3A.":
-  version: 0.0.0-use.local
-  resolution: "@usedispatch/client@portal:/home/nd/work/msg/usedispatch_client::locator=%40usedispatch%2Fforum%40workspace%3A."
+"@usedispatch/client@npm:^0.13.0":
+  version: 0.13.0
+  resolution: "@usedispatch/client@npm:0.13.0"
   dependencies:
     "@bonfida/spl-name-service": ^0.1.30
     "@metaplex-foundation/mpl-token-metadata": ^2.2.2
     "@project-serum/anchor": ^0.24.2
     "@solana/buffer-layout": ^4.0.0
     "@solana/spl-token": ^0.2.0
-    "@solana/web3.js": ^1.50.1
+    "@solana/web3.js": ^1.44.0
     crypto-js: ^4.1.1
-    lodash: ^4.17.21
+  checksum: 4bc5accf180780aeff6c8ae523e8d750cea3b050ddcffa5adf4fe7dd2b456e3b38823b2b5fc3810b95279bbe1a53a31270f3b8c7f886447deb7f441395d3b3d1
   languageName: node
-  linkType: soft
+  linkType: hard
 
 "@usedispatch/forum@workspace:.":
   version: 0.0.0-use.local
@@ -2999,6 +2999,8 @@ __metadata:
     "@parcel/config-default": ^2.7.0
     "@parcel/core": ^2.7.0
     "@parcel/packager-ts": 2.7.0
+    "@parcel/transformer-css": ^2.7.0
+    "@parcel/transformer-postcss": ^2.7.0
     "@parcel/transformer-typescript-tsc": ^2.7.0
     "@parcel/transformer-typescript-types": 2.7.0
     "@solana/spl-token": ^0.3.1

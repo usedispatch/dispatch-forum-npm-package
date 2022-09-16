@@ -150,7 +150,6 @@ export const TopicView = (props: Props) => {
       forum.wallet.publicKey &&
       isSuccess(topic)
     ) {
-      fetchVotes();
       getUserRole(forum, collectionPublicKey, role, topic);
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);

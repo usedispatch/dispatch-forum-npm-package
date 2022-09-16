@@ -116,6 +116,21 @@ export function useForumData(
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
+  useEffect(() => {
+    const setVotes = async () => {
+      if (isSuccess(forumData) && isNotFound(forumData.votes)) {
+        const votes = await fetchVotes();
+        if (isSuccess(votes)) {
+          setForumData({
+            ...forumData,
+            votes,
+          });
+        }
+      }
+    }
+    setVotes();
+  }, [forum.wallet, forumData]);
+
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<LoadingResult<PublicKey[]>> {
     if (collectionId) {
@@ -321,14 +336,13 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, description, posts, restriction, moderatorMint, votes] =
+        const [owners, description, posts, restriction, moderatorMint] =
           await Promise.all([
             fetchOwners(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
             fetchModeratorMint(),
-            fetchVotes()
           ]);
 
         // TODO(andrew) perhaps allow the page to load even if
@@ -343,7 +357,7 @@ export function useForumData(
             posts,
             restriction,
             moderatorMint,
-            votes
+            votes: onChainAccountNotFound(),
           });
         } else {
           // We already confirmed the forum existed, so assume

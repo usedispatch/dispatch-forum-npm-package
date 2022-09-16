@@ -50,10 +50,14 @@ export function Votes(props: VotesProps) {
   const setVotes = async () => {
     if (isSuccess(forumData.votes)) {
     const vote = forumData.votes.find((v) => v.postId === post.postId);
-      if (vote?.upVote === true) {
+      // redundancy needed for wallet change case and
+      // either upvote or downvote previously set to true
+    if (vote?.upVote === true) {
         setAlreadyUpVoted(true);
+        setAlreadyDownVoted(false);
       } else if (vote?.upVote === false) {
         setAlreadyDownVoted(true);
+        setAlreadyUpVoted(false);
       }
     }
   }

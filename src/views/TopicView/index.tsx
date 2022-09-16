@@ -61,7 +61,7 @@ export const TopicView = (props: Props) => {
     }
   }, [collectionId]);
 
-  const { forumData, update, addPost, editPost, deletePost } = useForumData(
+  const { forumData, update, addPost, editPost, deletePost, fetchVotes } = useForumData(
     collectionPublicKey,
     forum
   );
@@ -150,6 +150,7 @@ export const TopicView = (props: Props) => {
       forum.wallet.publicKey &&
       isSuccess(topic)
     ) {
+      fetchVotes();
       getUserRole(forum, collectionPublicKey, role, topic);
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);

@@ -112,6 +112,7 @@ export function useForumData(
   deletePost: (post: ForumPost) => void;
   editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
+  fetchVotes: () => Promise<LoadingResult<ChainVoteEntry[]>>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
@@ -185,22 +186,8 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
-  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
-    if (collectionId) {
-      try {
-        const fetchData = await forum.getVotes(collectionId);
-        if (fetchData) {
-          return fetchData;
-        } else {
-          return onChainAccountNotFound();
-        }
-      } catch (error) {
-        return dispatchClientError(error);
-      }
-    } else {
-      return onChainAccountNotFound();
-    }
-  }
+
+
   
 
   async function fetchForumPostRestriction(): Promise<
@@ -307,6 +294,24 @@ export function useForumData(
       });
     }
   }
+  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
+    if (collectionId && forum.permission.readAndWrite && isSuccess(forumData)) {
+      try {
+        const fetchData = await forum.getVotes(collectionId);
+        if (fetchData) {
+          setForumData({...forumData, votes: fetchData});
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
 
   /**
    * re-fetch all data related to this forum from chain
@@ -323,7 +328,7 @@ export function useForumData(
             fetchPosts(),
             fetchForumPostRestriction(),
             fetchModeratorMint(),
-            fetchVotes(),
+            fetchVotes()
           ]);
 
         // TODO(andrew) perhaps allow the page to load even if
@@ -358,7 +363,8 @@ export function useForumData(
     addPost,
     deletePost,
     editPost,
-    update
+    update,
+    fetchVotes,
   };
 }
 

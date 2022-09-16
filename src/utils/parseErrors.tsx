@@ -22,65 +22,6 @@ const postboxErrorCode = {
 
 const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
-export type DispatchError
-  = WalletError
-  | ContractError
-  | RateLimitingError
-  | NotFoundError
-  | UnknownError;
-
-/**
- * An error we caught from Phantom during transaction send
- */
-export interface WalletError {
-  errorKind: 'Wallet';
-  message: string;
-  suggestion?: string;
-}
-
-export interface NotFoundError {
-  errorKind: 'NotFound';
-  message: string;
-}
-
-export function notFoundError(
-  message: string
-): NotFoundError {
-  return {
-    errorKind: 'NotFound',
-    message
-  };
-}
-
-/**
- * An error thrown by one of our Contracts, due to something like
- * improper permissions or badly-formatted data
- */
-export interface ContractError {
-  errorKind: 'Contract';
-  code: number;
-  message: string;
-  suggestion?: string;
-}
-
-/**
- * An error that indicates that we have exhausted the RPC node
- * and need to wait a few minutes
- */
-export interface RateLimitingError {
-  errorKind: 'RateLimiting';
-  message: string;
-  suggestion?: string;
-}
-
-/**
- * An unknown or uncategorized kind of error
- */
-export interface UnknownError {
-  errorKind: 'Unknown',
-  error: any
-}
-
 export function parseError(error: any): DispatchError {
   if (error.message != undefined) {
     const hexIndex = (error.message as string).indexOf("0x");

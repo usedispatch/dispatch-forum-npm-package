@@ -22,12 +22,14 @@ import {
 
 import {
   parseError,
-  DispatchError,
-  notFoundError
 } from "../parseErrors";
-import { dispatchClientError, isSuccess } from '../../utils/loading';
+import { DispatchError, Result } from '../../types/error';
+import {
+  notFoundError,
+  badInputError
+} from '../../utils/error';
+import { isSuccess } from '../../utils/loading';
 import { stringToURL } from '../../utils/url';
-import { DispatchClientError } from '../../types/loading';
 
 enum UserCategory {
   moderator,
@@ -860,15 +862,15 @@ export class DispatchForum implements IForum {
 
     try {
       const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
-      const displayableMetadataPromises: Promise<DisplayableToken | DispatchClientError>[] = metadataForOwner.map(async ({ mint, data }) => {
+      const displayableMetadataPromises: Promise<Result<DisplayableToken>>[] = metadataForOwner.map(async ({ mint, data }) => {
         // Remove NUL bytes from name and URI
         const name = data.name.replaceAll('\x00', '');
         const uri = data.uri.replaceAll('\x00', '');
 
         if (uri === '') {
-          return dispatchClientError({
-            message: `Cannot load metadata for token ${mint.toBase58()}. Field uri is empty`
-          });
+          return notFoundError(
+            `Cannot load metadata for token ${mint.toBase58()}. Field uri is empty`
+          );
         }
 
         const url = stringToURL(uri);
@@ -882,9 +884,9 @@ export class DispatchForum implements IForum {
               parsed = await fetchedURI.json()
             }
             catch (error) {
-              return dispatchClientError({
-                message: `Cannot load metadata for token ${mint.toBase58()}. The metadata URI is invalid.`
-              });
+              return notFoundError(
+                `Cannot load metadata for token ${mint.toBase58()}. The metadata URI is invalid.`
+              );
             }
 
             // Verify that the parsed object has a string image
@@ -902,24 +904,26 @@ export class DispatchForum implements IForum {
                     uri: imageURL
                   };
                 } else {
-                  return dispatchClientError({
-                    message: `Cannot use non HTTP-protocol ${parsed.image.protocol} in ${url} for token ${mint.toBase58()}`
-                  });
+                  // TODO(andrew) categorize this error? Bad
+                  // format error?
+                  return badInputError(
+                    `Cannot use non HTTP-protocol ${parsed.image.protocol} in ${url} for token ${mint.toBase58()}`
+                  );
                 }
               } else {
-                return dispatchClientError({
-                  message: `Image address ${parsed.image} is not a valid URL for mint ${mint.toBase58()}`
-                });
+                return badInputError(
+                  `Image address ${parsed.image} is not a valid URL for mint ${mint.toBase58()}`
+                );
               }
             } else {
-              return dispatchClientError({
-                message: `Cannot parse fetched image metadata ${parsed} for token ${mint.toBase58()}. .image field is not found or not a string.`
-              });
+              return badInputError(
+                `Cannot parse fetched image metadata ${parsed} for token ${mint.toBase58()}. .image field is not found or not a string.`
+              );
             }
           } else {
-            return dispatchClientError({
-              message: `Cannot use non HTTP-protocol ${url.protocol} in ${url} for token ${mint.toBase58()}`
-            });
+            return badInputError(
+              `Cannot use non HTTP-protocol ${url.protocol} in ${url} for token ${mint.toBase58()}`
+            );
           }
         } else {
           // If URL parsing failed, return the parsing error
@@ -935,9 +939,7 @@ export class DispatchForum implements IForum {
           return true;
         } else {
           // Report failures
-          if (result.error) {
-            console.error(result.error);
-          }
+          console.error(result);
           return false;
         }
       }) as DisplayableToken[];

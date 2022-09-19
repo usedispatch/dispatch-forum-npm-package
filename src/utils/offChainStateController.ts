@@ -1,5 +1,6 @@
 import { web3 } from '@project-serum/anchor'
 import { createClient } from '@supabase/supabase-js'
+import { DEFAULT_FORUM_TYPE } from './consts'
 
 
 export async function addForum(forumID: web3.PublicKey, forumName: string, image?: string) {
@@ -10,7 +11,7 @@ export async function addForum(forumID: web3.PublicKey, forumName: string, image
     )
     let { data: forum, error } = await supabase
         .from('forums')
-        .insert({forum_id: forumID, forum_name: forumName, forum_image_url: image})
+        .insert({forum_id: forumID, forum_name: forumName, forum_image_url: image, forum_type: DEFAULT_FORUM_TYPE})
         .single()
   } catch (e) {
     console.error(e)

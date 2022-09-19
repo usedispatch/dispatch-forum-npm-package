@@ -7,23 +7,22 @@ import {
   unpackAccount,
   Account
 } from '@solana/spl-token';
-import { Loading, LoadingResult } from "../types/loading";
+import { Loading } from "../types/loading";
+import { Result } from "../types/error";
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
 } from "../components/common";
 import {
-  isResolved,
-  isNotFound,
   initial,
-  pending,
-  onChainAccountNotFound,
-  dispatchClientError,
-  isSuccess,
-  isDispatchClientError,
   isInitial,
+  isSuccess,
 } from "../utils/loading";
+import {
+  parseError
+} from "../utils/parseErrors";
+import { notFoundError } from "../utils/error";
 import { DispatchForum } from "./postbox/postboxWrapper";
 
 // TODO(andrew) move this to DispatchForum.getDescription()
@@ -91,13 +90,13 @@ export function isCreatedPost(
 
 export interface ForumData {
   collectionId: PublicKey;
-  owners: LoadingResult<PublicKey[]>;
+  owners: Result<PublicKey[]>;
   // TODO(andrew) if/when we optimize moderators, return this
   // field to the main forum data hook
   // moderators: LoadingResult<PublicKey[]>;
   description: Description;
   posts: ClientPost[];
-  restriction: LoadingResult<PostRestriction>;
+  restriction: Result<PostRestriction>;
   moderatorMint: PublicKey;
   votes: Loading<ChainVoteEntry[]>;
 }
@@ -130,81 +129,78 @@ export function useForumData(
   }, [forum.wallet, forumData]);
 
   // TODO(andrew) make this more generic
-  async function fetchOwners(): Promise<LoadingResult<PublicKey[]>> {
+  async function fetchOwners(): Promise<Result<PublicKey[]>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getOwners(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The owners did not exist');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collectionId was not defined');
     }
   }
 
-  async function fetchModeratorMint(): Promise<LoadingResult<PublicKey>> {
+  async function fetchModeratorMint(): Promise<Result<PublicKey>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The moderator mint did not exist');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collectionId was not defined');
     }
   }
 
   // TODO(andrew) when the moderators call is optimized, return
   // the fetchModerators() call to its place here
 
-  async function fetchDescription(): Promise<LoadingResult<Description>> {
+  async function fetchDescription(): Promise<Result<Description>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getDescription(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The description was not defined');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collectionId was not defined');
     }
   }
-  async function fetchPosts(): Promise<LoadingResult<ForumPost[]>> {
+  async function fetchPosts(): Promise<Result<ForumPost[]>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The posts could not be fetched');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collectionId was not defined');
     }
   }
 
-
-  
-
   async function fetchForumPostRestriction(): Promise<
-    LoadingResult<PostRestriction>
+    Result<PostRestriction>
   > {
     if (collectionId) {
       try {
@@ -212,13 +208,13 @@ export function useForumData(
         if (restriction) {
           return restriction;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The restriction was not defined');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collectionId was not defined');
     }
   }
 
@@ -307,20 +303,20 @@ export function useForumData(
       });
     }
   }
-  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
+  async function fetchVotes(): Promise<Result<ChainVoteEntry[]>> {
     if (collectionId && forum.permission.readAndWrite && isSuccess(forumData)) {
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The votes could not be found on-chain');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collection ID waas not defined');
     }
   }
 
@@ -359,14 +355,14 @@ export function useForumData(
         } else {
           // We already confirmed the forum existed, so assume
           // there was a failure in loading
-          setForumData(dispatchClientError());
+          setForumData(notFoundError('One or more of description, posts, and moderatorMint could not be fetched'));
         }
       } else {
-        setForumData(onChainAccountNotFound());
+        setForumData(notFoundError('The forum did not exist'));
       }
     } else {
       // TODO(andrew) make collectionId nonnull
-      setForumData(onChainAccountNotFound());
+      setForumData(notFoundError('The collectionId was not defined'));
     }
   }
   return {
@@ -387,20 +383,20 @@ export function useModerators(
 } {
   const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
 
-  async function fetchModerators(): Promise<LoadingResult<PublicKey[]>> {
+  async function fetchModerators(): Promise<Result<PublicKey[]>> {
     if (collectionId) {
       try {
         const fetchData = await forum.getModerators(collectionId, true);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The moderators were not defined');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collectionId was not defined');
     }
   }
 
@@ -568,7 +564,7 @@ export function useUserIsMod(
   async function fetchUserIsMod(): Promise<boolean> {
     const moderatorMint = await forum.getModeratorMint(forumId);
     // only continue if the moderator mint is actually defined
-    if (moderatorMint) {
+    if (isSuccess(moderatorMint)) {
       const ataAddress = await getAssociatedTokenAddress(moderatorMint, userPublicKey);
       const ataBinary = await forum.connection.getAccountInfo(ataAddress);
       if (ataBinary) {

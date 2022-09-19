@@ -18,8 +18,11 @@ import {
   isSuccess,
   isInitial,
   isPending,
-  isNotFound,
 } from "../../utils/loading";
+import {
+  isError,
+  isNotFoundError
+} from '../../utils/error';
 import { useForumData, useModal } from "../../utils/hooks";
 import { getCustomStyles } from "../../utils/getCustomStyles";
 import { StarsAlert } from "../../components/forums/StarsAlert";
@@ -120,7 +123,7 @@ export const ForumView = (props: ForumViewProps) => {
       <div className={customStyle}>
         <Helmet>
           <meta charSet="utf-8" />
-          {isNotFound(forumData) && (
+          {isError(forumData) && isNotFoundError(forumData) && (
             <title>Create Forum for {collectionId}</title>
           )}
           {isSuccess(forumData) && (
@@ -148,7 +151,7 @@ export const ForumView = (props: ForumViewProps) => {
                       <Spinner />
                     </div>
                   );
-                } else if (isNotFound(forumData)) {
+                } else if (isNotFoundError(forumData)) {
                   return (
                     <CreateForum
                       forumObject={forumObject}

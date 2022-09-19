@@ -16,6 +16,8 @@ import {
 import { Notification } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
 import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
@@ -147,30 +149,31 @@ export function CreateForum(props: CreateForumProps) {
   const createForum = async () => {
     setCreatingNewForum(true);
 
-    try {
-      if (!wallet) {
-        showModal({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        });
-      }
+    if (!wallet) {
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+      });
+    }
 
-      const moderators = [...modList, publicKey];
-      const owners = [...ownerList, publicKey];
+    const moderators = [...modList, publicKey];
+    const owners = [...ownerList, publicKey];
 
-      const forum = {
-        owners,
-        moderators,
-        title: title,
-        description: description,
-        collectionId: collectionPublicKey,
-        postRestriction: accessToken
-          ? pubkeysToRestriction(accessToken)
-          : undefined,
-      } as ForumInfo;
+    const forum = {
+      owners,
+      moderators,
+      title: title,
+      description: description,
+      collectionId: collectionPublicKey,
+      postRestriction: accessToken
+        ? pubkeysToRestriction(accessToken)
+        : undefined,
+    } as ForumInfo;
 
-      const res = await forumObject.createForum(forum);
+    const res = await forumObject.createForum(forum);
+
+    if (isSuccess(res)) {
 
       if (!_.isNil(res?.forum)) {
         showModal({
@@ -195,19 +198,17 @@ export function CreateForum(props: CreateForumProps) {
         }
       }
       ReactGA.event("successfulForumCreation");
-    } catch (e: any) {
+    } else {
+      const error = res;
       ReactGA.event("failedForumCreation");
-      if (e.error?.code !== 4001) {
-        showModal({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-          collapsible: { header: "Error", content: e.message },
-        });
-      }
-    } finally {
-      setCreatingNewForum(false);
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
+    setCreatingNewForum(false);
   };
 
   const advancedOptions = (

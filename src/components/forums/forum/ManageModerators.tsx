@@ -15,7 +15,7 @@ import { useForum } from "../../../contexts/DispatchProvider";
 import { ForumData, useModerators } from "../../../utils/hooks";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
+import { errorSummary, isError } from "../../../utils/error";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
@@ -78,6 +78,18 @@ export function ManageModerators(props: ManageModeratorsProps) {
 
     setManageModerators({ ...manageModerators, addingNewModerator: true });
     const moderatorId = newPublicKey(manageModerators.newModerator);
+    if (isError(moderatorId)) {
+      const error = moderatorId;
+      setManageModerators({ ...manageModerators, addingNewModerator: true });
+      resetInitialValues();
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The moderator could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
+      return;
+    }
     const tx = await forumObject.addModerator(
       moderatorId,
       forumData.collectionId

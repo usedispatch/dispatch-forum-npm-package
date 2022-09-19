@@ -15,13 +15,15 @@ import { useForum } from "./../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { ForumData } from "../../../utils/hooks";
 import { isSuccess } from "../../../utils/loading";
+import { isContractError } from "../../../utils/error";
+import { Result } from '../../../types/error';
 
 interface VotesProps {
   post: ForumPost;
   forumData: ForumData;
   update: () => Promise<void>;
-  onUpVotePost: () => Promise<string>;
-  onDownVotePost: () => Promise<string>;
+  onUpVotePost: () => Promise<Result<string>>;
+  onDownVotePost: () => Promise<Result<string>>;
   updateVotes: (upVoted: boolean) => void;
 }
 
@@ -65,8 +67,9 @@ export function Votes(props: VotesProps) {
   const upVotePost = async () => {
     setLoading(true);
 
-    try {
-      const tx = await onUpVotePost();
+    const tx = await onUpVotePost();
+
+    if (isSuccess(tx)) {
       updateVotes(true);
       setAlreadyUpVoted(true);
       setAlreadyDownVoted(false);
@@ -85,9 +88,10 @@ export function Votes(props: VotesProps) {
         () => setIsNotificationHidden(true),
         NOTIFICATION_BANNER_TIMEOUT
       );
-    } catch (error: any) {
+    } else {
+      const error = tx;
       console.log(error);
-      if (error.code === 4001) {
+      if (isContractError(error) && error.code === 4001) {
         setModalInfo({
           title: "The post could not be up voted",
           type: MessageType.error,
@@ -98,7 +102,7 @@ export function Votes(props: VotesProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: "The post could not be up voted",
-          collapsible: { header: "Error", content: error.message },
+          collapsible: { header: "Error", content: `${error.errorKind}: error.message` },
         });
       }
       setLoading(false);
@@ -109,8 +113,8 @@ export function Votes(props: VotesProps) {
     event.preventDefault();
     setLoading(true);
 
-    try {
-      const tx = await onDownVotePost();
+    const tx = await onDownVotePost();
+    if (isSuccess(tx)) {
       updateVotes(false);
       setAlreadyDownVoted(true);
       setAlreadyUpVoted(false);
@@ -129,9 +133,10 @@ export function Votes(props: VotesProps) {
         NOTIFICATION_BANNER_TIMEOUT
       );
       setLoading(false);
-    } catch (error: any) {
+    } else {
+      const error = tx;
       console.log(error);
-      if (error.code === 4001) {
+      if (isContractError(error) && error.code === 4001) {
         setModalInfo({
           title: "The post could not be down voted",
           type: MessageType.error,
@@ -142,7 +147,7 @@ export function Votes(props: VotesProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: "The post could not be down voted.",
-          collapsible: { header: "Error", content: error.message },
+          collapsible: { header: "Error", content: `${error.errorKind}: ${error.message}` },
         });
       }
 

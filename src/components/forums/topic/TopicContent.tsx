@@ -37,6 +37,8 @@ import {
   useForumIdentity,
   ForumIdentity,
 } from "../../../utils/hooks";
+import { isSuccess } from '../../../utils/loading';
+import { isContractError, isUncategorizedError } from '../../../utils/error';
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -165,13 +167,14 @@ export function TopicContent(props: TopicContentProps) {
   // };
 
   const onDeleteTopic = async () => {
-    try {
-      setDeletingTopic(true);
-      const tx = await forum.deleteForumPost(
-        topic,
-        forumData.collectionId,
-        userRoles.includes(UserRoleType.Moderator)
-      );
+    setDeletingTopic(true);
+    const tx = await forum.deleteForumPost(
+      topic,
+      forumData.collectionId,
+      userRoles.includes(UserRoleType.Moderator)
+    );
+
+    if (isSuccess(tx)) {
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -187,34 +190,40 @@ export function TopicContent(props: TopicContentProps) {
         okPath: forumPath,
       });
       setShowDeleteConfirmation(false);
-      if (tx) {
-        // When the topic is confirmed deleted, redirect to the
-        // parent URL (the main forum)
-        await forum.connection.confirmTransaction(tx).then(() => {
-          location.assign(`${forumPath}${location.search}`);
-        });
-      }
-      setDeletingTopic(false);
+      // When the topic is confirmed deleted, redirect to the
+      // parent URL (the main forum)
+      await forum.connection.confirmTransaction(tx).then(() => {
+        location.assign(`${forumPath}${location.search}`);
+      });
+
       return tx;
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
-      if (error.code === 4001) {
+      if (isContractError(error) && error.code === 4001) {
         setModalInfo({
           title: "The topic could not be deleted",
           type: MessageType.error,
           body: `The user cancelled the request`,
         });
-      } else {
+      } else if (isUncategorizedError(error)) {
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The topic could not be deleted`,
-          collapsible: { header: "Error", content: error.message },
+          collapsible: { header: "Error", content: JSON.stringify(error.error) },
+        });
+      } else {
+        setModalInfo({
+          title: 'Something went wrong!',
+          type: MessageType.error,
+          body: `There was an error deleting the topic: ${error.errorKind}`,
+          collapsible: { header: 'Error', content: error.message }
         });
       }
     }
-  };
+  }
 
   return (
     <>

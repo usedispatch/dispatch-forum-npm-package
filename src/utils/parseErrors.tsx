@@ -1,4 +1,5 @@
-import * as _ from "lodash";
+import { DispatchError } from '../types/error';
+import { uncategorizedError } from '../utils/error';
 
 const postboxErrorCode = {
   // Create post errors
@@ -57,16 +58,10 @@ export function parseError(error: any): DispatchError {
           suggestion: 'The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds.'
         };
       } else {
-        return {
-          errorKind: 'Unknown',
-          error
-        }
+        return uncategorizedError(error);
       }
     }
   } else {
-    return {
-      errorKind: 'Unknown',
-      error
-    }
+    return uncategorizedError(error);
   }
 }

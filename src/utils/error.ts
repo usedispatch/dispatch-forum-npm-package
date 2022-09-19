@@ -3,8 +3,13 @@ import {
   UncategorizedError,
   Result,
   DispatchError,
-  BadInputError
+  BadInputError,
+  ContractError
 } from '../types/error';
+
+export function errorSummary(error: DispatchError) {
+  return `${error.errorKind}: ${error.message}`;
+}
 
 export function isError<T>(
   value: Result<T>
@@ -16,6 +21,18 @@ export function isUncategorizedError(
   value: DispatchError
 ): value is UncategorizedError {
   return value.errorKind === 'Uncategorized';
+}
+
+export function isNotFoundError(
+  value: DispatchError
+): value is NotFoundError {
+  return value.errorKind === 'NotFound';
+}
+
+export function isContractError(
+  value: DispatchError
+): value is ContractError {
+  return value.errorKind === 'Contract';
 }
 
 /*
@@ -35,6 +52,7 @@ export function uncategorizedError(
 ): UncategorizedError {
   return {
     errorKind: 'Uncategorized',
+    message: JSON.stringify(error),
     error
   };
 }

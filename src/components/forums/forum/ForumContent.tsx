@@ -18,6 +18,8 @@ import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { Result } from "../../../types/error";
+import { isContractError, errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
   ForumData,
@@ -87,18 +89,17 @@ export function ForumContent(props: ForumContentProps) {
 
   const addAccessToken = async () => {
     setAddingAccessToken(true);
-    try {
-      const restriction = pubkeysToRestriction(
-        newForumAccessToken,
-        isSuccess(forumData.restriction) ? forumData.restriction : undefined
-      );
-      const currentIds = restrictionListToString(restriction);
+    const restriction = pubkeysToRestriction(
+      newForumAccessToken,
+      isSuccess(forumData.restriction) ? forumData.restriction : undefined
+    );
+    const currentIds = restrictionListToString(restriction);
 
-      const tx = await forumObject.setForumPostRestriction(
-        forumData.collectionId,
-        restriction
-      );
-
+    const tx = await forumObject.setForumPostRestriction(
+      forumData.collectionId,
+      restriction
+    );
+    if (isSuccess(tx)) {
       setCurrentForumAccessToken(
         currentForumAccessToken.concat([newForumAccessToken])
       );
@@ -116,9 +117,10 @@ export function ForumContent(props: ForumContentProps) {
         ),
       });
       setCurrentForumAccessToken(currentIds);
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setAddingAccessToken(false);
-      if (error.code !== 4001) {
+      if (isContractError(error) && error.code !== 4001) {
         setShowManageAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",
@@ -126,33 +128,41 @@ export function ForumContent(props: ForumContentProps) {
           body: `The access token could not be added`,
           collapsible: { header: "Error", content: error.message },
         });
+      } else {
+        setShowManageAccessToken(false);
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The access token could not be added`,
+          collapsible: { header: "Error", content: errorSummary(error) },
+        });
       }
     }
   };
 
   const deleteAccessToken = async () => {
     setRemoveAccessToken({ ...removeAccessToken, removing: true });
-    try {
-      const filteredTokens = currentForumAccessToken.filter(
-        (t) => t != removeAccessToken.token
+    const filteredTokens = currentForumAccessToken.filter(
+      (t) => t != removeAccessToken.token
+    );
+
+    let tx: Result<string>;
+    if (filteredTokens.length > 0) {
+      const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
+      tx = await forumObject.setForumPostRestriction(
+        forumData.collectionId,
+        restrictionList
       );
+    } else {
+      tx = await forumObject.deleteForumPostRestriction(
+        forumData.collectionId
+      );
+    }
 
-      let tx = "";
-      if (filteredTokens.length > 0) {
-        const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
-        tx = await forumObject.setForumPostRestriction(
-          forumData.collectionId,
-          restrictionList
-        );
-      } else {
-        tx = await forumObject.deleteForumPostRestriction(
-          forumData.collectionId
-        );
-      }
+    setCurrentForumAccessToken(filteredTokens);
+    setRemoveAccessToken({ show: false, removing: false });
 
-      setCurrentForumAccessToken(filteredTokens);
-      setRemoveAccessToken({ show: false, removing: false });
-
+    if (isSuccess(tx)) {
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -163,15 +173,23 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setRemoveAccessToken({ show: false, removing: false });
-      if (error?.error?.code !== 4001) {
+      if (isContractError(error) && error.code !== 4001) {
         setShowManageAccessToken(false);
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The access token could not be removed`,
           collapsible: { header: "Error", content: error.message },
+        });
+      } else {
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The access token could not be removed`,
+          collapsible: { header: "Error", content: errorSummary(error) },
         });
       }
     }

@@ -61,5 +61,6 @@ export interface RateLimitingError {
  */
 export interface UncategorizedError {
   errorKind: 'Uncategorized',
+  message: string,
   error: any
 }

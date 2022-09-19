@@ -14,6 +14,8 @@ import { Notification } from "../../forums";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
+import { isSuccess } from "../../../utils/loading";
+import { isContractError, errorSummary } from "../../../utils/error";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface EditPostProps {
@@ -61,12 +63,12 @@ export function EditPost(props: EditPostProps) {
 
   const editPostInfo = async () => {
     setEditPost({ ...editPost, loading: true });
-    try {
-      const tx = await forumObject.editForumPost(forumData.collectionId, post, {
-        body: editPost.body,
-        subj: editPost.subj,
-        meta: post.data.meta,
-      });
+    const tx = await forumObject.editForumPost(forumData.collectionId, post, {
+      body: editPost.body,
+      subj: editPost.subj,
+      meta: post.data.meta,
+    });
+    if (isSuccess(tx)) {
 
       setEditPost({
         show: false,
@@ -98,15 +100,16 @@ export function EditPost(props: EditPostProps) {
         () => setNotificationContent({ isHidden: true }),
         NOTIFICATION_BANNER_TIMEOUT
       );
-    } catch (error: any) {
+    } else {
       setEditPost({ ...editPost, loading: false });
-      if (error?.error?.code !== 4001) {
+      const error = tx;
+      if (isContractError(error) && error.code !== 4001) {
         resetToInitialValues();
         setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The ${post.isTopic ? "topic" : "post"} could not be edited`,
-          collapsible: { header: "Error", content: error.message },
+          collapsible: { header: "Error", content: errorSummary(error) },
         });
       }
     }

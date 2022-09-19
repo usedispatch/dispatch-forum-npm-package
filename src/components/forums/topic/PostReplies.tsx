@@ -12,6 +12,7 @@ import { EditPost, RoleLabel, Votes } from "../index";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
+import { Result } from "../../../types/error";
 import { getIdentity } from "../../../utils/identity";
 
 interface PostRepliesProps {
@@ -23,8 +24,8 @@ interface PostRepliesProps {
   update: () => Promise<void>;
   editPost: (post: ForumPost, newText: string) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
-  onUpVotePost: (post: ForumPost) => Promise<string>;
-  onDownVotePost: (post: ForumPost) => Promise<string>;
+  onUpVotePost: (post: ForumPost) => Promise<Result<string>>;
+  onDownVotePost: (post: ForumPost) => Promise<Result<string>>;
   onAwardReply: (post: ForumPost) => void;
 }
 

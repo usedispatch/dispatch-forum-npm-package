@@ -19,6 +19,8 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { isSuccess } from "../../../utils/loading";
+import { isContractError, errorSummary } from "../../../utils/error";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
 import {
@@ -130,13 +132,14 @@ export function PostContent(props: PostContentProps) {
   const onReplyToPost = async () => {
     setSendingReply(true);
     setPostInFlight(true);
-    try {
-      if (!isForumPost(post)) {
-        return;
-      }
-      const tx = await forum.replyToForumPost(post, forumData.collectionId, {
-        body: reply,
-      });
+    if (!isForumPost(post)) {
+      return;
+    }
+    const tx = await forum.replyToForumPost(post, forumData.collectionId, {
+      body: reply,
+    });
+
+    if (isSuccess(tx)) {
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
@@ -162,28 +165,26 @@ export function PostContent(props: PostContentProps) {
         state: "created",
       };
       addPost(localPost);
-
-      if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => {
-          update();
-          setPostInFlight(false);
-          setNotification({
-            isHidden: false,
-            content: (
-              <>
-                Replied successfully.
-                <TransactionLink transaction={tx!} />
-              </>
-            ),
-            type: MessageType.success,
-          });
-          setTimeout(
-            () => setNotification({ isHidden: true }),
-            NOTIFICATION_BANNER_TIMEOUT
-          );
+      await forum.connection.confirmTransaction(tx).then(() => {
+        update();
+        setPostInFlight(false);
+        setNotification({
+          isHidden: false,
+          content: (
+            <>
+              Replied successfully.
+              <TransactionLink transaction={tx!} />
+            </>
+          ),
+          type: MessageType.success,
         });
-      }
-    } catch (error: any) {
+        setTimeout(
+          () => setNotification({ isHidden: true }),
+          NOTIFICATION_BANNER_TIMEOUT
+        );
+      });
+    } else {
+      const error = tx;
       setPostInFlight(false);
       setNotification({ isHidden: true });
       console.log(error);
@@ -199,15 +200,15 @@ export function PostContent(props: PostContentProps) {
 
   const onDelete = async () => {
     setDeleting(true);
-    try {
-      if (!isForumPost(postToDelete)) {
-        return;
-      }
-      const tx = await forum.deleteForumPost(
-        postToDelete,
-        forumData.collectionId,
-        userRoles.includes(UserRoleType.Moderator)
-      );
+    if (!isForumPost(postToDelete)) {
+      return;
+    }
+    const tx = await forum.deleteForumPost(
+      postToDelete,
+      forumData.collectionId,
+      userRoles.includes(UserRoleType.Moderator)
+    );
+    if (isSuccess(tx)) {
       deletePost(postToDelete);
       onDeletePost(tx);
       setModalInfo({
@@ -216,29 +217,26 @@ export function PostContent(props: PostContentProps) {
         body: `The post was deleted`,
       });
       setShowDeleteConfirmation(false);
-      if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
-      }
+      await forum.connection.confirmTransaction(tx).then(() => update());
       setDeleting(false);
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setShowDeleteConfirmation(false);
       setDeleting(false);
-      let modalInfoError;
-      if (error.code === 4001) {
-        modalInfoError = {
+      if (isContractError(error) && error.code === 4001) {
+        setModalInfo({
           title: "The post could not be deleted",
           type: MessageType.error,
           body: `The user cancelled the request`,
-        };
+        });
       } else {
-        modalInfoError = {
+        setModalInfo({
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The post could not be deleted`,
-          collapsible: { header: "Error", content: error.message },
-        };
+          collapsible: { header: "Error", content: errorSummary(error) },
+        });
       }
-      setModalInfo(modalInfoError);
     }
   };
 

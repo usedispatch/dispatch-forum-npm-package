@@ -3,7 +3,7 @@ import { useState, ReactNode, useMemo } from "react";
 import * as web3 from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Result } from '../../../types/error';
-import { isContractError, errorSummary } from "../../../utils/error";
+import { errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import { CreatedPost } from "../../../utils/hooks";
 
@@ -124,14 +124,12 @@ export function CreatePost(props: CreatePostProps) {
       setPostInFlight(false);
       setNotification({ isHidden: true });
       setLoading(false);
-      if (isContractError(error) && error.code !== 4001) {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: "The new post could not be created",
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The new post could not be created",
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

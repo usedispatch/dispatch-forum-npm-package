@@ -17,7 +17,7 @@ import { Notification } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { isSuccess } from '../../../utils/loading';
-import { isContractError, errorSummary } from '../../../utils/error';
+import { errorSummary } from '../../../utils/error';
 import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
@@ -201,14 +201,12 @@ export function CreateForum(props: CreateForumProps) {
     } else {
       const error = res;
       ReactGA.event("failedForumCreation");
-      if (isContractError(error) && error.code !== 4001) {
-        showModal({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
     setCreatingNewForum(false);
   };

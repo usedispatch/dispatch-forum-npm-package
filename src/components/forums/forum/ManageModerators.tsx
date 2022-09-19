@@ -15,7 +15,7 @@ import { useForum } from "../../../contexts/DispatchProvider";
 import { ForumData, useModerators } from "../../../utils/hooks";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
-import { isContractError, errorSummary } from "../../../utils/error";
+import { errorSummary } from "../../../utils/error";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
@@ -103,15 +103,13 @@ export function ManageModerators(props: ManageModeratorsProps) {
     } else {
       const error = tx;
       setManageModerators({ ...manageModerators, addingNewModerator: true });
-      if (isContractError(error) && error.code !== 4001) {
-        resetInitialValues();
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The moderator could not be added`,
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      resetInitialValues();
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The moderator could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

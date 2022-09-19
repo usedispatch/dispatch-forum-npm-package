@@ -12,7 +12,7 @@ import { Notification } from "../../forums";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
-import { isContractError, errorSummary } from "../../../utils/error";
+import { errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
@@ -82,26 +82,12 @@ export function EditForum(props: EditForumProps) {
     } else {
       const error = tx;
       setEditForum({ ...editForum, loading: false });
-      if (isContractError(error) && error.code !== 4001) {
-        setEditForum({
-          show: false,
-          title: forumData.description.title,
-          description: forumData.description.desc,
-        });
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum could not be edited`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      } else {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum could not be edited`,
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum could not be edited`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

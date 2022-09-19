@@ -19,7 +19,7 @@ import { useRole } from "../../../contexts/DispatchProvider";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Result } from "../../../types/error";
-import { isContractError, errorSummary } from "../../../utils/error";
+import { errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
   ForumData,
@@ -120,23 +120,13 @@ export function ForumContent(props: ForumContentProps) {
     } else {
       const error = tx;
       setAddingAccessToken(false);
-      if (isContractError(error) && error.code !== 4001) {
-        setShowManageAccessToken(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be added`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      } else {
-        setShowManageAccessToken(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be added`,
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      setShowManageAccessToken(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
@@ -176,22 +166,12 @@ export function ForumContent(props: ForumContentProps) {
     } else {
       const error = tx;
       setRemoveAccessToken({ show: false, removing: false });
-      if (isContractError(error) && error.code !== 4001) {
-        setShowManageAccessToken(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be removed`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      } else {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be removed`,
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be removed`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

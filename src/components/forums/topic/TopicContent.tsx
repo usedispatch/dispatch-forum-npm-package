@@ -38,7 +38,7 @@ import {
   ForumIdentity,
 } from "../../../utils/hooks";
 import { isSuccess } from '../../../utils/loading';
-import { isContractError, isUncategorizedError } from '../../../utils/error';
+import { errorSummary } from '../../../utils/error';
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -201,27 +201,12 @@ export function TopicContent(props: TopicContentProps) {
       const error = tx;
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
-      if (isContractError(error) && error.code === 4001) {
-        setModalInfo({
-          title: "The topic could not be deleted",
-          type: MessageType.error,
-          body: `The user cancelled the request`,
-        });
-      } else if (isUncategorizedError(error)) {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be deleted`,
-          collapsible: { header: "Error", content: JSON.stringify(error.error) },
-        });
-      } else {
-        setModalInfo({
-          title: 'Something went wrong!',
-          type: MessageType.error,
-          body: `There was an error deleting the topic: ${error.errorKind}`,
-          collapsible: { header: 'Error', content: error.message }
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The topic could not be deleted`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   }
 

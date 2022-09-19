@@ -13,9 +13,9 @@ import {
 import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { errorSummary } from "../../../utils/error";
 import { ForumData } from "../../../utils/hooks";
 import { isSuccess } from "../../../utils/loading";
-import { isContractError } from "../../../utils/error";
 import { Result } from '../../../types/error';
 
 interface VotesProps {
@@ -91,20 +91,12 @@ export function Votes(props: VotesProps) {
     } else {
       const error = tx;
       console.log(error);
-      if (isContractError(error) && error.code === 4001) {
-        setModalInfo({
-          title: "The post could not be up voted",
-          type: MessageType.error,
-          body: `The user cancelled the request`,
-        });
-      } else {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: "The post could not be up voted",
-          collapsible: { header: "Error", content: `${error.errorKind}: error.message` },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The post could not be up voted",
+        collapsible: { header: "Error", content: `${error.errorKind}: error.message` },
+      });
       setLoading(false);
     }
   };
@@ -136,20 +128,12 @@ export function Votes(props: VotesProps) {
     } else {
       const error = tx;
       console.log(error);
-      if (isContractError(error) && error.code === 4001) {
-        setModalInfo({
-          title: "The post could not be down voted",
-          type: MessageType.error,
-          body: "The user cancelled the request",
-        });
-      } else {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: "The post could not be down voted.",
-          collapsible: { header: "Error", content: `${error.errorKind}: ${error.message}` },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The post could not be down voted.",
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
 
       setLoading(false);
     }

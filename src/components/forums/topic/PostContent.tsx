@@ -20,7 +20,7 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
-import { isContractError, errorSummary } from "../../../utils/error";
+import { errorSummary } from "../../../utils/error";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
 import {
@@ -223,20 +223,12 @@ export function PostContent(props: PostContentProps) {
       const error = tx;
       setShowDeleteConfirmation(false);
       setDeleting(false);
-      if (isContractError(error) && error.code === 4001) {
-        setModalInfo({
-          title: "The post could not be deleted",
-          type: MessageType.error,
-          body: `The user cancelled the request`,
-        });
-      } else {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The post could not be deleted`,
-          collapsible: { header: "Error", content: errorSummary(error) },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The post could not be deleted`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

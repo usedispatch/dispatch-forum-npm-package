@@ -8,6 +8,9 @@ import {
 } from '../types/error';
 
 export function errorSummary(error: DispatchError) {
+  // TODO(andrew) make this more descriptive.
+  // For instance, show the suggestion field if there is one,
+  // Add the error code for contract errors, etc.
   return `${error.errorKind}: ${error.message}`;
 }
 

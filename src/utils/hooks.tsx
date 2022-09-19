@@ -117,12 +117,9 @@ export function useForumData(
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
   useEffect(() => {
-      console.log("useEffect")
       if (isSuccess(forumData) && isInitial(forumData.votes)) {
-        console.log("call fetchVotes")
         fetchVotes().then((votes) => {
         if (isSuccess(votes)) {
-          console.log("successful fetchVotes")
           setForumData({
             ...forumData,
             votes,
@@ -130,8 +127,6 @@ export function useForumData(
         }
       });
       }
-    // }
-    // setVotes();
   }, [forum.wallet, forumData]);
 
   // TODO(andrew) make this more generic

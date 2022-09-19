@@ -22,6 +22,7 @@ import {
   dispatchClientError,
   isSuccess,
   isDispatchClientError,
+  isInitial,
 } from "../utils/loading";
 import { DispatchForum } from "./postbox/postboxWrapper";
 
@@ -98,7 +99,7 @@ export interface ForumData {
   posts: ClientPost[];
   restriction: LoadingResult<PostRestriction>;
   moderatorMint: PublicKey;
-  votes: LoadingResult<ChainVoteEntry[]>;
+  votes: Loading<ChainVoteEntry[]>;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -114,6 +115,19 @@ export function useForumData(
   update: () => Promise<void>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
+
+  useEffect(() => {
+      if (isSuccess(forumData) && isInitial(forumData.votes)) {
+        fetchVotes().then((votes) => {
+        if (isSuccess(votes)) {
+          setForumData({
+            ...forumData,
+            votes,
+          });
+        }
+      });
+      }
+  }, [forum.wallet, forumData]);
 
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<LoadingResult<PublicKey[]>> {
@@ -185,22 +199,8 @@ export function useForumData(
       return onChainAccountNotFound();
     }
   }
-  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
-    if (collectionId) {
-      try {
-        const fetchData = await forum.getVotes(collectionId);
-        if (fetchData) {
-          return fetchData;
-        } else {
-          return onChainAccountNotFound();
-        }
-      } catch (error) {
-        return dispatchClientError(error);
-      }
-    } else {
-      return onChainAccountNotFound();
-    }
-  }
+
+
   
 
   async function fetchForumPostRestriction(): Promise<
@@ -307,6 +307,23 @@ export function useForumData(
       });
     }
   }
+  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
+    if (collectionId && forum.permission.readAndWrite && isSuccess(forumData)) {
+      try {
+        const fetchData = await forum.getVotes(collectionId);
+        if (fetchData) {
+          return fetchData;
+        } else {
+          return onChainAccountNotFound();
+        }
+      } catch (error) {
+        return dispatchClientError(error);
+      }
+    } else {
+      return onChainAccountNotFound();
+    }
+  }
+
 
   /**
    * re-fetch all data related to this forum from chain
@@ -316,14 +333,13 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, description, posts, restriction, moderatorMint, votes] =
+        const [owners, description, posts, restriction, moderatorMint] =
           await Promise.all([
             fetchOwners(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
             fetchModeratorMint(),
-            fetchVotes(),
           ]);
 
         // TODO(andrew) perhaps allow the page to load even if
@@ -338,7 +354,7 @@ export function useForumData(
             posts,
             restriction,
             moderatorMint,
-            votes
+            votes: initial(),
           });
         } else {
           // We already confirmed the forum existed, so assume
@@ -358,7 +374,7 @@ export function useForumData(
     addPost,
     deletePost,
     editPost,
-    update
+    update,
   };
 }
 

@@ -16,7 +16,7 @@ import {
 } from "../components/common";
 import {
   initial,
-  pending,
+  isInitial,
   isSuccess,
 } from "../utils/loading";
 import {
@@ -303,20 +303,20 @@ export function useForumData(
       });
     }
   }
-  async function fetchVotes(): Promise<LoadingResult<ChainVoteEntry[]>> {
+  async function fetchVotes(): Promise<Result<ChainVoteEntry[]>> {
     if (collectionId && forum.permission.readAndWrite && isSuccess(forumData)) {
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
           return fetchData;
         } else {
-          return onChainAccountNotFound();
+          return notFoundError('The votes could not be found on-chain');
         }
       } catch (error) {
-        return dispatchClientError(error);
+        return parseError(error);
       }
     } else {
-      return onChainAccountNotFound();
+      return notFoundError('The collection ID waas not defined');
     }
   }
 

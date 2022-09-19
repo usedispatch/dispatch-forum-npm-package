@@ -14,7 +14,7 @@ export function errorSummary(error: DispatchError) {
 export function isError<T>(
   value: Result<T>
 ): value is DispatchError {
-  return 'errorKind' in value;
+  return typeof value === 'object' && 'errorKind' in value;
 }
 
 export function isUncategorizedError(

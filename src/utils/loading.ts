@@ -23,11 +23,14 @@ export function isSuccess<T>(value: Loading<T>): value is T {
  * still has time to go, so return false
  */
 export function isResult<T>(value: Loading<T>): value is Result<T> {
-  return !('loadingState' in value);
+  // Is this some kind of loading object, such as initial or pending?
+  const isLoading = typeof value === 'object' && 'loadingState' in value;
+  return !isLoading;
 }
 
 export function isInitial<T>(value: Loading<T>): value is Initial {
   return (
+    typeof value === 'object' &&
     'loadingState' in value &&
     value.loadingState === 'initial'
   );
@@ -35,6 +38,7 @@ export function isInitial<T>(value: Loading<T>): value is Initial {
 
 export function isPending<T>(value: Loading<T>): value is Pending {
   return (
+    typeof value === 'object' &&
     'loadingState' in value &&
     value.loadingState === 'pending'
   );

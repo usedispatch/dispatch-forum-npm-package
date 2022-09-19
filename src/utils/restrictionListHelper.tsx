@@ -1,9 +1,8 @@
 import { PublicKey } from "@solana/web3.js";
 import { PostRestriction } from "@usedispatch/client";
 import { newPublicKey } from "../utils/postbox/validateNewPublicKey";
-import { Result } from '../types/error';
-import { isError, badInputError } from '../utils/error';
-import { isSuccess } from '../utils/loading';
+import { Result, DispatchError } from '../types/error';
+import { isError, badInputError, errorSummary } from '../utils/error';
 
 // function cleans csv string, parses out into pubkeys,
 // and returns a PostRestriction object
@@ -21,12 +20,14 @@ export function pubkeysToRestriction(
   // Collect all invalid pubkeys
   const pubkeyErrors = newIdResults.filter(
     pkey => isError(pkey)
-  );
+  ) as DispatchError[];
   
   // If any pubkey is invalid...
   if (pubkeyErrors.length > 0) {
     return badInputError(
-      pubkeyErrors.toString()
+      pubkeyErrors
+        .map(err => errorSummary(err))
+        .join(', ')
     );
   }
 

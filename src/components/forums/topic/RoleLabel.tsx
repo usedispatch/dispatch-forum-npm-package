@@ -1,4 +1,4 @@
-import { isNil } from "lodash";
+import isNil from "lodash/isNil";
 import { PublicKey } from "@solana/web3.js";
 
 interface RoleLabelProps {

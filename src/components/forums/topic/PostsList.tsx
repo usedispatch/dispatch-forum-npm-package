@@ -1,4 +1,4 @@
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 
@@ -11,7 +11,7 @@ import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 interface PostListProps {
   forum: DispatchForum;
   forumData: ForumData;
-  participatingModerators: web3.PublicKey[] | null;
+  participatingModerators: PublicKey[] | null;
   userRoles: UserRoleType[];
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;

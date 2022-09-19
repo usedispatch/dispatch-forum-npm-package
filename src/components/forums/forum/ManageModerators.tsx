@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 
@@ -136,7 +136,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
-        {_.isNil(modalInfo) && manageModerators.show && (
+        {isNil(modalInfo) && manageModerators.show && (
           <PopUpModal
             id="add-moderators"
             visible
@@ -212,7 +212,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
             onClose={() => resetInitialValues()}
           />
         )}
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="manage-moderators-info"
             visible

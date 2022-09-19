@@ -1,4 +1,4 @@
-import { maxBy } from "lodash";
+import maxBy from "lodash/maxBy";
 import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
 import { useCallback, useMemo } from "react";

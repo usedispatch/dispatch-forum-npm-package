@@ -1,4 +1,3 @@
-import _, { min } from "lodash";
 import {
   DispatchConnection,
   Forum,
@@ -11,7 +10,12 @@ import {
   VoteType,
   ChainVoteEntry,
 } from "@usedispatch/client";
-import * as web3 from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  Connection,
+  Cluster
+} from '@solana/web3.js';
 
 import {
   getAssociatedTokenAddress,
@@ -45,7 +49,7 @@ enum UserCategory {
  */
 export interface DisplayableToken {
   name: string;
-  mint: web3.PublicKey;
+  mint: PublicKey;
   uri: URL;
 }
 
@@ -56,15 +60,15 @@ interface Permission {
 export interface IForum {
   // For a given collection ID, only one postbox can exist
   getForumForCollection(
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<Forum>>;
 
-  isOwner(collectionId: web3.PublicKey): Promise<boolean>
+  isOwner(collectionId: PublicKey): Promise<boolean>
 
-  isModerator(collectionId: web3.PublicKey): Promise<boolean>
+  isModerator(collectionId: PublicKey): Promise<boolean>
 
   // Return whether the given forum exists or not
-  exists(collectionPublicKey: web3.PublicKey): Promise<boolean>;
+  exists(collectionPublicKey: PublicKey): Promise<boolean>;
 
   // Create a postbox for a given collection ID
   createForum(
@@ -74,32 +78,32 @@ export interface IForum {
   >;
 
   // Get the description of the forum: title and blurb
-  getDescription(collectionId: web3.PublicKey): Promise<Result<{
+  getDescription(collectionId: PublicKey): Promise<Result<{
     title: string;
     desc: string;
   }>>;
   
-  getModeratorMint(collectionId: web3.PublicKey, assumeExists?: boolean): Promise<Result<web3.PublicKey>>;
+  getModeratorMint(collectionId: PublicKey, assumeExists?: boolean): Promise<Result<PublicKey>>;
 
-  setDescription(collectionId: web3.PublicKey, desc: {
+  setDescription(collectionId: PublicKey, desc: {
     title: string;
     desc: string;
   }): Promise<Result<string>>;
 
-  addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>>;
+  addModerator(newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
-  addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>>;
+  addOwner(newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
   // Get a list of moderators
-  getModerators(collectionId: web3.PublicKey): Promise<Result<web3.PublicKey[]>>;
+  getModerators(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
 
   // Get a list of owners
-  getOwners(collectionId: web3.PublicKey): Promise<Result<web3.PublicKey[]>>;
+  getOwners(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
 
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
   getTopicsForForum(
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<ForumPost[]>>;
 
   // Create a new topic
@@ -109,14 +113,14 @@ export interface IForum {
       body: string;
       meta?: any;
     },
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     postRestriction?: PostRestriction
   ): Promise<Result<string>>;
 
   // For a given topic ID
   getTopicData?(
     topicId: number,
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<ForumPost>>;
 
   // Create a post
@@ -127,67 +131,67 @@ export interface IForum {
       meta?: any;
     },
     topicId: number,
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<string>>;
 
-  editForumPost(collectionId: web3.PublicKey, post: ForumPost, newPostData: {
+  editForumPost(collectionId: PublicKey, post: ForumPost, newPostData: {
     subj?: string;
     body: string;
     meta?: any;
   }): Promise<Result<string>>;
 
   // For a given topic, the messages
-  getTopicMessages(topicId: number, collectionId: web3.PublicKey): Promise<Result<ForumPost[]>>;
+  getTopicMessages(topicId: number, collectionId: PublicKey): Promise<Result<ForumPost[]>>;
 
-  deleteForumPost(forumPost: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<Result<string>>;
+  deleteForumPost(forumPost: ForumPost, collectionId: PublicKey, asMod?: boolean): Promise<Result<string>>;
 
   // Vote a post up
-  voteUpForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<Result<string>>;
+  voteUpForumPost(post: ForumPost, collectionId: PublicKey): Promise<Result<string>>;
 
   // Vote a post down
-  voteDownForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<Result<string>>;
+  voteDownForumPost(post: ForumPost, collectionId: PublicKey): Promise<Result<string>>;
 
   // This is the same as createPost, but additionally,
   // post.parent = postId
-  replyToForumPost(replyToPost: ForumPost, collectionId: web3.PublicKey, post: {
+  replyToForumPost(replyToPost: ForumPost, collectionId: PublicKey, post: {
     subj?: string;
     body: string;
     meta?: any;
   }): Promise<Result<string>>;
 
   // For a given topic, the messages
-  getReplies(topic: ForumPost, collectionId: web3.PublicKey): Promise<Result<ForumPost[]>>;
+  getReplies(topic: ForumPost, collectionId: PublicKey): Promise<Result<ForumPost[]>>;
 
-  getForumPostRestriction(collectionId: web3.PublicKey): Promise<Result<PostRestriction | null>>;
+  getForumPostRestriction(collectionId: PublicKey): Promise<Result<PostRestriction | null>>;
 
-  setForumPostRestriction(collectionId: web3.PublicKey, restriction: PostRestriction): Promise<Result<string>>;
+  setForumPostRestriction(collectionId: PublicKey, restriction: PostRestriction): Promise<Result<string>>;
 
-  deleteForumPostRestriction(collectionId: web3.PublicKey): Promise<Result<string>>;
+  deleteForumPostRestriction(collectionId: PublicKey): Promise<Result<string>>;
 
-  canCreateTopic(collectionId: web3.PublicKey): Promise<boolean>;
+  canCreateTopic(collectionId: PublicKey): Promise<boolean>;
 
-  canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
+  canPost(collectionId: PublicKey,topic: ForumPost): Promise<boolean>;
 
-  canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<Result<boolean>>;
+  canVote(collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>>;
 
-  getVote(collectionId: web3.PublicKey, post: ForumPost): Promise<Result<boolean>>;
+  getVote(collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>>;
 
-  getVotes(collectionId: web3.PublicKey): Promise<Result<ChainVoteEntry[]>>;
+  getVotes(collectionId: PublicKey): Promise<Result<ChainVoteEntry[]>>;
 
-  getNFTsForCurrentUser(): Promise<Result<web3.PublicKey[]>>;
+  getNFTsForCurrentUser(): Promise<Result<PublicKey[]>>;
 
   getNFTMetadataForCurrentUser: () => Promise<Result<DisplayableToken[]>>;
 
-  transferNFTs(receiverId: web3.PublicKey, mint: web3.PublicKey, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<Result<string>>;
+  transferNFTs(receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection)=> Promise<string>): Promise<Result<string>>;
 }
 
 export class DispatchForum implements IForum {
   public wallet: WalletAdapterInterface;
-  public connection: web3.Connection;
+  public connection: Connection;
   public permission: Permission;
-  public cluster: web3.Cluster;
+  public cluster: Cluster;
 
-  constructor(wallet: WalletAdapterInterface, conn: web3.Connection, cluster: web3.Cluster) {
+  constructor(wallet: WalletAdapterInterface, conn: Connection, cluster: Cluster) {
     this.connection = conn;
     this.wallet = wallet;
     this.cluster = cluster;
@@ -199,16 +203,16 @@ export class DispatchForum implements IForum {
       // account for possibly missing wallets, instead of having
       // this noop dummy wallet
       this.wallet = {
-        publicKey: new web3.PublicKey('11111111111111111111111111111111'),
+        publicKey: new PublicKey('11111111111111111111111111111111'),
         signAllTransactions: () => {return Promise.resolve([])},
-        signTransaction: () => {return Promise.resolve(new web3.Transaction())},
+        signTransaction: () => {return Promise.resolve(new Transaction())},
         sendTransaction: () => {return Promise.resolve('');}
       };
       this.permission = { readAndWrite: false };
     }
   }
 
-  exists = async (collectionPublicKey: web3.PublicKey) => {
+  exists = async (collectionPublicKey: PublicKey) => {
     const { connection, wallet, cluster } = this;
     const forum = new Forum(
       new DispatchConnection(connection, wallet, { cluster }),
@@ -223,7 +227,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const collectionPublicKey = new web3.PublicKey(forumInfo.collectionId);
+      const collectionPublicKey = new PublicKey(forumInfo.collectionId);
       if (owner.publicKey) {
         const forumAsOwner = new Forum(
           new DispatchConnection(conn, owner, {cluster: this.cluster}),
@@ -257,7 +261,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  isOwner= async(collectionId: web3.PublicKey): Promise<boolean> =>{
+  isOwner= async(collectionId: PublicKey): Promise<boolean> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -266,7 +270,7 @@ export class DispatchForum implements IForum {
     return isOwner
   }
 
-  isModerator= async (collectionId: web3.PublicKey): Promise<boolean> => {
+  isModerator= async (collectionId: PublicKey): Promise<boolean> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -277,7 +281,7 @@ export class DispatchForum implements IForum {
 
   // Get the description of the forum: title and blurb
   getDescription = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
@@ -319,9 +323,9 @@ export class DispatchForum implements IForum {
   }
 
   getModeratorMint = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     assumeExists = false
-  ): Promise<Result<web3.PublicKey>> => {
+  ): Promise<Result<PublicKey>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -351,7 +355,7 @@ export class DispatchForum implements IForum {
   }
 
 
-  setDescription = async (collectionId: web3.PublicKey, desc: {
+  setDescription = async (collectionId: PublicKey, desc: {
     title: string;
     desc: string;
   }): Promise<Result<string>> => {
@@ -371,10 +375,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  addModerator = async (
-    newMod: web3.PublicKey,
-    collectionId: web3.PublicKey
-  ): Promise<Result<string>> => {
+  addModerator = async (newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -395,7 +396,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  addOwner = async (newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>> => {
+  addOwner = async (newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -417,11 +418,11 @@ export class DispatchForum implements IForum {
   }
 
   getModerators = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<Result<web3.PublicKey[]>> => {
+  ): Promise<Result<PublicKey[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -443,11 +444,11 @@ export class DispatchForum implements IForum {
   }
 
   getOwners = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<Result<web3.PublicKey[]>> => {
+  ): Promise<Result<PublicKey[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -469,7 +470,7 @@ export class DispatchForum implements IForum {
   }
 
   getForumForCollection = async (
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<Forum>> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -490,7 +491,7 @@ export class DispatchForum implements IForum {
   };
 
   getTopicsForForum = async (
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<ForumPost[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -510,7 +511,7 @@ export class DispatchForum implements IForum {
   };
 
   getPostsForForum = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
@@ -534,7 +535,7 @@ export class DispatchForum implements IForum {
   }
 
   canCreateTopic = async(
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<boolean> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -549,7 +550,7 @@ export class DispatchForum implements IForum {
 
   createTopic = async (
     topic: { subj?: string; body: string; meta?: any },
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     postRestriction?: PostRestriction
   ): Promise<Result<string>> => {
     const wallet = this.wallet;
@@ -574,7 +575,7 @@ export class DispatchForum implements IForum {
 
   getTopicData = async (
     topicId: number,
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<ForumPost>> => {
     const owner = this.wallet;
     const conn = this.connection;
@@ -591,7 +592,7 @@ export class DispatchForum implements IForum {
   };
 
   canPost = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     topic: ForumPost
   ): Promise<boolean> => {
     const owner = this.wallet;
@@ -612,7 +613,7 @@ export class DispatchForum implements IForum {
       meta?: any;
     },
     topicId: number,
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
@@ -640,7 +641,7 @@ export class DispatchForum implements IForum {
   };
 
 
-  editForumPost = async(collectionId: web3.PublicKey, post: ForumPost, newPostData: {
+  editForumPost = async(collectionId: PublicKey, post: ForumPost, newPostData: {
     subj?: string;
     body: string;
     meta?: any;
@@ -659,7 +660,7 @@ export class DispatchForum implements IForum {
       return parseError(error);
     }}
 
-  getTopicMessages = async (topicId: number, collectionId: web3.PublicKey): Promise<Result<ForumPost[]>> => {
+  getTopicMessages = async (topicId: number, collectionId: PublicKey): Promise<Result<ForumPost[]>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -679,7 +680,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  deleteForumPost = async (post: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<Result<string>> => {
+  deleteForumPost = async (post: ForumPost, collectionId: PublicKey, asMod?: boolean): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -693,7 +694,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  voteUpForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<Result<string>> =>{
+  voteUpForumPost = async (post: ForumPost, collectionId: PublicKey): Promise<Result<string>> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -707,7 +708,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  voteDownForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<Result<string>> => {
+  voteDownForumPost = async (post: ForumPost, collectionId: PublicKey): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -722,7 +723,7 @@ export class DispatchForum implements IForum {
   }
 
   replyToForumPost = async (
-    replyToPost: ForumPost, collectionId: web3.PublicKey,
+    replyToPost: ForumPost, collectionId: PublicKey,
     post: {
       subj?: string;
       body: string;
@@ -741,7 +742,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getReplies = async (topic: ForumPost, collectionId: web3.PublicKey): Promise<Result<ForumPost[]>> =>{
+  getReplies = async (topic: ForumPost, collectionId: PublicKey): Promise<Result<ForumPost[]>> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -755,7 +756,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  getForumPostRestriction = async(collectionId: web3.PublicKey) => {
+  getForumPostRestriction = async(collectionId: PublicKey) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -769,7 +770,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  setForumPostRestriction = async(collectionId: web3.PublicKey, restriction: PostRestriction) => {
+  setForumPostRestriction = async(collectionId: PublicKey, restriction: PostRestriction) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -786,7 +787,7 @@ export class DispatchForum implements IForum {
   };
 
 
-  deleteForumPostRestriction = async(collectionId: web3.PublicKey) => {
+  deleteForumPostRestriction = async(collectionId: PublicKey) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -802,7 +803,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  canVote = async(collectionId: web3.PublicKey, post: ForumPost) => {
+  canVote = async(collectionId: PublicKey, post: ForumPost) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -816,7 +817,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getVote = async(collectionId: web3.PublicKey, post: ForumPost) => {
+  getVote = async(collectionId: PublicKey, post: ForumPost) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -839,7 +840,7 @@ export class DispatchForum implements IForum {
 
   }
 
-  getVotes = async(collectionId: web3.PublicKey) => {
+  getVotes = async(collectionId: PublicKey) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -963,13 +964,13 @@ export class DispatchForum implements IForum {
     }
   }
 
-  transferNFTs = async(receiverId: web3.PublicKey, mint: web3.PublicKey, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
+  transferNFTs = async(receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection)=> Promise<string>) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
       let receiverAcc = await getAssociatedTokenAddress(mint, receiverId);
-      let txn = new web3.Transaction();
+      let txn = new Transaction();
       try {
         await getAccount(conn, receiverAcc);
       } catch (error: any) {

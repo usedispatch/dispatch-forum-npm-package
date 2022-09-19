@@ -1,11 +1,11 @@
-import { web3 } from "@project-serum/anchor";
+import { PublicKey } from '@solana/web3.js';
 import { useForum, useRole } from "../../contexts/DispatchProvider";
 import { PERMISSIONS } from "../../utils/permissions";
 
 interface PermissionsGateProps {
   children: React.ReactNode;
   scopes: string[];
-  posterKey?: web3.PublicKey;
+  posterKey?: PublicKey;
   RenderError?: React.FC;
 }
 

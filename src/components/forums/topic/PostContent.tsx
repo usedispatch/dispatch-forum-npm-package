@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNull from 'lodash/isNull';
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { ReactNode, useMemo, useRef, useState } from "react";
@@ -256,7 +256,7 @@ export function PostContent(props: PostContentProps) {
         className={`postContentContainer ${
           postInFlight && isLocal ? "inFlight" : ""
         }`}>
-        {_.isNull(modalInfo) && showDeleteConfirmation && (
+        {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
             visible
@@ -287,7 +287,7 @@ export function PostContent(props: PostContentProps) {
             // }
           />
         )}
-        {!_.isNull(modalInfo) && (
+        {!isNull(modalInfo) && (
           <PopUpModal
             id="post-info"
             visible

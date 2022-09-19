@@ -1,5 +1,5 @@
-import * as _ from "lodash";
-import { ReactNode, useMemo, useState } from "react";
+import isNil from 'lodash/isNil';
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
@@ -212,7 +212,7 @@ export function TopicContent(props: TopicContentProps) {
 
   return (
     <>
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="topic-info"
           visible
@@ -229,7 +229,7 @@ export function TopicContent(props: TopicContentProps) {
       )}
       {ReactGA.send("pageview")}
 
-      {showAddAccessToken && _.isNil(modalInfo) && (
+      {showAddAccessToken && isNil(modalInfo) && (
         <PopUpModal
           id="add-access-token"
           visible

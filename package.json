@@ -2,12 +2,28 @@
   "name": "@usedispatch/forum",
   "version": "0.4.1",
   "description": "Dispatch forum",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "source": [
+    "src/index.ts",
+    "src/style.css"
+  ],
+  "main": "dist/main/index.js",
+  "types": "dist/main/index.d.ts",
+  "targets": {
+    "main": {
+      "source": "src/index.ts",
+      "optimize": true
+    },
+    "types": {
+      "source": "src/index.ts"
+    },
+    "styles": {
+      "source": "src/style.css"
+    }
+  },
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "export NODE_ENV=development && npm run clean && npx webpack && cp README.md ./dist",
-    "build:prod": "export NODE_ENV=production && npm run clean && npx webpack && cp README.md ./dist",
+    "build": "yarn clean && NODE_ENV=development yarn parcel build && cp README.md ./dist",
+    "build:prod": "yarn clean && NODE_ENV=production yarn parcel build && cp README.md ./dist",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,45 +38,61 @@
   },
   "homepage": "https://github.com/usedispatch/dispatch-forum#readme",
   "devDependencies": {
+    "@parcel/core": "^2.7.0",
+    "@parcel/packager-ts": "2.7.0",
+    "@parcel/reporter-bundle-analyzer": "^2.7.0",
+    "@parcel/transformer-css": "^2.7.0",
+    "@parcel/transformer-postcss": "^2.7.0",
+    "@parcel/transformer-typescript-tsc": "^2.7.0",
+    "@parcel/transformer-typescript-types": "2.7.0",
     "@svgr/webpack": "^6.2.1",
-    "@tailwindcss/typography": "^0.4.1",
+    "@tailwindcss/typography": "^0.5.7",
     "@types/node-fetch": "^2.6.1",
     "@types/react": "^18.0.12",
     "@types/react-alert": "^5.2.1",
     "assert": "^2.0.0",
     "async": "^3.2.4",
     "autoprefixer": "^10.4.0",
-    "browserify-zlib": "^0.2.0",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
     "daisyui": "^1.16.2",
     "mini-css-extract-plugin": "^2.6.1",
+    "parcel": "^2.7.0",
     "path-browserify": "^1.0.1",
-    "postcss": "^8.3.11",
-    "postcss-import": "^14.1.0",
-    "postcss-loader": "^7.0.0",
+    "postcss": "^8.4.16",
+    "postcss-import": "^15.0.0",
+    "postcss-loader": "^7.0.1",
     "postcss-prefix-selector": "^1.16.0",
-    "react-jdenticon": "^1.0.0",
     "stream-browserify": "^3.0.0",
-    "tailwindcss": "^2.2.19",
+    "tailwindcss": "^3.1.8",
     "ts-loader": "^9.3.0",
     "typescript": "^4.7.3",
     "webpack": "^5.73.0",
+    "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "@project-serum/anchor": "^0.24.2",
+    "@parcel/config-default": "^2.7.0",
     "@solana/spl-token": "^0.3.1",
+    "@solana/web3.js": "^1.50.1",
+    "@types/lodash": "^4.14.185",
     "@usedispatch/client": "^0.13.0",
+    "bs58": "^5.0.0",
+    "buffer": "^6.0.3",
     "lodash": "^4.17.21",
     "lodash.orderby": "^4.6.0",
     "markdown-to-jsx": "^7.1.7",
     "react-ga4": "^1.4.1",
     "react-helmet": "^6.1.0",
+    "react-jdenticon": "^1.0.0",
     "save": "^2.5.0"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
     "react-dom": "^17.0.0 || ^18.0.0"
+  },
+  "packageManager": "yarn@3.2.3",
+  "resolutions": {
+    "@solana/web3.js": "1.50.1"
   }
 }

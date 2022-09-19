@@ -1,3 +1,4 @@
+import isNil from 'lodash/isNil';
 import { DispatchError } from '../types/error';
 import { uncategorizedError } from '../utils/error';
 

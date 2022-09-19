@@ -88,13 +88,13 @@ export interface IForum {
 
   addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>>;
 
-  addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
+  addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>>;
 
   // Get a list of moderators
   getModerators(collectionId: web3.PublicKey): Promise<Result<web3.PublicKey[]>>;
 
   // Get a list of owners
-  getOwners(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
+  getOwners(collectionId: web3.PublicKey): Promise<Result<web3.PublicKey[]>>;
 
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
@@ -117,7 +117,7 @@ export interface IForum {
   getTopicData?(
     topicId: number,
     collectionId: web3.PublicKey
-  ): Promise<ForumPost>;
+  ): Promise<Result<ForumPost>>;
 
   // Create a post
   createForumPost(
@@ -395,7 +395,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  addOwner = async (newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined> => {
+  addOwner = async (newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -408,9 +408,11 @@ export class DispatchForum implements IForum {
       if (await forumAsOwner.exists()) {
         const tx = await forumAsOwner.addOwners([newOwner]);
         return tx;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(error)
+      return parseError(error);
     }
   }
 
@@ -445,7 +447,7 @@ export class DispatchForum implements IForum {
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<web3.PublicKey[] | undefined> => {
+  ): Promise<Result<web3.PublicKey[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -458,9 +460,11 @@ export class DispatchForum implements IForum {
       if (assumeExists || await forumAsOwner.exists()) {
         const tx = await forumAsOwner.getOwners();
         return tx;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(JSON.stringify(error))
+      return parseError(JSON.stringify(error))
     }
   }
 
@@ -571,7 +575,7 @@ export class DispatchForum implements IForum {
   getTopicData = async (
     topicId: number,
     collectionId: web3.PublicKey
-  ): Promise<ForumPost> => {
+  ): Promise<Result<ForumPost>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -582,7 +586,7 @@ export class DispatchForum implements IForum {
       const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
       return topic[0];
     } catch (err) {
-      throw(parseError(err))
+      return parseError(err)
     }
   };
 
@@ -619,9 +623,14 @@ export class DispatchForum implements IForum {
       );
       const topic = await this.getTopicData(topicId, collectionId);
       if ((await forum.exists()) && topic) {
-        const tx1 = await forum.createForumPost(post, topic);
 
-        return tx1;
+        if (isSuccess(topic)) {
+          return forum.createForumPost(post, topic);
+        } else {
+          // If topic is an error, return that error
+          const error = topic;
+          return error;
+        }
       } else {
         return notFoundError('Forum does not exist');
       }
@@ -657,9 +666,14 @@ export class DispatchForum implements IForum {
     try {
       const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}),collectionId);
       const topic = await this.getTopicData(topicId, collectionId);
-      const topicPosts = await forum.getTopicMessages(topic);
-
-      return topicPosts;
+      if (isSuccess(topic)) {
+        const topicPosts = await forum.getTopicMessages(topic);
+        return topicPosts;
+      } else {
+        // If topic is an error, return the error
+        const error = topic;
+        return error;
+      }
     } catch (error) {
       return parseError(error);
     }

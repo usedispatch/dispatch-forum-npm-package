@@ -111,7 +111,7 @@
       justify-content: space-between;
       padding-bottom: 16px;
 
-      @media only screen and (max-width: 390px) {
+      @media only screen and (max-width: 480px) {
         align-items: center;
         flex-wrap: wrap;
       }
@@ -119,6 +119,7 @@
       .posterId {
         display: flex;
         align-items: center;
+        margin-right: 30px;
       }
 
       .icon {

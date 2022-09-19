@@ -5,7 +5,6 @@
     .manageModeratorsButton {
       display: flex;
       align-items: center;
-      margin-left: 24px;
 
       background: transparent;
       color: #4a279c;
@@ -115,6 +114,10 @@
       &.fetchModerators {
         margin: 0 auto;
       }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
     }
 
     .cancelButton {
@@ -142,6 +145,10 @@
       &:disabled {
         cursor: not-allowed;
         opacity: 0.6;
+      }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
       }
     }
   }

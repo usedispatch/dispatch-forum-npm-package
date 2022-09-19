@@ -72,6 +72,21 @@
         justify-content: flex-end;
         cursor: pointer;
       }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+        flex-direction: column-reverse;
+        gap: 12px;
+
+        .acceptAction {
+          width: 100%;
+        }
+
+        .cancelAction {
+          width: 100%;
+          margin-right: 0;
+        }
+      }
     }
 
     .modalTitle {

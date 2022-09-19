@@ -106,12 +106,12 @@ export function PostReplies(props: PostRepliesProps) {
                     {posterIdentity
                       ? posterIdentity.displayName
                       : reply.poster.toBase58()}
-                    <RoleLabel
-                      topicOwnerId={topicOwnerId}
-                      posterId={reply.poster}
-                      moderators={participatingModerators}
-                    />
                   </div>
+                  <RoleLabel
+                    topicOwnerId={topicOwnerId}
+                    posterId={reply.poster}
+                    moderators={participatingModerators}
+                  />
                 </div>
                 <div className="postedAt">
                   {isPost ? (
@@ -187,7 +187,8 @@ export function PostReplies(props: PostRepliesProps) {
                             className="awardButton"
                             disabled={!permission.readAndWrite}
                             onClick={() => onAwardReply(reply)}>
-                            Send Token <Gift />
+                            <span>Send Token</span>
+                            <Gift />
                           </button>
                         </>
                       )}

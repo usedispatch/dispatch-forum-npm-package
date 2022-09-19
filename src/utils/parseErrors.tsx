@@ -19,6 +19,7 @@ const postboxErrorCode = {
   207: "Extra account offsets invalid for this restriction type",
   208: "Must supply offsets when a post restriction applies",
   209: "We hit the test error",
+  210: "You have already made this vote, you can only vote up or down once, but you can switch your vote",
 };
 
 const hexToDecimal = (hex: string) => parseInt(hex, 16);

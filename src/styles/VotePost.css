@@ -74,5 +74,9 @@
     text-align: center;
     text-transform: capitalize;
     font-weight: 600;
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
   }
 }

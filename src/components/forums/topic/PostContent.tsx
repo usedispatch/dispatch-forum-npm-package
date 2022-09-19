@@ -355,12 +355,12 @@ export function PostContent(props: PostContentProps) {
                   </div>
                   <div className="walletId">
                     {identity ? identity.displayName : post.poster.toBase58()}
-                    <RoleLabel
-                      topicOwnerId={topicPosterId}
-                      posterId={post?.poster}
-                      moderators={participatingModerators}
-                    />
                   </div>
+                  <RoleLabel
+                    topicOwnerId={topicPosterId}
+                    posterId={post?.poster}
+                    moderators={participatingModerators}
+                  />
                 </div>
                 <div className="postedAt">
                   {(() => {
@@ -447,24 +447,27 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {// The gifting UI should be hidden on the apes forum for non-mods.
-                      // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                      (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                        userIsMod) &&
-                        !forum.wallet.publicKey?.equals(post.poster) && (
-                          <>
-                            <button
-                              className="awardButton"
-                              disabled={!permission.readAndWrite}
-                              onClick={() => {
-                                setPostToAward(post);
-                                setShowGiveAward(true);
-                              }}>
-                              Send Token <Gift />
-                            </button>
-                            <div className="actionDivider" />
-                          </>
-                        )}
+                      {
+                        // The gifting UI should be hidden on the apes forum for non-mods.
+                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                        (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                          userIsMod) &&
+                          !forum.wallet.publicKey?.equals(post.poster) && (
+                            <>
+                              <button
+                                className="awardButton"
+                                disabled={!permission.readAndWrite}
+                                onClick={() => {
+                                  setPostToAward(post);
+                                  setShowGiveAward(true);
+                                }}>
+                                <span>Send Token</span>
+                                <Gift />
+                              </button>
+                              <div className="actionDivider" />
+                            </>
+                          )
+                      }
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
@@ -475,7 +478,7 @@ export function PostContent(props: PostContentProps) {
                             block: "center",
                           });
                         }}>
-                        Reply <Reply />
+                        <span>Reply</span> <Reply />
                       </button>
                     </div>
                   </PermissionsGate>

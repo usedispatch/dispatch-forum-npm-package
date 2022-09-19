@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
@@ -24,7 +24,7 @@ import { isSuccess } from "../../../utils/loading";
 import {
   ForumData,
   useForumIdentity,
-  ForumIdentity
+  ForumIdentity,
 } from "../../../utils/hooks";
 import {
   restrictionListToString,
@@ -404,11 +404,12 @@ export function ForumContent(props: ForumContentProps) {
                     id="create-topic"
                     title="You are not authorized"
                     body={
-                      (isSuccess(forumData.restriction) &&
-                      forumData.restriction.tokenOwnership?.mint
-                        .equals(forumData.moderatorMint)) ?
-                      "Oops! Only moderators can create new topics at this time." :
-                      "Oops! You need a token to participate. Please contact the forum’s moderators."
+                      isSuccess(forumData.restriction) &&
+                      forumData.restriction.tokenOwnership?.mint.equals(
+                        forumData.moderatorMint
+                      )
+                        ? "Oops! Only moderators can create new topics at this time."
+                        : "Oops! You need a token to participate. Please contact the forum’s moderators."
                     }
                     visible
                     okButton={
@@ -527,24 +528,27 @@ export function ForumContent(props: ForumContentProps) {
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
               <div className="moderatorToolsContainer">
                 <div>Owner tools: </div>
-                <div className="lock">
-                  <Lock />
+                <div className="tools">
+                  <div className="lock">
+                    <Lock />
+                  </div>
+                  <ManageOwners forumData={forumData} />
+                  <ManageModerators forumData={forumData} />
+                  {
+                    // The manage users UI should be hidden for DAA
+                    forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
+                      <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                        <button
+                          className="moderatorTool"
+                          disabled={!permission.readAndWrite}
+                          onClick={() => setShowManageAccessToken(true)}>
+                          Manage forum access
+                        </button>
+                      </PermissionsGate>
+                    )
+                  }
+                  <EditForum forumData={forumData} update={update} />
                 </div>
-                <ManageOwners forumData={forumData} />
-                <ManageModerators forumData={forumData} />
-                {(// The manage users UI should be hidden for DAA
-                  forumIdentity !== ForumIdentity.DegenerateApeAcademy
-                ) &&
-                  <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                    <button
-                      className="moderatorTool"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => setShowManageAccessToken(true)}>
-                      Manage forum access
-                    </button>
-                  </PermissionsGate>
-                }
-                <EditForum forumData={forumData} update={update} />
               </div>
             </PermissionsGate>
           </div>

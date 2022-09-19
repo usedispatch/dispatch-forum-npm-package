@@ -42,6 +42,10 @@
     text-transform: capitalize;
     font-weight: 600;
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
+
     &:hover {
       opacity: 0.85;
     }
@@ -103,28 +107,52 @@
 
     .postHeader {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       padding-bottom: 16px;
+
+      @media only screen and (max-width: 480px) {
+        align-items: center;
+        flex-wrap: wrap;
+      }
 
       .posterId {
         display: flex;
         align-items: center;
+        margin-right: 30px;
       }
 
       .icon {
         height: 28px;
         width: 28px;
         margin-right: 4px;
+
+        @media only screen and (max-width: 570px) {
+          height: 16px;
+          width: 16px;
+        }
       }
 
       .walletId {
-        display: flex;
-        gap: 10px;
-
         font-size: 14px;
         font-weight: 400;
         color: #86878e;
+        margin-right: 10px;
+
+        @media only screen and (max-width: 768px) {
+          max-width: 120px;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        @media only screen and (max-width: 570px) {
+          font-size: 12px;
+        }
+
+        @media only screen and (max-width: 480px) {
+          max-width: 80px;
+        }
       }
 
       .postedAt {
@@ -152,11 +180,6 @@
         svg {
           height: 14px;
         }
-      }
-
-      @media only screen and (max-width: 480px) {
-        flex-direction: column;
-        align-items: flex-start;
       }
     }
 
@@ -225,6 +248,12 @@
             }
           }
 
+          span {
+            @media only screen and (max-width: 768px) {
+              display: none;
+            }
+          }
+
           &:disabled {
             cursor: not-allowed;
             opacity: 0.65;
@@ -240,6 +269,12 @@
           padding: 8px;
 
           font-weight: 600;
+
+          span {
+            @media only screen and (max-width: 768px) {
+              display: none;
+            }
+          }
 
           &:disabled {
             cursor: not-allowed;
@@ -323,6 +358,13 @@
       display: flex;
       align-items: center;
       margin-top: 24px;
+      gap: 12px;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+        flex-direction: column-reverse;
+        gap: 12px;
+      }
     }
 
     .postReplyButton {
@@ -341,6 +383,10 @@
       text-align: center;
       text-transform: capitalize;
       font-weight: 600;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
 
       &.inFlight {
         cursor: not-allowed;
@@ -365,7 +411,6 @@
       justify-content: center;
 
       padding: 0 16px;
-      margin-right: 12px;
       height: 48px;
       border-radius: 10px;
       border-width: 1px;
@@ -377,6 +422,10 @@
       font-weight: 600;
       text-align: center;
       text-transform: capitalize;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
 
       &:hover {
         opacity: 0.85;

@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { ReactNode, useEffect, useMemo, useState } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import Jdenticon from "react-jdenticon";
@@ -393,23 +393,29 @@ export function TopicContent(props: TopicContentProps) {
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
                 onClick={() => setShowAddAccessToken(true)}>
-                Manage post access
+                <span>Manage post access</span>
+                <div className="lock">
+                  <Lock />
+                </div>
               </button>
             </div>
-            {// The gifting UI should be hidden on the apes forum for non-mods.
-            // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-            (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-              userIsMod) &&
-              !forum.wallet.publicKey?.equals(topic.poster) && (
-                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <button
-                    className="awardButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowGiveAward(true)}>
-                    Send Token <Gift />
-                  </button>
-                </PermissionsGate>
-              )}
+            {
+              // The gifting UI should be hidden on the apes forum for non-mods.
+              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+              (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                userIsMod) &&
+                !forum.wallet.publicKey?.equals(topic.poster) && (
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <button
+                      className="awardButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowGiveAward(true)}>
+                      <span>Send Token</span>
+                      <Gift />
+                    </button>
+                  </PermissionsGate>
+                )
+            }
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
@@ -519,7 +525,6 @@ function TopicHeader(props: TopicHeaderProps) {
             <div className="posterId">
               {identity ? identity.displayName : topic.poster.toBase58()}
             </div>
-            &nbsp;
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId
             prop to an unrelated key */}

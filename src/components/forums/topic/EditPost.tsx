@@ -90,9 +90,7 @@ export function EditPost(props: EditPostProps) {
       editPostLocal(post, editPost.body, editPost.subj);
 
       // When the transaction is confirmed, update for real
-      forumObject.connection
-        .confirmTransaction(tx)
-        .then(() => update());
+      forumObject.connection.confirmTransaction(tx).then(() => update());
 
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
@@ -204,7 +202,7 @@ export function EditPost(props: EditPostProps) {
           className="editPostButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditPost({ ...editPost, show: true })}>
-          <Edit /> Edit
+          <Edit /> <span>Edit</span>
         </button>
         {showDividers.rightDivider && <div className="actionDivider" />}
       </div>

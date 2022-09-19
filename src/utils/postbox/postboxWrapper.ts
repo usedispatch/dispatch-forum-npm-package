@@ -78,27 +78,27 @@ export interface IForum {
   >;
 
   // Get the description of the forum: title and blurb
-  getDescription(collectionId: web3.PublicKey): Promise<Result<{
+  getDescription(collectionId: PublicKey): Promise<Result<{
     title: string;
     desc: string;
   }>>;
   
-  getModeratorMint(collectionId: web3.PublicKey, assumeExists?: boolean): Promise<Result<web3.PublicKey>>;
+  getModeratorMint(collectionId: PublicKey, assumeExists?: boolean): Promise<Result<PublicKey>>;
 
   setDescription(collectionId: PublicKey, desc: {
     title: string;
     desc: string;
   }): Promise<Result<string>>;
 
-  addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>>;
+  addModerator(newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
-  addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<Result<string>>;
+  addOwner(newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
   // Get a list of moderators
-  getModerators(collectionId: web3.PublicKey): Promise<Result<web3.PublicKey[]>>;
+  getModerators(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
 
   // Get a list of owners
-  getOwners(collectionId: web3.PublicKey): Promise<Result<web3.PublicKey[]>>;
+  getOwners(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
 
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
@@ -141,15 +141,15 @@ export interface IForum {
   }): Promise<Result<string>>;
 
   // For a given topic, the messages
-  getTopicMessages(topicId: number, collectionId: web3.PublicKey): Promise<Result<ForumPost[]>>;
+  getTopicMessages(topicId: number, collectionId: PublicKey): Promise<Result<ForumPost[]>>;
 
-  deleteForumPost(forumPost: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<Result<string>>;
+  deleteForumPost(forumPost: ForumPost, collectionId: PublicKey, asMod?: boolean): Promise<Result<string>>;
 
   // Vote a post up
-  voteUpForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<Result<string>>;
+  voteUpForumPost(post: ForumPost, collectionId: PublicKey): Promise<Result<string>>;
 
   // Vote a post down
-  voteDownForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<Result<string>>;
+  voteDownForumPost(post: ForumPost, collectionId: PublicKey): Promise<Result<string>>;
 
   // This is the same as createPost, but additionally,
   // post.parent = postId
@@ -160,25 +160,25 @@ export interface IForum {
   }): Promise<Result<string>>;
 
   // For a given topic, the messages
-  getReplies(topic: ForumPost, collectionId: web3.PublicKey): Promise<Result<ForumPost[]>>;
+  getReplies(topic: ForumPost, collectionId: PublicKey): Promise<Result<ForumPost[]>>;
 
-  getForumPostRestriction(collectionId: web3.PublicKey): Promise<Result<PostRestriction | null>>;
+  getForumPostRestriction(collectionId: PublicKey): Promise<Result<PostRestriction | null>>;
 
-  setForumPostRestriction(collectionId: web3.PublicKey, restriction: PostRestriction): Promise<Result<string>>;
+  setForumPostRestriction(collectionId: PublicKey, restriction: PostRestriction): Promise<Result<string>>;
 
-  deleteForumPostRestriction(collectionId: web3.PublicKey): Promise<Result<string>>;
+  deleteForumPostRestriction(collectionId: PublicKey): Promise<Result<string>>;
 
   canCreateTopic(collectionId: PublicKey): Promise<boolean>;
 
   canPost(collectionId: PublicKey,topic: ForumPost): Promise<boolean>;
 
-  canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<Result<boolean>>;
+  canVote(collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>>;
 
-  getVote(collectionId: web3.PublicKey, post: ForumPost): Promise<Result<boolean>>;
+  getVote(collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>>;
 
-  getVotes(collectionId: web3.PublicKey): Promise<Result<ChainVoteEntry[]>>;
+  getVotes(collectionId: PublicKey): Promise<Result<ChainVoteEntry[]>>;
 
-  getNFTsForCurrentUser(): Promise<Result<web3.PublicKey[]>>;
+  getNFTsForCurrentUser(): Promise<Result<PublicKey[]>>;
 
   getNFTMetadataForCurrentUser: () => Promise<Result<DisplayableToken[]>>;
 

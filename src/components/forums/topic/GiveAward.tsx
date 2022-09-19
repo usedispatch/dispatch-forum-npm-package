@@ -14,6 +14,7 @@ import {
 import { SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { DisplayableToken } from "../../../utils/postbox/postboxWrapper";
+import { isSuccess } from "../../../utils/loading"
 
 enum AwardType {
   NFT = "NFT",
@@ -76,12 +77,12 @@ export function GiveAward(props: GiveAwardProps) {
   const transferNFT = async () => {
     setLoading(true);
 
-    try {
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT?.mint!,
         Forum.wallet.sendTransaction
       );
+    if (isSuccess(tx)) {
 
       setLoading(false);
       onSuccess(
@@ -90,7 +91,8 @@ export function GiveAward(props: GiveAwardProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-    } catch (error: any) {
+    } else {
+      const error = tx;
       console.log(error);
       setLoading(false);
       onError(error);
@@ -175,13 +177,13 @@ export function GiveAward(props: GiveAwardProps) {
   );
 
   const getNFTsForCurrentUser = async () => {
-    try {
-      setLoadingNFT(true);
-      const nfts = await Forum.getNFTMetadataForCurrentUser();
+    setLoadingNFT(true);
+    const nfts = await Forum.getNFTMetadataForCurrentUser();
+    if (isSuccess(nfts)) {
       setNFTs(nfts);
       setLoadingNFT(false);
-    } catch (error: any) {
-      onError(error);
+    } else {
+      onError(nfts);
     }
   };
 

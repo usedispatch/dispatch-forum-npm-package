@@ -11,6 +11,7 @@ import { EditPost, RoleLabel, Votes } from "../index";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
+import { Result } from "../../../types/error";
 import { getIdentity } from "../../../utils/identity";
 
 interface PostRepliesProps {
@@ -22,8 +23,8 @@ interface PostRepliesProps {
   update: () => Promise<void>;
   editPost: (post: ForumPost, newText: string) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
-  onUpVotePost: (post: ForumPost) => Promise<string>;
-  onDownVotePost: (post: ForumPost) => Promise<string>;
+  onUpVotePost: (post: ForumPost) => Promise<Result<string>>;
+  onDownVotePost: (post: ForumPost) => Promise<Result<string>>;
   onAwardReply: (post: ForumPost) => void;
 }
 
@@ -104,12 +105,12 @@ export function PostReplies(props: PostRepliesProps) {
                     {posterIdentity
                       ? posterIdentity.displayName
                       : reply.poster.toBase58()}
-                    <RoleLabel
-                      topicOwnerId={topicOwnerId}
-                      posterId={reply.poster}
-                      moderators={participatingModerators}
-                    />
                   </div>
+                  <RoleLabel
+                    topicOwnerId={topicOwnerId}
+                    posterId={reply.poster}
+                    moderators={participatingModerators}
+                  />
                 </div>
                 <div className="postedAt">
                   {isPost ? (
@@ -185,7 +186,8 @@ export function PostReplies(props: PostRepliesProps) {
                             className="awardButton"
                             disabled={!permission.readAndWrite}
                             onClick={() => onAwardReply(reply)}>
-                            Send Token <Gift />
+                            <span>Send Token</span>
+                            <Gift />
                           </button>
                         </>
                       )}

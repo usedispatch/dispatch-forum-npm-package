@@ -15,6 +15,7 @@ import { useForum } from "../../../contexts/DispatchProvider";
 import { ForumData, useModerators } from "../../../utils/hooks";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
+import { errorSummary, isError } from "../../../utils/error";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
@@ -76,12 +77,24 @@ export function ManageModerators(props: ManageModeratorsProps) {
     }
 
     setManageModerators({ ...manageModerators, addingNewModerator: true });
-    try {
-      const moderatorId = newPublicKey(manageModerators.newModerator);
-      const tx = await forumObject.addModerator(
-        moderatorId,
-        forumData.collectionId
-      );
+    const moderatorId = newPublicKey(manageModerators.newModerator);
+    if (isError(moderatorId)) {
+      const error = moderatorId;
+      setManageModerators({ ...manageModerators, addingNewModerator: true });
+      resetInitialValues();
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The moderator could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
+      return;
+    }
+    const tx = await forumObject.addModerator(
+      moderatorId,
+      forumData.collectionId
+    );
+    if (isSuccess(tx)) {
       resetInitialValues();
       setNotificationContent({
         isHidden: false,
@@ -99,17 +112,16 @@ export function ManageModerators(props: ManageModeratorsProps) {
       );
 
       forumObject.connection.confirmTransaction(tx!).then(() => updateMods());
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setManageModerators({ ...manageModerators, addingNewModerator: true });
-      if (error.error?.code !== 4001) {
-        resetInitialValues();
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The moderator could not be added`,
-          collapsible: { header: "Error", content: error.error.message },
-        });
-      }
+      resetInitialValues();
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The moderator could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

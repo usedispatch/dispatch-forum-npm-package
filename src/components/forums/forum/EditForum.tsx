@@ -12,6 +12,8 @@ import { Notification } from "../../forums";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
+import { errorSummary } from "../../../utils/error";
+import { isSuccess } from "../../../utils/loading";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface EditForumProps {
@@ -55,10 +57,10 @@ export function EditForum(props: EditForumProps) {
 
   const editForumInfo = async () => {
     setEditForum({ ...editForum, loading: true });
-    try {
-      const desc = { title: editForum.title!, desc: editForum.description! };
+    const desc = { title: editForum.title!, desc: editForum.description! };
 
-      const tx = await forumObject.setDescription(forumData.collectionId, desc);
+    const tx = await forumObject.setDescription(forumData.collectionId, desc);
+    if (isSuccess(tx)) {
 
       await update();
       setBodySize(0);
@@ -77,21 +79,15 @@ export function EditForum(props: EditForumProps) {
         () => setNotificationContent({ isHidden: true }),
         NOTIFICATION_BANNER_TIMEOUT
       );
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setEditForum({ ...editForum, loading: false });
-      if (error.code !== 4001) {
-        setEditForum({
-          show: false,
-          title: forumData.description.title,
-          description: forumData.description.desc,
-        });
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum could not be edited`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum could not be edited`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 

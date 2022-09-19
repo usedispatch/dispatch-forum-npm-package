@@ -21,24 +21,48 @@
     justify-content: space-between;
     padding-bottom: 16px;
 
+    @media only screen and (max-width: 570px) {
+      flex-wrap: wrap;
+    }
+
     .posterId {
       display: flex;
       align-items: center;
+      margin-right: 20px;
     }
 
     .icon {
       height: 28px;
       width: 28px;
       margin-right: 4px;
+
+      @media only screen and (max-width: 570px) {
+        height: 16px;
+        width: 16px;
+      }
     }
 
     .walletId {
-      display: flex;
-      gap: 10px;
+      margin-right: 10px;
 
       font-size: 14px;
       font-weight: 400;
       color: #86878e;
+
+      @media only screen and (max-width: 768px) {
+        max-width: 120px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      @media only screen and (max-width: 570px) {
+        font-size: 12px;
+      }
+
+      @media only screen and (max-width: 480px) {
+        max-width: 80px;
+      }
     }
 
     .postedAt {
@@ -54,11 +78,6 @@
       svg {
         height: 14px;
       }
-    }
-
-    @media only screen and (max-width: 480px) {
-      flex-direction: column;
-      align-items: flex-start;
     }
   }
 
@@ -126,6 +145,12 @@
 
         color: #3f1d96;
         font-weight: 600;
+
+        span {
+          @media only screen and (max-width: 768px) {
+            display: none;
+          }
+        }
 
         &:disabled {
           cursor: not-allowed;

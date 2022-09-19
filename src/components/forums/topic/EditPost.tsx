@@ -14,6 +14,8 @@ import { Notification } from "../../forums";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
+import { isSuccess } from "../../../utils/loading";
+import { errorSummary } from "../../../utils/error";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface EditPostProps {
@@ -61,12 +63,12 @@ export function EditPost(props: EditPostProps) {
 
   const editPostInfo = async () => {
     setEditPost({ ...editPost, loading: true });
-    try {
-      const tx = await forumObject.editForumPost(forumData.collectionId, post, {
-        body: editPost.body,
-        subj: editPost.subj,
-        meta: post.data.meta,
-      });
+    const tx = await forumObject.editForumPost(forumData.collectionId, post, {
+      body: editPost.body,
+      subj: editPost.subj,
+      meta: post.data.meta,
+    });
+    if (isSuccess(tx)) {
 
       setEditPost({
         show: false,
@@ -90,25 +92,22 @@ export function EditPost(props: EditPostProps) {
       editPostLocal(post, editPost.body, editPost.subj);
 
       // When the transaction is confirmed, update for real
-      forumObject.connection
-        .confirmTransaction(tx)
-        .then(() => update());
+      forumObject.connection.confirmTransaction(tx).then(() => update());
 
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
         NOTIFICATION_BANNER_TIMEOUT
       );
-    } catch (error: any) {
+    } else {
       setEditPost({ ...editPost, loading: false });
-      if (error?.error?.code !== 4001) {
-        resetToInitialValues();
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The ${post.isTopic ? "topic" : "post"} could not be edited`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
+      const error = tx;
+      resetToInitialValues();
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The ${post.isTopic ? "topic" : "post"} could not be edited`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
@@ -204,7 +203,7 @@ export function EditPost(props: EditPostProps) {
           className="editPostButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditPost({ ...editPost, show: true })}>
-          <Edit /> Edit
+          <Edit /> <span>Edit</span>
         </button>
         {showDividers.rightDivider && <div className="actionDivider" />}
       </div>

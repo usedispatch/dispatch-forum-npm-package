@@ -1,4 +1,6 @@
 import isNil from 'lodash/isNil';
+import { DispatchError } from '../types/error';
+import { uncategorizedError } from '../utils/error';
 
 const postboxErrorCode = {
   // Create post errors
@@ -18,26 +20,31 @@ const postboxErrorCode = {
   207: "Extra account offsets invalid for this restriction type",
   208: "Must supply offsets when a post restriction applies",
   209: "We hit the test error",
+  210: "You have already made this vote, you can only vote up or down once, but you can switch your vote",
 };
 
 const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
-export function parseError(error: any) {
-  let result = { ...error, message: JSON.stringify(error) };
+export function parseError(error: any): DispatchError {
   if (error.message != undefined) {
     const hexIndex = (error.message as string).indexOf("0x");
     if (hexIndex >= 0) {
       const hexString = (error.message as string).substring(hexIndex + 2);
       const decimal = hexToDecimal(hexString) - 6000;
       const message = postboxErrorCode[decimal];
-      if (!isNil(result)) {
-        result = { code: decimal, message };
-      }
+      return {
+        errorKind: 'Contract',
+        code: decimal,
+        message,
+      };
     } else {
+      // Check for Wallet issue
       const str = error.toString() as string;
       if (str.includes('WalletSendTransactionError')) {
         return {
-          message: `Error with wallet: ${str}`
+          errorKind: 'Wallet',
+          message: `${str}`,
+          suggestion: 'Make sure you are using the correct network, devnet or mainnet, and try again'
         };
       }
       // TODO(andrew) these two lines produce a "cannot find
@@ -47,10 +54,16 @@ export function parseError(error: any) {
       const json = str.match(/(?:.*  )(.*)/)!;
       const errJson = JSON.parse(json[1]);
       if (errJson.error.code === 429)  {
-        result = { code: 429, message: JSON.stringify("The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds." )};
+        return {
+          errorKind: 'RateLimiting',
+          message: JSON.stringify('HTTP 429 Rate limited'),
+          suggestion: 'The Solana Blockchain RPC servers has rate limited your IP address, some actions may be limited, please try again in a few seconds.'
+        };
+      } else {
+        return uncategorizedError(error);
       }
     }
+  } else {
+    return uncategorizedError(error);
   }
-  return result;
 }
- 

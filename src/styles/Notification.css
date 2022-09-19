@@ -6,7 +6,6 @@
     grid-template-columns: auto 20px;
     align-content: center;
 
-    max-width: 1280px;
     width: 60%;
     margin: 0 auto 8px;
     padding: 18px 20px;
@@ -21,6 +20,10 @@
     right: 0;
     left: 0;
     z-index: 999;
+
+    @media only screen and (max-width: 570px) {
+      width: 85%;
+    }
 
     .closeContainer {
       display: flex;
@@ -68,7 +71,7 @@
 
     display: flex;
     align-items: center;
-    overflow-y: overlay;
+    flex-wrap: wrap;
 
     svg {
       height: 24px;

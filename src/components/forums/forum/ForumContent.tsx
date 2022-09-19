@@ -19,7 +19,7 @@ import { useRole } from "../../../contexts/DispatchProvider";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Result } from "../../../types/error";
-import { errorSummary } from "../../../utils/error";
+import { isError, errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
   ForumData,
@@ -93,6 +93,20 @@ export function ForumContent(props: ForumContentProps) {
       newForumAccessToken,
       isSuccess(forumData.restriction) ? forumData.restriction : undefined
     );
+
+    if (isError(restriction)) {
+      const error = restriction;
+      setAddingAccessToken(false);
+      setShowManageAccessToken(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
+      return;
+    }
+
     const currentIds = restrictionListToString(restriction);
 
     const tx = await forumObject.setForumPostRestriction(
@@ -139,6 +153,17 @@ export function ForumContent(props: ForumContentProps) {
     let tx: Result<string>;
     if (filteredTokens.length > 0) {
       const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
+      if (isError(restrictionList)) {
+        const error = restrictionList;
+        setRemoveAccessToken({ show: false, removing: false });
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The access token could not be removed`,
+          collapsible: { header: "Error", content: errorSummary(error) },
+        });
+        return;
+      }
       tx = await forumObject.setForumPostRestriction(
         forumData.collectionId,
         restrictionList

@@ -1,19 +1,36 @@
 import { PublicKey } from "@solana/web3.js";
 import { PostRestriction } from "@usedispatch/client";
 import { newPublicKey } from "../utils/postbox/validateNewPublicKey";
+import { Result } from '../types/error';
+import { isError, badInputError } from '../utils/error';
+import { isSuccess } from '../utils/loading';
 
 // function cleans csv string, parses out into pubkeys,
 // and returns a PostRestriction object
 export function pubkeysToRestriction(
   pubkeyList: string,
   existingRestriction?: PostRestriction
-): PostRestriction {
+): Result<PostRestriction> {
   const tokenCSV = pubkeyList.replace(/\s+/g, "");
   const csvList = tokenCSV.split(",");
 
-  let newIds = csvList.map((token) => {
+  const newIdResults = csvList.map((token) => {
     return newPublicKey(token);
   });
+
+  // Collect all invalid pubkeys
+  const pubkeyErrors = newIdResults.filter(
+    pkey => isError(pkey)
+  );
+  
+  // If any pubkey is invalid...
+  if (pubkeyErrors.length > 0) {
+    return badInputError(
+      pubkeyErrors.toString()
+    );
+  }
+
+  let newIds = newIdResults as PublicKey[];
 
   if (existingRestriction) {
     const existingIds = restrictionListToPubkey(existingRestriction);

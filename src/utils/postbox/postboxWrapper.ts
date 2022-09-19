@@ -111,7 +111,7 @@ export interface IForum {
     },
     collectionId: web3.PublicKey,
     postRestriction?: PostRestriction
-  ): Promise<string | undefined>;
+  ): Promise<Result<string>>;
 
   // For a given topic ID
   getTopicData?(
@@ -547,7 +547,7 @@ export class DispatchForum implements IForum {
     topic: { subj?: string; body: string; meta?: any },
     collectionId: web3.PublicKey,
     postRestriction?: PostRestriction
-  ): Promise<string | undefined> => {
+  ): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -560,9 +560,11 @@ export class DispatchForum implements IForum {
         const newTopic = await forum.createTopic(topic, postRestriction);
 
         return newTopic;
+      } else {
+        return notFoundError('The forum does not exist');
       }
     } catch (err) {
-      throw(parseError(err))
+      return parseError(err);
     }
   };
 

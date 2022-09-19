@@ -3,6 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
+import { PostRestriction } from '@usedispatch/client';
 
 import { Lock, Plus, Trash } from "../../../assets";
 import {
@@ -207,75 +208,75 @@ export function ForumContent(props: ForumContentProps) {
     };
 
     setCreatingNewTopic(true);
-    try {
-      let restriction;
-      // First case checks if existing gates are kept and new ones being added
-      // Second case removes existing gates and adds new ones
-      // Third case removes existing gates
-      // Final case keeps existing gates
-      if (keepGates && newTopic.accessToken !== "") {
-        restriction = pubkeysToRestriction(
-          newTopic.accessToken,
-          isSuccess(forumData.restriction) ? forumData.restriction : undefined
-        );
-      } else if (!keepGates && newTopic.accessToken !== "") {
-        restriction = pubkeysToRestriction(newTopic.accessToken);
-      } else if (!keepGates) {
-        restriction = { null: {} };
-      } else {
-        restriction = undefined;
-      }
-      const tx = await forumObject.createTopic(
-        p,
-        forumData.collectionId,
-        restriction
+    let restrictionResult: Result<PostRestriction> | undefined;
+    // First case checks if existing gates are kept and new ones being added
+    // Second case removes existing gates and adds new ones
+    // Third case removes existing gates
+    // Final case keeps existing gates
+    if (keepGates && newTopic.accessToken !== "") {
+      restrictionResult = pubkeysToRestriction(
+        newTopic.accessToken,
+        isSuccess(forumData.restriction) ? forumData.restriction : undefined
       );
-      if (!_.isNil(tx)) {
-        setCreatingNewTopic(false);
-        setNewTopicInFlight(true);
-        setModalInfo({
-          body: <TransactionLink transaction={tx} />,
-          type: MessageType.success,
-          title: "Topic created!",
-        });
-        setNewTopic({ title: "", description: "", accessToken: "" });
-        setShowNewTopicModal(false);
-
-        // re-load forum in background
-        await forumObject.connection.confirmTransaction(tx).then(() => {
-          update();
-          setNewTopicInFlight(false);
-        });
-      } else {
-        setCreatingNewTopic(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be created`,
-        });
-        setShowNewTopicModal(false);
-      }
-    } catch (error: any) {
-      setCreatingNewTopic(false);
-      if (error?.code !== 4001) {
-        setShowNewTopicModal(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be created`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      } else {
-        setShowNewTopicModal(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be created`,
-          collapsible: { header: "Error", content: error },
-        });
-      }
+    } else if (!keepGates && newTopic.accessToken !== "") {
+      restrictionResult = pubkeysToRestriction(newTopic.accessToken);
+    } else if (!keepGates) {
+      restrictionResult = { null: {} };
+    } else {
+      // No restriction
+      restrictionResult = undefined;
     }
-  };
+
+    if (isError(restrictionResult)) {
+      const error = restrictionResult;
+      setCreatingNewTopic(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The topic could not be created`,
+        collapsible: { header: 'Error', content: errorSummary(error) }
+      });
+      setShowNewTopicModal(false);
+      return;
+    }
+
+    // the possibility of error is no longer present, so rename
+    // this variable restriction
+    const restriction = restrictionResult;
+
+    const tx = await forumObject.createTopic(
+      p,
+      forumData.collectionId,
+      restriction
+    );
+    if (isSuccess(tx)) {
+      setCreatingNewTopic(false);
+      setNewTopicInFlight(true);
+      setModalInfo({
+        body: <TransactionLink transaction={tx} />,
+        type: MessageType.success,
+        title: "Topic created!",
+      });
+      setNewTopic({ title: "", description: "", accessToken: "" });
+      setShowNewTopicModal(false);
+
+      // re-load forum in background
+      await forumObject.connection.confirmTransaction(tx).then(() => {
+        update();
+        setNewTopicInFlight(false);
+      });
+    } else {
+      const error = tx;
+      setCreatingNewTopic(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The topic could not be created`,
+        collapsible: { header: 'Error', content: errorSummary(error) }
+      });
+      setShowNewTopicModal(false);
+    }
+  }
 
   const createTopicButton = (
     <button

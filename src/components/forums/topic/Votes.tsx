@@ -52,7 +52,7 @@ export function Votes(props: VotesProps) {
     const vote = forumData.votes.find((v) => v.postId === post.postId);
       // redundancy needed for wallet change case and
       // either upvote or downvote previously set to true
-    if (vote?.upVote === true) {
+    if (vote?.upVote) {
         setAlreadyUpVoted(true);
         setAlreadyDownVoted(false);
       } else if (vote?.upVote === false) {

@@ -61,7 +61,7 @@ export const TopicView = (props: Props) => {
     }
   }, [collectionId]);
 
-  const { forumData, update, addPost, editPost, deletePost, fetchVotes } = useForumData(
+  const { forumData, update, addPost, editPost, deletePost } = useForumData(
     collectionPublicKey,
     forum
   );

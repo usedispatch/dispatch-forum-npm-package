@@ -22,6 +22,7 @@ import {
   dispatchClientError,
   isSuccess,
   isDispatchClientError,
+  isInitial,
 } from "../utils/loading";
 import { DispatchForum } from "./postbox/postboxWrapper";
 
@@ -98,7 +99,7 @@ export interface ForumData {
   posts: ClientPost[];
   restriction: LoadingResult<PostRestriction>;
   moderatorMint: PublicKey;
-  votes: LoadingResult<ChainVoteEntry[]>;
+  votes: Loading<ChainVoteEntry[]>;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -112,23 +113,25 @@ export function useForumData(
   deletePost: (post: ForumPost) => void;
   editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
   update: () => Promise<void>;
-  fetchVotes: () => Promise<LoadingResult<ChainVoteEntry[]>>;
 } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
   useEffect(() => {
-    const setVotes = async () => {
-      if (isSuccess(forumData) && isNotFound(forumData.votes)) {
-        const votes = await fetchVotes();
+      console.log("useEffect")
+      if (isSuccess(forumData) && isInitial(forumData.votes)) {
+        console.log("call fetchVotes")
+        fetchVotes().then((votes) => {
         if (isSuccess(votes)) {
+          console.log("successful fetchVotes")
           setForumData({
             ...forumData,
             votes,
           });
         }
+      });
       }
-    }
-    setVotes();
+    // }
+    // setVotes();
   }, [forum.wallet, forumData]);
 
   // TODO(andrew) make this more generic
@@ -314,7 +317,6 @@ export function useForumData(
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
-          setForumData({...forumData, votes: fetchData});
           return fetchData;
         } else {
           return onChainAccountNotFound();
@@ -357,7 +359,7 @@ export function useForumData(
             posts,
             restriction,
             moderatorMint,
-            votes: onChainAccountNotFound(),
+            votes: initial(),
           });
         } else {
           // We already confirmed the forum existed, so assume
@@ -378,7 +380,6 @@ export function useForumData(
     deletePost,
     editPost,
     update,
-    fetchVotes,
   };
 }
 

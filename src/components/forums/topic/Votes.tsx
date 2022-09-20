@@ -99,7 +99,7 @@ export function Votes(props: VotesProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: "The post could not be up voted",
-        collapsible: { header: "Error", content: `${error.errorKind}: error.message` },
+        collapsible: { header: "Error", content: errorSummary(error) },
       });
       setLoading(false);
     }

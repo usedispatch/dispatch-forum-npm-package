@@ -24,7 +24,12 @@ import {
 } from "../../components/forums";
 import { Loading } from "../../types/loading";
 import { DispatchError } from "../../types/error";
-import { notFoundError, isError, isUncategorizedError } from '../../utils/error';
+import {
+  notFoundError,
+  isError,
+  isUncategorizedError,
+  errorSummary
+} from '../../utils/error';
 import {
   isSuccess,
   isInitial,
@@ -123,7 +128,7 @@ export const TopicView = (props: Props) => {
           return {
             type: MessageType.error,
             title: `Error loading ${error.errorKind}`,
-            collapsible: { header: "Error", content: error.message },
+            collapsible: { header: "Error", content: errorSummary(error) },
           };
         })
       );

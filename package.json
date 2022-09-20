@@ -20,6 +20,9 @@
       "source": "src/style.css"
     }
   },
+  "files": [
+    "dist/**/*"
+  ],
   "scripts": {
     "clean": "rm -rf dist",
     "build": "yarn clean && NODE_ENV=development yarn parcel build && cp README.md ./dist",

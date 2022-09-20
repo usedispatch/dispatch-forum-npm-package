@@ -1,7 +1,7 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode } from "react";
 import { PublicKey, Transaction, Connection, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
-import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
+import { ForumPost, WalletInterface } from "@usedispatch/client";
 
 import {
   CollapsibleProps,
@@ -235,7 +235,7 @@ export function GiveAward(props: GiveAwardProps) {
 }
 
 interface TransferSOLProps {
-  wallet: WalletAdapterInterface;
+  wallet: WalletInterface;
   posterId: PublicKey;
   collectionId: PublicKey;
   amount: number;

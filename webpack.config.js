@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   entry: './src/index.ts',
@@ -27,10 +28,10 @@ module.exports = {
     extensions: ['.tsx', '.ts', '.js'],
         fallback: {
             buffer: require.resolve('buffer'),
-            crypto: require.resolve('crypto-browserify'), 
+            crypto: require.resolve('crypto-browserify'),
             stream: require.resolve('stream-browserify'),
             path: require.resolve('path-browserify'),
-            zlib: require.resolve('browserify-zlib'),
+            zlib: false,
             assert: require.resolve('assert'),
         },
         symlinks: false
@@ -51,7 +52,9 @@ module.exports = {
         Buffer: ['buffer', 'Buffer'],
     }),
     new MiniCssExtractPlugin(),
-    
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static'
+    })
   ],
   externals: {
     react: 'react',

@@ -1,44 +1,19 @@
 import {
+  isError
+} from './error';
+import {
   Loading,
-  LoadingResult,
   Initial,
-  OnChainAccountNotFound,
-  DispatchClientError,
   Pending
 } from '../types/loading';
+import { Result } from '../types/error';
 
 /**
  * Return whether a given Loading value is a success or not, and
  * narrow its type
  */
 export function isSuccess<T>(value: Loading<T>): value is T {
-  // Every kind of `Loading` type is tagged with a
-  // `loadingState`, except for `T`, which is not. Note that this
-  // type checking means that `Loading` object should not be
-  // nested within each other.
-  return !('loadingState' in value);
-}
-
-/**
- * Return whether a given Loading value is a success or not, and
- * narrow its type
- */
-export function isDispatchClientError<T>(value: Loading<T>): value is DispatchClientError {
-  return (
-    'loadingState' in value &&
-    value.loadingState === 'dispatchClientError'
-  );
-}
-
-/**
- * Return whether a given Loading value is a "not found" result
- * or not, and narrow its type
- */
-export function isNotFound<T>(value: Loading<T>): value is OnChainAccountNotFound {
-  return (
-    'loadingState' in value &&
-    value.loadingState === 'onChainAccountNotFound'
-  );
+  return isResult(value) && !isError(value);
 }
 
 /**
@@ -47,16 +22,15 @@ export function isNotFound<T>(value: Loading<T>): value is OnChainAccountNotFoun
  * found. If the object is in the initial or pending state, it
  * still has time to go, so return false
  */
-export function isResolved<T>(value: Loading<T>): value is LoadingResult<T> {
-  return (
-    isSuccess(value) ||
-    value.loadingState === 'dispatchClientError' ||
-    value.loadingState === 'onChainAccountNotFound'
-  );
+export function isResult<T>(value: Loading<T>): value is Result<T> {
+  // Is this some kind of loading object, such as initial or pending?
+  const isLoading = typeof value === 'object' && 'loadingState' in value;
+  return !isLoading;
 }
 
 export function isInitial<T>(value: Loading<T>): value is Initial {
   return (
+    typeof value === 'object' &&
     'loadingState' in value &&
     value.loadingState === 'initial'
   );
@@ -64,6 +38,7 @@ export function isInitial<T>(value: Loading<T>): value is Initial {
 
 export function isPending<T>(value: Loading<T>): value is Pending {
   return (
+    typeof value === 'object' &&
     'loadingState' in value &&
     value.loadingState === 'pending'
   );
@@ -73,18 +48,10 @@ export function isPending<T>(value: Loading<T>): value is Pending {
  * Type constructors
  */
 
-export function onChainAccountNotFound(): OnChainAccountNotFound {
-  return { loadingState: 'onChainAccountNotFound' };
-}
-
 export function pending(): Pending {
   return { loadingState: 'pending' };
 }
 
 export function initial(): Initial {
   return { loadingState: 'initial' };
-}
-
-export function dispatchClientError(error?: any): DispatchClientError {
-  return { loadingState: 'dispatchClientError', error };
 }

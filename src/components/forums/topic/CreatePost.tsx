@@ -1,7 +1,10 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from "react";
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
+import { Result } from '../../../types/error';
+import { errorSummary } from "../../../utils/error";
+import { isSuccess } from "../../../utils/loading";
 import { CreatedPost } from "../../../utils/hooks";
 
 import {
@@ -17,7 +20,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 
 interface CreatePostProps {
   topic: ForumPost;
-  collectionId: web3.PublicKey;
+  collectionId: PublicKey;
   createForumPost: (
     post: {
       subj?: string | undefined;
@@ -25,8 +28,8 @@ interface CreatePostProps {
       meta?: any;
     },
     topicId: number,
-    collectionId: web3.PublicKey
-  ) => Promise<string | undefined>;
+    collectionId: PublicKey
+  ) => Promise<Result<string>>;
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
   onReload: () => void;
@@ -70,9 +73,9 @@ export function CreatePost(props: CreatePostProps) {
     };
 
     const post = { body: target.post.value };
-    try {
-      const tx = await createForumPost(post, topic.postId, collectionId);
+    const tx = await createForumPost(post, topic.postId, collectionId);
 
+    if (isSuccess(tx)) {
       const localPost: CreatedPost = {
         data: {
           body: post.body,
@@ -96,48 +99,43 @@ export function CreatePost(props: CreatePostProps) {
         ),
         type: MessageType.info,
       });
-
-      if (tx) {
-        await Forum.connection.confirmTransaction(tx).then(() => {
-          setPostInFlight(false);
-          setNotification({
-            isHidden: false,
-            content: (
-              <>
-                Post created successfully.
-                <TransactionLink transaction={tx} />
-              </>
-            ),
-            type: MessageType.success,
-          });
-          update();
+      await Forum.connection.confirmTransaction(tx).then(() => {
+        setPostInFlight(false);
+        setNotification({
+          isHidden: false,
+          content: (
+            <>
+              Post created successfully.
+              <TransactionLink transaction={tx} />
+            </>
+          ),
+          type: MessageType.success,
         });
-        setTimeout(
-          () => setNotification({ isHidden: true }),
-          NOTIFICATION_BANNER_TIMEOUT
-        );
-      }
+        update();
+      });
+      setTimeout(
+        () => setNotification({ isHidden: true }),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
       onReload();
       setBodySize(0);
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setPostInFlight(false);
       setNotification({ isHidden: true });
-      const message = JSON.stringify(error);
       setLoading(false);
-      if (error.code !== 4001) {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: "The new post could not be created",
-          collapsible: { header: "Error", content: message },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: "The new post could not be created",
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
   return (
     <>
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="create-topic-info"
           visible

@@ -4,6 +4,7 @@
     flex-direction: column;
     align-items: center;
     margin: 64px 0 24px;
+
     font-family: Manrope, sans-serif;
   }
 
@@ -12,7 +13,7 @@
     font-weight: 600;
     text-align: center;
     color: #2e008b;
-    padding-bottom: 1rem;
+    padding-bottom: 16px;
   }
 
   .createForumSubtitle {
@@ -20,14 +21,17 @@
     font-size: 16px;
     font-weight: 300;
     color: #414149;
-    width: 650px;
-    padding-bottom: 1rem;
+    width: 80%;
+    padding-bottom: 16px;
   }
 
   .createForumForm {
     display: flex;
     justify-content: center;
-    width: 50%;
+
+    min-width: 50%;
+    width: 100%;
+    max-width: 750px;
     margin-top: 16px;
 
     background: #fff;
@@ -49,6 +53,11 @@
       width: 85%;
       background: #fff;
       padding: 2rem;
+
+      @media only screen and (max-width: 570px) {
+        width: 90%;
+        padding: 20px 16px;
+      }
     }
 
     .formSection {
@@ -196,6 +205,10 @@
       cursor: not-allowed;
       opacity: 0.65;
     }
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
   }
 
   .acceptCreateForumButton {
@@ -214,6 +227,10 @@
     text-align: center;
     text-transform: capitalize;
     font-weight: 600;
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
 
     &:hover {
       opacity: 0.85;

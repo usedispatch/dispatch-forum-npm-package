@@ -1,4 +1,7 @@
-import { web3 } from "@project-serum/anchor";
+import {
+  Connection,
+  Cluster
+} from '@solana/web3.js';
 import { WalletAdapterInterface } from "@usedispatch/client";
 import ReactGA from "react-ga4"
 import {
@@ -14,8 +17,8 @@ import { UserRoleType } from "./../utils/permissions";
 import { DebugWarning } from "./../components/common/DebugWarning";
 export interface DispatchAppProps {
   wallet: WalletAdapterInterface;
-  connection: web3.Connection;
-  cluster: web3.Cluster;
+  connection: Connection;
+  cluster: Cluster;
   children: ReactNode | ReactNode[];
   buildForumPath: typeof ForumPathFunction;
   buildTopicPath: typeof TopicPathFunction;

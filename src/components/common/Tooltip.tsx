@@ -1,5 +1,4 @@
 import { ReactNode, useState } from "react";
-import { Chevron } from "../../assets";
 
 export interface TooltipProps {
   content: ReactNode | string;
@@ -8,13 +7,17 @@ export interface TooltipProps {
 
 export const Tooltip = (props: TooltipProps) => {
   const { message, content } = props;
+  const [isVisible, setIsVisible] = useState(false);
 
   return (
-    <div className="tooltipContainer">
-      <div className="tooltipContent">
+    <div className={`tooltipContainer ${isVisible ? "visible" : ""}`}>
+      <div
+        className={"tooltipContent"}
+        onMouseLeave={() => setIsVisible(false)}
+        onMouseEnter={() => setIsVisible(true)}>
         {content}
-        <span className="tooltipMessage">{message}</span>
       </div>
+      <span className="tooltipMessage">{message}</span>
     </div>
   );
 };

@@ -1,6 +1,6 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode } from "react";
-import * as web3 from "@solana/web3.js";
+import { PublicKey, Transaction, Connection, SystemProgram, LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { ForumPost, WalletAdapterInterface } from "@usedispatch/client";
 
 import {
@@ -14,6 +14,7 @@ import {
 import { SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
 import { DisplayableToken } from "../../../utils/postbox/postboxWrapper";
+import { isSuccess } from "../../../utils/loading"
 
 enum AwardType {
   NFT = "NFT",
@@ -22,7 +23,7 @@ enum AwardType {
 
 interface GiveAwardProps {
   post: ForumPost;
-  collectionId: web3.PublicKey;
+  collectionId: PublicKey;
   onCancel: () => void;
   onSuccess: (notificationContent: ReactNode) => void;
   onError: (error: any) => void;
@@ -76,12 +77,12 @@ export function GiveAward(props: GiveAwardProps) {
   const transferNFT = async () => {
     setLoading(true);
 
-    try {
       const tx = await Forum.transferNFTs(
         post.poster,
         selectedNFT?.mint!,
         Forum.wallet.sendTransaction
       );
+    if (isSuccess(tx)) {
 
       setLoading(false);
       onSuccess(
@@ -90,7 +91,8 @@ export function GiveAward(props: GiveAwardProps) {
           <TransactionLink transaction={tx} />
         </>
       );
-    } catch (error: any) {
+    } else {
+      const error = tx;
       console.log(error);
       setLoading(false);
       onError(error);
@@ -175,19 +177,19 @@ export function GiveAward(props: GiveAwardProps) {
   );
 
   const getNFTsForCurrentUser = async () => {
-    try {
-      setLoadingNFT(true);
-      const nfts = await Forum.getNFTMetadataForCurrentUser();
+    setLoadingNFT(true);
+    const nfts = await Forum.getNFTMetadataForCurrentUser();
+    if (isSuccess(nfts)) {
       setNFTs(nfts);
       setLoadingNFT(false);
-    } catch (error: any) {
-      onError(error);
+    } else {
+      onError(nfts);
     }
   };
 
   return (
     <div className="awardContainer">
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="give-award-info"
           visible
@@ -221,7 +223,7 @@ export function GiveAward(props: GiveAwardProps) {
           ) : (
             <button
               className="confirmAndAwardButton"
-              disabled={_.isNil(selectedNFT)}
+              disabled={isNil(selectedNFT)}
               onClick={() => transferNFT()}>
               Send
             </button>
@@ -234,20 +236,20 @@ export function GiveAward(props: GiveAwardProps) {
 
 interface TransferSOLProps {
   wallet: WalletAdapterInterface;
-  posterId: web3.PublicKey;
-  collectionId: web3.PublicKey;
+  posterId: PublicKey;
+  collectionId: PublicKey;
   amount: number;
-  connection: web3.Connection;
+  connection: Connection;
 }
 
 async function transferSOL(props: TransferSOLProps) {
   const { posterId, amount, wallet, connection } = props;
 
-  let tx = new web3.Transaction().add(
-    web3.SystemProgram.transfer({
+  let tx = new Transaction().add(
+    SystemProgram.transfer({
       fromPubkey: wallet.publicKey!,
       toPubkey: posterId,
-      lamports: amount * web3.LAMPORTS_PER_SOL,
+      lamports: amount * LAMPORTS_PER_SOL,
     })
   );
 

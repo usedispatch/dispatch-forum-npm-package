@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 
@@ -16,6 +16,7 @@ import { ForumData } from "../../../utils/hooks";
 import { getIdentity } from '../../../utils/identity';
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
+import { errorSummary } from "../../../utils/error";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
 
@@ -83,33 +84,33 @@ export function ManageOwners(props: ManageOwnersProps) {
 
   const addOwner = async () => {
     setManageOwners({ ...manageOwners, addingNewOwner: true });
-    try {
-      const ownerId = newPublicKey(manageOwners.newOwner);
+    const ownerId = newPublicKey(manageOwners.newOwner);
+    if (isSuccess(ownerId)) {
       const tx = await forumObject.addOwner(ownerId, forumData.collectionId);
 
-      setManageOwners({
-        show: false,
-        currentOwners: manageOwners.currentOwners.concat(manageOwners.newOwner),
-        newOwner: "",
-        addingNewOwner: false,
-      });
-      setNotificationContent({
-        isHidden: false,
-        content: (
-          <>
-            The owner was added.
-            <TransactionLink transaction={tx!} />
-          </>
-        ),
-        type: MessageType.success,
-      });
-      setTimeout(
-        () => setNotificationContent({ isHidden: true }),
-        NOTIFICATION_BANNER_TIMEOUT
-      );
-    } catch (error: any) {
-      setManageOwners({ ...manageOwners, addingNewOwner: false });
-      if (error.error?.code !== 4001) {
+      if (isSuccess(tx)) {
+        setManageOwners({
+          show: false,
+          currentOwners: manageOwners.currentOwners.concat(manageOwners.newOwner),
+          newOwner: "",
+          addingNewOwner: false,
+        });
+        setNotificationContent({
+          isHidden: false,
+          content: (
+            <>
+              The owner was added.
+              <TransactionLink transaction={tx!} />
+            </>
+          ),
+          type: MessageType.success,
+        });
+        setTimeout(
+          () => setNotificationContent({ isHidden: true }),
+          NOTIFICATION_BANNER_TIMEOUT
+        );
+      } else {
+        const error = tx;
         setManageOwners({
           ...manageOwners,
           newOwner: "",
@@ -119,9 +120,22 @@ export function ManageOwners(props: ManageOwnersProps) {
           title: "Something went wrong!",
           type: MessageType.error,
           body: `The owner could not be added`,
-          collapsible: { header: "Error", content: error },
+          collapsible: { header: "Error", content: errorSummary(error) },
         });
       }
+    } else {
+      const error = ownerId;
+      setManageOwners({
+        ...manageOwners,
+        newOwner: "",
+        show: false,
+      });
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The owner could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
@@ -138,7 +152,7 @@ export function ManageOwners(props: ManageOwnersProps) {
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
-        {_.isNil(modalInfo) && manageOwners.show && (
+        {isNil(modalInfo) && manageOwners.show && (
           <PopUpModal
             id="add-owners"
             visible
@@ -163,21 +177,26 @@ export function ManageOwners(props: ManageOwnersProps) {
                   {manageOwners.currentOwners.map((m) => {
                     // TODO error checking on this newPublicKey
                     // call?
-                    const identity = getIdentity(newPublicKey(m));
-                    return (
-                      <li key={m} className="currentOwners">
-                        <div className="iconContainer">
-                          { identity ?
-                            <img
-                              src={identity.profilePicture.href}
-                              style={{ borderRadius: '50%' }}
-                            /> :
-                            <Jdenticon value={m} alt="ownerId" />
-                          }
-                        </div>
-                        { identity ? identity.displayName : m }
-                      </li>
-                    );
+                    const pkey = newPublicKey(m);
+                    if (isSuccess(pkey)) {
+                      const identity = getIdentity(pkey);
+                      return (
+                        <li key={m} className="currentOwners">
+                          <div className="iconContainer">
+                            { identity ?
+                              <img
+                                src={identity.profilePicture.href}
+                                style={{ borderRadius: '50%' }}
+                              /> :
+                              <Jdenticon value={m} alt="ownerId" />
+                            }
+                          </div>
+                          { identity ? identity.displayName : m }
+                        </li>
+                      );
+                    } else {
+                      console.error(pkey);
+                    }
                   })}
                 </ul>
               </div>
@@ -194,7 +213,7 @@ export function ManageOwners(props: ManageOwnersProps) {
             onClose={() => resetInitialValues()}
           />
         )}
-        {!_.isNil(modalInfo) && (
+        {!isNil(modalInfo) && (
           <PopUpModal
             id="manage-owners-info"
             visible

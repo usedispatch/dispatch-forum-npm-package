@@ -1,12 +1,17 @@
 import { PublicKey } from "@solana/web3.js";
+import { Result } from '../../types/error';
+import { badInputError } from '../../utils/error';
 
-const bs58 = require("bs58");
-
-export const newPublicKey = (s: string) => {
+/**
+ * Like new PublicKey(), but returns an error instead of throwing
+ * one if the given value is not a valid pubkey
+ */
+export function newPublicKey(s: string): Result<PublicKey> {
   try {
-    const d = bs58.decode(s);
     return new PublicKey(s);
   } catch (error) {
-    throw { message: `The public key '${s}' is invalid` };
+    return badInputError(
+      `The public key '${s}' is invalid`
+    );
   }
 };

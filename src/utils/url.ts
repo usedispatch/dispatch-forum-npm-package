@@ -1,5 +1,5 @@
-import { DispatchClientError } from '../types/loading';
-import { dispatchClientError } from './loading';
+import { Result } from '../types/error';
+import { uncategorizedError } from '../utils/error';
 
 /**
  * Attempt to parse a URL from a string. On success, return the
@@ -10,10 +10,11 @@ import { dispatchClientError } from './loading';
  * Dispatch Client, so the fact that it returns thie error is
  * misleading
  */
-export function stringToURL(text: string): URL | DispatchClientError {
+export function stringToURL(text: string): Result<URL> {
   try {
     return new URL(text);
   } catch (e) {
-    return dispatchClientError(e);
+    // TODO categorize this
+    return uncategorizedError(e);
   }
 }

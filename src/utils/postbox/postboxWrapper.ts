@@ -1,4 +1,3 @@
-import _, { min } from "lodash";
 import {
   DispatchConnection,
   Forum,
@@ -11,7 +10,12 @@ import {
   VoteType,
   ChainVoteEntry,
 } from "@usedispatch/client";
-import * as web3 from "@solana/web3.js";
+import {
+  PublicKey,
+  Transaction,
+  Connection,
+  Cluster
+} from '@solana/web3.js';
 
 import {
   getAssociatedTokenAddress,
@@ -20,10 +24,16 @@ import {
   getAccount
 } from "@solana/spl-token";
 
-import { parseError } from "../parseErrors";
-import { dispatchClientError, isSuccess } from '../../utils/loading';
+import {
+  parseError,
+} from "../parseErrors";
+import { Result } from '../../types/error';
+import {
+  notFoundError,
+  badInputError
+} from '../../utils/error';
+import { isSuccess } from '../../utils/loading';
 import { stringToURL } from '../../utils/url';
-import { DispatchClientError } from '../../types/loading';
 
 enum UserCategory {
   moderator,
@@ -39,7 +49,7 @@ enum UserCategory {
  */
 export interface DisplayableToken {
   name: string;
-  mint: web3.PublicKey;
+  mint: PublicKey;
   uri: URL;
 }
 
@@ -50,49 +60,51 @@ interface Permission {
 export interface IForum {
   // For a given collection ID, only one postbox can exist
   getForumForCollection(
-    collectionId: web3.PublicKey
-  ): Promise<Forum | undefined>;
+    collectionId: PublicKey
+  ): Promise<Result<Forum>>;
 
-  isOwner(collectionId: web3.PublicKey): Promise<boolean>
+  isOwner(collectionId: PublicKey): Promise<boolean>
 
-  isModerator(collectionId: web3.PublicKey): Promise<boolean>
+  isModerator(collectionId: PublicKey): Promise<boolean>
 
   // Return whether the given forum exists or not
-  exists(collectionPublicKey: web3.PublicKey): Promise<boolean>;
+  exists(collectionPublicKey: PublicKey): Promise<boolean>;
 
   // Create a postbox for a given collection ID
   createForum(
     forumInfo: ForumInfo
-  ): Promise<{forum: Forum, txs: string[]} | undefined>;
+  ): Promise<
+    Result<{forum: Forum, txs: string[]}>
+  >;
 
   // Get the description of the forum: title and blurb
-  getDescription(collectionId: web3.PublicKey): Promise<{
+  getDescription(collectionId: PublicKey): Promise<Result<{
     title: string;
     desc: string;
-  } | undefined>;
+  }>>;
   
-  getModeratorMint(collectionId: web3.PublicKey, assumeExists?: boolean): Promise<web3.PublicKey | undefined>;
+  getModeratorMint(collectionId: PublicKey, assumeExists?: boolean): Promise<Result<PublicKey>>;
 
-  setDescription(collectionId: web3.PublicKey, desc: {
+  setDescription(collectionId: PublicKey, desc: {
     title: string;
     desc: string;
-  }): Promise<string>;
+  }): Promise<Result<string>>;
 
-  addModerator(newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
+  addModerator(newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
-  addOwner(newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined>;
+  addOwner(newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
   // Get a list of moderators
-  getModerators(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
+  getModerators(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
 
   // Get a list of owners
-  getOwners(collectionId: web3.PublicKey): Promise<web3.PublicKey[] | undefined>;
+  getOwners(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
 
   // Get topics for a forum
   // topics are the same as a post but with topic=true set
   getTopicsForForum(
-    collectionId: web3.PublicKey
-  ): Promise<ForumPost[] | undefined>;
+    collectionId: PublicKey
+  ): Promise<Result<ForumPost[]>>;
 
   // Create a new topic
   createTopic(
@@ -101,15 +113,15 @@ export interface IForum {
       body: string;
       meta?: any;
     },
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     postRestriction?: PostRestriction
-  ): Promise<string | undefined>;
+  ): Promise<Result<string>>;
 
   // For a given topic ID
   getTopicData?(
     topicId: number,
-    collectionId: web3.PublicKey
-  ): Promise<ForumPost>;
+    collectionId: PublicKey
+  ): Promise<Result<ForumPost>>;
 
   // Create a post
   createForumPost(
@@ -119,67 +131,67 @@ export interface IForum {
       meta?: any;
     },
     topicId: number,
-    collectionId: web3.PublicKey
-  ): Promise<string | undefined>;
+    collectionId: PublicKey
+  ): Promise<Result<string>>;
 
-  editForumPost(collectionId: web3.PublicKey, post: ForumPost, newPostData: {
+  editForumPost(collectionId: PublicKey, post: ForumPost, newPostData: {
     subj?: string;
     body: string;
     meta?: any;
-  }): Promise<string>;
+  }): Promise<Result<string>>;
 
   // For a given topic, the messages
-  getTopicMessages(topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined>;
+  getTopicMessages(topicId: number, collectionId: PublicKey): Promise<Result<ForumPost[]>>;
 
-  deleteForumPost(forumPost: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<string>;
+  deleteForumPost(forumPost: ForumPost, collectionId: PublicKey, asMod?: boolean): Promise<Result<string>>;
 
   // Vote a post up
-  voteUpForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<string>;
+  voteUpForumPost(post: ForumPost, collectionId: PublicKey): Promise<Result<string>>;
 
   // Vote a post down
-  voteDownForumPost(post: ForumPost, collectionId: web3.PublicKey): Promise<string>;
+  voteDownForumPost(post: ForumPost, collectionId: PublicKey): Promise<Result<string>>;
 
   // This is the same as createPost, but additionally,
   // post.parent = postId
-  replyToForumPost(replyToPost: ForumPost, collectionId: web3.PublicKey, post: {
+  replyToForumPost(replyToPost: ForumPost, collectionId: PublicKey, post: {
     subj?: string;
     body: string;
     meta?: any;
-  }): Promise<string>;
+  }): Promise<Result<string>>;
 
   // For a given topic, the messages
-  getReplies(topic: ForumPost, collectionId: web3.PublicKey): Promise<ForumPost[]>;
+  getReplies(topic: ForumPost, collectionId: PublicKey): Promise<Result<ForumPost[]>>;
 
-  getForumPostRestriction(collectionId: web3.PublicKey): Promise<PostRestriction | null>;
+  getForumPostRestriction(collectionId: PublicKey): Promise<Result<PostRestriction | null>>;
 
-  setForumPostRestriction(collectionId: web3.PublicKey, restriction: PostRestriction): Promise<string>;
+  setForumPostRestriction(collectionId: PublicKey, restriction: PostRestriction): Promise<Result<string>>;
 
-  deleteForumPostRestriction(collectionId: web3.PublicKey): Promise<string>;
+  deleteForumPostRestriction(collectionId: PublicKey): Promise<Result<string>>;
 
-  canCreateTopic(collectionId: web3.PublicKey): Promise<boolean>;
+  canCreateTopic(collectionId: PublicKey): Promise<boolean>;
 
-  canPost(collectionId: web3.PublicKey,topic: ForumPost): Promise<boolean>;
+  canPost(collectionId: PublicKey,topic: ForumPost): Promise<boolean>;
 
-  canVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean>;
+  canVote(collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>>;
 
-  getVote(collectionId: web3.PublicKey, post: ForumPost): Promise<boolean | undefined>;
+  getVote(collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>>;
 
-  getVotes(collectionId: web3.PublicKey): Promise<ChainVoteEntry[] | undefined>;
+  getVotes(collectionId: PublicKey): Promise<Result<ChainVoteEntry[]>>;
 
-  getNFTsForCurrentUser(): Promise<web3.PublicKey[]>;
+  getNFTsForCurrentUser(): Promise<Result<PublicKey[]>>;
 
-  getNFTMetadataForCurrentUser: () => Promise<DisplayableToken[]>;
+  getNFTMetadataForCurrentUser: () => Promise<Result<DisplayableToken[]>>;
 
-  transferNFTs(receiverId: web3.PublicKey, mint: web3.PublicKey, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>): Promise<string>;
+  transferNFTs(receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection)=> Promise<string>): Promise<Result<string>>;
 }
 
 export class DispatchForum implements IForum {
   public wallet: WalletAdapterInterface;
-  public connection: web3.Connection;
+  public connection: Connection;
   public permission: Permission;
-  public cluster: web3.Cluster;
+  public cluster: Cluster;
 
-  constructor(wallet: WalletAdapterInterface, conn: web3.Connection, cluster: web3.Cluster) {
+  constructor(wallet: WalletAdapterInterface, conn: Connection, cluster: Cluster) {
     this.connection = conn;
     this.wallet = wallet;
     this.cluster = cluster;
@@ -191,16 +203,16 @@ export class DispatchForum implements IForum {
       // account for possibly missing wallets, instead of having
       // this noop dummy wallet
       this.wallet = {
-        publicKey: new web3.PublicKey('11111111111111111111111111111111'),
+        publicKey: new PublicKey('11111111111111111111111111111111'),
         signAllTransactions: () => {return Promise.resolve([])},
-        signTransaction: () => {return Promise.resolve(new web3.Transaction())},
+        signTransaction: () => {return Promise.resolve(new Transaction())},
         sendTransaction: () => {return Promise.resolve('');}
       };
       this.permission = { readAndWrite: false };
     }
   }
 
-  exists = async (collectionPublicKey: web3.PublicKey) => {
+  exists = async (collectionPublicKey: PublicKey) => {
     const { connection, wallet, cluster } = this;
     const forum = new Forum(
       new DispatchConnection(connection, wallet, { cluster }),
@@ -215,7 +227,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const collectionPublicKey = new web3.PublicKey(forumInfo.collectionId);
+      const collectionPublicKey = new PublicKey(forumInfo.collectionId);
       if (owner.publicKey) {
         const forumAsOwner = new Forum(
           new DispatchConnection(conn, owner, {cluster: this.cluster}),
@@ -241,13 +253,15 @@ export class DispatchForum implements IForum {
         }
 
         return {forum: forumAsOwner, txs};
+      } else {
+        return notFoundError('Owner public key not found');
       }
     } catch (error) {
-        throw(parseError(error))
+        return parseError(error);
     }
   };
 
-  isOwner= async(collectionId: web3.PublicKey): Promise<boolean> =>{
+  isOwner= async(collectionId: PublicKey): Promise<boolean> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -256,7 +270,7 @@ export class DispatchForum implements IForum {
     return isOwner
   }
 
-  isModerator= async (collectionId: web3.PublicKey): Promise<boolean> => {
+  isModerator= async (collectionId: PublicKey): Promise<boolean> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -267,14 +281,14 @@ export class DispatchForum implements IForum {
 
   // Get the description of the forum: title and blurb
   getDescription = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<{
+  ): Promise<Result<{
     title: string;
     desc: string;
-  } | undefined> => {
+  }>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -287,19 +301,31 @@ export class DispatchForum implements IForum {
 
         if (assumeExists || await forum.exists()) {
           const desc = await forum.getDescription();
-          return desc;
+          if (desc) {
+            return desc;
+          } else {
+            return notFoundError('Description not found');
+          }
+        } else {
+          return notFoundError(
+            'Forum does not exist'
+          );
         }
 
+      } else {
+        return notFoundError(
+          'Owner publicKey not found'
+        );
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
   getModeratorMint = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     assumeExists = false
-  ): Promise<web3.PublicKey | undefined> => {
+  ): Promise<Result<PublicKey>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -313,18 +339,26 @@ export class DispatchForum implements IForum {
         if(assumeExists || await forum.exists()) {
           const moderatorMint = forum.getModeratorMint();
           return moderatorMint;
+        } else {
+          return notFoundError(
+            'Forum does not exist'
+          );
         }
+      } else {
+        return notFoundError(
+          'Owner public key not found'
+        );
       }
     } catch (error) {
-      throw(parseError(error));
+      return parseError(error);;
     }
   }
 
 
-  setDescription = async (collectionId: web3.PublicKey, desc: {
+  setDescription = async (collectionId: PublicKey, desc: {
     title: string;
     desc: string;
-  }): Promise<string> => {
+  }): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -337,11 +371,11 @@ export class DispatchForum implements IForum {
       const tx = await forum.setDescription(desc);
       return tx;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
-  addModerator = async (newMod: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined> => {
+  addModerator = async (newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -354,13 +388,15 @@ export class DispatchForum implements IForum {
       if (await forumAsOwner.exists()) {
         const tx = await forumAsOwner.addModerator(newMod);
         return tx;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
-  addOwner = async (newOwner: web3.PublicKey, collectionId: web3.PublicKey): Promise<string | undefined> => {
+  addOwner = async (newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -373,18 +409,20 @@ export class DispatchForum implements IForum {
       if (await forumAsOwner.exists()) {
         const tx = await forumAsOwner.addOwners([newOwner]);
         return tx;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(error)
+      return parseError(error);
     }
   }
 
   getModerators = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<web3.PublicKey[] | undefined> => {
+  ): Promise<Result<PublicKey[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -397,18 +435,20 @@ export class DispatchForum implements IForum {
       if (assumeExists || await forumAsOwner.exists()) {
         const tx = await forumAsOwner.getModerators();
         return tx;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
   getOwners = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<web3.PublicKey[] | undefined> => {
+  ): Promise<Result<PublicKey[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -421,15 +461,17 @@ export class DispatchForum implements IForum {
       if (assumeExists || await forumAsOwner.exists()) {
         const tx = await forumAsOwner.getOwners();
         return tx;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(JSON.stringify(error))
+      return parseError(JSON.stringify(error))
     }
   }
 
   getForumForCollection = async (
-    collectionId: web3.PublicKey
-  ): Promise<Forum | undefined> => {
+    collectionId: PublicKey
+  ): Promise<Result<Forum>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -438,15 +480,19 @@ export class DispatchForum implements IForum {
     try {
       if (await forum.exists()) {
         return forum;
+      } else {
+        return notFoundError(
+          'Forum does not exist'
+        );
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
   getTopicsForForum = async (
-    collectionId: web3.PublicKey
-  ): Promise<ForumPost[] | undefined> => {
+    collectionId: PublicKey
+  ): Promise<Result<ForumPost[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -456,18 +502,20 @@ export class DispatchForum implements IForum {
         const topics = await forum.getTopicsForForum();
 
         return topics;
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
   getPostsForForum = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     // If this parameter is set, skip checking whether the forum
     // exists on-chain
     assumeExists = false
-  ): Promise<ForumPost[] | undefined> => {
+  ): Promise<Result<ForumPost[]>> => {
     const { wallet, connection } = this;
 
     try {
@@ -476,14 +524,18 @@ export class DispatchForum implements IForum {
         const posts = await forum.getPostsForForum();
 
         return posts;
+      } else {
+        return notFoundError(
+          'Forum does not exist'
+        );
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
   canCreateTopic = async(
-    collectionId: web3.PublicKey
+    collectionId: PublicKey
   ): Promise<boolean> => {
     const wallet = this.wallet;
     const conn = this.connection;
@@ -498,9 +550,9 @@ export class DispatchForum implements IForum {
 
   createTopic = async (
     topic: { subj?: string; body: string; meta?: any },
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     postRestriction?: PostRestriction
-  ): Promise<string | undefined> => {
+  ): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -513,16 +565,18 @@ export class DispatchForum implements IForum {
         const newTopic = await forum.createTopic(topic, postRestriction);
 
         return newTopic;
+      } else {
+        return notFoundError('The forum does not exist');
       }
     } catch (err) {
-      throw(parseError(err))
+      return parseError(err);
     }
   };
 
   getTopicData = async (
     topicId: number,
-    collectionId: web3.PublicKey
-  ): Promise<ForumPost> => {
+    collectionId: PublicKey
+  ): Promise<Result<ForumPost>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -533,12 +587,12 @@ export class DispatchForum implements IForum {
       const topic = topics.filter((t) => t.isTopic && t.postId === topicId);
       return topic[0];
     } catch (err) {
-      throw(parseError(err))
+      return parseError(err)
     }
   };
 
   canPost = async (
-    collectionId: web3.PublicKey,
+    collectionId: PublicKey,
     topic: ForumPost
   ): Promise<boolean> => {
     const owner = this.wallet;
@@ -559,8 +613,8 @@ export class DispatchForum implements IForum {
       meta?: any;
     },
     topicId: number,
-    collectionId: web3.PublicKey
-  ): Promise<string | undefined> => {
+    collectionId: PublicKey
+  ): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
     try {
@@ -570,21 +624,28 @@ export class DispatchForum implements IForum {
       );
       const topic = await this.getTopicData(topicId, collectionId);
       if ((await forum.exists()) && topic) {
-        const tx1 = await forum.createForumPost(post, topic);
 
-        return tx1;
+        if (isSuccess(topic)) {
+          return forum.createForumPost(post, topic);
+        } else {
+          // If topic is an error, return that error
+          const error = topic;
+          return error;
+        }
+      } else {
+        return notFoundError('Forum does not exist');
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
 
-  editForumPost = async(collectionId: web3.PublicKey, post: ForumPost, newPostData: {
+  editForumPost = async(collectionId: PublicKey, post: ForumPost, newPostData: {
     subj?: string;
     body: string;
     meta?: any;
-  }): Promise<string> => {
+  }): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -596,25 +657,30 @@ export class DispatchForum implements IForum {
       const tx = await forum.editForumPost(post, newPostData);
       return tx
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }}
 
-  getTopicMessages = async (topicId: number, collectionId: web3.PublicKey): Promise<ForumPost[] | undefined> => {
+  getTopicMessages = async (topicId: number, collectionId: PublicKey): Promise<Result<ForumPost[]>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
     try {
       const forum = new Forum(new DispatchConnection(conn, owner, {cluster: this.cluster}),collectionId);
       const topic = await this.getTopicData(topicId, collectionId);
-      const topicPosts = await forum.getTopicMessages(topic);
-
-      return topicPosts;
+      if (isSuccess(topic)) {
+        const topicPosts = await forum.getTopicMessages(topic);
+        return topicPosts;
+      } else {
+        // If topic is an error, return the error
+        const error = topic;
+        return error;
+      }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
-  deleteForumPost = async (post: ForumPost, collectionId: web3.PublicKey, asMod?: boolean): Promise<string> => {
+  deleteForumPost = async (post: ForumPost, collectionId: PublicKey, asMod?: boolean): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -624,11 +690,11 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
-  voteUpForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<string> =>{
+  voteUpForumPost = async (post: ForumPost, collectionId: PublicKey): Promise<Result<string>> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -638,11 +704,11 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
-  voteDownForumPost = async (post: ForumPost, collectionId: web3.PublicKey): Promise<string> => {
+  voteDownForumPost = async (post: ForumPost, collectionId: PublicKey): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -652,17 +718,17 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
   replyToForumPost = async (
-    replyToPost: ForumPost, collectionId: web3.PublicKey,
+    replyToPost: ForumPost, collectionId: PublicKey,
     post: {
       subj?: string;
       body: string;
       meta?: any;
-    }): Promise<string> => {
+    }): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -672,11 +738,11 @@ export class DispatchForum implements IForum {
 
       return reply;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
-  getReplies = async (topic: ForumPost, collectionId: web3.PublicKey): Promise<ForumPost[]> =>{
+  getReplies = async (topic: ForumPost, collectionId: PublicKey): Promise<Result<ForumPost[]>> =>{
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -686,11 +752,11 @@ export class DispatchForum implements IForum {
 
       return replies;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
-  getForumPostRestriction = async(collectionId: web3.PublicKey) => {
+  getForumPostRestriction = async(collectionId: PublicKey) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -700,11 +766,11 @@ export class DispatchForum implements IForum {
 
       return restriction;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
-  setForumPostRestriction = async(collectionId: web3.PublicKey, restriction: PostRestriction) => {
+  setForumPostRestriction = async(collectionId: PublicKey, restriction: PostRestriction) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -716,12 +782,12 @@ export class DispatchForum implements IForum {
 
       return dispatchConn.sendTransaction(tx);
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
 
-  deleteForumPostRestriction = async(collectionId: web3.PublicKey) => {
+  deleteForumPostRestriction = async(collectionId: PublicKey) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -733,11 +799,11 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
-  canVote = async(collectionId: web3.PublicKey, post: ForumPost) => {
+  canVote = async(collectionId: PublicKey, post: ForumPost) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -747,11 +813,11 @@ export class DispatchForum implements IForum {
 
       return tx;
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   };
 
-  getVote = async(collectionId: web3.PublicKey, post: ForumPost) => {
+  getVote = async(collectionId: PublicKey, post: ForumPost) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -763,24 +829,31 @@ export class DispatchForum implements IForum {
       } else if (vote == VoteType.up) {
         return true;
       } else {
-        return vote;
+        // Vote is undefined
+        return notFoundError(
+          'The vote is neither up nor down'
+        );
       }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
 
   }
 
-  getVotes = async(collectionId: web3.PublicKey) => {
+  getVotes = async(collectionId: PublicKey) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
       const forum = new Forum(new DispatchConnection(conn, wallet, {cluster: this.cluster}), collectionId);
       const votes = await forum.getVotes();
-      return votes;
+      if (votes) {
+        return votes;
+      } else {
+        return notFoundError('The votes were not found');
+      }
     } catch (error) {
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
@@ -792,7 +865,7 @@ export class DispatchForum implements IForum {
       const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
       return mintsForOwner;
     } catch (error) {
-        throw(parseError(error))
+        return parseError(error);
     }
   }
 
@@ -802,15 +875,15 @@ export class DispatchForum implements IForum {
 
     try {
       const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
-      const displayableMetadataPromises: Promise<DisplayableToken | DispatchClientError>[] = metadataForOwner.map(async ({ mint, data }) => {
+      const displayableMetadataPromises: Promise<Result<DisplayableToken>>[] = metadataForOwner.map(async ({ mint, data }) => {
         // Remove NUL bytes from name and URI
         const name = data.name.replaceAll('\x00', '');
         const uri = data.uri.replaceAll('\x00', '');
 
         if (uri === '') {
-          return dispatchClientError({
-            message: `Cannot load metadata for token ${mint.toBase58()}. Field uri is empty`
-          });
+          return notFoundError(
+            `Cannot load metadata for token ${mint.toBase58()}. Field uri is empty`
+          );
         }
 
         const url = stringToURL(uri);
@@ -824,9 +897,9 @@ export class DispatchForum implements IForum {
               parsed = await fetchedURI.json()
             }
             catch (error) {
-              return dispatchClientError({
-                message: `Cannot load metadata for token ${mint.toBase58()}. The metadata URI is invalid.`
-              });
+              return notFoundError(
+                `Cannot load metadata for token ${mint.toBase58()}. The metadata URI is invalid.`
+              );
             }
 
             // Verify that the parsed object has a string image
@@ -844,24 +917,26 @@ export class DispatchForum implements IForum {
                     uri: imageURL
                   };
                 } else {
-                  return dispatchClientError({
-                    message: `Cannot use non HTTP-protocol ${parsed.image.protocol} in ${url} for token ${mint.toBase58()}`
-                  });
+                  // TODO(andrew) categorize this error? Bad
+                  // format error?
+                  return badInputError(
+                    `Cannot use non HTTP-protocol ${parsed.image.protocol} in ${url} for token ${mint.toBase58()}`
+                  );
                 }
               } else {
-                return dispatchClientError({
-                  message: `Image address ${parsed.image} is not a valid URL for mint ${mint.toBase58()}`
-                });
+                return badInputError(
+                  `Image address ${parsed.image} is not a valid URL for mint ${mint.toBase58()}`
+                );
               }
             } else {
-              return dispatchClientError({
-                message: `Cannot parse fetched image metadata ${parsed} for token ${mint.toBase58()}. .image field is not found or not a string.`
-              });
+              return badInputError(
+                `Cannot parse fetched image metadata ${parsed} for token ${mint.toBase58()}. .image field is not found or not a string.`
+              );
             }
           } else {
-            return dispatchClientError({
-              message: `Cannot use non HTTP-protocol ${url.protocol} in ${url} for token ${mint.toBase58()}`
-            });
+            return badInputError(
+              `Cannot use non HTTP-protocol ${url.protocol} in ${url} for token ${mint.toBase58()}`
+            );
           }
         } else {
           // If URL parsing failed, return the parsing error
@@ -877,9 +952,7 @@ export class DispatchForum implements IForum {
           return true;
         } else {
           // Report failures
-          if (result.error) {
-            console.error(result.error);
-          }
+          console.error(result);
           return false;
         }
       }) as DisplayableToken[];
@@ -887,17 +960,17 @@ export class DispatchForum implements IForum {
       // Return successes
       return successes;
     } catch (error) {
-        throw(parseError(error))
+        return parseError(error);
     }
   }
 
-  transferNFTs = async(receiverId: web3.PublicKey, mint: web3.PublicKey, sendTransaction: (transaction: web3.Transaction, connection: web3.Connection)=> Promise<string>) => {
+  transferNFTs = async(receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection)=> Promise<string>) => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
       let receiverAcc = await getAssociatedTokenAddress(mint, receiverId);
-      let txn = new web3.Transaction();
+      let txn = new Transaction();
       try {
         await getAccount(conn, receiverAcc);
       } catch (error: any) {
@@ -930,7 +1003,7 @@ export class DispatchForum implements IForum {
       return result;
     } catch (error) {
       console.log(error)
-        throw(parseError(error))
+        return parseError(error);
     }
   }
 }

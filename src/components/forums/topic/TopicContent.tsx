@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
@@ -37,6 +37,8 @@ import {
   useForumIdentity,
   ForumIdentity,
 } from "../../../utils/hooks";
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -165,13 +167,14 @@ export function TopicContent(props: TopicContentProps) {
   // };
 
   const onDeleteTopic = async () => {
-    try {
-      setDeletingTopic(true);
-      const tx = await forum.deleteForumPost(
-        topic,
-        forumData.collectionId,
-        userRoles.includes(UserRoleType.Moderator)
-      );
+    setDeletingTopic(true);
+    const tx = await forum.deleteForumPost(
+      topic,
+      forumData.collectionId,
+      userRoles.includes(UserRoleType.Moderator)
+    );
+
+    if (isSuccess(tx)) {
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -187,38 +190,29 @@ export function TopicContent(props: TopicContentProps) {
         okPath: forumPath,
       });
       setShowDeleteConfirmation(false);
-      if (tx) {
-        // When the topic is confirmed deleted, redirect to the
-        // parent URL (the main forum)
-        await forum.connection.confirmTransaction(tx).then(() => {
-          location.assign(`${forumPath}${location.search}`);
-        });
-      }
-      setDeletingTopic(false);
+      // When the topic is confirmed deleted, redirect to the
+      // parent URL (the main forum)
+      await forum.connection.confirmTransaction(tx).then(() => {
+        location.assign(`${forumPath}${location.search}`);
+      });
+
       return tx;
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
-      if (error.code === 4001) {
-        setModalInfo({
-          title: "The topic could not be deleted",
-          type: MessageType.error,
-          body: `The user cancelled the request`,
-        });
-      } else {
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be deleted`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The topic could not be deleted`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
-  };
+  }
 
   return (
     <>
-      {!_.isNil(modalInfo) && (
+      {!isNil(modalInfo) && (
         <PopUpModal
           id="topic-info"
           visible
@@ -235,7 +229,7 @@ export function TopicContent(props: TopicContentProps) {
       )}
       {ReactGA.send("pageview")}
 
-      {showAddAccessToken && _.isNil(modalInfo) && (
+      {showAddAccessToken && isNil(modalInfo) && (
         <PopUpModal
           id="add-access-token"
           visible
@@ -393,23 +387,29 @@ export function TopicContent(props: TopicContentProps) {
                 className="moderatorTool"
                 disabled={!permission.readAndWrite}
                 onClick={() => setShowAddAccessToken(true)}>
-                Manage post access
+                <span>Manage post access</span>
+                <div className="lock">
+                  <Lock />
+                </div>
               </button>
             </div>
-            {// The gifting UI should be hidden on the apes forum for non-mods.
-            // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-            (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-              userIsMod) &&
-              !forum.wallet.publicKey?.equals(topic.poster) && (
-                <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <button
-                    className="awardButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowGiveAward(true)}>
-                    Send Token <Gift />
-                  </button>
-                </PermissionsGate>
-              )}
+            {
+              // The gifting UI should be hidden on the apes forum for non-mods.
+              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+              (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                userIsMod) &&
+                !forum.wallet.publicKey?.equals(topic.poster) && (
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <button
+                      className="awardButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowGiveAward(true)}>
+                      <span>Send Token</span>
+                      <Gift />
+                    </button>
+                  </PermissionsGate>
+                )
+            }
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
@@ -519,7 +519,6 @@ function TopicHeader(props: TopicHeaderProps) {
             <div className="posterId">
               {identity ? identity.displayName : topic.poster.toBase58()}
             </div>
-            &nbsp;
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId
             prop to an unrelated key */}

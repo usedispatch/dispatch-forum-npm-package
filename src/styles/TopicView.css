@@ -77,10 +77,7 @@
   .topicView {
     background: #f7f7fe;
     padding-top: 24px;
-
-    @media only screen and (max-width: 570px) {
-      overflow-x: overlay;
-    }
+    overflow-y: hidden;
   }
 
   .topicViewContainer {

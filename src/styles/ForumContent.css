@@ -14,10 +14,14 @@
 
       font-size: 36px;
       color: #2e008b;
+      word-break: break-word;
 
       @media only screen and (max-width: 570px) {
+        flex-direction: column;
         margin: 0 8px;
         padding: 12px 0;
+
+        font-size: 26px;
       }
     }
 
@@ -276,7 +280,7 @@
     ul {
       padding-left: 0;
       max-height: 260px;
-      overflow-y: overlay;
+      overflow-y: scroll;
     }
   }
 

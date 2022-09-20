@@ -2,7 +2,7 @@ import {
   Connection,
   Cluster
 } from '@solana/web3.js';
-import { WalletAdapterInterface } from "@usedispatch/client";
+import { WalletInterface } from "@usedispatch/client";
 import ReactGA from "react-ga4"
 import {
   FC,
@@ -16,7 +16,7 @@ import { DispatchForum, MainForum } from "./../utils/postbox/postboxWrapper";
 import { UserRoleType } from "./../utils/permissions";
 import { DebugWarning } from "./../components/common/DebugWarning";
 export interface DispatchAppProps {
-  wallet: WalletAdapterInterface;
+  wallet: WalletInterface;
   connection: Connection;
   cluster: Cluster;
   children: ReactNode | ReactNode[];

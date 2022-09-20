@@ -2988,18 +2988,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@usedispatch/client@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "@usedispatch/client@npm:0.13.0"
+"@usedispatch/client@npm:^0.14.0":
+  version: 0.14.0
+  resolution: "@usedispatch/client@npm:0.14.0"
   dependencies:
     "@bonfida/spl-name-service": ^0.1.30
     "@metaplex-foundation/mpl-token-metadata": ^2.2.2
     "@project-serum/anchor": ^0.24.2
     "@solana/buffer-layout": ^4.0.0
     "@solana/spl-token": ^0.2.0
-    "@solana/web3.js": ^1.44.0
+    "@solana/web3.js": ^1.50.1
     crypto-js: ^4.1.1
-  checksum: 4bc5accf180780aeff6c8ae523e8d750cea3b050ddcffa5adf4fe7dd2b456e3b38823b2b5fc3810b95279bbe1a53a31270f3b8c7f886447deb7f441395d3b3d1
+    lodash: ^4.17.21
+  checksum: cf7b7062f96941bf118f2625d77f2ef2c01cfa0b5c16d5d0c10d039ded2485efca6e820f0ba3d8eb79d3540330e51d0f5d9297ebc3d514494d644e1e0caadd6c
   languageName: node
   linkType: hard
 
@@ -3023,7 +3024,7 @@ __metadata:
     "@types/node-fetch": ^2.6.1
     "@types/react": ^18.0.12
     "@types/react-alert": ^5.2.1
-    "@usedispatch/client": ^0.13.0
+    "@usedispatch/client": ^0.14.0
     assert: ^2.0.0
     async: ^3.2.4
     autoprefixer: ^10.4.0

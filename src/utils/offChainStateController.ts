@@ -1,9 +1,9 @@
-import { web3 } from '@project-serum/anchor'
+import { PublicKey } from "@solana/web3.js"
 import { createClient } from '@supabase/supabase-js'
 import { DEFAULT_FORUM_TYPE } from './consts'
 
 
-export async function addForum(forumID: web3.PublicKey, forumName: string, image?: string) {
+export async function addForum(forumID: PublicKey, forumName: string, image?: string) {
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,

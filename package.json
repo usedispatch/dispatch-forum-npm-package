@@ -73,9 +73,9 @@
   },
   "dependencies": {
     "@parcel/config-default": "^2.7.0",
-    "@supabase/supabase-js": "^1.35.6",
     "@solana/spl-token": "^0.3.1",
     "@solana/web3.js": "^1.50.1",
+    "@supabase/supabase-js": "^1.35.6",
     "@types/lodash": "^4.14.185",
     "@usedispatch/client": "^0.13.0",
     "bs58": "^5.0.0",

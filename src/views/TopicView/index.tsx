@@ -15,7 +15,7 @@ import {
 } from '../../utils/hooks/useModal'
 import {
   useParticipatingModerators
-} from "../../utils/hooks";
+} from "../../utils/hooks/useParticipatingModerators";
 
 import { Chevron } from "../../assets";
 import { MessageType, Spinner, Link } from "../../components/common";

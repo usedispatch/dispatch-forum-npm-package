@@ -24,9 +24,9 @@
     "dist/**/*"
   ],
   "alias": {
-    "@hooks": "./utils/hooks",
-    "@types": "./types",
-    "@utils": "./utils"
+    "@hooks": "./src/utils/hooks",
+    "@types": "./src/types",
+    "@utils": "./src/utils"
   },
   "scripts": {
     "clean": "rm -rf dist",

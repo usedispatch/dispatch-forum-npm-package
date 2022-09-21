@@ -26,7 +26,7 @@ import { isError, errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
   useForumIdentity,
-} from "../../../utils/hooks/useForumIdentity";
+} from '@hooks';
 import {
   restrictionListToString,
   pubkeysToRestriction,

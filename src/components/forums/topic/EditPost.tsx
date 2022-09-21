@@ -12,8 +12,8 @@ import {
 import { Notification } from "../../forums";
 
 import { useForum } from "../../../contexts/DispatchProvider";
+import { ForumData } from '../../../types/forumData';
 
-import { ForumData } from "../../../utils/hooks";
 import { isSuccess } from "../../../utils/loading";
 import { errorSummary } from "../../../utils/error";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";

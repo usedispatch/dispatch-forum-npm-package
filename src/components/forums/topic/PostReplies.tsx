@@ -10,7 +10,8 @@ import { EditPost, RoleLabel, Votes } from "../index";
 
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
+import { ForumData, ClientPost } from '../../../types/forumData';
+import { isForumPost } from '../../../utils/forumData';
 import { Result } from "../../../types/error";
 import { getIdentity } from "../../../utils/identity";
 

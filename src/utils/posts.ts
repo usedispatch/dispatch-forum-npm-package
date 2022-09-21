@@ -2,13 +2,13 @@ import {
   ForumPost
 } from '@usedispatch/client';
 import {
-  CreatedPost,
   ClientPost,
-  EditedPost,
-  isCreatedPost,
+  EditedPost
+} from '../types/forumData';
+import {
   isForumPost,
   isEditedPost
-} from '../utils/hooks';
+} from '../utils/forumData';
 
 export function selectTopics(
   posts: ClientPost[]

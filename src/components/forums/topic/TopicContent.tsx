@@ -28,11 +28,9 @@ import { UserRoleType } from "../../../utils/permissions";
 import { SCOPES } from "../../../utils/permissions";
 import { selectRepliesFromPosts } from "../../../utils/posts";
 import { getIdentity } from "../../../utils/identity";
+import { ForumData, CreatedPost, EditedPost } from '../../../types/forumData';
+import { isEditedPost } from '../../../utils/forumData';
 import {
-  ForumData,
-  CreatedPost,
-  EditedPost,
-  isEditedPost,
   useUserIsMod,
   useForumIdentity,
   ForumIdentity,

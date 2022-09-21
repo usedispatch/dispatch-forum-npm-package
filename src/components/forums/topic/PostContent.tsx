@@ -23,13 +23,9 @@ import { isSuccess } from "../../../utils/loading";
 import { errorSummary } from "../../../utils/error";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
+import { ForumData, CreatedPost, ClientPost } from '../../../types/forumData';
+import { isForumPost, isEditedPost, isCreatedPost } from '../../../utils/forumData';
 import {
-  ForumData,
-  CreatedPost,
-  isForumPost,
-  isEditedPost,
-  isCreatedPost,
-  ClientPost,
   useUserIsMod,
   useForumIdentity,
   ForumIdentity,

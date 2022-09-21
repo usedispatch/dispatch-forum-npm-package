@@ -14,7 +14,7 @@ import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { errorSummary } from "../../../utils/error";
-import { ForumData } from "../../../utils/hooks";
+import { ForumData } from "../../../types/forumData";
 import { isSuccess } from "../../../utils/loading";
 import { Result } from '../../../types/error';
 

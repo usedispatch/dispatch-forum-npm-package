@@ -7,12 +7,12 @@ import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
 
 import {
-  useForumData,
+  useForumData
+} from '../../utils/hooks/useForumData';
+import { isForumPost, isEditedPost } from '../../utils/forumData';
+import {
   useModal,
-  useParticipatingModerators,
-  isForumPost,
-  isEditedPost,
-  EditedPost,
+  useParticipatingModerators
 } from "../../utils/hooks";
 
 import { Chevron } from "../../assets";
@@ -24,6 +24,7 @@ import {
 } from "../../components/forums";
 import { Loading } from "../../types/loading";
 import { DispatchError } from "../../types/error";
+import { EditedPost } from "../../types/forumData";
 import {
   notFoundError,
   isError,

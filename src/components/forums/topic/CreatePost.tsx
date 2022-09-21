@@ -3,9 +3,9 @@ import { useState, ReactNode, useMemo } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Result } from '../../../types/error';
+import { CreatedPost } from '../../../types/forumData';
 import { errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
-import { CreatedPost } from "../../../utils/hooks";
 
 import {
   CollapsibleProps,

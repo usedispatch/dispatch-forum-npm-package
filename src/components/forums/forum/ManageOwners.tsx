@@ -12,13 +12,13 @@ import {
 import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 
-import { ForumData } from "../../../utils/hooks";
 import { getIdentity } from '../../../utils/identity';
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
 import { errorSummary } from "../../../utils/error";
 import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
 import { SCOPES } from "../../../utils/permissions";
+import { ForumData } from '../../../types/forumData';
 
 interface ManageOwnersProps {
   forumData: ForumData;

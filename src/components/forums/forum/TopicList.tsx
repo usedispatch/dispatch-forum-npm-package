@@ -15,7 +15,7 @@ import {
 import { isSuccess } from "../../../utils/loading";
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { getIdentity } from '../../../utils/identity';
-import { ForumData } from "../../../utils/hooks";
+import { ForumData } from '../../../types/forumData';
 
 interface TopicListProps {
   forumData: ForumData;

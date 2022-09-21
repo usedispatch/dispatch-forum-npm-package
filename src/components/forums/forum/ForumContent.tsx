@@ -20,10 +20,10 @@ import { useRole } from "../../../contexts/DispatchProvider";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Result } from "../../../types/error";
+import { ForumData } from "../../../types/forumData";
 import { isError, errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
-  ForumData,
   useForumIdentity,
   ForumIdentity,
 } from "../../../utils/hooks";

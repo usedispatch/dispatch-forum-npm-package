@@ -1,5 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { newPublicKey, isSuccess } from 'utils';
+import { newPublicKey, isSuccess } from '@utils';
 
 export function csvStringToPubkeyList(pubkeyList: string): PublicKey[] {
   const tokenCSV = pubkeyList.replace(/\s+/g, "");

@@ -17,6 +17,7 @@ import { useModerators } from '@hooks';
 import {
   NOTIFICATION_BANNER_TIMEOUT,
   isSuccess,
+  isError,
   errorSummary,
   newPublicKey,
   SCOPES,

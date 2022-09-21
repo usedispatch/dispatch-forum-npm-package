@@ -24,12 +24,12 @@ import { errorSummary } from "../../../utils/error";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
 import { ForumData, CreatedPost, ClientPost } from '../../../types/forumData';
+import { ForumIdentity } from '../../../types/forumIdentity';
 import { isForumPost, isEditedPost, isCreatedPost } from '../../../utils/forumData';
 import { useUserIsMod } from '../../../utils/hooks/useUserIsMod';
 import {
   useForumIdentity,
-  ForumIdentity,
-} from "../../../utils/hooks";
+} from "../../../utils/hooks/useForumIdentity";
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {

@@ -21,12 +21,12 @@ import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { Result } from "../../../types/error";
 import { ForumData } from "../../../types/forumData";
+import { ForumIdentity } from "../../../types/forumIdentity";
 import { isError, errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
   useForumIdentity,
-  ForumIdentity,
-} from "../../../utils/hooks";
+} from "../../../utils/hooks/useForumIdentity";
 import {
   restrictionListToString,
   pubkeysToRestriction,

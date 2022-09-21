@@ -25,8 +25,8 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
 import { ForumData, CreatedPost, ClientPost } from '../../../types/forumData';
 import { isForumPost, isEditedPost, isCreatedPost } from '../../../utils/forumData';
+import { useUserIsMod } from '../../../utils/hooks/useUserIsMod';
 import {
-  useUserIsMod,
   useForumIdentity,
   ForumIdentity,
 } from "../../../utils/hooks";

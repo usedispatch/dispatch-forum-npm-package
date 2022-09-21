@@ -30,8 +30,8 @@ import { selectRepliesFromPosts } from "../../../utils/posts";
 import { getIdentity } from "../../../utils/identity";
 import { ForumData, CreatedPost, EditedPost } from '../../../types/forumData';
 import { isEditedPost } from '../../../utils/forumData';
+import { useUserIsMod } from '../../../utils/hooks/useUserIsMod';
 import {
-  useUserIsMod,
   useForumIdentity,
   ForumIdentity,
 } from "../../../utils/hooks";

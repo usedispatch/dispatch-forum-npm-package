@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
+    "typecheck": "yarn clean && tsc",
     "build": "yarn clean && NODE_ENV=development yarn parcel build && cp README.md ./dist",
     "build:prod": "yarn clean && NODE_ENV=production yarn parcel build && cp README.md ./dist",
     "test": "echo \"Error: no test specified\" && exit 1"

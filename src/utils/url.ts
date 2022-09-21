@@ -1,4 +1,4 @@
-import { Result } from '../types/error';
+import { Result } from '@types';
 import { uncategorizedError } from '../utils/error';
 
 /**

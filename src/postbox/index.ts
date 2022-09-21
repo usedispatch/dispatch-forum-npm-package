@@ -31,11 +31,11 @@ import {
   isSuccess,
   stringToURL
 } from '@utils'
-import { Result } from '../types/error';
 import {
+  Result,
   DisplayableToken,
   Description
-} from '../types/postboxWrapper';
+} from '@types';
 
 enum UserCategory {
   moderator,

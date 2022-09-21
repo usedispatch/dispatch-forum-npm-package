@@ -22,7 +22,12 @@ import { RoleLabel } from "./RoleLabel";
 
 import { usePath } from "../../../contexts/DispatchProvider";
 
-import { ForumData, CreatedPost, EditedPost } from '../../../types/forumData';
+import {
+  ForumData,
+  CreatedPost,
+  EditedPost,
+  ForumIdentity
+} from '@types';
 import { DispatchForum } from '@postbox';
 import {
   NOTIFICATION_BANNER_TIMEOUT,
@@ -35,7 +40,6 @@ import {
   errorSummary,
   restrictionListToString,
 } from '@utils';
-import { ForumIdentity } from '../../../types/forumIdentity';
 import { useUserIsMod, useForumIdentity } from '@hooks';
 
 interface TopicContentProps {

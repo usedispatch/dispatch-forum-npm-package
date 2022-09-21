@@ -1,7 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
-import { Result } from '../types/error';
-import { Description } from '../types/postboxWrapper';
-import { Loading } from '../types/loading';
+import { Result } from './error';
+import { Description } from './postboxWrapper';
+import { Loading } from './loading';
 import { ForumPost, PostRestriction, ChainVoteEntry } from "@usedispatch/client";
 
 export interface ForumData {

@@ -1,8 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { useState, useEffect } from 'react';
 import { ForumPost, PostRestriction, ChainVoteEntry } from '@usedispatch/client';
-import { Loading } from '../types/loading';
-import { Result } from "../types/error";
 import {
   initial,
   isInitial,
@@ -16,9 +14,11 @@ import { parseError } from '../utils/parseErrors';
 import {
   ForumData,
   CreatedPost,
-  EditedPost
-} from "../types/forumData";
-import { Description } from '../types/postboxWrapper';
+  EditedPost,
+  Loading,
+  Result,
+  Description
+} from '@types';
 import { DispatchForum } from '@postbox';
 
 // This hook returns all the necessary forum data and a function

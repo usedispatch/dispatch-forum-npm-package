@@ -27,9 +27,11 @@ import {
   restrictionListToString,
   pubkeysToRestriction,
 } from '@utils';
-import { Result } from "../../../types/error";
-import { ForumData } from "../../../types/forumData";
-import { ForumIdentity } from "../../../types/forumIdentity";
+import {
+  Result,
+  ForumData,
+  ForumIdentity
+} from '@types';
 import {
   useForumIdentity,
 } from '@hooks';

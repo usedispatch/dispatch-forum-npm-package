@@ -5,7 +5,7 @@ import {
   DispatchError,
   BadInputError,
   ContractError
-} from '../types/error';
+} from '@types';
 
 export function errorSummary(error: DispatchError) {
   // TODO(andrew) make this more descriptive.

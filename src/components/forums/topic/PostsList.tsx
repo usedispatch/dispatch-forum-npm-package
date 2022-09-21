@@ -5,7 +5,10 @@ import { ForumPost } from "@usedispatch/client";
 import { PostContent } from "../../forums";
 import { DispatchForum } from '@postbox';
 import { UserRoleType } from '@utils';
-import { ForumData, CreatedPost } from '../../../types/forumData';;
+import {
+  ForumData,
+  CreatedPost
+} from '@types';
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostListProps {

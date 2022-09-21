@@ -34,9 +34,11 @@ import {
   PoweredByDispatch,
   TopicContent,
 } from "../../components/forums";
-import { Loading } from "../../types/loading";
-import { DispatchError } from "../../types/error";
-import { EditedPost } from "../../types/forumData";
+import {
+  Loading,
+  DispatchError,
+  EditedPost
+} from '@types';
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { StarsAlert } from "../../components/forums/StarsAlert";

@@ -12,7 +12,7 @@ import {
 import { Notification } from "../../forums";
 
 import { useForum } from "../../../contexts/DispatchProvider";
-import { ForumData } from '../../../types/forumData';
+import { ForumData } from '@types';
 
 import { isSuccess } from "../../../utils/loading";
 import { errorSummary } from "../../../utils/error";

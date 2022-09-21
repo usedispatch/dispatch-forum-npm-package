@@ -3,7 +3,7 @@ import {
   ClientPost,
   EditedPost,
   CreatedPost
-} from '../types/forumData';
+} from '@types';
 
 // TODO(andrew) move all these intos a types util file
 export function isForumPost(

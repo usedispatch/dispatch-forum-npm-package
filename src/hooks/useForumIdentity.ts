@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 import { useMemo } from 'react';
-import { ForumIdentity } from '../types/forumIdentity';
+import { ForumIdentity } from '@types';
 
 
 /**

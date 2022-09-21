@@ -4,11 +4,11 @@ import {
 import {
   ClientPost,
   EditedPost
-} from '../types/forumData';
+} from '@types';
 import {
   isForumPost,
   isEditedPost
-} from '../utils/forumData';
+} from './forumData';
 
 export function selectTopics(
   posts: ClientPost[]

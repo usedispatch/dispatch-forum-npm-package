@@ -18,8 +18,12 @@ import { Votes, Notification } from "../../../components/forums";
 import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 
 import { DispatchForum } from '@postbox';
-import { ForumData, CreatedPost, ClientPost } from '../../../types/forumData';
-import { ForumIdentity } from '../../../types/forumIdentity';
+import {
+  ForumData,
+  CreatedPost,
+  ClientPost,
+  ForumIdentity
+} from '@types';
 import { useUserIsMod, useForumIdentity } from '@hooks';
 import {
   NOTIFICATION_BANNER_TIMEOUT,

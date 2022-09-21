@@ -12,7 +12,7 @@ import {
 import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 
-import { ForumData } from '../../../types/forumData';
+import { ForumData } from '@types';
 import { useModerators } from '@hooks';
 import {
   NOTIFICATION_BANNER_TIMEOUT,

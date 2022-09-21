@@ -5,8 +5,8 @@ import {
   Loading,
   Initial,
   Pending
-} from '../types/loading';
-import { Result } from '../types/error';
+} from '@types';
+import { Result } from '@types';
 
 /**
  * Return whether a given Loading value is a success or not, and

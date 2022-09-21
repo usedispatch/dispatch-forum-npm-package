@@ -14,9 +14,8 @@ import { Notification } from "..";
 import { useForum } from "./../../../contexts/DispatchProvider";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { errorSummary } from "../../../utils/error";
-import { ForumData } from "../../../types/forumData";
+import { ForumData, Result } from '@types';
 import { isSuccess } from "../../../utils/loading";
-import { Result } from '../../../types/error';
 
 interface VotesProps {
   post: ForumPost;

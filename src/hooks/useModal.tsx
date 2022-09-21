@@ -3,7 +3,7 @@ import {
   useMemo
 } from 'react';
 
-import { ModalInfo } from '../types/modal';
+import { ModalInfo } from '@types';
 import { PopUpModal } from '../components/common';
 
 export function useModal() {

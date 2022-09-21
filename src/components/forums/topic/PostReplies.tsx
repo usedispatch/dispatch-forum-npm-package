@@ -10,9 +10,12 @@ import { EditPost, RoleLabel, Votes } from "../index";
 
 import { useForum } from "../../../contexts/DispatchProvider";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData, ClientPost } from '../../../types/forumData';
+import {
+  ForumData,
+  ClientPost,
+  Result
+} from '@types';
 import { isForumPost } from '../../../utils/forumData';
-import { Result } from "../../../types/error";
 import { getIdentity } from "../../../utils/identity";
 
 interface PostRepliesProps {

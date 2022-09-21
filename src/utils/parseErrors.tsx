@@ -1,6 +1,5 @@
-import isNil from 'lodash/isNil';
-import { DispatchError } from '../types/error';
-import { uncategorizedError } from '../utils/error';
+import { DispatchError } from '@types';
+import { uncategorizedError } from './error';
 
 const postboxErrorCode = {
   // Create post errors

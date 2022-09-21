@@ -1,5 +1,5 @@
 import { PublicKey } from "@solana/web3.js";
-import { Result } from '../types/error';
+import { Result } from '@types';
 import { badInputError } from '@utils';
 
 /**

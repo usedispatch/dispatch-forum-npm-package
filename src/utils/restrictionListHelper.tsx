@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { PostRestriction } from "@usedispatch/client";
-import { Result, DispatchError } from '../types/error';
+import { Result, DispatchError } from '@types';
 import { newPublicKey, isError, badInputError, errorSummary } from '@utils';
 
 // function cleans csv string, parses out into pubkeys,

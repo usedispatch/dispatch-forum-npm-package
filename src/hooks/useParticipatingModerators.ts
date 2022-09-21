@@ -10,8 +10,10 @@ import {
 } from '@solana/spl-token';
 import { getAccountsInfoPaginated } from "@usedispatch/client";
 
-import { ForumData } from '../types/forumData';
-import { Loading } from '../types/loading';
+import {
+  ForumData,
+  Loading
+} from '@types';
 import { DispatchForum } from '@postbox';
 import {
   isSuccess,

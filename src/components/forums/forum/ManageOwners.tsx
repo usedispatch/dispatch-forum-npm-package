@@ -20,7 +20,7 @@ import {
   NOTIFICATION_BANNER_TIMEOUT,
   getIdentity
 } from '@utils'
-import { ForumData } from '../../../types/forumData';
+import { ForumData } from '@types';
 
 interface ManageOwnersProps {
   forumData: ForumData;

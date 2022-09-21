@@ -15,7 +15,7 @@ import {
   newPublicKey,
   getIdentity,
 } from '@utils';
-import { ForumData } from '../../../types/forumData';
+import { ForumData } from '@types';
 
 interface TopicListProps {
   forumData: ForumData;

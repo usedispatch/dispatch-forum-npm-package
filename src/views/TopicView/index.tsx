@@ -12,6 +12,8 @@ import {
 import { isForumPost, isEditedPost } from '../../utils/forumData';
 import {
   useModal,
+} from '../../utils/hooks/useModal'
+import {
   useParticipatingModerators
 } from "../../utils/hooks";
 

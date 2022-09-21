@@ -18,7 +18,7 @@ import { Notification } from "..";
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { isSuccess } from '../../../utils/loading';
 import { errorSummary } from '../../../utils/error';
-import { useModal } from "../../../utils/hooks";
+import { useModal } from "../../../utils/hooks/useModal";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
 import { getIdentity } from "../../../utils/identity";

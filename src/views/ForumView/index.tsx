@@ -22,7 +22,7 @@ import {
   isNotFoundError
 } from '../../utils/error';
 import { useForumData } from '../../utils/hooks/useForumData';
-import { useModal } from "../../utils/hooks";
+import { useModal } from "../../utils/hooks/useModal";
 import { getCustomStyles } from "../../utils/getCustomStyles";
 import { StarsAlert } from "../../components/forums/StarsAlert";
 

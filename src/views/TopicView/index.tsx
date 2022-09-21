@@ -37,7 +37,7 @@ import {
 } from "../../utils/loading";
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
-import { getUserRole } from "./../../utils/postbox/userRole";
+import { getUserRole } from '@postbox';
 import { getCustomStyles } from "../../utils/getCustomStyles";
 import { StarsAlert } from "../../components/forums/StarsAlert";
 

@@ -24,6 +24,7 @@
     "dist/**/*"
   ],
   "alias": {
+    "@postbox": "./src/postbox",
     "@hooks": "./src/hooks",
     "@types": "./src/types",
     "@utils": "./src/utils"

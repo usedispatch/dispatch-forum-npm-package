@@ -5,7 +5,8 @@
     "paths": {
       "@hooks": ["./hooks"],
       "@utils": ["./utils"],
-      "@types": ["./types"]
+      "@types": ["./types"],
+      "@postbox": ["./postbox"]
     },
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],

@@ -29,6 +29,10 @@ import {
 } from "../parseErrors";
 import { Result } from '../../types/error';
 import {
+  DisplayableToken,
+  Description
+} from '../../types/postboxWrapper';
+import {
   notFoundError,
   badInputError
 } from '../../utils/error';
@@ -39,18 +43,6 @@ enum UserCategory {
   moderator,
   owner,
   poster,
-}
-
-/**
- * A token that can be displayed in the UI
- *
- * TODO(andrew) move this type definition into the types
- * directory under a suitable filename
- */
-export interface DisplayableToken {
-  name: string;
-  mint: PublicKey;
-  uri: URL;
 }
 
 interface Permission {
@@ -78,10 +70,9 @@ export interface IForum {
   >;
 
   // Get the description of the forum: title and blurb
-  getDescription(collectionId: PublicKey): Promise<Result<{
-    title: string;
-    desc: string;
-  }>>;
+  getDescription(
+    collectionId: PublicKey
+  ): Promise<Result<Description>>;
   
   getModeratorMint(collectionId: PublicKey, assumeExists?: boolean): Promise<Result<PublicKey>>;
 

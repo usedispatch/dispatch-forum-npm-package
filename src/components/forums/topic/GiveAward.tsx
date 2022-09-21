@@ -13,7 +13,7 @@ import {
 
 import { SolanaLogo, Plus } from "../../../assets";
 import { useForum } from "../../../contexts/DispatchProvider";
-import { DisplayableToken } from "../../../utils/postbox/postboxWrapper";
+import { DisplayableToken } from "../../../types/postboxWrapper";
 import { isSuccess } from "../../../utils/loading"
 
 enum AwardType {

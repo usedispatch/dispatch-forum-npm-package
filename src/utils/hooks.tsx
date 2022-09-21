@@ -11,6 +11,7 @@ import {
 } from '@solana/spl-token';
 import { Loading } from "../types/loading";
 import { Result } from "../types/error";
+import { Description } from '../types/postboxWrapper';
 import {
   CollapsibleProps,
   MessageType,
@@ -26,13 +27,6 @@ import {
 } from "../utils/parseErrors";
 import { notFoundError } from "../utils/error";
 import { DispatchForum } from "./postbox/postboxWrapper";
-
-// TODO(andrew) move this to DispatchForum.getDescription()
-// so that function can be properly typed
-export interface Description {
-  title: string;
-  desc: string;
-}
 
 /**
  * A post that is created locally, but has not yet been confirmed

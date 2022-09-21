@@ -1,8 +1,6 @@
-import "./../../style.css";
-import * as _ from "lodash";
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet";
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from '@solana/web3.js';
 
 import { MessageType, Spinner, TransactionLink } from "../../components/common";
 import {
@@ -18,8 +16,11 @@ import {
   isSuccess,
   isInitial,
   isPending,
-  isNotFound,
 } from "../../utils/loading";
+import {
+  isError,
+  isNotFoundError
+} from '../../utils/error';
 import { useForumData, useModal } from "../../utils/hooks";
 import { getCustomStyles } from "../../utils/getCustomStyles";
 import { StarsAlert } from "../../components/forums/StarsAlert";
@@ -71,7 +72,7 @@ export const ForumView = (props: ForumViewProps) => {
   const collectionId = props.collectionId;
   const collectionPublicKey = useMemo(() => {
     try {
-      const pubkey = new web3.PublicKey(collectionId);
+      const pubkey = new PublicKey(collectionId);
 
       // TODO(andrew) make croppedCollectionID a useMemo() call as well?
       // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d
@@ -120,7 +121,7 @@ export const ForumView = (props: ForumViewProps) => {
       <div className={customStyle}>
         <Helmet>
           <meta charSet="utf-8" />
-          {isNotFound(forumData) && (
+          {isError(forumData) && isNotFoundError(forumData) && (
             <title>Create Forum for {collectionId}</title>
           )}
           {isSuccess(forumData) && (
@@ -148,7 +149,7 @@ export const ForumView = (props: ForumViewProps) => {
                       <Spinner />
                     </div>
                   );
-                } else if (isNotFound(forumData)) {
+                } else if (isNotFoundError(forumData)) {
                   return (
                     <CreateForum
                       forumObject={forumObject}

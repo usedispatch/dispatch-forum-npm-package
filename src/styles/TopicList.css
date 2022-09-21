@@ -4,7 +4,7 @@
 
     margin: 48px 0 16px;
     padding: 24px;
-    overflow-x: overlay;
+    overflow-x: scroll;
 
     background: white;
     box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
@@ -73,7 +73,7 @@
       }
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 768px) {
       box-shadow: 0px 4px 12px rgb(0 0 0 / 16%),
         inset -4px 0px 8px 0 rgb(0 0 0 / 16%);
     }

@@ -10,7 +10,6 @@
     .manageOwnersButton {
       display: flex;
       align-items: center;
-      margin-left: 24px;
 
       background: transparent;
       color: #4a279c;
@@ -43,7 +42,7 @@
       ul {
         padding-left: 0;
         max-height: 260px;
-        overflow-y: overlay;
+        overflow-y: scroll;
       }
 
       .manageOwnersInput {
@@ -103,6 +102,10 @@
       text-transform: capitalize;
       font-weight: 600;
 
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
+
       &:hover {
         opacity: 0.85;
       }
@@ -130,6 +133,10 @@
       font-weight: 600;
       text-align: center;
       text-transform: capitalize;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
 
       &:hover {
         opacity: 0.85;

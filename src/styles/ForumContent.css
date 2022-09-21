@@ -14,9 +14,14 @@
 
       font-size: 36px;
       color: #2e008b;
+      word-break: break-word;
 
-      @media only screen and (max-width: 480px) {
+      @media only screen and (max-width: 570px) {
+        flex-direction: column;
         margin: 0 8px;
+        padding: 12px 0;
+
+        font-size: 26px;
       }
     }
 
@@ -30,12 +35,25 @@
         color: #414149;
         word-wrap: anywhere;
         margin-right: 40px;
+
+        @media only screen and (max-width: 570px) {
+          margin-right: 0;
+        }
+      }
+
+      @media only screen and (max-width: 570px) {
+        flex-direction: column;
+        gap: 20px;
       }
     }
 
     .gatedForum {
       height: 24px;
       width: 24px;
+    }
+
+    @media only screen and (max-width: 570px) {
+      padding: 0 24px 24px;
     }
   }
 
@@ -112,6 +130,10 @@
     text-transform: capitalize;
     font-weight: 600;
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
+
     &:hover {
       opacity: 0.85;
     }
@@ -181,6 +203,7 @@
     display: flex;
     align-items: center;
 
+    width: 100%;
     padding: 20px 24px;
     color: #414149;
     font-size: 12px;
@@ -193,9 +216,32 @@
       margin: 0 0 0 10px;
     }
 
-    @media only screen and (max-width: 480px) {
+    @media only screen and (max-width: 570px) {
       padding: 12px;
+      gap: 14px;
       flex-wrap: wrap;
+      justify-content: flex-start;
+
+      .lock {
+        margin: 0;
+      }
+    }
+
+    .tools {
+      width: 100%;
+      display: flex;
+      gap: 24px;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: wrap;
+
+      @media only screen and (max-width: 570px) {
+        gap: 20px;
+
+        .editForumContainer .editForumButton svg {
+          margin-right: 16px;
+        }
+      }
     }
   }
 
@@ -214,10 +260,6 @@
     &:disabled {
       color: #7c7b7c;
       cursor: not-allowed;
-
-      svg path {
-        fill: #7c7b7c;
-      }
     }
   }
 
@@ -238,7 +280,7 @@
     ul {
       padding-left: 0;
       max-height: 260px;
-      overflow-y: overlay;
+      overflow-y: scroll;
     }
   }
 
@@ -308,6 +350,10 @@
       &.fetchModerators {
         margin: 16px auto 0;
       }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
     }
 
     .cancelButton {
@@ -335,6 +381,10 @@
       &:disabled {
         cursor: not-allowed;
         opacity: 0.6;
+      }
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
       }
     }
   }

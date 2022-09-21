@@ -77,10 +77,7 @@
   .topicView {
     background: #f7f7fe;
     padding-top: 24px;
-
-    @media only screen and (max-width: 480px) {
-      overflow-x: overlay;
-    }
+    overflow-y: hidden;
   }
 
   .topicViewContainer {
@@ -96,18 +93,26 @@
     align-items: center;
     justify-content: space-between;
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+      padding: 0 22px 24px;
+
+      .topicViewContent {
+        padding: 0;
+      }
+    }
+
     .topicViewContent {
       width: 100%;
       padding: 0 42px 24px;
 
+      @media only screen and (max-width: 570px) {
+        padding: 0;
+      }
+
       .topicViewLoading {
         padding-top: 192px;
       }
-    }
-
-    @media only screen and (max-width: 480px) {
-      margin: 0 8px;
-      width: fit-content;
     }
   }
 }

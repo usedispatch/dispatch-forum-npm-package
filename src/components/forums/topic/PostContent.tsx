@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import isNull from 'lodash/isNull';
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { ReactNode, useMemo, useRef, useState } from "react";
@@ -19,6 +19,8 @@ import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { isSuccess } from "../../../utils/loading";
+import { errorSummary } from "../../../utils/error";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { getIdentity } from "../../../utils/identity";
 import {
@@ -130,13 +132,14 @@ export function PostContent(props: PostContentProps) {
   const onReplyToPost = async () => {
     setSendingReply(true);
     setPostInFlight(true);
-    try {
-      if (!isForumPost(post)) {
-        return;
-      }
-      const tx = await forum.replyToForumPost(post, forumData.collectionId, {
-        body: reply,
-      });
+    if (!isForumPost(post)) {
+      return;
+    }
+    const tx = await forum.replyToForumPost(post, forumData.collectionId, {
+      body: reply,
+    });
+
+    if (isSuccess(tx)) {
       setSendingReply(false);
       setShowReplyBox(false);
       setReply("");
@@ -162,28 +165,26 @@ export function PostContent(props: PostContentProps) {
         state: "created",
       };
       addPost(localPost);
-
-      if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => {
-          update();
-          setPostInFlight(false);
-          setNotification({
-            isHidden: false,
-            content: (
-              <>
-                Replied successfully.
-                <TransactionLink transaction={tx!} />
-              </>
-            ),
-            type: MessageType.success,
-          });
-          setTimeout(
-            () => setNotification({ isHidden: true }),
-            NOTIFICATION_BANNER_TIMEOUT
-          );
+      await forum.connection.confirmTransaction(tx).then(() => {
+        update();
+        setPostInFlight(false);
+        setNotification({
+          isHidden: false,
+          content: (
+            <>
+              Replied successfully.
+              <TransactionLink transaction={tx!} />
+            </>
+          ),
+          type: MessageType.success,
         });
-      }
-    } catch (error: any) {
+        setTimeout(
+          () => setNotification({ isHidden: true }),
+          NOTIFICATION_BANNER_TIMEOUT
+        );
+      });
+    } else {
+      const error = tx;
       setPostInFlight(false);
       setNotification({ isHidden: true });
       console.log(error);
@@ -199,15 +200,15 @@ export function PostContent(props: PostContentProps) {
 
   const onDelete = async () => {
     setDeleting(true);
-    try {
-      if (!isForumPost(postToDelete)) {
-        return;
-      }
-      const tx = await forum.deleteForumPost(
-        postToDelete,
-        forumData.collectionId,
-        userRoles.includes(UserRoleType.Moderator)
-      );
+    if (!isForumPost(postToDelete)) {
+      return;
+    }
+    const tx = await forum.deleteForumPost(
+      postToDelete,
+      forumData.collectionId,
+      userRoles.includes(UserRoleType.Moderator)
+    );
+    if (isSuccess(tx)) {
       deletePost(postToDelete);
       onDeletePost(tx);
       setModalInfo({
@@ -216,29 +217,18 @@ export function PostContent(props: PostContentProps) {
         body: `The post was deleted`,
       });
       setShowDeleteConfirmation(false);
-      if (tx) {
-        await forum.connection.confirmTransaction(tx).then(() => update());
-      }
+      await forum.connection.confirmTransaction(tx).then(() => update());
       setDeleting(false);
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setShowDeleteConfirmation(false);
       setDeleting(false);
-      let modalInfoError;
-      if (error.code === 4001) {
-        modalInfoError = {
-          title: "The post could not be deleted",
-          type: MessageType.error,
-          body: `The user cancelled the request`,
-        };
-      } else {
-        modalInfoError = {
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The post could not be deleted`,
-          collapsible: { header: "Error", content: error.message },
-        };
-      }
-      setModalInfo(modalInfoError);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The post could not be deleted`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
@@ -266,7 +256,7 @@ export function PostContent(props: PostContentProps) {
         className={`postContentContainer ${
           postInFlight && isLocal ? "inFlight" : ""
         }`}>
-        {_.isNull(modalInfo) && showDeleteConfirmation && (
+        {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
             visible
@@ -297,7 +287,7 @@ export function PostContent(props: PostContentProps) {
             // }
           />
         )}
-        {!_.isNull(modalInfo) && (
+        {!isNull(modalInfo) && (
           <PopUpModal
             id="post-info"
             visible
@@ -365,12 +355,12 @@ export function PostContent(props: PostContentProps) {
                   </div>
                   <div className="walletId">
                     {identity ? identity.displayName : post.poster.toBase58()}
-                    <RoleLabel
-                      topicOwnerId={topicPosterId}
-                      posterId={post?.poster}
-                      moderators={participatingModerators}
-                    />
                   </div>
+                  <RoleLabel
+                    topicOwnerId={topicPosterId}
+                    posterId={post?.poster}
+                    moderators={participatingModerators}
+                  />
                 </div>
                 <div className="postedAt">
                   {(() => {
@@ -457,24 +447,27 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {// The gifting UI should be hidden on the apes forum for non-mods.
-                      // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                      (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                        userIsMod) &&
-                        !forum.wallet.publicKey?.equals(post.poster) && (
-                          <>
-                            <button
-                              className="awardButton"
-                              disabled={!permission.readAndWrite}
-                              onClick={() => {
-                                setPostToAward(post);
-                                setShowGiveAward(true);
-                              }}>
-                              Send Token <Gift />
-                            </button>
-                            <div className="actionDivider" />
-                          </>
-                        )}
+                      {
+                        // The gifting UI should be hidden on the apes forum for non-mods.
+                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+                        (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
+                          userIsMod) &&
+                          !forum.wallet.publicKey?.equals(post.poster) && (
+                            <>
+                              <button
+                                className="awardButton"
+                                disabled={!permission.readAndWrite}
+                                onClick={() => {
+                                  setPostToAward(post);
+                                  setShowGiveAward(true);
+                                }}>
+                                <span>Send Token</span>
+                                <Gift />
+                              </button>
+                              <div className="actionDivider" />
+                            </>
+                          )
+                      }
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
@@ -485,7 +478,7 @@ export function PostContent(props: PostContentProps) {
                             block: "center",
                           });
                         }}>
-                        Reply <Reply />
+                        <span>Reply</span> <Reply />
                       </button>
                     </div>
                   </PermissionsGate>

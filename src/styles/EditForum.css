@@ -8,6 +8,10 @@
       margin: 0 10px;
 
       background: #6e59b1;
+
+      @media only screen and (max-width: 570px) {
+        display: none;
+      }
     }
 
     .successBody {
@@ -21,6 +25,7 @@
 
       background: transparent;
       color: #3f1d96;
+      text-align: left;
 
       &:hover {
         opacity: 0.85;
@@ -105,6 +110,10 @@
       text-transform: capitalize;
       font-weight: 600;
 
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
+
       &:hover {
         opacity: 0.85;
       }
@@ -132,6 +141,10 @@
       font-weight: 600;
       text-align: center;
       text-transform: capitalize;
+
+      @media only screen and (max-width: 570px) {
+        width: 100%;
+      }
 
       &:hover {
         opacity: 0.85;

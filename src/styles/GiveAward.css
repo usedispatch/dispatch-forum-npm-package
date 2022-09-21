@@ -15,6 +15,12 @@
       justify-content: flex-end;
       gap: 14px;
       margin-top: 24px;
+      width: 100%;
+
+      @media only screen and (max-width: 570px) {
+        flex-direction: column;
+        gap: 12px;
+      }
 
       .nftType {
         display: flex;
@@ -29,6 +35,10 @@
         font-weight: 600;
         font-size: 16px;
         color: #4a279c;
+
+        @media only screen and (max-width: 570px) {
+          width: 100%;
+        }
 
         svg {
           height: 12px;
@@ -65,6 +75,10 @@
             #28e0b9 69.81%,
             #19fb9b 93.01%
           );
+
+        @media only screen and (max-width: 570px) {
+          width: 100%;
+        }
 
         svg {
           height: 12px;
@@ -105,7 +119,7 @@
     .giftsContainer {
       padding: 0 14px;
       max-height: 280px;
-      overflow-y: overlay;
+      overflow-y: scroll;
 
       .giftsGrid {
         display: flex;
@@ -116,7 +130,7 @@
         gap: 8%;
         grid-row-gap: 5px;
 
-        overflow-x: overlay;
+        overflow-x: scroll;
 
         .noAvailableNFT {
           font-size: 14px;
@@ -179,6 +193,11 @@
         #19fb9b 93.01%
       );
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+      margin: 16px 0 0;
+    }
+
     &:disabled {
       opacity: 0.65;
       cursor: not-allowed;
@@ -206,6 +225,10 @@
         #19fb9b 93.01%
       );
 
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
+
     &:disabled {
       opacity: 0.65;
       cursor: not-allowed;
@@ -228,5 +251,9 @@
     text-align: center;
     text-transform: capitalize;
     font-weight: 600;
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
+    }
   }
 }

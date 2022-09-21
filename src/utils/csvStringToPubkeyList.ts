@@ -1,11 +1,23 @@
-import { web3 } from "@project-serum/anchor";
+import { PublicKey } from '@solana/web3.js';
 import { newPublicKey } from "./postbox/validateNewPublicKey";
+import { isSuccess } from '../utils/loading';
 
-export function csvStringToPubkeyList(pubkeyList: string): web3.PublicKey[] {
-    const tokenCSV = pubkeyList.replace(/\s+/g, "");
-    const csvList = tokenCSV.split(",");
-    let newIds = csvList.map((token) => {
-        return newPublicKey(token);
-      });
-    return newIds;
+export function csvStringToPubkeyList(pubkeyList: string): PublicKey[] {
+  const tokenCSV = pubkeyList.replace(/\s+/g, "");
+  const csvList = tokenCSV.split(",");
+  let newIdResults = csvList.map((token) => {
+    return newPublicKey(token);
+  });
+
+  const newIds = newIdResults.filter(result => {
+    if (isSuccess(result)) {
+      return true;
+    } else {
+      // If result is an error, print it and return false
+      console.error(result);
+      return false;
+    }
+  }) as PublicKey[];
+
+  return newIds;
 }

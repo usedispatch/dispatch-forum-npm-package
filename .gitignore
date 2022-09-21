@@ -1,3 +1,17 @@
 dist
 node_modules
 .env
+.vim
+
+# Parcel
+.parcel-cache
+parcel-bundle-reports
+
+# Yarn
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions

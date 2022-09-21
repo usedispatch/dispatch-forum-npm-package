@@ -1,6 +1,10 @@
 @layer components {
   .alertContainer {
     padding: 0 42px;
+
+    @media only screen and (max-width: 570px) {
+      padding: 0 22px;
+    }
   }
 
   .alertContent {
@@ -28,9 +32,9 @@
 
   .alertText {
     color: #414149;
-
     font-weight: 400;
     font-size: 14px;
+    word-break: break-word;
 
     margin-left: 24px;
   }

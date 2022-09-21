@@ -1,9 +1,9 @@
-import * as _ from "lodash";
+import isNil from 'lodash/isNil';
 import { useState, useMemo, ReactNode } from "react";
 import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
 import { ForumInfo } from "@usedispatch/client";
-import * as web3 from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 
 import { Info } from "../../../assets";
 import {
@@ -16,10 +16,12 @@ import {
 import { Notification } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
 import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 
 interface CreateForumProps {
   forumObject: DispatchForum;
@@ -38,9 +40,9 @@ export function CreateForum(props: CreateForumProps) {
   const [newModerator, setNewModerator] = useState("");
   const [newOwners, setNewOwners] = useState("");
   const [accessToken, setAccessToken] = useState<string>("");
-  const [modList, setModList] = useState<web3.PublicKey[]>([]);
-  const [ownerList, setOwnerList] = useState<web3.PublicKey[]>([]);
-  const [accessList, setAccessList] = useState<web3.PublicKey[]>([]);
+  const [modList, setModList] = useState<PublicKey[]>([]);
+  const [ownerList, setOwnerList] = useState<PublicKey[]>([]);
+  const [accessList, setAccessList] = useState<PublicKey[]>([]);
   const [bodySize, setBodySize] = useState<number>(0);
 
   const [notification, setNotification] = useState<{
@@ -52,7 +54,7 @@ export function CreateForum(props: CreateForumProps) {
   const { modal, showModal } = useModal();
   const croppedCollectionID = useMemo(() => {
     try {
-      const pubkey = new web3.PublicKey(collectionId);
+      const pubkey = new PublicKey(collectionId);
 
       // TODO(andrew) make croppedCollectionID a useMemo() call as well?
       // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d
@@ -71,7 +73,7 @@ export function CreateForum(props: CreateForumProps) {
 
   const collectionPublicKey = useMemo(() => {
     try {
-      const pubkey = new web3.PublicKey(collectionId);
+      const pubkey = new PublicKey(collectionId);
       return pubkey;
     } catch (error) {
       const message = JSON.stringify(error);
@@ -147,32 +149,33 @@ export function CreateForum(props: CreateForumProps) {
   const createForum = async () => {
     setCreatingNewForum(true);
 
-    try {
-      if (!wallet) {
-        showModal({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        });
-      }
+    if (!wallet) {
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+      });
+    }
 
-      const moderators = [...modList, publicKey];
-      const owners = [...ownerList, publicKey];
+    const moderators = [...modList, publicKey];
+    const owners = [...ownerList, publicKey];
 
-      const forum = {
-        owners,
-        moderators,
-        title: title,
-        description: description,
-        collectionId: collectionPublicKey,
-        postRestriction: accessToken
-          ? pubkeysToRestriction(accessToken)
-          : undefined,
-      } as ForumInfo;
+    const forum = {
+      owners,
+      moderators,
+      title: title,
+      description: description,
+      collectionId: collectionPublicKey,
+      postRestriction: accessToken
+        ? pubkeysToRestriction(accessToken)
+        : undefined,
+    } as ForumInfo;
 
-      const res = await forumObject.createForum(forum);
+    const res = await forumObject.createForum(forum);
 
-      if (!_.isNil(res?.forum)) {
+    if (isSuccess(res)) {
+
+      if (!isNil(res?.forum)) {
         showModal({
           title: `Success!`,
           body: (
@@ -195,19 +198,17 @@ export function CreateForum(props: CreateForumProps) {
         }
       }
       ReactGA.event("successfulForumCreation");
-    } catch (e: any) {
+    } else {
+      const error = res;
       ReactGA.event("failedForumCreation");
-      if (e.error?.code !== 4001) {
-        showModal({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-          collapsible: { header: "Error", content: e.message },
-        });
-      }
-    } finally {
-      setCreatingNewForum(false);
+      showModal({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
+    setCreatingNewForum(false);
   };
 
   const advancedOptions = (
@@ -234,28 +235,31 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setNewModerator(e.target.value)}
           onBlur={() => parseModList()}
         />
-        <ul className="idsList">
-          {modList.map((pubkey) => {
-            const m = pubkey.toBase58();
-            const identity = getIdentity(pubkey);
-            return (
-              <li key={m} className="addedIds">
-                <>
-                  <div className="iconContainer">
-                    { identity ?
-                      <img
-                        src={identity.profilePicture.href}
-                        style={{ borderRadius: '50%' }}
-                      /> :
+        {modList.length > 0 && (
+          <ul className="idsList">
+            {modList.map((pubkey) => {
+              const m = pubkey.toBase58();
+              const identity = getIdentity(pubkey);
+              return (
+                <li key={m} className="addedIds">
+                  <>
+                    <div className="iconContainer">
+                      {identity ? (
+                        <img
+                          src={identity.profilePicture.href}
+                          style={{ borderRadius: "50%" }}
+                        />
+                      ) : (
                         <Jdenticon value={m} alt="moderatorId" />
-                    }
-                  </div>
-                  { identity ? identity.displayName : m }
-                </>
-              </li>
-            );
-          })}
-        </ul>
+                      )}
+                    </div>
+                    {identity ? identity.displayName : m}
+                  </>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
       <div className="formSection">
         <span className="formLabel">
@@ -279,21 +283,23 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setNewOwners(e.target.value)}
           onBlur={() => parseOwnerList()}
         />
-        <ul className="idsList">
-          {ownerList.map((pubkey) => {
-            const o = pubkey.toBase58();
-            return (
-              <li key={o} className="addedIds">
-                <>
-                  <div className="iconContainer">
-                    <Jdenticon value={o} alt="ownerId" />
-                  </div>
-                  {o}
-                </>
-              </li>
-            );
-          })}
-        </ul>
+        {ownerList.length > 0 && (
+          <ul className="idsList">
+            {ownerList.map((pubkey) => {
+              const o = pubkey.toBase58();
+              return (
+                <li key={o} className="addedIds">
+                  <>
+                    <div className="iconContainer">
+                      <Jdenticon value={o} alt="ownerId" />
+                    </div>
+                    {o}
+                  </>
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
       <div className="formSection">
         <span className="formLabel">
@@ -317,16 +323,18 @@ export function CreateForum(props: CreateForumProps) {
           onChange={(e) => setAccessToken(e.target.value)}
           onBlur={() => parseCollectionList()}
         />
-        <ul className="idsList">
-          {accessList.map((pubkey) => {
-            const a = pubkey.toBase58();
-            return (
-              <li key={a} className="addedIds">
-                {a}
-              </li>
-            );
-          })}
-        </ul>
+        {accessList.length > 0 && (
+          <ul className="idsList">
+            {accessList.map((pubkey) => {
+              const a = pubkey.toBase58();
+              return (
+                <li key={a} className="addedIds">
+                  {a}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </div>
     </div>
   );

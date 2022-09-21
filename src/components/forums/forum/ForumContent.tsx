@@ -1,8 +1,9 @@
-import * as _ from "lodash";
-import { PublicKey } from '@solana/web3.js';
+import isNil from 'lodash/isNil';
+import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
+import { PostRestriction } from '@usedispatch/client';
 
 import { Lock, Plus, Trash } from "../../../assets";
 import {
@@ -18,11 +19,13 @@ import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
 import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { Result } from "../../../types/error";
+import { isError, errorSummary } from "../../../utils/error";
 import { isSuccess } from "../../../utils/loading";
 import {
   ForumData,
   useForumIdentity,
-  ForumIdentity
+  ForumIdentity,
 } from "../../../utils/hooks";
 import {
   restrictionListToString,
@@ -87,18 +90,31 @@ export function ForumContent(props: ForumContentProps) {
 
   const addAccessToken = async () => {
     setAddingAccessToken(true);
-    try {
-      const restriction = pubkeysToRestriction(
-        newForumAccessToken,
-        isSuccess(forumData.restriction) ? forumData.restriction : undefined
-      );
-      const currentIds = restrictionListToString(restriction);
+    const restriction = pubkeysToRestriction(
+      newForumAccessToken,
+      isSuccess(forumData.restriction) ? forumData.restriction : undefined
+    );
 
-      const tx = await forumObject.setForumPostRestriction(
-        forumData.collectionId,
-        restriction
-      );
+    if (isError(restriction)) {
+      const error = restriction;
+      setAddingAccessToken(false);
+      setShowManageAccessToken(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
+      return;
+    }
 
+    const currentIds = restrictionListToString(restriction);
+
+    const tx = await forumObject.setForumPostRestriction(
+      forumData.collectionId,
+      restriction
+    );
+    if (isSuccess(tx)) {
       setCurrentForumAccessToken(
         currentForumAccessToken.concat([newForumAccessToken])
       );
@@ -116,43 +132,53 @@ export function ForumContent(props: ForumContentProps) {
         ),
       });
       setCurrentForumAccessToken(currentIds);
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setAddingAccessToken(false);
-      if (error.code !== 4001) {
-        setShowManageAccessToken(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be added`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
+      setShowManageAccessToken(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be added`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
   const deleteAccessToken = async () => {
     setRemoveAccessToken({ ...removeAccessToken, removing: true });
-    try {
-      const filteredTokens = currentForumAccessToken.filter(
-        (t) => t != removeAccessToken.token
-      );
+    const filteredTokens = currentForumAccessToken.filter(
+      (t) => t != removeAccessToken.token
+    );
 
-      let tx = "";
-      if (filteredTokens.length > 0) {
-        const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
-        tx = await forumObject.setForumPostRestriction(
-          forumData.collectionId,
-          restrictionList
-        );
-      } else {
-        tx = await forumObject.deleteForumPostRestriction(
-          forumData.collectionId
-        );
+    let tx: Result<string>;
+    if (filteredTokens.length > 0) {
+      const restrictionList = pubkeysToRestriction(filteredTokens.join(","));
+      if (isError(restrictionList)) {
+        const error = restrictionList;
+        setRemoveAccessToken({ show: false, removing: false });
+        setModalInfo({
+          title: "Something went wrong!",
+          type: MessageType.error,
+          body: `The access token could not be removed`,
+          collapsible: { header: "Error", content: errorSummary(error) },
+        });
+        return;
       }
+      tx = await forumObject.setForumPostRestriction(
+        forumData.collectionId,
+        restrictionList
+      );
+    } else {
+      tx = await forumObject.deleteForumPostRestriction(
+        forumData.collectionId
+      );
+    }
 
-      setCurrentForumAccessToken(filteredTokens);
-      setRemoveAccessToken({ show: false, removing: false });
+    setCurrentForumAccessToken(filteredTokens);
+    setRemoveAccessToken({ show: false, removing: false });
 
+    if (isSuccess(tx)) {
       setModalInfo({
         title: "Success!",
         type: MessageType.success,
@@ -163,17 +189,15 @@ export function ForumContent(props: ForumContentProps) {
           </div>
         ),
       });
-    } catch (error: any) {
+    } else {
+      const error = tx;
       setRemoveAccessToken({ show: false, removing: false });
-      if (error?.error?.code !== 4001) {
-        setShowManageAccessToken(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The access token could not be removed`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      }
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be removed`,
+        collapsible: { header: "Error", content: errorSummary(error) },
+      });
     }
   };
 
@@ -184,75 +208,75 @@ export function ForumContent(props: ForumContentProps) {
     };
 
     setCreatingNewTopic(true);
-    try {
-      let restriction;
-      // First case checks if existing gates are kept and new ones being added
-      // Second case removes existing gates and adds new ones
-      // Third case removes existing gates
-      // Final case keeps existing gates
-      if (keepGates && newTopic.accessToken !== "") {
-        restriction = pubkeysToRestriction(
-          newTopic.accessToken,
-          isSuccess(forumData.restriction) ? forumData.restriction : undefined
-        );
-      } else if (!keepGates && newTopic.accessToken !== "") {
-        restriction = pubkeysToRestriction(newTopic.accessToken);
-      } else if (!keepGates) {
-        restriction = { null: {} };
-      } else {
-        restriction = undefined;
-      }
-      const tx = await forumObject.createTopic(
-        p,
-        forumData.collectionId,
-        restriction
+    let restrictionResult: Result<PostRestriction> | undefined;
+    // First case checks if existing gates are kept and new ones being added
+    // Second case removes existing gates and adds new ones
+    // Third case removes existing gates
+    // Final case keeps existing gates
+    if (keepGates && newTopic.accessToken !== "") {
+      restrictionResult = pubkeysToRestriction(
+        newTopic.accessToken,
+        isSuccess(forumData.restriction) ? forumData.restriction : undefined
       );
-      if (!_.isNil(tx)) {
-        setCreatingNewTopic(false);
-        setNewTopicInFlight(true);
-        setModalInfo({
-          body: <TransactionLink transaction={tx} />,
-          type: MessageType.success,
-          title: "Topic created!",
-        });
-        setNewTopic({ title: "", description: "", accessToken: "" });
-        setShowNewTopicModal(false);
-
-        // re-load forum in background
-        await forumObject.connection.confirmTransaction(tx).then(() => {
-          update();
-          setNewTopicInFlight(false);
-        });
-      } else {
-        setCreatingNewTopic(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be created`,
-        });
-        setShowNewTopicModal(false);
-      }
-    } catch (error: any) {
-      setCreatingNewTopic(false);
-      if (error?.code !== 4001) {
-        setShowNewTopicModal(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be created`,
-          collapsible: { header: "Error", content: error.message },
-        });
-      } else {
-        setShowNewTopicModal(false);
-        setModalInfo({
-          title: "Something went wrong!",
-          type: MessageType.error,
-          body: `The topic could not be created`,
-          collapsible: { header: "Error", content: error },
-        });
-      }
+    } else if (!keepGates && newTopic.accessToken !== "") {
+      restrictionResult = pubkeysToRestriction(newTopic.accessToken);
+    } else if (!keepGates) {
+      restrictionResult = { null: {} };
+    } else {
+      // No restriction
+      restrictionResult = undefined;
     }
-  };
+
+    if (isError(restrictionResult)) {
+      const error = restrictionResult;
+      setCreatingNewTopic(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The topic could not be created`,
+        collapsible: { header: 'Error', content: errorSummary(error) }
+      });
+      setShowNewTopicModal(false);
+      return;
+    }
+
+    // the possibility of error is no longer present, so rename
+    // this variable restriction
+    const restriction = restrictionResult;
+
+    const tx = await forumObject.createTopic(
+      p,
+      forumData.collectionId,
+      restriction
+    );
+    if (isSuccess(tx)) {
+      setCreatingNewTopic(false);
+      setNewTopicInFlight(true);
+      setModalInfo({
+        body: <TransactionLink transaction={tx} />,
+        type: MessageType.success,
+        title: "Topic created!",
+      });
+      setNewTopic({ title: "", description: "", accessToken: "" });
+      setShowNewTopicModal(false);
+
+      // re-load forum in background
+      await forumObject.connection.confirmTransaction(tx).then(() => {
+        update();
+        setNewTopicInFlight(false);
+      });
+    } else {
+      const error = tx;
+      setCreatingNewTopic(false);
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The topic could not be created`,
+        collapsible: { header: 'Error', content: errorSummary(error) }
+      });
+      setShowNewTopicModal(false);
+    }
+  }
 
   const createTopicButton = (
     <button
@@ -295,7 +319,7 @@ export function ForumContent(props: ForumContentProps) {
         <>
           {ReactGA.send("pageview")}
 
-          {!_.isNil(modalInfo) && (
+          {!isNil(modalInfo) && (
             <PopUpModal
               id="create-topic-info"
               visible
@@ -310,7 +334,7 @@ export function ForumContent(props: ForumContentProps) {
               }
             />
           )}
-          {showManageAccessToken && _.isNil(modalInfo) && (
+          {showManageAccessToken && isNil(modalInfo) && (
             <PopUpModal
               id="add-access-token"
               visible
@@ -372,7 +396,7 @@ export function ForumContent(props: ForumContentProps) {
               }
             />
           )}
-          {removeAccessToken.show && _.isNil(modalInfo) && (
+          {removeAccessToken.show && isNil(modalInfo) && (
             <PopUpModal
               id="remove-access-token"
               visible
@@ -399,18 +423,19 @@ export function ForumContent(props: ForumContentProps) {
             />
           )}
           {(() => {
-            if (showNewTopicModal && _.isNil(modalInfo)) {
+            if (showNewTopicModal && isNil(modalInfo)) {
               if (roles.includes(UserRoleType.Viewer)) {
                 return (
                   <PopUpModal
                     id="create-topic"
                     title="You are not authorized"
                     body={
-                      (isSuccess(forumData.restriction) &&
-                      forumData.restriction.tokenOwnership?.mint
-                        .equals(forumData.moderatorMint)) ?
-                      "Oops! Only moderators can create new topics at this time." :
-                      "Oops! You need a token to participate. Please contact the forum’s moderators."
+                      isSuccess(forumData.restriction) &&
+                      forumData.restriction.tokenOwnership?.mint.equals(
+                        forumData.moderatorMint
+                      )
+                        ? "Oops! Only moderators can create new topics at this time."
+                        : "Oops! You need a token to participate. Please contact the forum’s moderators."
                     }
                     visible
                     okButton={
@@ -529,31 +554,34 @@ export function ForumContent(props: ForumContentProps) {
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
               <div className="moderatorToolsContainer">
                 <div>Owner tools: </div>
-                <div className="lock">
-                  <Lock />
+                <div className="tools">
+                  <div className="lock">
+                    <Lock />
+                  </div>
+                  <ManageOwners forumData={forumData} />
+                  <ManageModerators forumData={forumData} />
+                  {
+                    // The manage users UI should be hidden for DAA
+                    forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
+                      <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                        <button
+                          className="moderatorTool"
+                          disabled={!permission.readAndWrite}
+                          onClick={() => setShowManageAccessToken(true)}>
+                          Manage forum access
+                        </button>
+                      </PermissionsGate>
+                    )
+                  }
+                  <EditForum forumData={forumData} update={update} />
                 </div>
-                <ManageOwners forumData={forumData} />
-                <ManageModerators forumData={forumData} />
-                {(// The manage users UI should be hidden for DAA
-                  forumIdentity !== ForumIdentity.DegenerateApeAcademy
-                ) &&
-                  <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                    <button
-                      className="moderatorTool"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => setShowManageAccessToken(true)}>
-                      Manage forum access
-                    </button>
-                  </PermissionsGate>
-                }
-                <EditForum forumData={forumData} update={update} />
               </div>
             </PermissionsGate>
           </div>
           {(() => {
             if (newTopicInFlight) {
               return <Spinner />;
-            } else if (!_.isNil(forumData.collectionId)) {
+            } else if (!isNil(forumData.collectionId)) {
               return <TopicList forumData={forumData} />;
             }
           })()}

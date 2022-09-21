@@ -1,25 +1,25 @@
 import { PublicKey } from '@solana/web3.js';
 import { useState, useEffect } from 'react';
 import { ForumPost, PostRestriction, ChainVoteEntry } from '@usedispatch/client';
-import { Loading } from '../../types/loading';
-import { Result } from "../../types/error";
+import { Loading } from '../types/loading';
+import { Result } from "../types/error";
 import {
   initial,
   isInitial,
   isSuccess,
-} from '../../utils/loading';
+} from '../utils/loading';
 import {
   isForumPost,
-} from '../../utils/forumData';
-import { notFoundError } from '../../utils/error';
-import { parseError } from '../../utils/parseErrors';
+} from '../utils/forumData';
+import { notFoundError } from '../utils/error';
+import { parseError } from '../utils/parseErrors';
 import {
   ForumData,
   CreatedPost,
   EditedPost
-} from "../../types/forumData";
-import { Description } from '../../types/postboxWrapper';
-import { DispatchForum } from "../postbox/postboxWrapper";
+} from "../types/forumData";
+import { Description } from '../types/postboxWrapper';
+import { DispatchForum } from '../utils/postbox/postboxWrapper';
 
 // This hook returns all the necessary forum data and a function
 // to refresh it

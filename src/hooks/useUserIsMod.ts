@@ -4,8 +4,8 @@ import {
   getAssociatedTokenAddress,
   unpackAccount,
 } from '@solana/spl-token';
-import { DispatchForum } from '../postbox/postboxWrapper';
-import { isSuccess } from '../../utils/loading';
+import { DispatchForum } from '../utils/postbox/postboxWrapper';
+import { isSuccess } from '../utils/loading';
 
 /**
  * This hook returns whether the given user is a moderator for a

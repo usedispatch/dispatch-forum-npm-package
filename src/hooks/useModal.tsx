@@ -3,8 +3,8 @@ import {
   useMemo
 } from 'react';
 
-import { ModalInfo } from '../../types/modal';
-import { PopUpModal } from '../../components/common';
+import { ModalInfo } from '../types/modal';
+import { PopUpModal } from '../components/common';
 
 export function useModal() {
   const [modalInfoList, setModalInfoList] = useState<ModalInfo[]>([]);

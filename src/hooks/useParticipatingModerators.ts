@@ -10,12 +10,12 @@ import {
 } from '@solana/spl-token';
 import { getAccountsInfoPaginated } from "@usedispatch/client";
 
-import { ForumData } from '../../types/forumData';
-import { Loading } from '../../types/loading';
-import { DispatchForum } from '../postbox/postboxWrapper';
+import { ForumData } from '../types/forumData';
+import { Loading } from '../types/loading';
+import { DispatchForum } from '../utils/postbox/postboxWrapper';
 import {
   isSuccess,
-} from '../../utils/loading';
+} from '../utils/loading';
 
 /*
  * Of the posters participating in this forum, return the set of

@@ -1,12 +1,12 @@
 import { PublicKey } from '@solana/web3.js'
 import { useState } from 'react';
 
-import { DispatchForum } from '../postbox/postboxWrapper';
-import { Loading } from '../../types/loading';
-import { Result } from '../../types/error';
-import { notFoundError } from '../../utils/error';
-import { initial } from '../../utils/loading';
-import { parseError } from '../../utils/parseErrors';
+import { DispatchForum } from '../utils/postbox/postboxWrapper';
+import { Loading } from '../types/loading';
+import { Result } from '../types/error';
+import { notFoundError } from '../utils/error';
+import { initial } from '../utils/loading';
+import { parseError } from '../utils/parseErrors';
 
 export function useModerators(
   collectionId: PublicKey | null,

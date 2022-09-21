@@ -24,7 +24,7 @@
     "dist/**/*"
   ],
   "alias": {
-    "@hooks": "./src/utils/hooks",
+    "@hooks": "./src/hooks",
     "@types": "./src/types",
     "@utils": "./src/utils"
   },

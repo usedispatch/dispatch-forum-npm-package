@@ -23,6 +23,11 @@
   "files": [
     "dist/**/*"
   ],
+  "alias": {
+    "@hooks": "./utils/hooks",
+    "@types": "./types",
+    "@utils": "./utils"
+  },
   "scripts": {
     "clean": "rm -rf dist",
     "typecheck": "yarn clean && tsc",

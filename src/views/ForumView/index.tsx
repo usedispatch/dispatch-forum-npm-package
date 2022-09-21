@@ -11,18 +11,16 @@ import {
 } from "../../components/forums";
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
-import { getUserRole } from "./../../utils/postbox/userRole";
 import {
+  getUserRole,
   isSuccess,
   isInitial,
   isPending,
-} from "../../utils/loading";
-import {
   isError,
-  isNotFoundError
-} from '../../utils/error';
+  isNotFoundError,
+  getCustomStyles
+} from '@utils';
 import { useForumData, useModal } from '@hooks';
-import { getCustomStyles } from "../../utils/getCustomStyles";
 import { StarsAlert } from "../../components/forums/StarsAlert";
 
 interface ForumViewProps {

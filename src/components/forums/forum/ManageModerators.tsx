@@ -14,12 +14,14 @@ import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from '../../../types/forumData';
 import { useModerators } from '@hooks';
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary, isError } from "../../../utils/error";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { SCOPES } from "../../../utils/permissions";
-import { getIdentity } from "../../../utils/identity";
+import {
+  NOTIFICATION_BANNER_TIMEOUT,
+  isSuccess,
+  errorSummary,
+  newPublicKey,
+  SCOPES,
+  getIdentity
+} from '@utils';
 
 interface ManageModeratorsProps {
   forumData: ForumData;

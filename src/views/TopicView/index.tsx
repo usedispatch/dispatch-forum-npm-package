@@ -11,7 +11,21 @@ import {
   useModal,
   useParticipatingModerators
 } from '@hooks';
-import { isForumPost, isEditedPost } from '../../utils/forumData';
+
+import {
+  isForumPost,
+  isEditedPost,
+  getUserRole,
+  notFoundError,
+  isError,
+  isUncategorizedError,
+  errorSummary,
+  isSuccess,
+  isInitial,
+  isPending,
+  pending,
+  getCustomStyles
+} from '@utils'
 
 import { Chevron } from "../../assets";
 import { MessageType, Spinner, Link } from "../../components/common";
@@ -23,22 +37,8 @@ import {
 import { Loading } from "../../types/loading";
 import { DispatchError } from "../../types/error";
 import { EditedPost } from "../../types/forumData";
-import {
-  notFoundError,
-  isError,
-  isUncategorizedError,
-  errorSummary
-} from '../../utils/error';
-import {
-  isSuccess,
-  isInitial,
-  isPending,
-  pending,
-} from "../../utils/loading";
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
-import { getUserRole } from '@postbox';
-import { getCustomStyles } from "../../utils/getCustomStyles";
 import { StarsAlert } from "../../components/forums/StarsAlert";
 
 interface Props {

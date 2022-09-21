@@ -22,22 +22,21 @@ import { RoleLabel } from "./RoleLabel";
 
 import { usePath } from "../../../contexts/DispatchProvider";
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { UserRoleType } from "../../../utils/permissions";
-import { SCOPES } from "../../../utils/permissions";
-import { selectRepliesFromPosts } from "../../../utils/posts";
-import { getIdentity } from "../../../utils/identity";
 import { ForumData, CreatedPost, EditedPost } from '../../../types/forumData';
-import { ForumIdentity } from '../../../types/forumIdentity';
-import { isEditedPost } from '../../../utils/forumData';
-import { useUserIsMod, useForumIdentity } from '@hooks';
-import { isSuccess } from '../../../utils/loading';
-import { errorSummary } from '../../../utils/error';
+import { DispatchForum } from '@postbox';
 import {
+  NOTIFICATION_BANNER_TIMEOUT,
+  UserRoleType,
+  SCOPES,
+  selectRepliesFromPosts,
+  getIdentity,
+  isEditedPost,
+  isSuccess,
+  errorSummary,
   restrictionListToString,
-  pubkeysToRestriction,
-} from "../../../utils/restrictionListHelper";
+} from '@utils';
+import { ForumIdentity } from '../../../types/forumIdentity';
+import { useUserIsMod, useForumIdentity } from '@hooks';
 
 interface TopicContentProps {
   forum: DispatchForum;

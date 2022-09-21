@@ -15,13 +15,15 @@ import {
 } from "../../common";
 import { Notification } from "..";
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { isSuccess } from '../../../utils/loading';
-import { errorSummary } from '../../../utils/error';
+import { DispatchForum } from '@postbox';
 import { useModal } from '@hooks';
-import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
-import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
-import { getIdentity } from "../../../utils/identity";
+import {
+  isSuccess,
+  errorSummary,
+  pubkeysToRestriction,
+  csvStringToPubkeyList,
+  getIdentity
+} from '@utils';
 
 interface CreateForumProps {
   forumObject: DispatchForum;

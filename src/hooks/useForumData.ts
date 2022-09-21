@@ -19,7 +19,7 @@ import {
   EditedPost
 } from "../types/forumData";
 import { Description } from '../types/postboxWrapper';
-import { DispatchForum } from '../utils/postbox/postboxWrapper';
+import { DispatchForum } from '@postbox';
 
 // This hook returns all the necessary forum data and a function
 // to refresh it

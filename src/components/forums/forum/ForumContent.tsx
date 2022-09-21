@@ -17,20 +17,22 @@ import {
 import { TopicList, EditForum, ManageOwners, ManageModerators } from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
+import { DispatchForum } from '@postbox';
+import {
+  SCOPES,
+  UserRoleType,
+  isError,
+  errorSummary,
+  isSuccess,
+  restrictionListToString,
+  pubkeysToRestriction,
+} from '@utils';
 import { Result } from "../../../types/error";
 import { ForumData } from "../../../types/forumData";
 import { ForumIdentity } from "../../../types/forumIdentity";
-import { isError, errorSummary } from "../../../utils/error";
-import { isSuccess } from "../../../utils/loading";
 import {
   useForumIdentity,
 } from '@hooks';
-import {
-  restrictionListToString,
-  pubkeysToRestriction,
-} from "../../../utils/restrictionListHelper";
 
 interface ForumContentProps {
   forumObject: DispatchForum;

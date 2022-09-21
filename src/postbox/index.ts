@@ -26,18 +26,16 @@ import {
 
 import {
   parseError,
-} from "../parseErrors";
-import { Result } from '../../types/error';
+  notFoundError,
+  badInputError,
+  isSuccess,
+  stringToURL
+} from '@utils'
+import { Result } from '../types/error';
 import {
   DisplayableToken,
   Description
-} from '../../types/postboxWrapper';
-import {
-  notFoundError,
-  badInputError
-} from '../../utils/error';
-import { isSuccess } from '../../utils/loading';
-import { stringToURL } from '../../utils/url';
+} from '../types/postboxWrapper';
 
 enum UserCategory {
   moderator,

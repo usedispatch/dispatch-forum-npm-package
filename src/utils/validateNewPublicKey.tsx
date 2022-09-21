@@ -1,6 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
-import { Result } from '../../types/error';
-import { badInputError } from '../../utils/error';
+import { Result } from '../types/error';
+import { badInputError } from '@utils';
 
 /**
  * Like new PublicKey(), but returns an error instead of throwing

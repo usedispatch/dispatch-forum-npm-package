@@ -11,10 +11,10 @@ import {
   selectTopics,
   sortByVotes,
   selectForumPosts,
-} from "../../../utils/posts";
-import { isSuccess } from "../../../utils/loading";
-import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
-import { getIdentity } from '../../../utils/identity';
+  isSuccess,
+  newPublicKey,
+  getIdentity,
+} from '@utils';
 import { ForumData } from '../../../types/forumData';
 
 interface TopicListProps {

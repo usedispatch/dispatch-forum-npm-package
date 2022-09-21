@@ -17,17 +17,23 @@ import {
 import { Votes, Notification } from "../../../components/forums";
 import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { getIdentity } from "../../../utils/identity";
+import { DispatchForum } from '@postbox';
 import { ForumData, CreatedPost, ClientPost } from '../../../types/forumData';
 import { ForumIdentity } from '../../../types/forumIdentity';
-import { isForumPost, isEditedPost, isCreatedPost } from '../../../utils/forumData';
 import { useUserIsMod, useForumIdentity } from '@hooks';
-import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
+import {
+  NOTIFICATION_BANNER_TIMEOUT,
+  isSuccess,
+  errorSummary,
+  SCOPES,
+  UserRoleType,
+  getIdentity,
+  isForumPost,
+  isEditedPost,
+  isCreatedPost,
+  selectRepliesFromPosts,
+  sortByVotes
+} from '@utils';
 
 interface PostContentProps {
   forum: DispatchForum;

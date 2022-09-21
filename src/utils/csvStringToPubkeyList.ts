@@ -1,6 +1,5 @@
 import { PublicKey } from '@solana/web3.js';
-import { newPublicKey } from "./postbox/validateNewPublicKey";
-import { isSuccess } from '../utils/loading';
+import { newPublicKey, isSuccess } from 'utils';
 
 export function csvStringToPubkeyList(pubkeyList: string): PublicKey[] {
   const tokenCSV = pubkeyList.replace(/\s+/g, "");

@@ -3,8 +3,8 @@ import { useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 
 import { PostContent } from "../../forums";
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/permissions";
+import { DispatchForum } from '@postbox';
+import { UserRoleType } from '@utils';
 import { ForumData, CreatedPost } from '../../../types/forumData';;
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 

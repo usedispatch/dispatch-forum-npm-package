@@ -12,8 +12,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { DispatchForum, MainForum } from "./../utils/postbox/postboxWrapper";
-import { UserRoleType } from "./../utils/permissions";
+import { DispatchForum, MainForum } from '@postbox';
+import { UserRoleType } from '@utils';
 import { DebugWarning } from "./../components/common/DebugWarning";
 export interface DispatchAppProps {
   wallet: WalletInterface;

@@ -26,10 +26,7 @@ import { getIdentity } from "../../../utils/identity";
 import { ForumData, CreatedPost, ClientPost } from '../../../types/forumData';
 import { ForumIdentity } from '../../../types/forumIdentity';
 import { isForumPost, isEditedPost, isCreatedPost } from '../../../utils/forumData';
-import { useUserIsMod } from '../../../utils/hooks/useUserIsMod';
-import {
-  useForumIdentity,
-} from "../../../utils/hooks/useForumIdentity";
+import { useUserIsMod, useForumIdentity } from '@hooks';
 import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
 
 interface PostContentProps {

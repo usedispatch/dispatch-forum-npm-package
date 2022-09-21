@@ -31,10 +31,7 @@ import { getIdentity } from "../../../utils/identity";
 import { ForumData, CreatedPost, EditedPost } from '../../../types/forumData';
 import { ForumIdentity } from '../../../types/forumIdentity';
 import { isEditedPost } from '../../../utils/forumData';
-import { useUserIsMod } from '../../../utils/hooks/useUserIsMod';
-import {
-  useForumIdentity,
-} from "../../../utils/hooks/useForumIdentity";
+import { useUserIsMod, useForumIdentity } from '@hooks';
 import { isSuccess } from '../../../utils/loading';
 import { errorSummary } from '../../../utils/error';
 import {

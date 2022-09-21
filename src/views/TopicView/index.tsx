@@ -7,15 +7,11 @@ import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
 
 import {
-  useForumData
-} from '../../utils/hooks/useForumData';
-import { isForumPost, isEditedPost } from '../../utils/forumData';
-import {
+  useForumData,
   useModal,
-} from '../../utils/hooks/useModal'
-import {
   useParticipatingModerators
-} from "../../utils/hooks/useParticipatingModerators";
+} from '@hooks';
+import { isForumPost, isEditedPost } from '../../utils/forumData';
 
 import { Chevron } from "../../assets";
 import { MessageType, Spinner, Link } from "../../components/common";

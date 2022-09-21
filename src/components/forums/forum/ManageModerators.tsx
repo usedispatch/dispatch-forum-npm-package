@@ -13,7 +13,7 @@ import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from '../../../types/forumData';
-import { useModerators } from "../../../utils/hooks/useModerators";
+import { useModerators } from '@hooks';
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
 import { errorSummary, isError } from "../../../utils/error";

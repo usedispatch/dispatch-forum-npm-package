@@ -179,7 +179,8 @@
       margin-right: 8px;
 
       @media only screen and (max-width: 570px) {
-        width: 18px;
+        max-width: 18px;
+        min-width: 18px;
       }
     }
   }

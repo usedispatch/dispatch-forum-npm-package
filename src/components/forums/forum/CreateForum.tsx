@@ -402,10 +402,7 @@ export function CreateForum(props: CreateForumProps) {
               />
               <div className="textSize">{bodySize}/800</div>
             </div>
-            <Collapsible
-              header="Show advanced options"
-              content={advancedOptions}
-            />
+            <Collapsible header="Advanced options" content={advancedOptions} />
             {creatingNewForum && <Spinner />}
             <div className="createForumButtonContainer">
               <button

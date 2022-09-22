@@ -50,6 +50,7 @@
     .gatedForum {
       height: 24px;
       width: 24px;
+      min-width: 24px;
     }
 
     @media only screen and (max-width: 570px) {
@@ -243,7 +244,6 @@
     }
 
     .tools {
-      width: 100%;
       display: flex;
       gap: 24px;
       flex-direction: row;
@@ -264,7 +264,6 @@
     display: flex;
     align-items: center;
 
-    margin-left: 24px;
     background: transparent;
     color: #3f1d96;
 

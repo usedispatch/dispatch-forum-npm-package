@@ -4,23 +4,26 @@ import { uncategorizedError } from '../utils/error';
 
 const postboxErrorCode = {
   // Create post errors
-  100: "The provided post ID is too large an increase",
-  101: "The reply-to account is not a Post account",
-  102: "Replies cannot have a further reply restriction",
-  103: "Invalid setting type for post",
+  // 0x0 corresponds to account already in use, in this case most  
+  // likely means that the post ID is already in use
+  0: "Too many posts being created, please try again",
+  6100: "The provided post ID is too large an increase",
+  6101: "The reply-to account is not a Post account",
+  6102: "Replies cannot have a further reply restriction",
+  6103: "Invalid setting type for post",
 
   // Post restriction errors
-  200: "The provided token account is not a token account",
-  201: "Missing the token required by the restriction",
-  202: "Account provided is not expected metadata key",
-  203: "The provided account is not a metadata account",
-  204: "No collection set on the metadata",
-  205: "Missing an NFT from the collection required by the restriction",
-  206: "Cannot parse a setting",
-  207: "Extra account offsets invalid for this restriction type",
-  208: "Must supply offsets when a post restriction applies",
-  209: "We hit the test error",
-  210: "You have already made this vote, you can only vote up or down once, but you can switch your vote",
+  6200: "The provided token account is not a token account",
+  6201: "Missing the token required by the restriction",
+  6202: "Account provided is not expected metadata key",
+  6203: "The provided account is not a metadata account",
+  6204: "No collection set on the metadata",
+  6205: "Missing an NFT from the collection required by the restriction",
+  6206: "Cannot parse a setting",
+  6207: "Extra account offsets invalid for this restriction type",
+  6208: "Must supply offsets when a post restriction applies",
+  6209: "We hit the test error",
+  6210: "You have already made this vote, you can only vote up or down once, but you can switch your vote",
 };
 
 const hexToDecimal = (hex: string) => parseInt(hex, 16);
@@ -30,7 +33,7 @@ export function parseError(error: any): DispatchError {
     const hexIndex = (error.message as string).indexOf("0x");
     if (hexIndex >= 0) {
       const hexString = (error.message as string).substring(hexIndex + 2);
-      const decimal = hexToDecimal(hexString) - 6000;
+      const decimal = hexToDecimal(hexString);
       const message = postboxErrorCode[decimal];
       return {
         errorKind: 'Contract',

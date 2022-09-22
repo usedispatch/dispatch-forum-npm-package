@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode, useMemo } from "react";
+import { useState, ReactNode, useMemo, SyntheticEvent } from "react";
 import { PublicKey } from "@solana/web3.js";
 import { ForumPost } from "@usedispatch/client";
 import { Result } from '../../../types/error';
@@ -21,15 +21,6 @@ import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 interface CreatePostProps {
   topic: ForumPost;
   collectionId: PublicKey;
-  createForumPost: (
-    post: {
-      subj?: string | undefined;
-      body: string;
-      meta?: any;
-    },
-    topicId: number,
-    collectionId: PublicKey
-  ) => Promise<Result<string>>;
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
   onReload: () => void;
@@ -39,7 +30,6 @@ interface CreatePostProps {
 
 export function CreatePost(props: CreatePostProps) {
   const {
-    createForumPost,
     collectionId,
     topic,
     onReload,
@@ -65,7 +55,7 @@ export function CreatePost(props: CreatePostProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const createNewPost = async (event: React.SyntheticEvent) => {
+  const createNewPost = async (event: SyntheticEvent) => {
     event.preventDefault();
     setLoading(true);
     const target = event.target as typeof event.target & {
@@ -73,7 +63,8 @@ export function CreatePost(props: CreatePostProps) {
     };
 
     const post = { body: target.post.value };
-    const tx = await createForumPost(post, topic.postId, collectionId);
+    setPostInFlight(true);
+    const tx = await Forum.createForumPost(post, topic.postId, collectionId);
 
     if (isSuccess(tx)) {
       const localPost: CreatedPost = {

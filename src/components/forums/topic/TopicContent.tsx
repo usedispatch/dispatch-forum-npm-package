@@ -415,19 +415,6 @@ export function TopicContent(props: TopicContentProps) {
             <CreatePost
               topic={topic}
               collectionId={forumData.collectionId}
-              createForumPost={async (
-                { subj, body, meta },
-                topicId,
-                collectionId
-              ) => {
-                setPostInFlight(true);
-                const signature = forum.createForumPost(
-                  { subj, body, meta },
-                  topicId,
-                  collectionId
-                );
-                return signature;
-              }}
               update={update}
               addPost={addPost}
               onReload={() => {}}

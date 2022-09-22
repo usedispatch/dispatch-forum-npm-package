@@ -144,7 +144,7 @@
     }
 
     .idsList {
-      padding-left: 0;
+      margin-top: 0;
       padding: 8px 0 0 8px;
     }
 
@@ -155,12 +155,32 @@
       font-size: 14px;
       font-weight: 400;
       color: #414149;
+
+      .displayName {
+        max-width: calc(100% - 8px);
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+
+        @media only screen and (max-width: 480px) {
+          max-width: 310px;
+        }
+
+        @media only screen and (max-width: 370px) {
+          max-width: 220px;
+        }
+      }
     }
 
     .iconContainer {
       heigh: 28px;
       width: 28px;
+      min-width: 28px;
       margin-right: 8px;
+
+      @media only screen and (max-width: 570px) {
+        width: 18px;
+      }
     }
   }
 

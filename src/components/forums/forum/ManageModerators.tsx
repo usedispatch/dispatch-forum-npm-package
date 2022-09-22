@@ -1,4 +1,4 @@
-import isNil from 'lodash/isNil';
+import isNil from "lodash/isNil";
 import { useState, ReactNode, useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 
@@ -178,7 +178,9 @@ export function ManageModerators(props: ManageModeratorsProps) {
                                   <Jdenticon value={m} alt="moderatorId" />
                                 )}
                               </div>
-                              {identity ? identity.displayName : m}
+                              <div className="displayName">
+                                {identity ? identity.displayName : m}
+                              </div>
                             </>
                           </li>
                         );

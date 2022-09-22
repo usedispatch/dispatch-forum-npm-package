@@ -1,4 +1,4 @@
-import { PublicKey } from "@solana/web3.js";
+import { PublicKey, TokenAmount } from "@solana/web3.js";
 import { PostRestriction } from "@usedispatch/client";
 import { newPublicKey } from "../utils/postbox/validateNewPublicKey";
 import { Result, DispatchError } from '../types/error';
@@ -52,6 +52,53 @@ export function pubkeysToRestriction(
         collectionIds: newIds,
       },
     } as PostRestriction;
+  }
+}
+
+// add support for list?
+export function pubkeysToSPLRestriction(
+  pubkey: string,
+  amount: number,
+  decimals: number,
+): Result<PostRestriction> {
+  const tokenCSV = pubkey.replace(/\s+/g, "");
+  const csvList = tokenCSV.split(",");
+
+  const newIdResults = csvList.map((token) => {
+    return newPublicKey(token);
+  });
+
+  // Collect all invalid pubkeys
+  const pubkeyErrors = newIdResults.filter(
+    pkey => isError(pkey)
+  ) as DispatchError[];
+  
+  // If any pubkey is invalid...
+  if (pubkeyErrors.length > 0) {
+    return badInputError(
+      pubkeyErrors
+        .map(err => errorSummary(err))
+        .join(', ')
+    );
+  }
+
+  let newIds = newIdResults as PublicKey[];
+
+  const tokenAmount = amount * 10 ** decimals;
+
+  if (newIds.length === 0) {
+    return {
+      null: {},
+    } as PostRestriction;
+  } else if (newIds.length === 1) {
+    return {
+      tokenOwnership: { mint: newIds[0], amount: tokenAmount },
+    } as PostRestriction;
+  } else {
+    return badInputError(
+      'Only one SPL token can be specified',
+      'Please remove all but one SPL token from the list'
+    );
   }
 }
 

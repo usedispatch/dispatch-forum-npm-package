@@ -30,7 +30,9 @@ import {
 import {
   restrictionListToString,
   pubkeysToRestriction,
+  pubkeysToSPLRestriction
 } from "../../../utils/restrictionListHelper";
+import Input from '../../../components/common/Input';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -48,8 +50,10 @@ export function ForumContent(props: ForumContentProps) {
   const [newTopic, setNewTopic] = useState<{
     title: string;
     description: string;
-    accessToken: string;
-  }>({ title: "", description: "", accessToken: "" });
+    NFTaccessToken: string;
+    SPLaccessToken: string;
+    SPLamount: number;
+  }>({ title: "", description: "", NFTaccessToken: "", SPLaccessToken: "", SPLamount: 0 });
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
@@ -81,20 +85,30 @@ export function ForumContent(props: ForumContentProps) {
   } | null>(null);
 
   useEffect(() => {
-    if (!keepGates && newTopic.accessToken.length === 0) {
+    if (!keepGates && (newTopic.NFTaccessToken.length === 0 || newTopic.SPLaccessToken.length === 0)) {
       setUngatedNewTopic(true);
     } else {
       setUngatedNewTopic(false);
     }
-  }, [newTopic.accessToken, keepGates]);
+  }, [newTopic.SPLaccessToken, newTopic.NFTaccessToken.length, keepGates]);
 
   const addAccessToken = async () => {
     setAddingAccessToken(true);
-    const restriction = pubkeysToRestriction(
+    const NFT_restrictions = pubkeysToRestriction(
       newForumAccessToken,
       isSuccess(forumData.restriction) ? forumData.restriction : undefined
     );
+    //TODO: add support on manage forum
+    const spl_mint = new PublicKey(newTopic.SPLaccessToken);
+    const tokenMetadata = await forumObject.connection.getTokenSupply(spl_mint)
 
+    const SPL_restrictions = pubkeysToSPLRestriction(
+      newTopic.SPLaccessToken,
+      newTopic.SPLamount,
+      tokenMetadata.value.decimals
+    );
+    const restriction = NFT_restrictions ? NFT_restrictions : SPL_restrictions ? SPL_restrictions : undefined;
+    console.log(restriction, SPL_restrictions);
     if (isError(restriction)) {
       const error = restriction;
       setAddingAccessToken(false);
@@ -108,11 +122,11 @@ export function ForumContent(props: ForumContentProps) {
       return;
     }
 
-    const currentIds = restrictionListToString(restriction);
+    const currentIds = restrictionListToString(restriction!);
 
     const tx = await forumObject.setForumPostRestriction(
       forumData.collectionId,
-      restriction
+      restriction!
     );
     if (isSuccess(tx)) {
       setCurrentForumAccessToken(
@@ -213,15 +227,23 @@ export function ForumContent(props: ForumContentProps) {
     // Second case removes existing gates and adds new ones
     // Third case removes existing gates
     // Final case keeps existing gates
-    if (keepGates && newTopic.accessToken !== "") {
+    if (keepGates && newTopic.NFTaccessToken !== "") {
       restrictionResult = pubkeysToRestriction(
-        newTopic.accessToken,
+        newTopic.NFTaccessToken,
         isSuccess(forumData.restriction) ? forumData.restriction : undefined
       );
-    } else if (!keepGates && newTopic.accessToken !== "") {
-      restrictionResult = pubkeysToRestriction(newTopic.accessToken);
-    } else if (!keepGates) {
-      restrictionResult = { null: {} };
+    } else if (!keepGates && newTopic.NFTaccessToken !== "") {
+      restrictionResult = pubkeysToRestriction(newTopic.NFTaccessToken);
+    } else if (newTopic.SPLaccessToken !== "") {
+      // change conditions here
+      const spl_mint = new PublicKey(newTopic.SPLaccessToken);
+      const tokenMetadata = await forumObject.connection.getTokenSupply(spl_mint)
+  
+      restrictionResult = pubkeysToSPLRestriction(
+        newTopic.SPLaccessToken,
+        newTopic.SPLamount,
+        tokenMetadata.value.decimals
+      );
     } else {
       // No restriction
       restrictionResult = undefined;
@@ -247,7 +269,7 @@ export function ForumContent(props: ForumContentProps) {
     const tx = await forumObject.createTopic(
       p,
       forumData.collectionId,
-      restriction
+      restriction!
     );
     if (isSuccess(tx)) {
       setCreatingNewTopic(false);
@@ -257,7 +279,7 @@ export function ForumContent(props: ForumContentProps) {
         type: MessageType.success,
         title: "Topic created!",
       });
-      setNewTopic({ title: "", description: "", accessToken: "" });
+      setNewTopic({ title: "", description: "", NFTaccessToken: "", SPLaccessToken: "", SPLamount: 0 });
       setShowNewTopicModal(false);
 
       // re-load forum in background
@@ -493,21 +515,58 @@ export function ForumContent(props: ForumContentProps) {
                           scopes={[SCOPES.canAddTopicRestriction]}>
                           <>
                             <span className="createTopicLabel">
-                              Limit post access
+                              Limit post access by NFT Collection ID
+                            </span>
+                            <input
+                              type="text"
+                              placeholder="Metaplex collection ID as comma separated list"
+                              className="newAccessToken"
+                              name="accessToken"
+                              value={newTopic.NFTaccessToken}
+                              onChange={(e) =>
+                                setNewTopic({
+                                  ...newTopic,
+                                  NFTaccessToken: e.target.value,
+                                })
+                              }
+                            />
+                            <div className="addSPLToken">
+                            <span className="createTopicLabel">
+                              Limit post access by SPL Collection ID
                             </span>
                             <input
                               type="text"
                               placeholder="Token mint ID"
                               className="newAccessToken"
                               name="accessToken"
-                              value={newTopic.accessToken}
-                              onChange={(e) =>
+                              value={newTopic.SPLaccessToken}
+                              onChange={(e) => {
+                                console.log(e.target.value);
                                 setNewTopic({
                                   ...newTopic,
-                                  accessToken: e.target.value,
-                                })
+                                  SPLaccessToken: e.target.value,
+                                });
+                              }
                               }
                             />
+                            <span className="createTopicLabel">
+                              Amount
+                            </span>
+                            {/* validate input */}
+                            <input
+                              type='number'
+                              value={1.00}
+                              min={0}
+                              step={0.1}
+                              className="newAccessToken"
+                              onChange={(e) => {
+                                setNewTopic({
+                                  ...newTopic,
+                                  SPLamount: parseFloat(e.target.value),
+                                });
+                              }
+                              }/>
+                              </div>
                             {currentForumAccessToken.length > 0 && (
                               <div className="gateCheckbox">
                                 <div className="createTopicLabel">

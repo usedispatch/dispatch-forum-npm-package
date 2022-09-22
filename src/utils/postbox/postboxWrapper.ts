@@ -627,7 +627,7 @@ export class DispatchForum implements IForum {
       if ((await forum.exists()) && topic) {
 
         if (isSuccess(topic)) {
-          return forum.createForumPost(post, topic);
+          return await forum.createForumPost(post, topic);
         } else {
           // If topic is an error, return that error
           const error = topic;

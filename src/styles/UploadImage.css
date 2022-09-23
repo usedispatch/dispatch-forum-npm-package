@@ -5,9 +5,19 @@
     .customizeBannerButton {
       display: flex;
       align-items: center;
+      justify-content: center;
 
-      background: transparent;
-      color: #3f1d96;
+      padding: 14px;
+      position: absolute;
+      top: 12%;
+      right: 2%;
+
+      background: #ffffff;
+      border-radius: 8px;
+
+      svg path {
+        stroke: #454196;
+      }
 
       &:hover {
         opacity: 0.85;
@@ -18,14 +28,8 @@
         opacity: 0.65;
       }
 
-      svg {
-        height: 12px;
-        width: 12px;
-        margin-right: 6px;
-
-        path {
-          stroke: #454196;
-        }
+      @media only screen and (max-width: 480px) {
+        top: 15%;
       }
     }
 

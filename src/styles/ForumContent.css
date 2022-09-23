@@ -271,6 +271,7 @@
 
       @media only screen and (max-width: 570px) {
         gap: 20px;
+        row-gap: 12px;
 
         .editForumContainer .editForumButton svg {
           margin-right: 16px;

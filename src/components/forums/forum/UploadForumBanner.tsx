@@ -2,7 +2,7 @@ import isNil from "lodash/isNil";
 import { useState, ReactNode, useMemo } from "react";
 import { PublicKey } from "@solana/web3.js";
 
-import { Info } from "../../../assets";
+import { Info, Edit } from "../../../assets";
 import {
   CollapsibleProps,
   MessageType,
@@ -165,7 +165,7 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
           onClick={() =>
             setForumImage({ ...forumImage, showUploadImage: true })
           }>
-          Customize banner
+          <Edit />
         </button>
       </div>
     </div>

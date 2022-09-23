@@ -327,7 +327,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  setImageUrls = async(collectionId:  PublicKey, image: string): Promise<string> => {
+  setImageUrls = async(collectionId:  PublicKey, image: string): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -341,12 +341,11 @@ export class DispatchForum implements IForum {
       const tx = await forum.setImageUrls(expectedImages);
       return tx
     } catch (error) {
-      console.log(error);
-      throw(parseError(error))
+      return parseError(error);
     }
   }
 
-  getImageUrls = async(collectionId:  PublicKey) => {
+  getImageUrls = async(collectionId:  PublicKey): Promise<Result<any>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -357,8 +356,8 @@ export class DispatchForum implements IForum {
       );
       const tx = await forum.getImageUrls();
       return tx
-    } catch (error) {
-      throw(parseError(error))
+    }  catch (error) {
+      return parseError(error);
     }
   }
 

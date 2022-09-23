@@ -95,7 +95,6 @@
 
     @media only screen and (max-width: 570px) {
       width: 100%;
-      padding: 0 22px 24px;
 
       .topicViewContent {
         padding: 0;
@@ -104,10 +103,10 @@
 
     .topicViewContent {
       width: 100%;
-      padding: 0 42px 24px;
+      padding: 0 10% 24px;
 
       @media only screen and (max-width: 570px) {
-        padding: 0;
+        padding: 0 5% 24px;
       }
 
       .topicViewLoading {

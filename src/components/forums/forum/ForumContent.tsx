@@ -20,6 +20,7 @@ import {
   ManageOwners,
   ManageModerators,
   UploadForumBanner,
+  ConnectionAlert,
 } from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
@@ -37,6 +38,7 @@ import {
   restrictionListToString,
   pubkeysToRestriction,
 } from "../../../utils/restrictionListHelper";
+import { StarsAlert } from "../StarsAlert";
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -555,8 +557,13 @@ export function ForumContent(props: ForumContentProps) {
           <div
             className="forumContentBox"
             style={{
-              backgroundImage: `url(${forumData.images?.background})`,
+              backgroundImage: forumData.images?.background
+                ? `url(${forumData.images?.background})`
+                : undefined,
             }}>
+            {!permission.readAndWrite && <ConnectionAlert />}
+            {forumData.collectionId.toBase58() ===
+              "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert />}
             {forumHeader}
           </div>
           <PermissionsGate scopes={[SCOPES.canEditForum]}>

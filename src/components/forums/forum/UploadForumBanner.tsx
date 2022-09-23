@@ -1,12 +1,21 @@
-import * as _ from "lodash";
+import isNil from "lodash/isNil";
 import { useState, ReactNode, useMemo } from "react";
 import { PublicKey } from "@solana/web3.js";
 
 import { Info } from "../../../assets";
-import { MessageType, PopUpModal, Tooltip } from "../../common";
+import {
+  CollapsibleProps,
+  MessageType,
+  PopUpModal,
+  Tooltip,
+  TransactionLink,
+} from "../../common";
 import { Notification } from "..";
 
 import { useForum } from "../../../contexts/DispatchProvider";
+import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { isSuccess } from "../../../utils/loading";
+import { errorSummary } from "../../../utils/error";
 
 interface UploadForumBannerProps {
   collectionId: PublicKey;
@@ -18,29 +27,60 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
   const forumObject = useForum();
   const { permission } = forumObject;
 
-  const [notificationContent, setNotificationContent] = useState<{
-    isHidden: boolean;
-    content?: string | ReactNode;
-    type?: MessageType;
-  }>({ isHidden: true });
-
   const [forumImage, setForumImage] = useState<{
     showUploadImage: boolean;
     imageURL: string;
     saving: boolean;
   }>({ showUploadImage: false, imageURL: "", saving: false });
 
+  const [notificationContent, setNotificationContent] = useState<{
+    isHidden: boolean;
+    content?: string | ReactNode;
+    type?: MessageType;
+  }>({ isHidden: true });
+  const [modalInfo, setModalInfo] = useState<{
+    title: string | ReactNode;
+    type: MessageType;
+    body?: string | ReactNode;
+    collapsible?: CollapsibleProps;
+  } | null>(null);
+
   const reset = () =>
     setForumImage({ showUploadImage: false, imageURL: "", saving: false });
 
   const onSave = async () => {
     setForumImage({ ...forumImage, saving: true });
-    try {
-      await forumObject.setImageUrls(collectionId, forumImage.imageURL);
+
+    const tx = await forumObject.setImageUrls(
+      collectionId,
+      forumImage.imageURL
+    );
+
+    if (isSuccess(tx)) {
+      setNotificationContent({
+        isHidden: false,
+        type: MessageType.success,
+        content: (
+          <>
+            The banner was edited.
+            <TransactionLink transaction={tx} />
+          </>
+        ),
+      });
+      setTimeout(
+        () => setNotificationContent({ isHidden: true }),
+        NOTIFICATION_BANNER_TIMEOUT
+      );
       onSetImageURL(forumImage.imageURL);
-      setForumImage({ ...forumImage, saving: false });
-    } catch (error) {
-      setForumImage({ ...forumImage, saving: false });
+      reset();
+    } else {
+      reset();
+      setModalInfo({
+        title: "Something went wrong!",
+        type: MessageType.error,
+        body: `The access token could not be added`,
+        collapsible: { header: "Error", content: errorSummary(tx) },
+      });
     }
   };
 
@@ -63,6 +103,21 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
           type={notificationContent?.type}
           onClose={() => setNotificationContent({ isHidden: true })}
         />
+        {!isNil(modalInfo) && (
+          <PopUpModal
+            id="create-topic-info"
+            visible
+            title={modalInfo.title}
+            messageType={modalInfo.type}
+            body={modalInfo.body}
+            collapsible={modalInfo.collapsible}
+            okButton={
+              <a className="okButton" onClick={() => setModalInfo(null)}>
+                OK
+              </a>
+            }
+          />
+        )}
         {forumImage.showUploadImage && (
           <PopUpModal
             id="cutomize-banner"
@@ -79,7 +134,7 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
                         <Info />
                       </div>
                     }
-                    message="The image must be a png"
+                    message="The image must beof type png"
                   />
                 </div>
                 <input

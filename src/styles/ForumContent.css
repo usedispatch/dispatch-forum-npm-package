@@ -1,9 +1,12 @@
 @layer components {
   .forumContentBox {
-    padding: 72px 42px 0;
+    padding: 72px 10% 0;
+    background-image: url("assets/default_background.png");
+    background-position: bottom;
+    background-size: cover;
 
     @media only screen and (max-width: 570px) {
-      padding: 72px 22px 0;
+      padding: 72px 5% 0;
     }
   }
 
@@ -230,7 +233,7 @@
     display: flex;
     align-items: center;
     padding: 20px 24px;
-    margin: 0 42px;
+    margin: 0 10%;
 
     border-top: 1px solid #b8b9dc;
     background: #fff;
@@ -249,7 +252,7 @@
 
     @media only screen and (max-width: 570px) {
       padding: 12px;
-      margin: 0 22px;
+      margin: 0 5%;
       gap: 14px;
       flex-wrap: wrap;
       justify-content: flex-start;
@@ -420,10 +423,10 @@
   }
 
   .topicListWrapper {
-    margin: 0 42px;
+    margin: 0 10%;
 
     @media only screen and (max-width: 570px) {
-      margin: 0 22px;
+      margin: 0 5%;
     }
   }
 }

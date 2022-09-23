@@ -1,4 +1,4 @@
-import isNil from 'lodash/isNil';
+import isNil from "lodash/isNil";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
@@ -37,8 +37,8 @@ import {
   useForumIdentity,
   ForumIdentity,
 } from "../../../utils/hooks";
-import { isSuccess } from '../../../utils/loading';
-import { errorSummary } from '../../../utils/error';
+import { isSuccess } from "../../../utils/loading";
+import { errorSummary } from "../../../utils/error";
 import {
   restrictionListToString,
   pubkeysToRestriction,
@@ -208,7 +208,7 @@ export function TopicContent(props: TopicContentProps) {
         collapsible: { header: "Error", content: errorSummary(error) },
       });
     }
-  }
+  };
 
   return (
     <>
@@ -358,7 +358,7 @@ export function TopicContent(props: TopicContentProps) {
             participatingModerators={participatingModerators}
             isGated={currentForumAccessToken.length > 0}
           />
-          <div className="moderatorToolsContainer">
+          <div className="topicToolsContainer">
             <div className="topicTools">
               <PermissionsGate
                 scopes={[SCOPES.canDeleteTopic]}

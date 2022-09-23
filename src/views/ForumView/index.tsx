@@ -4,7 +4,6 @@ import { PublicKey } from "@solana/web3.js";
 
 import { MessageType, Spinner } from "../../components/common";
 import {
-  ConnectionAlert,
   CreateForum,
   ForumContent,
   PoweredByDispatch,
@@ -16,7 +15,6 @@ import { isSuccess, isInitial, isPending } from "../../utils/loading";
 import { isError, isNotFoundError } from "../../utils/error";
 import { useForumData, useModal } from "../../utils/hooks";
 import { getCustomStyles } from "../../utils/getCustomStyles";
-import { StarsAlert } from "../../components/forums/StarsAlert";
 
 interface ForumViewProps {
   collectionId: string;
@@ -93,10 +91,6 @@ export const ForumView = (props: ForumViewProps) => {
         </Helmet>
         <div className="forumView">
           {modal}
-          {!permission.readAndWrite && <ConnectionAlert />}
-          {collectionId === "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && (
-            <StarsAlert />
-          )}
           <div className="forumViewContainer">
             <div className="forumViewContent">
               {(() => {

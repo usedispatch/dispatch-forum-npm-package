@@ -1,7 +1,7 @@
-import isNil from 'lodash/isNil';
-import isNull from 'lodash/isNull';
+import isNil from "lodash/isNil";
+import isNull from "lodash/isNull";
 import Markdown from "markdown-to-jsx";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 import { useEffect, useMemo } from "react";
 import { ForumPost } from "@usedispatch/client";
 import { Helmet } from "react-helmet";
@@ -28,14 +28,9 @@ import {
   notFoundError,
   isError,
   isUncategorizedError,
-  errorSummary
-} from '../../utils/error';
-import {
-  isSuccess,
-  isInitial,
-  isPending,
-  pending,
-} from "../../utils/loading";
+  errorSummary,
+} from "../../utils/error";
+import { isSuccess, isInitial, isPending, pending } from "../../utils/loading";
 
 import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
@@ -95,7 +90,7 @@ export const TopicView = (props: Props) => {
       if (post) {
         return post;
       } else {
-        return notFoundError('Post not found');
+        return notFoundError("Post not found");
       }
     } else {
       if (isPending(forumData)) {
@@ -121,8 +116,11 @@ export const TopicView = (props: Props) => {
             return {
               type: MessageType.error,
               title: `Error loading`,
-              collapsible: { header: "Error", content: JSON.stringify(error.error) },
-            }
+              collapsible: {
+                header: "Error",
+                content: JSON.stringify(error.error),
+              },
+            };
           }
           // TODO better error display here
           return {
@@ -189,10 +187,13 @@ export const TopicView = (props: Props) => {
         </Helmet>
         <div className="topicView">
           {modal}
-          {!permission.readAndWrite && <ConnectionAlert />}
-          {collectionId === "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert/>}
           <div className="topicViewContainer">
             <div className="topicViewContent">
+              {!permission.readAndWrite && <ConnectionAlert />}
+              {collectionId ===
+                "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && (
+                <StarsAlert />
+              )}
               <main>
                 <div>
                   {(() => {

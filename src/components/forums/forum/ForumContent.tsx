@@ -14,7 +14,13 @@ import {
   TransactionLink,
   Spinner,
 } from "../../common";
-import { TopicList, EditForum, ManageOwners, ManageModerators } from "..";
+import {
+  TopicList,
+  EditForum,
+  ManageOwners,
+  ManageModerators,
+  UploadForumBanner,
+} from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -313,7 +319,15 @@ export function ForumContent(props: ForumContentProps) {
 
   return (
     <div className="dsp- ">
-      <div className="forumContent">
+      <div
+        className="forumContent"
+        // style={{
+        //   backgroundImage: `url(${forumData.images?.background})`,
+        //   boxShadow: forumData.images?.background
+        //     ? "0px 4px 8px rgb(0 0 0 / 8%)"
+        //     : undefined,
+        // }}
+      >
         <>
           {ReactGA.send("pageview")}
 
@@ -572,6 +586,7 @@ export function ForumContent(props: ForumContentProps) {
                     )
                   }
                   <EditForum forumData={forumData} update={update} />
+                  <UploadForumBanner onSetImageURL={() => update()} />
                 </div>
               </div>
             </PermissionsGate>

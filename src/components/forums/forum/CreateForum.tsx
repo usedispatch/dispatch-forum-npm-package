@@ -1,4 +1,4 @@
-import isNil from 'lodash/isNil';
+import isNil from "lodash/isNil";
 import { useState, useMemo, ReactNode } from "react";
 import Jdenticon from "react-jdenticon";
 import ReactGA from "react-ga4";
@@ -16,8 +16,8 @@ import {
 import { Notification } from "..";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { isSuccess } from '../../../utils/loading';
-import { errorSummary } from '../../../utils/error';
+import { isSuccess } from "../../../utils/loading";
+import { errorSummary } from "../../../utils/error";
 import { useModal } from "../../../utils/hooks";
 import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
 import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
@@ -174,7 +174,6 @@ export function CreateForum(props: CreateForumProps) {
     const res = await forumObject.createForum(forum);
 
     if (isSuccess(res)) {
-
       if (!isNil(res?.forum)) {
         showModal({
           title: `Success!`,
@@ -242,19 +241,19 @@ export function CreateForum(props: CreateForumProps) {
               const identity = getIdentity(pubkey);
               return (
                 <li key={m} className="addedIds">
-                  <>
-                    <div className="iconContainer">
-                      {identity ? (
-                        <img
-                          src={identity.profilePicture.href}
-                          style={{ borderRadius: "50%" }}
-                        />
-                      ) : (
-                        <Jdenticon value={m} alt="moderatorId" />
-                      )}
-                    </div>
+                  <div className="iconContainer">
+                    {identity ? (
+                      <img
+                        src={identity.profilePicture.href}
+                        style={{ borderRadius: "50%" }}
+                      />
+                    ) : (
+                      <Jdenticon value={m} alt="moderatorId" />
+                    )}
+                  </div>
+                  <div className="displayName">
                     {identity ? identity.displayName : m}
-                  </>
+                  </div>
                 </li>
               );
             })}
@@ -289,12 +288,10 @@ export function CreateForum(props: CreateForumProps) {
               const o = pubkey.toBase58();
               return (
                 <li key={o} className="addedIds">
-                  <>
-                    <div className="iconContainer">
-                      <Jdenticon value={o} alt="ownerId" />
-                    </div>
-                    {o}
-                  </>
+                  <div className="iconContainer">
+                    <Jdenticon value={o} alt="ownerId" />
+                  </div>
+                  <div className="displayName">{o}</div>
                 </li>
               );
             })}
@@ -329,7 +326,7 @@ export function CreateForum(props: CreateForumProps) {
               const a = pubkey.toBase58();
               return (
                 <li key={a} className="addedIds">
-                  {a}
+                  <div className="displayName">{a}</div>
                 </li>
               );
             })}
@@ -405,10 +402,7 @@ export function CreateForum(props: CreateForumProps) {
               />
               <div className="textSize">{bodySize}/800</div>
             </div>
-            <Collapsible
-              header="Show advanced options"
-              content={advancedOptions}
-            />
+            <Collapsible header="Advanced options" content={advancedOptions} />
             {creatingNewForum && <Spinner />}
             <div className="createForumButtonContainer">
               <button

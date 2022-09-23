@@ -1,9 +1,9 @@
-import isNil from 'lodash/isNil';
+import isNil from "lodash/isNil";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
-import { PostRestriction } from '@usedispatch/client';
+import { PostRestriction } from "@usedispatch/client";
 
 import { Lock, Plus, Trash } from "../../../assets";
 import {
@@ -170,9 +170,7 @@ export function ForumContent(props: ForumContentProps) {
         restrictionList
       );
     } else {
-      tx = await forumObject.deleteForumPostRestriction(
-        forumData.collectionId
-      );
+      tx = await forumObject.deleteForumPostRestriction(forumData.collectionId);
     }
 
     setCurrentForumAccessToken(filteredTokens);
@@ -234,7 +232,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
-        collapsible: { header: 'Error', content: errorSummary(error) }
+        collapsible: { header: "Error", content: errorSummary(error) },
       });
       setShowNewTopicModal(false);
       return;
@@ -272,11 +270,11 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
-        collapsible: { header: 'Error', content: errorSummary(error) }
+        collapsible: { header: "Error", content: errorSummary(error) },
       });
       setShowNewTopicModal(false);
     }
-  }
+  };
 
   const createTopicButton = (
     <button
@@ -366,7 +364,7 @@ export function ForumContent(props: ForumContentProps) {
                     currentForumAccessToken.map((token, index) => {
                       return (
                         <div className="currentToken" key={index}>
-                          <>{token}</>
+                          <div className="displayName">{token}</div>
                           <div
                             onClick={() => {
                               setShowManageAccessToken(false);

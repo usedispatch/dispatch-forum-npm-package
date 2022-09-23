@@ -6,7 +6,7 @@
     border: 1px solid #b8b9dc;
     background: #f7f7fe;
 
-    overflow-y: scroll;
+    overflow-y: auto;
     max-height: 250px;
   }
 

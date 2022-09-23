@@ -1,4 +1,4 @@
-import isNil from 'lodash/isNil';
+import isNil from "lodash/isNil";
 import { useState, ReactNode, useMemo } from "react";
 import Jdenticon from "react-jdenticon";
 
@@ -13,7 +13,7 @@ import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 import { ForumData } from "../../../utils/hooks";
-import { getIdentity } from '../../../utils/identity';
+import { getIdentity } from "../../../utils/identity";
 import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
 import { isSuccess } from "../../../utils/loading";
 import { errorSummary } from "../../../utils/error";
@@ -91,7 +91,9 @@ export function ManageOwners(props: ManageOwnersProps) {
       if (isSuccess(tx)) {
         setManageOwners({
           show: false,
-          currentOwners: manageOwners.currentOwners.concat(manageOwners.newOwner),
+          currentOwners: manageOwners.currentOwners.concat(
+            manageOwners.newOwner
+          ),
           newOwner: "",
           addingNewOwner: false,
         });
@@ -183,15 +185,18 @@ export function ManageOwners(props: ManageOwnersProps) {
                       return (
                         <li key={m} className="currentOwners">
                           <div className="iconContainer">
-                            { identity ?
+                            {identity ? (
                               <img
                                 src={identity.profilePicture.href}
-                                style={{ borderRadius: '50%' }}
-                              /> :
+                                style={{ borderRadius: "50%" }}
+                              />
+                            ) : (
                               <Jdenticon value={m} alt="ownerId" />
-                            }
+                            )}
                           </div>
-                          { identity ? identity.displayName : m }
+                          <div className="displayName">
+                            {identity ? identity.displayName : m}
+                          </div>
                         </li>
                       );
                     } else {

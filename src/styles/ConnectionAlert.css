@@ -1,6 +1,6 @@
 @layer components {
   .alertContainer {
-    padding: 0 42px;
+    padding: 24px 42px 0;
 
     @media only screen and (max-width: 570px) {
       padding: 0 22px;

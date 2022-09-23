@@ -319,18 +319,9 @@ export function ForumContent(props: ForumContentProps) {
 
   return (
     <div className="dsp- ">
-      <div
-        className="forumContent"
-        // style={{
-        //   backgroundImage: `url(${forumData.images?.background})`,
-        //   boxShadow: forumData.images?.background
-        //     ? "0px 4px 8px rgb(0 0 0 / 8%)"
-        //     : undefined,
-        // }}
-      >
+      <div className="forumContent">
         <>
           {ReactGA.send("pageview")}
-
           {!isNil(modalInfo) && (
             <PopUpModal
               id="create-topic-info"
@@ -561,41 +552,52 @@ export function ForumContent(props: ForumContentProps) {
               return null;
             }
           })()}
-          <div className="forumContentBox">
+          <div
+            className="forumContentBox"
+            style={{
+              backgroundImage: `url(${forumData.images?.background})`,
+            }}>
             {forumHeader}
-            <PermissionsGate scopes={[SCOPES.canEditForum]}>
-              <div className="moderatorToolsContainer">
-                <div>Owner tools: </div>
-                <div className="tools">
-                  <div className="lock">
-                    <Lock />
-                  </div>
-                  <ManageOwners forumData={forumData} />
-                  <ManageModerators forumData={forumData} />
-                  {
-                    // The manage users UI should be hidden for DAA
-                    forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
-                      <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                        <button
-                          className="moderatorTool"
-                          disabled={!permission.readAndWrite}
-                          onClick={() => setShowManageAccessToken(true)}>
-                          Manage forum access
-                        </button>
-                      </PermissionsGate>
-                    )
-                  }
-                  <EditForum forumData={forumData} update={update} />
-                  <UploadForumBanner onSetImageURL={() => update()} />
-                </div>
-              </div>
-            </PermissionsGate>
           </div>
+          <PermissionsGate scopes={[SCOPES.canEditForum]}>
+            <div className="moderatorToolsContainer">
+              <div>Owner tools: </div>
+              <div className="tools">
+                <div className="lock">
+                  <Lock />
+                </div>
+                <ManageOwners forumData={forumData} />
+                <ManageModerators forumData={forumData} />
+                {
+                  // The manage users UI should be hidden for DAA
+                  forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
+                    <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                      <button
+                        className="moderatorTool"
+                        disabled={!permission.readAndWrite}
+                        onClick={() => setShowManageAccessToken(true)}>
+                        Manage forum access
+                      </button>
+                    </PermissionsGate>
+                  )
+                }
+                <EditForum forumData={forumData} update={update} />
+                <UploadForumBanner
+                  onSetImageURL={() => update()}
+                  collectionId={forumData.collectionId}
+                />
+              </div>
+            </div>
+          </PermissionsGate>
           {(() => {
             if (newTopicInFlight) {
               return <Spinner />;
             } else if (!isNil(forumData.collectionId)) {
-              return <TopicList forumData={forumData} />;
+              return (
+                <div className="topicListWrapper">
+                  <TopicList forumData={forumData} />
+                </div>
+              );
             }
           })()}
         </>

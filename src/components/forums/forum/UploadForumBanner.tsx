@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import { useState, ReactNode, useMemo } from "react";
+import { PublicKey } from "@solana/web3.js";
 
 import { Info } from "../../../assets";
 import { MessageType, PopUpModal, Tooltip } from "../../common";
@@ -8,11 +9,12 @@ import { Notification } from "..";
 import { useForum } from "../../../contexts/DispatchProvider";
 
 interface UploadForumBannerProps {
+  collectionId: PublicKey;
   onSetImageURL: (url: string) => void;
 }
 
 export function UploadForumBanner(props: UploadForumBannerProps) {
-  const { onSetImageURL } = props;
+  const { collectionId, onSetImageURL } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -21,8 +23,6 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
     content?: string | ReactNode;
     type?: MessageType;
   }>({ isHidden: true });
-
-  const fileTypes = "png";
 
   const [forumImage, setForumImage] = useState<{
     showUploadImage: boolean;
@@ -33,18 +33,13 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
   const reset = () =>
     setForumImage({ showUploadImage: false, imageURL: "", saving: false });
 
-  const onSave = () => {
+  const onSave = async () => {
     setForumImage({ ...forumImage, saving: true });
     try {
-      console.log(forumImage.imageURL);
-      // await forumObject.setImageUrls(
-      //   forumData.collectionId,
-      //   bannerImage.href
-      // );
+      await forumObject.setImageUrls(collectionId, forumImage.imageURL);
       onSetImageURL(forumImage.imageURL);
       setForumImage({ ...forumImage, saving: false });
     } catch (error) {
-      console.log(error);
       setForumImage({ ...forumImage, saving: false });
     }
   };
@@ -103,10 +98,7 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
             }
             onClose={() => reset()}
             okButton={
-              <button
-                className="okButton"
-                disabled={forumImage.imageURL.length === 0}
-                onClick={() => onSave()}>
+              <button className="okButton" onClick={() => onSave()}>
                 Save
               </button>
             }

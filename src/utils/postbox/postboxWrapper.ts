@@ -82,6 +82,10 @@ export interface IForum {
     title: string;
     desc: string;
   }>>;
+
+  setImageUrls(collectionId: PublicKey, image: string ): Promise<Result<string>>;
+
+  getImageUrls(collectionId: PublicKey): Promise<Result<any>>;
   
   getModeratorMint(collectionId: PublicKey, assumeExists?: boolean): Promise<Result<PublicKey>>;
 
@@ -320,6 +324,41 @@ export class DispatchForum implements IForum {
       }
     } catch (error) {
       return parseError(error);
+    }
+  }
+
+  setImageUrls = async(collectionId:  PublicKey, image: string): Promise<string> => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+
+      const expectedImages = { background: image };
+      const tx = await forum.setImageUrls(expectedImages);
+      return tx
+    } catch (error) {
+      console.log(error);
+      throw(parseError(error))
+    }
+  }
+
+  getImageUrls = async(collectionId:  PublicKey) => {
+    const owner = this.wallet;
+    const conn = this.connection;
+
+    try {
+      const forum = new Forum(
+        new DispatchConnection(conn, owner, {cluster: this.cluster}),
+        collectionId
+      );
+      const tx = await forum.getImageUrls();
+      return tx
+    } catch (error) {
+      throw(parseError(error))
     }
   }
 

@@ -90,7 +90,6 @@
 
   .forumView {
     background: #f7f7fe;
-    padding-top: 24px;
   }
 
   .forumViewContainer {
@@ -110,7 +109,6 @@
       height: 100%;
       width: 100%;
       margin: 0;
-      padding: 0 42px;
 
       .forumLoading {
         padding-top: 192px;
@@ -118,7 +116,6 @@
 
       @media only screen and (max-width: 570px) {
         margin: 0 8px;
-        padding: 0 22px;
       }
     }
   }

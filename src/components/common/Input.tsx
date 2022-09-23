@@ -12,7 +12,7 @@ interface Props {
 }
 
 const Input = ({
-  type,
+  type ,
   value,
   min,
   max,

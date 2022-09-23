@@ -29,9 +29,9 @@ const postboxErrorCode = {
 const hexToDecimal = (hex: string) => parseInt(hex, 16);
 
 export function parseError(error: any): DispatchError {
-  if (error.message != undefined) {
+  if (error?.message != undefined) {
     const hexIndex = (error.message as string).indexOf("0x");
-    if (hexIndex >= 0) {
+    if (hexIndex >= 0 && error.message != undefined) {
       const hexString = (error.message as string).substring(hexIndex + 2);
       const decimal = hexToDecimal(hexString);
       const message = postboxErrorCode[decimal];
@@ -48,6 +48,12 @@ export function parseError(error: any): DispatchError {
           errorKind: 'Wallet',
           message: `${str}`,
           suggestion: 'Make sure you are using the correct network, devnet or mainnet, and try again'
+        };
+      } else if (str.includes("mint could not be unpacked")) {
+        return {
+          errorKind: 'BadInput',
+          message: JSON.stringify('Invalid Mint Address'),
+          suggestion: 'The mint address you entered is invalid, please check the address or try another.'
         };
       }
       // TODO(andrew) these two lines produce a "cannot find

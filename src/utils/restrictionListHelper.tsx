@@ -85,7 +85,6 @@ export function pubkeysToSPLRestriction(
   let newIds = newIdResults as PublicKey[];
 
   const tokenAmount = amount * 10 ** decimals;
-
   if (newIds.length === 0) {
     return {
       null: {},

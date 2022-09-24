@@ -572,7 +572,7 @@ export function ForumContent(props: ForumContentProps) {
                                   >
                                   <option value="">Select a token type</option>
                                   <option value="NFT">Metaplex NFT</option>
-                                  <option value="SPL">SPL Token</option>
+                                  {(!isSuccess(forumData.restriction) && !keepGates) && <option value="SPL">SPL Token</option>}
                                 </select>
                             </div>
                           {addNFTGate && (

@@ -27,6 +27,7 @@
     "clean": "rm -rf dist",
     "build": "yarn clean && yarn eslint --fix $(git diff --name-only HEAD | xargs) && NODE_ENV=development yarn parcel build && cp README.md ./dist",
     "build:prod": "yarn clean && yarn eslint --fix $(git diff --name-only HEAD | xargs) && NODE_ENV=production yarn parcel build && cp README.md ./dist",
+    "build:commit": "yarn clean && (git diff HEAD~1 --name-only | xargs yarn eslint) && NODE_ENV=production yarn parcel build && cp README.md ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "lint": "lint-staged"

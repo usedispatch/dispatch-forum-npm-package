@@ -19,11 +19,12 @@ import { errorSummary } from '../../../utils/error';
 
 interface UploadForumBannerProps {
   collectionId: PublicKey;
+  currentBannerURL: string;
   onSetImageURL: (url: string) => void;
 }
 
 export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
-  const { collectionId, onSetImageURL } = props;
+  const { collectionId, onSetImageURL, currentBannerURL } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -31,7 +32,11 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
     showUploadImage: boolean;
     imageURL: string;
     saving: boolean;
-  }>({ showUploadImage: false, imageURL: '', saving: false });
+  }>({
+    showUploadImage: false,
+    imageURL: currentBannerURL,
+    saving: false,
+  });
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -46,7 +51,23 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
   } | null>(null);
 
   const reset = (): void =>
-    setForumImage({ showUploadImage: false, imageURL: '', saving: false });
+    setForumImage({
+      showUploadImage: false,
+      imageURL: currentBannerURL,
+      saving: false,
+    });
+
+  const typeError = useMemo(() => {
+    if (forumImage.imageURL.length > 0) {
+      const type = forumImage.imageURL.substring(
+        forumImage.imageURL.lastIndexOf('.') + 1,
+      );
+
+      return type.toLowerCase() !== 'png';
+    }
+
+    return false;
+  }, [forumImage.imageURL]);
 
   const onSave = async (): Promise<void> => {
     setForumImage({ ...forumImage, saving: true });
@@ -78,22 +99,11 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
       setModalInfo({
         title: 'Something went wrong!',
         type: MessageType.error,
-        body: 'The access token could not be added',
+        body: 'The banner image could not be updated',
         collapsible: { header: 'Error', content: errorSummary(tx) },
       });
     }
   };
-
-  const typeError = useMemo(() => {
-    if (forumImage.imageURL.length > 0) {
-      const type = forumImage.imageURL.substring(
-        forumImage.imageURL.lastIndexOf('.') + 1,
-      );
-
-      return type.toLowerCase() !== 'png';
-    }
-    return false;
-  }, [forumImage.imageURL]);
 
   return (
     <div className="dsp- ">
@@ -135,28 +145,31 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                         <Info />
                       </div>
                     }
-                    message="The image must beof type png"
+                    message="The image must be of type png"
                   />
                 </div>
                 <input
-                  placeholder="add image URL"
-                  className={
-                    typeError ? 'imageSrcInput invalid' : 'imageSrcInput'
-                  }
+                  placeholder="add URL for new banner"
+                  className={'imageSrcInput'}
+                  value={forumImage.imageURL}
                   onChange={e =>
                     setForumImage({ ...forumImage, imageURL: e.target.value })
                   }
                 />
-                {!typeError && forumImage.imageURL.length > 0 && (
+                {forumImage.imageURL.length > 0 && (
                   <div className="imageContainer">
-                    <img src={forumImage.imageURL} alt="" />
+                    {!typeError && <img src={forumImage.imageURL} alt="" />}
+                    {typeError && <div>the image must be of png type </div>}
                   </div>
                 )}
               </div>
             }
             onClose={() => reset()}
             okButton={
-              <button className="okButton" onClick={async () => onSave()}>
+              <button
+                className="okButton"
+                disabled={typeError}
+                onClick={async () => onSave()}>
                 Save
               </button>
             }

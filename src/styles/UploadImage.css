@@ -42,7 +42,7 @@
         gap: 5px;
         align-items: center;
 
-        padding: 0 4px;
+        padding: 0;
         font-size: 16px;
         font-weight: 500;
 
@@ -78,6 +78,7 @@
 
       .invalidAlert {
         color: red;
+        padding-left: 12px;
       }
 
       .imageContainer {
@@ -91,6 +92,32 @@
         border-radius: 6px;
         text-align: center;
       }
+    }
+  }
+
+  .okButton {
+    margin: 0 0 0 auto;
+    padding: 0 16px;
+    border-radius: 6px;
+
+    background: #3f1d96;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 600;
+
+    &:hover {
+      opacity: 0.85;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    @media only screen and (max-width: 570px) {
+      width: 100%;
     }
   }
 }

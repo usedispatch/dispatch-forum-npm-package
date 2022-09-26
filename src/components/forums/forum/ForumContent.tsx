@@ -593,6 +593,7 @@ export function ForumContent(props: ForumContentProps) {
                   <UploadForumBanner
                     onSetImageURL={async () => update()}
                     collectionId={forumData.collectionId}
+                    currentBannerURL={forumData.images?.background ?? ''}
                   />
                 </div>
               </div>

@@ -96,28 +96,27 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      }
 
       .displayName {
-      max-width: calc(100% - 8px);
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
+        max-width: 330px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
 
-      @media only screen and (max-width: 480px) {
-        max-width: 310px;
+        @media only screen and (max-width: 480px) {
+          max-width: 310px;
+        }
+
+        @media only screen and (max-width: 370px) {
+          max-width: 220px;
+        }
       }
 
-      @media only screen and (max-width: 370px) {
-        max-width: 220px;
+      .iconContainer {
+        heigh: 22px;
+        width: 22px;
+        margin-right: 8px;
       }
-    }
-    
-
-    .iconContainer {
-      heigh: 28px;
-      width: 28px;
-      margin-right: 8px;
     }
 
     .deleteIcon {

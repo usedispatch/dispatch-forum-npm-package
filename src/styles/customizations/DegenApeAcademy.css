@@ -105,6 +105,10 @@
       }
     }
 
+    .toolsWrapper {
+      background: #1d1c1c;
+    }
+
     .moderatorToolsContainer {
       background: #1d1c1c;
       border-top: 1px solid white;

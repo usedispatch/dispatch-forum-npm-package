@@ -1,28 +1,28 @@
-import isNil from "lodash/isNil";
-import { useState, ReactNode, useMemo } from "react";
-import { PublicKey } from "@solana/web3.js";
+import isNil from 'lodash/isNil';
+import { useState, ReactNode, useMemo } from 'react';
+import { PublicKey } from '@solana/web3.js';
 
-import { Info, Edit } from "../../../assets";
+import { Info, Edit } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
   Tooltip,
   TransactionLink,
-} from "../../common";
-import { Notification } from "..";
+} from '../../common';
+import { Notification } from '..';
 
-import { useForum } from "../../../contexts/DispatchProvider";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
+import { useForum } from '../../../contexts/DispatchProvider';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
 
 interface UploadForumBannerProps {
   collectionId: PublicKey;
   onSetImageURL: (url: string) => void;
 }
 
-export function UploadForumBanner(props: UploadForumBannerProps) {
+export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
   const { collectionId, onSetImageURL } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
@@ -31,7 +31,7 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
     showUploadImage: boolean;
     imageURL: string;
     saving: boolean;
-  }>({ showUploadImage: false, imageURL: "", saving: false });
+  }>({ showUploadImage: false, imageURL: '', saving: false });
 
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -45,15 +45,15 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const reset = () =>
-    setForumImage({ showUploadImage: false, imageURL: "", saving: false });
+  const reset = (): void =>
+    setForumImage({ showUploadImage: false, imageURL: '', saving: false });
 
-  const onSave = async () => {
+  const onSave = async (): Promise<void> => {
     setForumImage({ ...forumImage, saving: true });
 
     const tx = await forumObject.setImageUrls(
       collectionId,
-      forumImage.imageURL
+      forumImage.imageURL,
     );
 
     if (isSuccess(tx)) {
@@ -69,17 +69,17 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
       });
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
       onSetImageURL(forumImage.imageURL);
       reset();
     } else {
       reset();
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The access token could not be added`,
-        collapsible: { header: "Error", content: errorSummary(tx) },
+        body: 'The access token could not be added',
+        collapsible: { header: 'Error', content: errorSummary(tx) },
       });
     }
   };
@@ -87,10 +87,10 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
   const typeError = useMemo(() => {
     if (forumImage.imageURL.length > 0) {
       const type = forumImage.imageURL.substring(
-        forumImage.imageURL.lastIndexOf(".") + 1
+        forumImage.imageURL.lastIndexOf('.') + 1,
       );
 
-      return type.toLowerCase() !== "png";
+      return type.toLowerCase() !== 'png';
     }
   }, [forumImage.imageURL]);
 
@@ -122,7 +122,7 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
           <PopUpModal
             id="cutomize-banner"
             visible
-            title={"Upload banner image"}
+            title={'Upload banner image'}
             loading={forumImage.saving}
             body={
               <div className="uploadImageWrapper">
@@ -139,12 +139,14 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
                 </div>
                 <input
                   placeholder="add image URL"
-                  className={`imageSrcInput ${typeError ? "invalid" : ""}`}
-                  onBlur={(e) =>
+                  className={
+                    isNil(typeError) ? 'imageSrcInput invalid' : 'imageSrcInput'
+                  }
+                  onBlur={e =>
                     setForumImage({ ...forumImage, imageURL: e.target.value })
                   }
                 />
-                {!typeError && forumImage.imageURL.length > 0 && (
+                {!isNil(typeError) && forumImage.imageURL.length > 0 && (
                   <div className="imageContainer">
                     <img src={forumImage.imageURL} alt="" />
                   </div>
@@ -153,7 +155,7 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
             }
             onClose={() => reset()}
             okButton={
-              <button className="okButton" onClick={() => onSave()}>
+              <button className="okButton" onClick={async () => onSave()}>
                 Save
               </button>
             }
@@ -164,7 +166,8 @@ export function UploadForumBanner(props: UploadForumBannerProps) {
           disabled={!permission.readAndWrite}
           onClick={() =>
             setForumImage({ ...forumImage, showUploadImage: true })
-          }>
+          }
+        >
           <Edit />
         </button>
       </div>

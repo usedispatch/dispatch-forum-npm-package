@@ -566,36 +566,38 @@ export function ForumContent(props: ForumContentProps) {
               "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert />}
             {forumHeader}
           </div>
-          <PermissionsGate scopes={[SCOPES.canEditForum]}>
-            <div className="moderatorToolsContainer">
-              <div>Owner tools: </div>
-              <div className="tools">
-                <div className="lock">
-                  <Lock />
+          <div className="toolsWrapper">
+            <PermissionsGate scopes={[SCOPES.canEditForum]}>
+              <div className="moderatorToolsContainer">
+                <div>Owner tools: </div>
+                <div className="tools">
+                  <div className="lock">
+                    <Lock />
+                  </div>
+                  <ManageOwners forumData={forumData} />
+                  <ManageModerators forumData={forumData} />
+                  {
+                    // The manage users UI should be hidden for DAA
+                    forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
+                      <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
+                        <button
+                          className="moderatorTool"
+                          disabled={!permission.readAndWrite}
+                          onClick={() => setShowManageAccessToken(true)}>
+                          Manage forum access
+                        </button>
+                      </PermissionsGate>
+                    )
+                  }
+                  <EditForum forumData={forumData} update={update} />
+                  <UploadForumBanner
+                    onSetImageURL={async () => update()}
+                    collectionId={forumData.collectionId}
+                  />
                 </div>
-                <ManageOwners forumData={forumData} />
-                <ManageModerators forumData={forumData} />
-                {
-                  // The manage users UI should be hidden for DAA
-                  forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
-                    <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                      <button
-                        className="moderatorTool"
-                        disabled={!permission.readAndWrite}
-                        onClick={() => setShowManageAccessToken(true)}>
-                        Manage forum access
-                      </button>
-                    </PermissionsGate>
-                  )
-                }
-                <EditForum forumData={forumData} update={update} />
-                <UploadForumBanner
-                  onSetImageURL={() => update()}
-                  collectionId={forumData.collectionId}
-                />
               </div>
-            </div>
-          </PermissionsGate>
+            </PermissionsGate>
+          </div>
           {(() => {
             if (newTopicInFlight) {
               return <Spinner />;

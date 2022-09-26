@@ -92,6 +92,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
 
       return type.toLowerCase() !== 'png';
     }
+    return false;
   }, [forumImage.imageURL]);
 
   return (
@@ -140,13 +141,13 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                 <input
                   placeholder="add image URL"
                   className={
-                    isNil(typeError) ? 'imageSrcInput invalid' : 'imageSrcInput'
+                    typeError ? 'imageSrcInput invalid' : 'imageSrcInput'
                   }
-                  onBlur={e =>
+                  onChange={e =>
                     setForumImage({ ...forumImage, imageURL: e.target.value })
                   }
                 />
-                {!isNil(typeError) && forumImage.imageURL.length > 0 && (
+                {!typeError && forumImage.imageURL.length > 0 && (
                   <div className="imageContainer">
                     <img src={forumImage.imageURL} alt="" />
                   </div>
@@ -166,8 +167,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
           disabled={!permission.readAndWrite}
           onClick={() =>
             setForumImage({ ...forumImage, showUploadImage: true })
-          }
-        >
+          }>
           <Edit />
         </button>
       </div>

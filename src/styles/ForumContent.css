@@ -1,7 +1,7 @@
 @layer components {
   .forumContentBox {
     padding: 72px 10% 0;
-    background-image: url("assets/default_background.png");
+    background-image: url('assets/default_background.png');
     background-position: bottom;
     background-size: cover;
 
@@ -229,16 +229,24 @@
     flex-direction: column;
   }
 
+  .toolsWrapper {
+    min-height: 30px;
+    margin: 0 10%;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0px 10px 12px 0px #00000029;
+
+    @media only screen and (max-width: 570px) {
+      margin: 0 5%;
+    }
+  }
+
   .moderatorToolsContainer {
     display: flex;
     align-items: center;
     padding: 20px 24px;
-    margin: 0 10%;
 
     border-top: 1px solid #b8b9dc;
-    background: #fff;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0 4px 12px #00000029;
 
     color: #414149;
     font-size: 12px;
@@ -252,7 +260,6 @@
 
     @media only screen and (max-width: 570px) {
       padding: 12px;
-      margin: 0 5%;
       gap: 14px;
       flex-wrap: wrap;
       justify-content: flex-start;
@@ -292,7 +299,7 @@
     }
 
     &:disabled {
-      color: #7c7b7c;
+      opacity: 0.65;
       cursor: not-allowed;
     }
   }

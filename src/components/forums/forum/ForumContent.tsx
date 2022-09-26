@@ -368,24 +368,26 @@ export function ForumContent(props: ForumContentProps) {
                       The forum has no restriction
                     </div>
                   ) : (
-                    currentForumAccessToken.map((token, index) => {
-                      return (
-                        <div className="currentToken" key={index}>
-                          <div className="displayName">{token}</div>
-                          <div
-                            onClick={() => {
-                              setShowManageAccessToken(false);
-                              setRemoveAccessToken({
-                                ...removeAccessToken,
-                                show: true,
-                                token,
-                              });
-                            }}>
-                            <Trash />
-                          </div>
-                        </div>
-                      );
-                    })
+                    <ul>
+                      {currentForumAccessToken.map((token, index) => {
+                        return (
+                          <li className="currentToken" key={index}>
+                            <div className="token">{token}</div>
+                            <div
+                              onClick={() => {
+                                setShowManageAccessToken(false);
+                                setRemoveAccessToken({
+                                  ...removeAccessToken,
+                                  show: true,
+                                  token,
+                                });
+                              }}>
+                              <Trash />
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   )}
                 </div>
               }

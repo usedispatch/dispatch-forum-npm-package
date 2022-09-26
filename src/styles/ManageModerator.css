@@ -35,9 +35,10 @@
       font-size: 14px;
 
       ul {
+        margin-top: 0;
         padding-left: 0;
         max-height: 260px;
-        overflow-y: scroll;
+        overflow-y: auto;
       }
 
       .manageModeratorsInput {
@@ -95,8 +96,8 @@
     }
 
     .iconContainer {
-      heigh: 28px;
-      width: 28px;
+      heigh: 22px;
+      width: 22px;
       margin-right: 8px;
     }
 

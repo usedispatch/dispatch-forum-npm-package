@@ -96,7 +96,7 @@ export interface IForum {
 
   addModerator(newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
 
-  addOwner(newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>>;
+  addOwners(newOwners: PublicKey[], collectionId: PublicKey): Promise<Result<string>>;
 
   // Get a list of moderators
   getModerators(collectionId: PublicKey): Promise<Result<PublicKey[]>>;
@@ -435,7 +435,7 @@ export class DispatchForum implements IForum {
     }
   }
 
-  addOwner = async (newOwner: PublicKey, collectionId: PublicKey): Promise<Result<string>> => {
+  addOwners = async (newOwners: PublicKey[], collectionId: PublicKey): Promise<Result<string>> => {
     const owner = this.wallet;
     const conn = this.connection;
 
@@ -446,7 +446,7 @@ export class DispatchForum implements IForum {
       );
 
       if (await forumAsOwner.exists()) {
-        const tx = await forumAsOwner.addOwners([newOwner]);
+        const tx = await forumAsOwner.addOwners(newOwners);
         return tx;
       } else {
         return notFoundError('Forum does not exist');

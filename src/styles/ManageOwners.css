@@ -41,17 +41,29 @@
 
       ul {
         padding-left: 0;
+        margin-top: 0;
         max-height: 260px;
-        overflow-y: scroll;
+        overflow-y: auto;
       }
+    }
+
+    .manageOwnersLabel {
+      margin-bottom: 8px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .addOwner {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+      margin-bottom: 24px;
 
       .manageOwnersInput {
         width: 100%;
-        height: 32px;
+        height: 42px;
         font-size: 14px;
         padding: 16px;
-        margin-top: 4px;
-        margin-bottom: 24px;
 
         border-color: #d1d5db;
         border-width: 1px;
@@ -64,22 +76,29 @@
       }
     }
 
-    .manageOwnersLabel {
-      margin-bottom: 8px;
-      font-size: 16px;
-      font-weight: 500;
-    }
-
     .currentOwners {
       display: flex;
       align-items: center;
-      margin: 0 0 8px 0;
+      justify-content: space-between;
+
+      margin: 0 0 8px;
       font-size: 14px;
       font-weight: 400;
       color: #414149;
+
+      &.toRemove {
+        opacity: 0.65;
+        text-decoration: line-through;
+      }
     }
 
-    .displayName {
+    .identity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      }
+
+      .displayName {
       max-width: calc(100% - 8px);
       text-overflow: ellipsis;
       overflow: hidden;
@@ -93,11 +112,40 @@
         max-width: 220px;
       }
     }
+    
 
     .iconContainer {
       heigh: 28px;
       width: 28px;
       margin-right: 8px;
+    }
+
+    .deleteIcon {
+      svg {
+        height: 16px;
+        width: 16px;
+      }
+
+      &:hover {
+        cursor: pointer;
+      }
+
+      &.hide {
+        display: none;
+      }
+
+      .trash {
+        svg path {
+          fill: #3f1d96;
+        }
+      }
+    }
+
+    .cancelIcon {
+      svg {
+        height: 10px;
+        width: 10px;
+      }
     }
 
     .okButton {
@@ -116,6 +164,10 @@
       text-align: center;
       text-transform: capitalize;
       font-weight: 600;
+
+      &.add {
+        height: 42px;
+      }
 
       @media only screen and (max-width: 570px) {
         width: 100%;
@@ -155,11 +207,6 @@
 
       &:hover {
         opacity: 0.85;
-      }
-
-      &:disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
       }
     }
   }

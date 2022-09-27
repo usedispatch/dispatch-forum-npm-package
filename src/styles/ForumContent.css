@@ -115,6 +115,13 @@
     font-weight: 400;
     color: #414149;
 
+    .token {
+      max-width: 365px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
     svg {
       height: 16px;
       width: 16px;
@@ -247,6 +254,7 @@
     padding: 20px 24px;
 
     border-top: 1px solid #b8b9dc;
+    border-radius: 0 0 12px 12px;
 
     color: #414149;
     font-size: 12px;
@@ -321,7 +329,7 @@
     ul {
       padding-left: 0;
       max-height: 260px;
-      overflow-y: scroll;
+      overflow-y: auto;
     }
   }
 
@@ -360,8 +368,8 @@
   }
 
   .iconContainer {
-    heigh: 28px;
-    width: 28px;
+    heigh: 22px;
+    width: 22px;
     margin-right: 8px;
   }
 

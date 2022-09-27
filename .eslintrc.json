@@ -49,13 +49,18 @@
             }
         ],
         "@typescript-eslint/no-shadow": "off",
-        "@typescript-eslint/restrict-template-expressions": [
+        "multiline-ternary": [
             "error",
+            "always-multiline"
+        ],
+        "operator-linebreak": [
+            "error",
+            "after",
             {
-                "allowNumber": true,
-                "allowBoolean": true,
-                "allowAny": true,
-                "allowNullish": true
+                "overrides": {
+                    "?": "before",
+                    ":": "before"
+                }
             }
         ]
     }

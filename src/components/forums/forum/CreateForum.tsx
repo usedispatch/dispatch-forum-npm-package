@@ -1,27 +1,27 @@
-import isNil from "lodash/isNil";
-import { useState, useMemo, ReactNode } from "react";
-import Jdenticon from "react-jdenticon";
-import ReactGA from "react-ga4";
-import { ForumInfo } from "@usedispatch/client";
-import { PublicKey } from "@solana/web3.js";
+import isNil from 'lodash/isNil';
+import { useState, useMemo, ReactNode } from 'react';
+import Jdenticon from 'react-jdenticon';
+import ReactGA from 'react-ga4';
+import { ForumInfo } from '@usedispatch/client';
+import { PublicKey } from '@solana/web3.js';
 
-import { Info } from "../../../assets";
+import { Info } from '../../../assets';
 import {
   Collapsible,
   MessageType,
   Spinner,
   Tooltip,
   TransactionLink,
-} from "../../common";
-import { Notification } from "..";
+} from '../../common';
+import { Notification } from '..';
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
-import { useModal } from "../../../utils/hooks";
-import { pubkeysToRestriction } from "../../../utils/restrictionListHelper";
-import { csvStringToPubkeyList } from "../../../utils/csvStringToPubkeyList";
-import { getIdentity } from "../../../utils/identity";
+import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
+import { useModal } from '../../../utils/hooks';
+import { pubkeysToRestriction } from '../../../utils/restrictionListHelper';
+import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
+import { getIdentity } from '../../../utils/identity';
 
 interface CreateForumProps {
   forumObject: DispatchForum;
@@ -29,17 +29,17 @@ interface CreateForumProps {
   update: () => Promise<void>;
 }
 
-export function CreateForum(props: CreateForumProps) {
+export function CreateForum(props: CreateForumProps): JSX.Element {
   const { collectionId, forumObject, update } = props;
   const { wallet } = forumObject;
   const { publicKey } = wallet;
 
   const [creatingNewForum, setCreatingNewForum] = useState(false);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [newModerator, setNewModerator] = useState("");
-  const [newOwners, setNewOwners] = useState("");
-  const [accessToken, setAccessToken] = useState<string>("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [newModerator, setNewModerator] = useState('');
+  const [newOwners, setNewOwners] = useState('');
+  const [accessToken, setAccessToken] = useState<string>('');
   const [modList, setModList] = useState<PublicKey[]>([]);
   const [ownerList, setOwnerList] = useState<PublicKey[]>([]);
   const [accessList, setAccessList] = useState<PublicKey[]>([]);
@@ -54,20 +54,16 @@ export function CreateForum(props: CreateForumProps) {
   const { modal, showModal } = useModal();
   const croppedCollectionID = useMemo(() => {
     try {
-      const pubkey = new PublicKey(collectionId);
-
-      // TODO(andrew) make croppedCollectionID a useMemo() call as well?
-      // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d
       return `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`;
     } catch (error: any) {
       const message = JSON.stringify(error);
       showModal({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: "Invalid Collection ID Public Key",
-        collapsible: { header: "Error", content: message },
+        body: 'Invalid Collection ID Public Key',
+        collapsible: { header: 'Error', content: message },
       });
-      return null;
+      return '';
     }
   }, [collectionId]);
 
@@ -79,16 +75,16 @@ export function CreateForum(props: CreateForumProps) {
       const message = JSON.stringify(error);
       console.log(error);
       showModal({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: "Invalid Collection ID Public Key",
-        collapsible: { header: "Error", content: message },
+        body: 'Invalid Collection ID Public Key',
+        collapsible: { header: 'Error', content: message },
       });
       return null;
     }
   }, [collectionId]);
 
-  const parseModList = () => {
+  const parseModList = (): void => {
     try {
       if (newModerator.length > 0) {
         const list = csvStringToPubkeyList(newModerator);
@@ -106,7 +102,7 @@ export function CreateForum(props: CreateForumProps) {
     }
   };
 
-  const parseOwnerList = () => {
+  const parseOwnerList = (): void => {
     try {
       if (newOwners.length > 0) {
         const list = csvStringToPubkeyList(newOwners);
@@ -124,7 +120,7 @@ export function CreateForum(props: CreateForumProps) {
     }
   };
 
-  const parseCollectionList = () => {
+  const parseCollectionList = (): void => {
     try {
       if (accessToken.length > 0) {
         const list = csvStringToPubkeyList(accessToken);
@@ -142,46 +138,48 @@ export function CreateForum(props: CreateForumProps) {
     }
   };
 
-  const onCreateForumClick = () => {
-    createForum();
-  };
-
-  const createForum = async () => {
+  const createForum = async (): Promise<void> => {
     setCreatingNewForum(true);
 
-    if (!wallet) {
+    if (isNil(wallet) || isNil(collectionPublicKey)) {
       showModal({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
         body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
       });
+      return;
     }
 
     const moderators = [...modList, publicKey];
     const owners = [...ownerList, publicKey];
+    let postRestriction;
+    if (accessToken.length > 0) {
+      const result = pubkeysToRestriction(accessToken);
+      if (isSuccess(result)) {
+        postRestriction = result;
+      }
+    }
 
-    const forum = {
+    const forum: ForumInfo = {
       owners,
       moderators,
-      title: title,
-      description: description,
+      title,
+      description,
       collectionId: collectionPublicKey,
-      postRestriction: accessToken
-        ? pubkeysToRestriction(accessToken)
-        : undefined,
-    } as ForumInfo;
+      postRestriction,
+    };
 
     const res = await forumObject.createForum(forum);
 
     if (isSuccess(res)) {
       if (!isNil(res?.forum)) {
         showModal({
-          title: `Success!`,
+          title: 'Success!',
           body: (
             <div className="successBody">
               <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
               <div>
-                {res?.txs.map((tx) => (
+                {res?.txs.map(tx => (
                   <TransactionLink transaction={tx} key={tx} />
                 ))}
               </div>
@@ -190,24 +188,30 @@ export function CreateForum(props: CreateForumProps) {
           type: MessageType.success,
         });
 
-        if (res?.txs) {
+        if (!isNil(res.txs)) {
           await Promise.all(
-            res.txs.map((tx) => forumObject.connection.confirmTransaction(tx))
-          ).then(() => update());
+            res.txs.map(async tx =>
+              forumObject.connection.confirmTransaction(tx),
+            ),
+          ).then(async () => update());
         }
       }
-      ReactGA.event("successfulForumCreation");
+      ReactGA.event('successfulForumCreation');
     } else {
       const error = res;
-      ReactGA.event("failedForumCreation");
+      ReactGA.event('failedForumCreation');
       showModal({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
         body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
     setCreatingNewForum(false);
+  };
+
+  const onCreateForumClick = async (): Promise<void> => {
+    await createForum();
   };
 
   const advancedOptions = (
@@ -231,28 +235,30 @@ export function CreateForum(props: CreateForumProps) {
           className="formInput"
           value={newModerator}
           disabled={creatingNewForum}
-          onChange={(e) => setNewModerator(e.target.value)}
+          onChange={e => setNewModerator(e.target.value)}
           onBlur={() => parseModList()}
         />
         {modList.length > 0 && (
           <ul className="idsList">
-            {modList.map((pubkey) => {
+            {modList.map(pubkey => {
               const m = pubkey.toBase58();
               const identity = getIdentity(pubkey);
               return (
                 <li key={m} className="addedIds">
                   <div className="iconContainer">
-                    {identity ? (
+                    {isNil(identity)
+                      ? (
+                      <Jdenticon value={m} alt="moderatorId" />
+                      )
+                      : (
                       <img
                         src={identity.profilePicture.href}
-                        style={{ borderRadius: "50%" }}
+                        style={{ borderRadius: '50%' }}
                       />
-                    ) : (
-                      <Jdenticon value={m} alt="moderatorId" />
-                    )}
+                      )}
                   </div>
                   <div className="displayName">
-                    {identity ? identity.displayName : m}
+                    {isNil(identity) ? m : identity.displayName}
                   </div>
                 </li>
               );
@@ -279,12 +285,12 @@ export function CreateForum(props: CreateForumProps) {
           className="formInput"
           value={newOwners}
           disabled={creatingNewForum}
-          onChange={(e) => setNewOwners(e.target.value)}
+          onChange={e => setNewOwners(e.target.value)}
           onBlur={() => parseOwnerList()}
         />
         {ownerList.length > 0 && (
           <ul className="idsList">
-            {ownerList.map((pubkey) => {
+            {ownerList.map(pubkey => {
               const o = pubkey.toBase58();
               return (
                 <li key={o} className="addedIds">
@@ -308,7 +314,7 @@ export function CreateForum(props: CreateForumProps) {
               </div>
             }
             message={
-              "Here, you are able to gate your forum to Metaplex NFT Collection holders. Simply enter the collection ID of your NFT collection and only token holders can create posts. You can find the collection ID in the metadata URI of your NFT."
+              'Here, you are able to gate your forum to Metaplex NFT Collection holders. Simply enter the collection ID of your NFT collection and only token holders can create posts. You can find the collection ID in the metadata URI of your NFT.'
             }
           />
         </span>
@@ -317,12 +323,12 @@ export function CreateForum(props: CreateForumProps) {
           className="formInput lastInputField"
           value={accessToken}
           disabled={creatingNewForum || bodySize > 800}
-          onChange={(e) => setAccessToken(e.target.value)}
+          onChange={e => setAccessToken(e.target.value)}
           onBlur={() => parseCollectionList()}
         />
         {accessList.length > 0 && (
           <ul className="idsList">
-            {accessList.map((pubkey) => {
+            {accessList.map(pubkey => {
               const a = pubkey.toBase58();
               return (
                 <li key={a} className="addedIds">
@@ -351,7 +357,8 @@ export function CreateForum(props: CreateForumProps) {
           Create one to create topics, post, share, rate, and gift tokens.
         </div>
         <div
-          className={`createForumForm ${creatingNewForum ? "creating" : ""}`}>
+          className={`createForumForm ${creatingNewForum ? 'creating' : ''}`}
+        >
           <div className="formBody">
             <div className="formSection">
               <span className="formLabel">
@@ -367,14 +374,14 @@ export function CreateForum(props: CreateForumProps) {
               </span>
               <input
                 type="text"
-                className={`formInput readonly`}
+                className={'formInput readonly'}
                 required
                 value={collectionId}
                 readOnly
               />
             </div>
             <div className="formSection">
-              <>{ReactGA.send("pageview")}</>
+              <>{ReactGA.send('pageview')}</>
               <span className="formLabel">Title</span>
               <input
                 type="text"
@@ -384,7 +391,7 @@ export function CreateForum(props: CreateForumProps) {
                 required
                 value={title}
                 disabled={creatingNewForum}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={e => setTitle(e.target.value)}
               />
             </div>
             <div className="formSection">
@@ -395,9 +402,9 @@ export function CreateForum(props: CreateForumProps) {
                 maxLength={800}
                 value={description}
                 disabled={creatingNewForum}
-                onChange={(e) => {
+                onChange={e => {
                   setDescription(e.target.value);
-                  setBodySize(new Buffer(e.target.value).byteLength);
+                  setBodySize(Buffer.from(e.target.value).byteLength);
                 }}
               />
               <div className="textSize">{bodySize}/800</div>
@@ -409,10 +416,11 @@ export function CreateForum(props: CreateForumProps) {
                 type="submit"
                 className="acceptCreateForumButton"
                 disabled={creatingNewForum || title.length === 0}
-                onClick={() => {
-                  onCreateForumClick();
-                  ReactGA.event("sendForumCreate");
-                }}>
+                onClick={async () => {
+                  await onCreateForumClick();
+                  ReactGA.event('sendForumCreate');
+                }}
+              >
                 Create forum
               </button>
             </div>

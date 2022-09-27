@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { Helmet } from "react-helmet";
-import { PublicKey } from '@solana/web3.js';
+import { PublicKey } from "@solana/web3.js";
 
-import { MessageType, Spinner, TransactionLink } from "../../components/common";
+import { MessageType, Spinner } from "../../components/common";
 import {
-  ConnectionAlert,
   CreateForum,
   ForumContent,
   PoweredByDispatch,
@@ -12,52 +11,14 @@ import {
 
 import { useForum, useRole } from "./../../contexts/DispatchProvider";
 import { getUserRole } from "./../../utils/postbox/userRole";
-import {
-  isSuccess,
-  isInitial,
-  isPending,
-} from "../../utils/loading";
-import {
-  isError,
-  isNotFoundError
-} from '../../utils/error';
+import { isSuccess, isInitial, isPending } from "../../utils/loading";
+import { isError, isNotFoundError } from "../../utils/error";
 import { useForumData, useModal } from "../../utils/hooks";
 import { getCustomStyles } from "../../utils/getCustomStyles";
-import { StarsAlert } from "../../components/forums/StarsAlert";
 
 interface ForumViewProps {
   collectionId: string;
 }
-/**
- * 1- fetch collectionId from url
- * 2- make sure user has login
- * 2.5 getUserCategory(wallet, collectionId): user category
- * 3- if the getUserCategory() == owner of collection {
- *     const Forum = new MainForum(category = "owner");
- *      Forum.category === "owner"
- *      add form with input and button (pass public key)
- * }
- * else if getUserCategory() == moderator of collection {
- *     const Forum = new MainForum(category = "moderator");
- *      Forum.category === "moderator"
- *      add form with input and button (pass public key)
- * }
- * else if getUserCategory() == poster {
- *     const Forum = new MainForum(category = "poster");
- *      Forum.category === "poster"
- * }
- * 4- have a global variable indicating user category
- * 5- a-initialize forum
- * b-delete forum
- * c-add moderator
- * d-delete moderator
- * e-create post
- * f-delete own post
- * g-delete any post
- * 6- forum as owner can 5.a to 5.g
- *    forum as Moderator can 5.c to 5.g
- *    forum as poster can 5.e and 5.f
- */
 
 export const ForumView = (props: ForumViewProps) => {
   const forumObject = useForum();
@@ -130,8 +91,6 @@ export const ForumView = (props: ForumViewProps) => {
         </Helmet>
         <div className="forumView">
           {modal}
-          {!permission.readAndWrite && <ConnectionAlert />}
-          {collectionId === "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert/>}
           <div className="forumViewContainer">
             <div className="forumViewContent">
               {(() => {

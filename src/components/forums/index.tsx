@@ -8,6 +8,7 @@ export * from "./forum/ForumContent";
 export * from "./forum/ManageModerators";
 export * from "./forum/ManageOwners";
 export * from "./forum/TopicList";
+export * from "./forum/UploadForumBanner";
 
 export * from "./topic/CreatePost";
 export * from "./topic/EditPost";

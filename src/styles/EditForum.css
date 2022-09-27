@@ -1,11 +1,11 @@
 @layer components {
   .editForumContainer {
     display: flex;
+    gap: 20px;
     color: black;
 
     .actionDivider {
       width: 1px;
-      margin: 0 10px;
 
       background: #6e59b1;
 

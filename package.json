@@ -25,9 +25,23 @@
   ],
   "scripts": {
     "clean": "rm -rf dist",
-    "build": "yarn clean && NODE_ENV=development yarn parcel build && cp README.md ./dist",
-    "build:prod": "yarn clean && NODE_ENV=production yarn parcel build && cp README.md ./dist",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "yarn clean && yarn eslint --fix $(git diff --name-only HEAD | xargs) && NODE_ENV=development yarn parcel build && cp README.md ./dist",
+    "build:prod": "yarn clean && yarn eslint --fix $(git diff --name-only HEAD | xargs) && NODE_ENV=production yarn parcel build && cp README.md ./dist",
+    "build:commit": "yarn clean && (git diff HEAD~1 --name-only | xargs yarn eslint) && NODE_ENV=production yarn parcel build && cp README.md ./dist",
+    "build:staging": "yarn clean && NODE_ENV=production yarn parcel build && cp README.md ./dist",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install",
+    "lint": "lint-staged"
+  },
+  "lint-staged": {
+    "unstaged": "true",
+    "*.{ts,tsx}": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{html,css,less,ejs}": [
+      "prettier --write"
+    ]
   },
   "repository": {
     "type": "git",
@@ -53,12 +67,23 @@
     "@types/node-fetch": "^2.6.1",
     "@types/react": "^18.0.12",
     "@types/react-alert": "^5.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.0.0",
     "assert": "^2.0.0",
     "async": "^3.2.4",
     "autoprefixer": "^10.4.0",
     "crypto-browserify": "^3.12.0",
     "css-loader": "^6.7.1",
     "daisyui": "^1.16.2",
+    "eslint": "^8.0.1",
+    "eslint-config-airbnb-typescript": "^17.0.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-n": "^15.0.0",
+    "eslint-plugin-promise": "^6.0.0",
+    "eslint-plugin-react": "^7.31.8",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.3",
     "mini-css-extract-plugin": "^2.6.1",
     "parcel": "^2.7.0",
     "path-browserify": "^1.0.1",
@@ -66,10 +91,12 @@
     "postcss-import": "^15.0.0",
     "postcss-loader": "^7.0.1",
     "postcss-prefix-selector": "^1.16.0",
+    "prettier": "^2.7.1",
+    "react-jdenticon": "^1.0.0",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.1.8",
     "ts-loader": "^9.3.0",
-    "typescript": "^4.7.3",
+    "typescript": "4.7.3",
     "webpack": "^5.73.0",
     "webpack-bundle-analyzer": "^4.6.1",
     "webpack-cli": "^4.10.0"

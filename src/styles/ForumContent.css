@@ -1,8 +1,22 @@
 @layer components {
+  .forumContentBox {
+    padding: 72px 10% 0;
+    background-image: url('assets/default_background.png');
+    background-position: bottom;
+    background-size: cover;
+
+    @media only screen and (max-width: 570px) {
+      padding: 72px 5% 0;
+    }
+  }
+
   .forumContentHeader {
     height: auto;
-    margin: 48px 0 0;
+    margin: 0;
     padding: 0 24px 48px;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0px 0px 12px #00000029;
+    background: white;
 
     .titleBox {
       display: flex;
@@ -50,6 +64,7 @@
     .gatedForum {
       height: 24px;
       width: 24px;
+      min-width: 24px;
     }
 
     @media only screen and (max-width: 570px) {
@@ -110,6 +125,21 @@
 
       &:hover {
         cursor: pointer;
+      }
+    }
+
+    .displayName {
+      max-width: calc(100% - 8px);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+
+      @media only screen and (max-width: 480px) {
+        max-width: 310px;
+      }
+
+      @media only screen and (max-width: 370px) {
+        max-width: 220px;
       }
     }
   }
@@ -199,16 +229,28 @@
     flex-direction: column;
   }
 
+  .toolsWrapper {
+    min-height: 30px;
+    margin: 0 10%;
+    background: #fff;
+    border-radius: 0 0 12px 12px;
+    box-shadow: 0px 10px 12px 0px #00000029;
+
+    @media only screen and (max-width: 570px) {
+      margin: 0 5%;
+    }
+  }
+
   .moderatorToolsContainer {
     display: flex;
     align-items: center;
-
-    width: 100%;
     padding: 20px 24px;
+
+    border-top: 1px solid #b8b9dc;
+
     color: #414149;
     font-size: 12px;
     font-weight: 400;
-    border-top: 1px solid #b8b9dc;
 
     .lock {
       height: 12px;
@@ -228,7 +270,6 @@
     }
 
     .tools {
-      width: 100%;
       display: flex;
       gap: 24px;
       flex-direction: row;
@@ -237,6 +278,7 @@
 
       @media only screen and (max-width: 570px) {
         gap: 20px;
+        row-gap: 12px;
 
         .editForumContainer .editForumButton svg {
           margin-right: 16px;
@@ -249,7 +291,6 @@
     display: flex;
     align-items: center;
 
-    margin-left: 24px;
     background: transparent;
     color: #3f1d96;
 
@@ -258,7 +299,7 @@
     }
 
     &:disabled {
-      color: #7c7b7c;
+      opacity: 0.65;
       cursor: not-allowed;
     }
   }
@@ -389,9 +430,11 @@
     }
   }
 
-  .forumContentBox {
-    background: white;
-    box-shadow: 0px 4px 12px rgb(0 0 0 / 16%);
-    border-radius: 12px;
+  .topicListWrapper {
+    margin: 0 10%;
+
+    @media only screen and (max-width: 570px) {
+      margin: 0 5%;
+    }
   }
 }

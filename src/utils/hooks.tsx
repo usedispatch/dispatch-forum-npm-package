@@ -101,6 +101,7 @@ export interface ForumData {
   restriction: Result<PostRestriction>;
   moderatorMint: PublicKey;
   votes: Loading<ChainVoteEntry[]>;
+  images: any;
 }
 
 // This hook returns all the necessary forum data and a function
@@ -184,6 +185,21 @@ export function useForumData(
       return notFoundError('The collectionId was not defined');
     }
   }
+  async function fetchForumImage(): Promise<any> {
+    if (collectionId) {
+      try {
+        const imgs = await forum.getImageUrls(collectionId);
+        if (imgs) {
+          return imgs;
+        } else {
+          return notFoundError("The banner could not be fetched");
+        }
+      } catch (error: any) {
+        return parseError(error);
+      }
+    }
+  }
+
   async function fetchPosts(): Promise<Result<ForumPost[]>> {
     if (collectionId) {
       try {
@@ -331,13 +347,14 @@ export function useForumData(
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
-        const [owners, description, posts, restriction, moderatorMint] =
+        const [owners, description, posts, restriction, moderatorMint, images] =
           await Promise.all([
             fetchOwners(),
             fetchDescription(),
             fetchPosts(),
             fetchForumPostRestriction(),
             fetchModeratorMint(),
+            fetchForumImage(),
           ]);
 
         // TODO(andrew) perhaps allow the page to load even if
@@ -353,6 +370,7 @@ export function useForumData(
             restriction,
             moderatorMint,
             votes: initial(),
+            images,
           });
         } else {
           // We already confirmed the forum existed, so assume

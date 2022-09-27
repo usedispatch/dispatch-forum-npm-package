@@ -1,9 +1,9 @@
-import isNil from 'lodash/isNil';
+import isNil from "lodash/isNil";
 import { PublicKey } from "@solana/web3.js";
 import Markdown from "markdown-to-jsx";
 import { useState, ReactNode, useEffect } from "react";
 import ReactGA from "react-ga4";
-import { PostRestriction } from '@usedispatch/client';
+import { PostRestriction } from "@usedispatch/client";
 
 import { Lock, Plus, Trash } from "../../../assets";
 import {
@@ -14,7 +14,14 @@ import {
   TransactionLink,
   Spinner,
 } from "../../common";
-import { TopicList, EditForum, ManageOwners, ManageModerators } from "..";
+import {
+  TopicList,
+  EditForum,
+  ManageOwners,
+  ManageModerators,
+  UploadForumBanner,
+  ConnectionAlert,
+} from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -37,6 +44,7 @@ import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
 import { Notification } from "..";
 import { parseError } from '../../../utils/parseErrors';
+import { StarsAlert } from "../StarsAlert";
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -232,9 +240,7 @@ export function ForumContent(props: ForumContentProps) {
         restrictionList
       );
     } else {
-      tx = await forumObject.deleteForumPostRestriction(
-        forumData.collectionId
-      );
+      tx = await forumObject.deleteForumPostRestriction(forumData.collectionId);
     }
 
     setCurrentForumAccessToken(filteredTokens);
@@ -321,7 +327,7 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
-        collapsible: { header: 'Error', content: errorSummary(error) }
+        collapsible: { header: "Error", content: errorSummary(error) },
       });
       setShowNewTopicModal(false);
       return;
@@ -359,11 +365,11 @@ export function ForumContent(props: ForumContentProps) {
         title: "Something went wrong!",
         type: MessageType.error,
         body: `The topic could not be created`,
-        collapsible: { header: 'Error', content: errorSummary(error) }
+        collapsible: { header: "Error", content: errorSummary(error) },
       });
       setShowNewTopicModal(false);
     }
-  }
+  };
 
   const createTopicButton = (
     <button
@@ -531,7 +537,7 @@ export function ForumContent(props: ForumContentProps) {
                     currentForumAccessToken.map((token, index) => {
                       return (
                         <div className="currentToken" key={index}>
-                          <>{token}</>
+                          <div className="displayName">{token}</div>
                           <div
                             onClick={() => {
                               setShowManageAccessToken(false);
@@ -768,8 +774,19 @@ export function ForumContent(props: ForumContentProps) {
               return null;
             }
           })()}
-          <div className="forumContentBox">
+          <div
+            className="forumContentBox"
+            style={{
+              backgroundImage: forumData.images?.background
+                ? `url(${forumData.images?.background})`
+                : undefined,
+            }}>
+            {!permission.readAndWrite && <ConnectionAlert />}
+            {forumData.collectionId.toBase58() ===
+              "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert />}
             {forumHeader}
+          </div>
+          <div className="toolsWrapper">
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
               <div className="moderatorToolsContainer">
                 <div>Owner tools: </div>
@@ -793,6 +810,11 @@ export function ForumContent(props: ForumContentProps) {
                     )
                   }
                   <EditForum forumData={forumData} update={update} />
+                  <UploadForumBanner
+                    onSetImageURL={async () => update()}
+                    collectionId={forumData.collectionId}
+                    currentBannerURL={forumData.images?.background ?? ''}
+                  />
                 </div>
               </div>
             </PermissionsGate>
@@ -801,7 +823,11 @@ export function ForumContent(props: ForumContentProps) {
             if (newTopicInFlight) {
               return <Spinner />;
             } else if (!isNil(forumData.collectionId)) {
-              return <TopicList forumData={forumData} />;
+              return (
+                <div className="topicListWrapper">
+                  <TopicList forumData={forumData} />
+                </div>
+              );
             }
           })()}
         </>

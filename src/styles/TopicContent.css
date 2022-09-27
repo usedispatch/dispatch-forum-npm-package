@@ -215,7 +215,7 @@
         .subj {
           display: flex;
           justify-content: flex-start;
-          align-items: baseline;
+          align-items: center;
           gap: 5px;
           padding-top: 16px;
 
@@ -236,7 +236,7 @@
         }
       }
 
-      .moderatorToolsContainer {
+      .topicToolsContainer {
         display: flex;
         align-items: center;
         justify-content: space-between;

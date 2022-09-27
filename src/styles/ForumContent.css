@@ -88,6 +88,14 @@
     }
   }
 
+  .addTokenGateSelect {
+    padding: 8px;
+    font-size: 14px;
+    border-width: 1px;
+    border-color: #b8b9dc;
+    border-radius: 6px;
+  }
+
   .gateCheckbox {
     display: flex;
     align-items: center;
@@ -150,7 +158,29 @@
       }
     }
   }
+  .addedIds {
+    display: flex;
+    align-items: center;
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: #414149;
 
+    .displayName {
+      max-width: calc(100% - 8px);
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+
+      @media only screen and (max-width: 480px) {
+        max-width: 310px;
+      }
+
+      @media only screen and (max-width: 370px) {
+        max-width: 220px;
+      }
+    }
+  }
   .createTopicButton {
     display: flex;
     align-items: center;

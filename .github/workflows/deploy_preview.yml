@@ -20,4 +20,4 @@ jobs:
             -H 'Accept: application/vnd.github+json' \
             -H 'Authorization: token ${{ secrets.WEBSITE_STAGING_REDEPLOY_TOKEN }}' \
             'https://api.github.com/repos/usedispatch/www.dispatch.forum/actions/workflows/deploy_preview.yml/dispatches' \
-            -d '{"ref":"main","inputs":{ branch: $GITHUB_REF_NAME }}'
+            -d '{"ref":"main","inputs":{ "branch": "$GITHUB_REF_NAME" }}'

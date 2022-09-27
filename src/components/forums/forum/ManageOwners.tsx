@@ -86,10 +86,6 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  // const isOwner = useMemo(async () => {
-  //   return forumObject.isOwner(forumData.collectionId);
-  // }, [forumObject]);
-
   const addToList = async (): Promise<void> => {
     if (manageOwners.newOwner.length > 0) {
       const ownerId = newPublicKey(manageOwners.newOwner);
@@ -191,7 +187,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
                   />
                   <button
                     className="okButton add"
-                    onClick={async () => addToList()}>
+                    onClick={async () => addToList()}
+                  >
                     Add
                   </button>
                 </div>
@@ -209,7 +206,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
                           key={m.id}
                           className={`currentOwners ${
                             m.toRemove ? 'toRemove' : ''
-                          }`}>
+                          }`}
+                        >
                           <div className="identity">
                             <div className="iconContainer">
                               {!isNil(identity) && (
@@ -239,7 +237,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
                                 ...manageOwners,
                                 currentOwners: newList,
                               });
-                            }}>
+                            }}
+                          >
                             {m.toRemove && <Undo />}
                             {!m.toRemove && (
                               <div className="trash">
@@ -266,7 +265,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
             cancelButton={
               <button
                 className="cancelButton"
-                onClick={() => resetInitialValues()}>
+                onClick={() => resetInitialValues()}
+              >
                 Cancel
               </button>
             }
@@ -292,7 +292,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
           <button
             className="manageOwnersButton"
             disabled={!permission.readAndWrite}
-            onClick={() => setManageOwners({ ...manageOwners, show: true })}>
+            onClick={() => setManageOwners({ ...manageOwners, show: true })}
+          >
             Manage owners
           </button>
         </PermissionsGate>

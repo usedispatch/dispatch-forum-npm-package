@@ -91,7 +91,7 @@
       font-family: "Raleway", "sans-serif";
     }
 
-    .forumContentBox {
+    .forumContentHeader {
       background: #1d1c1c;
 
       .titleBox,
@@ -103,21 +103,26 @@
       .description {
         font-family: "Raleway", "sans-serif";
       }
+    }
 
-      .moderatorToolsContainer {
-        border-top: 1px solid white;
-        color: #999999;
+    .toolsWrapper {
+      background: #1d1c1c;
+    }
 
-        .manageOwnersButton,
-        .manageModeratorsButton,
-        .moderatorTool,
-        .editForumButton {
-          color: #d1d1d1;
-        }
+    .moderatorToolsContainer {
+      background: #1d1c1c;
+      border-top: 1px solid white;
+      color: #999999;
 
-        .actionDivider {
-          background: white;
-        }
+      .manageOwnersButton,
+      .manageModeratorsButton,
+      .moderatorTool,
+      .editForumButton {
+        color: #d1d1d1;
+      }
+
+      .actionDivider {
+        background: white;
       }
     }
 

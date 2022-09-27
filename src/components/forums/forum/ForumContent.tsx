@@ -14,7 +14,14 @@ import {
   TransactionLink,
   Spinner,
 } from "../../common";
-import { TopicList, EditForum, ManageOwners, ManageModerators } from "..";
+import {
+  TopicList,
+  EditForum,
+  ManageOwners,
+  ManageModerators,
+  UploadForumBanner,
+  ConnectionAlert,
+} from "..";
 import { useRole } from "../../../contexts/DispatchProvider";
 
 import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
@@ -31,6 +38,7 @@ import {
   restrictionListToString,
   pubkeysToRestriction,
 } from "../../../utils/restrictionListHelper";
+import { StarsAlert } from "../StarsAlert";
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -316,7 +324,6 @@ export function ForumContent(props: ForumContentProps) {
       <div className="forumContent">
         <>
           {ReactGA.send("pageview")}
-
           {!isNil(modalInfo) && (
             <PopUpModal
               id="create-topic-info"
@@ -547,8 +554,19 @@ export function ForumContent(props: ForumContentProps) {
               return null;
             }
           })()}
-          <div className="forumContentBox">
+          <div
+            className="forumContentBox"
+            style={{
+              backgroundImage: forumData.images?.background
+                ? `url(${forumData.images?.background})`
+                : undefined,
+            }}>
+            {!permission.readAndWrite && <ConnectionAlert />}
+            {forumData.collectionId.toBase58() ===
+              "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && <StarsAlert />}
             {forumHeader}
+          </div>
+          <div className="toolsWrapper">
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
               <div className="moderatorToolsContainer">
                 <div>Owner tools: </div>
@@ -572,6 +590,11 @@ export function ForumContent(props: ForumContentProps) {
                     )
                   }
                   <EditForum forumData={forumData} update={update} />
+                  <UploadForumBanner
+                    onSetImageURL={async () => update()}
+                    collectionId={forumData.collectionId}
+                    currentBannerURL={forumData.images?.background ?? ''}
+                  />
                 </div>
               </div>
             </PermissionsGate>
@@ -580,7 +603,11 @@ export function ForumContent(props: ForumContentProps) {
             if (newTopicInFlight) {
               return <Spinner />;
             } else if (!isNil(forumData.collectionId)) {
-              return <TopicList forumData={forumData} />;
+              return (
+                <div className="topicListWrapper">
+                  <TopicList forumData={forumData} />
+                </div>
+              );
             }
           })()}
         </>

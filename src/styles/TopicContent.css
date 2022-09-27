@@ -236,7 +236,7 @@
         }
       }
 
-      .moderatorToolsContainer {
+      .topicToolsContainer {
         display: flex;
         align-items: center;
         justify-content: space-between;

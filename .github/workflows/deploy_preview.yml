@@ -1,9 +1,10 @@
-name: Tell www.dispatch.forum to deploy staging
+name: Tell www.dispatch.forum to deploy preview
 
 on:
   push:
     branches-ignore:
-      - master
+      - main
+      
 jobs:
   deploy-staging:
     runs-on: ubuntu-latest

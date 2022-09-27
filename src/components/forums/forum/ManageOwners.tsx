@@ -121,7 +121,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
       isSuccess(result),
     ) as PublicKey[];
 
-    const tx = await forumObject.addOwners(
+    const tx = await forumObject.setOwners(
       newOwnersList,
       forumData.collectionId,
     );
@@ -195,7 +195,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
                     Add
                   </button>
                 </div>
-                <label className="manageOwnersLabel">Current owners</label>
+                <label className="manageOwnersLabel">Owners</label>
                 <ul>
                   {manageOwners.currentOwners.map((m, index) => {
                     const pkey = newPublicKey(m.id);

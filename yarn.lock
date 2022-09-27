@@ -3161,9 +3161,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@usedispatch/client@npm:^0.14.0":
-  version: 0.14.0
-  resolution: "@usedispatch/client@npm:0.14.0"
+"@usedispatch/client@npm:^0.14.1":
+  version: 0.14.1
+  resolution: "@usedispatch/client@npm:0.14.1"
   dependencies:
     "@bonfida/spl-name-service": ^0.1.30
     "@metaplex-foundation/mpl-token-metadata": ^2.2.2
@@ -3173,7 +3173,7 @@ __metadata:
     "@solana/web3.js": ^1.50.1
     crypto-js: ^4.1.1
     lodash: ^4.17.21
-  checksum: cf7b7062f96941bf118f2625d77f2ef2c01cfa0b5c16d5d0c10d039ded2485efca6e820f0ba3d8eb79d3540330e51d0f5d9297ebc3d514494d644e1e0caadd6c
+  checksum: 1bed502917085a96f95632da7701f60f0101430fa8ae9dc982cff876a25afdaf7354c0cef3ce05164a7a6d311c882a345d1078854af8f6c5f24e9d5249322cec
   languageName: node
   linkType: hard
 
@@ -3199,7 +3199,7 @@ __metadata:
     "@types/react-alert": ^5.2.1
     "@typescript-eslint/eslint-plugin": ^5.13.0
     "@typescript-eslint/parser": ^5.0.0
-    "@usedispatch/client": ^0.14.0
+    "@usedispatch/client": ^0.14.1
     assert: ^2.0.0
     async: ^3.2.4
     autoprefixer: ^10.4.0

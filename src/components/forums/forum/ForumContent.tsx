@@ -557,7 +557,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     <div className="noRestriction">
                       The forum has no restriction
                     </div>
-                  ) : (
+                    )
+                    : (
                     <ul>
                       {currentForumAccessToken.map((token, index) => {
                         return (
@@ -571,14 +572,15 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                                   show: true,
                                   token,
                                 });
-                              }}>
+                              }}
+                            >
                               <Trash />
                             </div>
                           </li>
                         );
                       })}
                     </ul>
-                  )}
+                    )}
                 </div>
               }
               loading={addingAccessToken}
@@ -812,9 +814,11 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           <div
             className="forumContentBox"
             style={{
-              backgroundImage: !isNil(forumData.images?.background)
-                ? `url(${forumData.images?.background})`
-                : undefined,
+              backgroundImage:
+                !isNil(forumData.images?.background) &&
+                forumData.images.background.length > 0
+                  ? `url(${forumData.images?.background})`
+                  : undefined,
             }}
           >
             {!permission.readAndWrite && <ConnectionAlert />}

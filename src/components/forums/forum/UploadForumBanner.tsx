@@ -138,14 +138,14 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
             body={
               <div className="uploadImageWrapper">
                 <div className="uploadImageLabel">
-                  Image URL
+                  Banner URL
                   <Tooltip
                     content={
                       <div className="labelTooltip">
                         <Info />
                       </div>
                     }
-                    message="The image must be of type png"
+                    message="Banners should be .png format and 1400px x 900px"
                   />
                 </div>
                 <input
@@ -158,8 +158,13 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                 />
                 {forumImage.imageURL.length > 0 && (
                   <div className="imageContainer">
-                    {!typeError && <img src={forumImage.imageURL} alt="" />}
-                    {typeError && <div>the image must be of png type </div>}
+                    {typeError
+                      ? (
+                      <div>the image must be of png type </div>
+                      )
+                      : (
+                      <img src={forumImage.imageURL} alt="" />
+                      )}
                   </div>
                 )}
               </div>
@@ -169,7 +174,8 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
               <button
                 className="okButton"
                 disabled={typeError}
-                onClick={async () => onSave()}>
+                onClick={async () => onSave()}
+              >
                 Save
               </button>
             }
@@ -180,7 +186,8 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
           disabled={!permission.readAndWrite}
           onClick={() =>
             setForumImage({ ...forumImage, showUploadImage: true })
-          }>
+          }
+        >
           <Edit />
         </button>
       </div>

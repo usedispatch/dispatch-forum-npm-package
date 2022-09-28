@@ -1,7 +1,8 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode } from 'react';
-import Jdenticon from 'react-jdenticon';
+// import Jdenticon from 'react-jdenticon';
 import { PublicKey } from '@solana/web3.js';
+// import { ProfileSmall } from '@cardinal/namespaces-components';
 
 import { Trash, Undo } from '../../../assets';
 import {
@@ -217,7 +218,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
                                 />
                               )}
                               {isNil(identity) && (
-                                <Jdenticon value={m.id} alt="ownerId" />
+                                // <Jdenticon value={m.id} alt="ownerId" />
+                                <div>icon</div>
                               )}
                             </div>
                             <div className="displayName">{displayName}</div>

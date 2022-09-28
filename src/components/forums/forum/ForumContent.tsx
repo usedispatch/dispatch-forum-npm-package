@@ -27,7 +27,7 @@ import { useRole } from '../../../contexts/DispatchProvider';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { SCOPES, UserRoleType } from '../../../utils/permissions';
-import { Result } from '../../../types/error';
+import { DispatchError, Result } from '../../../types/error';
 import { isError, errorSummary } from '../../../utils/error';
 import { isSuccess } from '../../../utils/loading';
 import {
@@ -124,22 +124,24 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     } else {
       try {
         const splMint = newPublicKey(newForumAccessToken);
-        const tokenMetadata = await forumObject.connection.getTokenSupply(
-          splMint,
-        );
+        if (isSuccess(splMint)) {
+          const tokenMetadata = await forumObject.connection.getTokenSupply(
+            splMint,
+          );
 
-        restriction = pubkeysToSPLRestriction(
-          newForumAccessToken,
-          newForumAccessTokenAmount,
-          tokenMetadata.value.decimals,
-        );
+          restriction = pubkeysToSPLRestriction(
+            newForumAccessToken,
+            newForumAccessTokenAmount,
+            tokenMetadata.value.decimals,
+          );
+        }
       } catch (error) {
         setAddingAccessToken(false);
         setModalInfo({
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error) },
+          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
         });
         setShowManageAccessToken(false);
         return;
@@ -279,20 +281,22 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       // TODO: turn into a util function later
       try {
         const splMint = newPublicKey(newTopic.SPLaccessToken);
-        const tokenMetadata =
+        if (isSuccess(splMint)) {
+          const tokenMetadata =
           (await forumObject.connection.getTokenSupply(splMint)) ?? undefined;
-        restrictionResult = pubkeysToSPLRestriction(
-          newTopic.SPLaccessToken,
-          newTopic.SPLamount,
-          tokenMetadata.value.decimals,
-        );
+          restrictionResult = pubkeysToSPLRestriction(
+            newTopic.SPLaccessToken,
+            newTopic.SPLamount,
+            tokenMetadata.value.decimals,
+          );
+        }
       } catch (error) {
         setCreatingNewTopic(false);
         setModalInfo({
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error) },
+          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
         });
         setShowNewTopicModal(false);
         return;
@@ -557,7 +561,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     <div className="noRestriction">
                       The forum has no restriction
                     </div>
-                  ) : (
+                    )
+                    : (
                     <ul>
                       {currentForumAccessToken.map((token, index) => {
                         return (
@@ -578,7 +583,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                         );
                       })}
                     </ul>
-                  )}
+                    )}
                 </div>
               }
               loading={addingAccessToken}
@@ -631,10 +636,10 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     id="create-topic"
                     title="You are not authorized"
                     body={
-                      isSuccess(forumData.restriction.tokenOwnership) &&
-                      (forumData.restriction.tokenOwnership.mint.equals(
+                      isSuccess(forumData.restriction) && !isNil(forumData.restriction?.tokenOwnership) && !isNil(forumData.restriction?.tokenOwnership.mint) &&
+                      forumData.restriction.tokenOwnership.mint.equals(
                         forumData.moderatorMint,
-                      ) as boolean)
+                      )
                         ? 'Oops! Only moderators can create new topics at this time.'
                         : 'Oops! You need a token to participate. Please contact the forum’s moderators.'
                     }
@@ -862,7 +867,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
             } else if (!isNil(forumData.collectionId)) {
               return (
                 <div className="topicListWrapper">
-                  <TopicList forumData={forumData} />
+                  <TopicList forumData={forumData} forum={forumObject}/>
                 </div>
               );
             }

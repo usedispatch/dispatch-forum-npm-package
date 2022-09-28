@@ -1,18 +1,18 @@
-import Markdown from "markdown-to-jsx";
-import { useMemo } from "react";
-import { PublicKey } from "@solana/web3.js";
-import Jdenticon from "react-jdenticon";
-import { ForumPost } from "@usedispatch/client";
+import Markdown from 'markdown-to-jsx';
+import { useMemo } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import { ForumPost } from '@usedispatch/client';
+import { ProfileSmall } from '@cardinal/namespaces-components';
 
-import { Gift, Info, Trash } from "../../../assets";
-import { PermissionsGate, Spinner } from "../../../components/common";
-import { EditPost, RoleLabel, Votes } from "../index";
+import { Gift, Info, Trash } from '../../../assets';
+import { PermissionsGate, Spinner } from '../../../components/common';
+import { EditPost, RoleLabel, Votes } from '../index';
 
-import { useForum } from "../../../contexts/DispatchProvider";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
-import { Result } from "../../../types/error";
-import { getIdentity } from "../../../utils/identity";
+import { useForum } from '../../../contexts/DispatchProvider';
+import { SCOPES, UserRoleType } from '../../../utils/permissions';
+import { ForumData, isForumPost, ClientPost } from '../../../utils/hooks';
+import { Result } from '../../../types/error';
+import { getIdentity } from '../../../utils/identity';
 
 interface PostRepliesProps {
   forumData: ForumData;
@@ -45,23 +45,23 @@ export function PostReplies(props: PostRepliesProps) {
 
   const postedAt = (reply: ClientPost) =>
     `${reply.data.ts.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
     })} at ${reply.data.ts.toLocaleTimeString(undefined, {
-      hour: "numeric",
-      minute: "numeric",
+      hour: 'numeric',
+      minute: 'numeric',
     })}`;
 
   const replies = useMemo(
     () =>
       props.replies.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
-    [props.replies]
+    [props.replies],
   );
 
   const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost) => {
     const index = replies.findIndex((r) => {
-      return "postId" in r && r.postId === replyToUpdate.postId;
+      return 'postId' in r && r.postId === replyToUpdate.postId;
     });
     if (upVoted) {
       replyToUpdate.upVotes = replyToUpdate.upVotes + 1;
@@ -81,30 +81,16 @@ export function PostReplies(props: PostRepliesProps) {
       {replies.map((reply, index) => {
         const isPost = isForumPost(reply);
 
-        const posterIdentity = getIdentity(reply.poster);
-
         return (
           <div key={index}>
-            <div className={`replyContent  ${!isPost ? "inFlight" : ""}`}>
+            <div className={`replyContent  ${!isPost ? 'inFlight' : ''}`}>
               <div className="replyHeader">
                 <div className="posterId">
-                  <div className="icon">
-                    {posterIdentity ? (
-                      <img
-                        src={posterIdentity.profilePicture.href}
-                        style={{ borderRadius: "50%" }}
-                      />
-                    ) : (
-                      <Jdenticon
-                        value={reply.poster.toBase58()}
-                        alt="posterID"
-                      />
-                    )}
-                  </div>
                   <div className="walletId">
-                    {posterIdentity
-                      ? posterIdentity.displayName
-                      : reply.poster.toBase58()}
+                    <ProfileSmall
+                      address={reply.poster}
+                      connection={forum.connection}
+                    />
                   </div>
                   <RoleLabel
                     topicOwnerId={topicOwnerId}
@@ -121,7 +107,7 @@ export function PostReplies(props: PostRepliesProps) {
                         <a
                           href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
                           className="transactionLink"
-                          target="_blank">
+                          target="_blank" rel="noreferrer">
                           <Info />
                         </a>
                       </div>
@@ -148,8 +134,8 @@ export function PostReplies(props: PostRepliesProps) {
                         forumData={forumData}
                         update={update}
                         updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                        onUpVotePost={() => onUpVotePost(reply)}
-                        onDownVotePost={() => onDownVotePost(reply)}
+                        onUpVotePost={async () => onUpVotePost(reply)}
+                        onDownVotePost={async () => onDownVotePost(reply)}
                         post={reply}
                       />
                     </PermissionsGate>
@@ -159,7 +145,7 @@ export function PostReplies(props: PostRepliesProps) {
                     <EditPost
                       post={reply}
                       forumData={forumData}
-                      update={() => update()}
+                      update={async () => update()}
                       editPostLocal={editPost}
                       showDividers={{ leftDivider: true, rightDivider: false }}
                     />
@@ -174,7 +160,7 @@ export function PostReplies(props: PostRepliesProps) {
                       <button
                         className="deleteButton"
                         disabled={!permission.readAndWrite}
-                        onClick={() => onDeletePost(reply)}>
+                        onClick={async () => onDeletePost(reply)}>
                         <Trash />
                       </button>
                     </PermissionsGate>

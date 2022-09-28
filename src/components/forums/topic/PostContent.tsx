@@ -1,11 +1,11 @@
 import isNull from 'lodash/isNull';
-import { PublicKey } from "@solana/web3.js";
-import Markdown from "markdown-to-jsx";
-import { ReactNode, useMemo, useRef, useState } from "react";
-import Jdenticon from "react-jdenticon";
-import { ForumPost } from "@usedispatch/client";
+import { PublicKey } from '@solana/web3.js';
+import Markdown from 'markdown-to-jsx';
+import { ReactNode, useMemo, useRef, useState } from 'react';
+import { ForumPost } from '@usedispatch/client';
+import { ProfileSmall } from '@cardinal/namespaces-components';
 
-import { Gift, Trash, Reply, Info } from "../../../assets";
+import { Gift, Trash, Reply, Info } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -13,16 +13,14 @@ import {
   PopUpModal,
   Spinner,
   TransactionLink,
-} from "./../../common";
-import { Votes, Notification } from "../../../components/forums";
-import { PostReplies, GiveAward, EditPost, RoleLabel } from "../index";
+} from './../../common';
+import { Votes, Notification, PostReplies, GiveAward, EditPost, RoleLabel } from '../../../components/forums';
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { getIdentity } from "../../../utils/identity";
+import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
+import { SCOPES, UserRoleType } from '../../../utils/permissions';
 import {
   ForumData,
   CreatedPost,
@@ -33,8 +31,8 @@ import {
   useUserIsMod,
   useForumIdentity,
   ForumIdentity,
-} from "../../../utils/hooks";
-import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
+} from '../../../utils/hooks';
+import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -73,7 +71,7 @@ export function PostContent(props: PostContentProps) {
   const userIsMod = useUserIsMod(
     forumData.collectionId,
     forum,
-    forum.wallet.publicKey || new PublicKey("11111111111111111111111111111111")
+    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111'),
   );
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
@@ -83,10 +81,10 @@ export function PostContent(props: PostContentProps) {
   const [deleting, setDeleting] = useState(false);
 
   const [showReplyBox, setShowReplyBox] = useState(false);
-  const [reply, setReply] = useState("");
+  const [reply, setReply] = useState('');
   const [sendingReply, setSendingReply] = useState(false);
   const [replySize, setReplySize] = useState(
-    new Buffer(reply, "utf-8").byteLength
+    new Buffer(reply, 'utf-8').byteLength,
   );
 
   const [showGiveAward, setShowGiveAward] = useState(false);
@@ -142,13 +140,13 @@ export function PostContent(props: PostContentProps) {
     if (isSuccess(tx)) {
       setSendingReply(false);
       setShowReplyBox(false);
-      setReply("");
+      setReply('');
       setNotification({
         isHidden: false,
         content: (
           <>
             Posting reply.
-            <TransactionLink transaction={tx!} />
+            <TransactionLink transaction={tx} />
           </>
         ),
         type: MessageType.info,
@@ -162,7 +160,7 @@ export function PostContent(props: PostContentProps) {
         poster: forum.wallet.publicKey!,
         isTopic: false,
         replyTo: post.address,
-        state: "created",
+        state: 'created',
       };
       addPost(localPost);
       await forum.connection.confirmTransaction(tx).then(() => {
@@ -173,14 +171,14 @@ export function PostContent(props: PostContentProps) {
           content: (
             <>
               Replied successfully.
-              <TransactionLink transaction={tx!} />
+              <TransactionLink transaction={tx} />
             </>
           ),
           type: MessageType.success,
         });
         setTimeout(
           () => setNotification({ isHidden: true }),
-          NOTIFICATION_BANNER_TIMEOUT
+          NOTIFICATION_BANNER_TIMEOUT,
         );
       });
     } else {
@@ -189,10 +187,10 @@ export function PostContent(props: PostContentProps) {
       setNotification({ isHidden: true });
       console.log(error);
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The reply could not be sent`,
-        collapsible: { header: "Error", content: error.message },
+        body: 'The reply could not be sent',
+        collapsible: { header: 'Error', content: error.message },
       });
       setSendingReply(false);
     }
@@ -206,39 +204,39 @@ export function PostContent(props: PostContentProps) {
     const tx = await forum.deleteForumPost(
       postToDelete,
       forumData.collectionId,
-      userRoles.includes(UserRoleType.Moderator)
+      userRoles.includes(UserRoleType.Moderator),
     );
     if (isSuccess(tx)) {
       deletePost(postToDelete);
       onDeletePost(tx);
       setModalInfo({
-        title: "Success!",
+        title: 'Success!',
         type: MessageType.success,
-        body: `The post was deleted`,
+        body: 'The post was deleted',
       });
       setShowDeleteConfirmation(false);
-      await forum.connection.confirmTransaction(tx).then(() => update());
+      await forum.connection.confirmTransaction(tx).then(async () => update());
       setDeleting(false);
     } else {
       const error = tx;
       setShowDeleteConfirmation(false);
       setDeleting(false);
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The post could not be deleted`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The post could not be deleted',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
   };
 
   const postedAt = `${post.data.ts.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric",
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
   })} at ${post.data.ts.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "numeric",
+    hour: 'numeric',
+    minute: 'numeric',
   })}`;
 
   // TODO(andrew) reimplement moderator label later
@@ -248,13 +246,11 @@ export function PostContent(props: PostContentProps) {
 
   const isLocal = isCreatedPost(post);
 
-  const identity = getIdentity(post.poster);
-
   return (
     <>
       <div
         className={`postContentContainer ${
-          postInFlight && isLocal ? "inFlight" : ""
+          postInFlight && isLocal ? 'inFlight' : ''
         }`}>
         {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
@@ -262,14 +258,14 @@ export function PostContent(props: PostContentProps) {
             visible
             title="Are you sure you want to delete this post?"
             body={
-              "This is permanent and you won’t be able to retrieve this comment again. Upvotes and downvotes will go too."
+              'This is permanent and you won’t be able to retrieve this comment again. Upvotes and downvotes will go too.'
             }
             loading={deleting}
             okButton={
               !deleting && (
                 <a
                   className="acceptDeletePostButton"
-                  onClick={() => onDelete()}>
+                  onClick={async () => onDelete()}>
                   Confirm
                 </a>
               )
@@ -301,7 +297,7 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
-        {showGiveAward && postToAward && (
+        {showGiveAward && (postToAward != null) && (
           <GiveAward
             post={postToAward}
             collectionId={forumData.collectionId}
@@ -315,16 +311,16 @@ export function PostContent(props: PostContentProps) {
               });
               setTimeout(
                 () => setNotification({ isHidden: true }),
-                NOTIFICATION_BANNER_TIMEOUT
+                NOTIFICATION_BANNER_TIMEOUT,
               );
             }}
             onError={(error) => {
               setShowGiveAward(false);
               setModalInfo({
-                title: "Something went wrong!",
+                title: 'Something went wrong!',
                 type: MessageType.error,
-                body: `The award could not be given.`,
-                collapsible: { header: "Error", content: error?.message },
+                body: 'The award could not be given.',
+                collapsible: { header: 'Error', content: error?.message },
               });
             }}
           />
@@ -340,21 +336,11 @@ export function PostContent(props: PostContentProps) {
             <div className="box">
               <div className="postHeader">
                 <div className="posterId">
-                  <div className="icon">
-                    {identity ? (
-                      <img
-                        src={identity.profilePicture.href}
-                        style={{ borderRadius: "50%" }}
-                      />
-                    ) : (
-                      <Jdenticon
-                        value={post?.poster.toBase58()}
-                        alt="posterID"
-                      />
-                    )}
-                  </div>
                   <div className="walletId">
-                    {identity ? identity.displayName : post.poster.toBase58()}
+                    <ProfileSmall
+                      address={post?.poster}
+                      connection={forum.connection}
+                    />
                   </div>
                   <RoleLabel
                     topicOwnerId={topicPosterId}
@@ -372,7 +358,7 @@ export function PostContent(props: PostContentProps) {
                             <a
                               href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
                               className="transactionLink"
-                              target="_blank">
+                              target="_blank" rel="noreferrer">
                               <Info />
                             </a>
                           </div>
@@ -415,10 +401,10 @@ export function PostContent(props: PostContentProps) {
                       forumData={forumData}
                       update={update}
                       post={post}
-                      onDownVotePost={() =>
+                      onDownVotePost={async () =>
                         forum.voteDownForumPost(post, forumData.collectionId)
                       }
-                      onUpVotePost={() =>
+                      onUpVotePost={async () =>
                         forum.voteUpForumPost(post, forumData.collectionId)
                       }
                       updateVotes={(upVoted) => updateVotes(upVoted)}
@@ -427,7 +413,7 @@ export function PostContent(props: PostContentProps) {
                   <EditPost
                     post={post}
                     forumData={forumData}
-                    update={() => update()}
+                    update={async () => update()}
                     editPostLocal={editPost}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
@@ -466,7 +452,7 @@ export function PostContent(props: PostContentProps) {
                               </button>
                               <div className="actionDivider" />
                             </>
-                          )
+                        )
                       }
                       <button
                         className="replyButton"
@@ -474,8 +460,8 @@ export function PostContent(props: PostContentProps) {
                         onClick={() => {
                           setShowReplyBox(true);
                           replyAreaRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "center",
+                            behavior: 'smooth',
+                            block: 'center',
                           });
                         }}>
                         <span>Reply</span> <Reply />
@@ -496,16 +482,16 @@ export function PostContent(props: PostContentProps) {
                 replies={replies}
                 userRoles={userRoles}
                 topicOwnerId={topicPosterId}
-                update={() => update()}
+                update={async () => update()}
                 editPost={editPost}
                 onDeletePost={async (postToDelete) => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);
                 }}
-                onDownVotePost={(reply) =>
+                onDownVotePost={async (reply) =>
                   forum.voteDownForumPost(reply, forumData.collectionId)
                 }
-                onUpVotePost={(reply) =>
+                onUpVotePost={async (reply) =>
                   forum.voteUpForumPost(reply, forumData.collectionId)
                 }
                 onAwardReply={(reply) => {
@@ -518,7 +504,7 @@ export function PostContent(props: PostContentProps) {
             <div
               ref={replyAreaRef}
               className={`replyFormContainer ${
-                showReplyBox && !sendingReply ? "visible" : ""
+                showReplyBox && !sendingReply ? 'visible' : ''
               }`}>
               <div className="replyForm">
                 <textarea
@@ -536,13 +522,13 @@ export function PostContent(props: PostContentProps) {
                     disabled={postInFlight}
                     onClick={() => {
                       setShowReplyBox(false);
-                      new Buffer(reply, "utf-8").byteLength;
+                      new Buffer(reply, 'utf-8').byteLength;
                     }}>
                     Cancel
                   </button>
                   <button
                     className={`postReplyButton ${
-                      postInFlight ? "inFlight" : ""
+                      postInFlight ? 'inFlight' : ''
                     }`}
                     type="submit"
                     disabled={reply.length === 0}

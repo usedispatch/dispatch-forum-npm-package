@@ -55,6 +55,8 @@
   },
   "homepage": "https://github.com/usedispatch/dispatch-forum#readme",
   "devDependencies": {
+    "@cardinal/namespaces": "^4.1.56",
+    "@cardinal/namespaces-components": "^4.1.19",
     "@parcel/core": "^2.7.0",
     "@parcel/packager-ts": "2.7.0",
     "@parcel/reporter-bundle-analyzer": "^2.7.0",
@@ -64,6 +66,7 @@
     "@parcel/transformer-typescript-types": "2.7.0",
     "@svgr/webpack": "^6.2.1",
     "@tailwindcss/typography": "^0.5.7",
+    "@types/node": "^18.7.18",
     "@types/node-fetch": "^2.6.1",
     "@types/react": "^18.0.12",
     "@types/react-alert": "^5.2.1",
@@ -92,6 +95,7 @@
     "postcss-loader": "^7.0.1",
     "postcss-prefix-selector": "^1.16.0",
     "prettier": "^2.7.1",
+    "react-dom": "^18.2.0",
     "react-jdenticon": "^1.0.0",
     "stream-browserify": "^3.0.0",
     "tailwindcss": "^3.1.8",
@@ -102,8 +106,10 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "@cardinal/namespaces": "^4.1.56",
+    "@cardinal/namespaces-components": "^4.1.19",
     "@parcel/config-default": "^2.7.0",
-    "@solana/spl-token": "^0.3.1",
+    "@solana/spl-token": "^0.1.8",
     "@solana/web3.js": "^1.50.1",
     "@types/lodash": "^4.14.185",
     "@usedispatch/client": "^0.14.1",
@@ -115,7 +121,9 @@
     "react-ga4": "^1.4.1",
     "react-helmet": "^6.1.0",
     "react-jdenticon": "^1.0.0",
-    "save": "^2.5.0"
+    "save": "^2.5.0",
+    "spl-token-031": "npm:@solana/spl-token@0.3.1",
+    "web3-031": "npm:@solana/web3.js@0.3.1"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",

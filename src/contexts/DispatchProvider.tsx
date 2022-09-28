@@ -1,9 +1,10 @@
 import {
   Connection,
-  Cluster
+  Cluster,
 } from '@solana/web3.js';
-import { WalletInterface } from "@usedispatch/client";
-import ReactGA from "react-ga4"
+import { WalletIdentityProvider, IDENTITIES } from '@cardinal/namespaces-components';
+import { WalletInterface } from '@usedispatch/client';
+import ReactGA from 'react-ga4';
 import {
   FC,
   ReactNode,
@@ -11,10 +12,10 @@ import {
   useContext,
   useMemo,
   useState,
-} from "react";
-import { DispatchForum, MainForum } from "./../utils/postbox/postboxWrapper";
-import { UserRoleType } from "./../utils/permissions";
-import { DebugWarning } from "./../components/common/DebugWarning";
+} from 'react';
+import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
+import { UserRoleType } from './../utils/permissions';
+import { DebugWarning } from './../components/common/DebugWarning';
 export interface DispatchAppProps {
   wallet: WalletInterface;
   connection: Connection;
@@ -50,15 +51,15 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
   buildForumPath,
   buildTopicPath,
 }) => {
-  ReactGA.initialize("G-QD3BDH1D5P");
+  ReactGA.initialize('G-QD3BDH1D5P');
 
   const forum = useMemo(
     () => new MainForum(wallet, connection, cluster),
-    [wallet, connection, cluster]
+    [wallet, connection, cluster],
   );
   const paths = {
-    buildForumPath: buildForumPath,
-    buildTopicPath: buildTopicPath,
+    buildForumPath,
+    buildTopicPath,
   };
   const [roles, setRoles] = useState([UserRoleType.Viewer]);
 
@@ -67,8 +68,10 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
     <ForumContext.Provider value={forum}>
       <PathContext.Provider value={paths}>
         <UserRoleContext.Provider value={userRole}>
-          <DebugWarning />
-          {children}
+          <WalletIdentityProvider identities={[IDENTITIES.twitter]}>
+            <DebugWarning />
+            {children}
+          </WalletIdentityProvider>
         </UserRoleContext.Provider>
       </PathContext.Provider>
     </ForumContext.Provider>

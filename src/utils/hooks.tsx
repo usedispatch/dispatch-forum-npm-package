@@ -1,31 +1,31 @@
-import { useMemo, useState, useEffect, ReactNode } from "react";
-import { PublicKey, AccountInfo } from "@solana/web3.js";
-import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated, ChainVoteEntry } from "@usedispatch/client";
+import { useMemo, useState, useEffect, ReactNode } from 'react';
+import { PublicKey, AccountInfo } from '@solana/web3.js';
+import { ForumInfo, ForumPost, PostRestriction, getAccountsInfoPaginated, ChainVoteEntry } from '@usedispatch/client';
 import uniqBy from 'lodash/uniqBy';
 import zip from 'lodash/zip';
 import isNil from 'lodash/isNil';
 import {
   getAssociatedTokenAddress,
   unpackAccount,
-  Account
-} from '@solana/spl-token';
-import { Loading } from "../types/loading";
-import { Result } from "../types/error";
+  Account,
+} from 'spl-token-031';
+import { Loading } from '../types/loading';
+import { Result } from '../types/error';
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
-} from "../components/common";
+} from '../components/common';
 import {
   initial,
   isInitial,
   isSuccess,
-} from "../utils/loading";
+} from '../utils/loading';
 import {
-  parseError
-} from "../utils/parseErrors";
-import { notFoundError } from "../utils/error";
-import { DispatchForum } from "./postbox/postboxWrapper";
+  parseError,
+} from '../utils/parseErrors';
+import { notFoundError } from '../utils/error';
+import { DispatchForum } from './postbox/postboxWrapper';
 
 // TODO(andrew) move this to DispatchForum.getDescription()
 // so that function can be properly typed
@@ -39,11 +39,11 @@ export interface Description {
  * on-chain. Should not be allowed to be interacted with
  */
 export type CreatedPost = Pick<
-  ForumPost
-  , 'data'
-  | 'replyTo'
-  | 'isTopic'
-  | 'poster'
+ForumPost
+, 'data'
+| 'replyTo'
+| 'isTopic'
+| 'poster'
 > & { state: 'created' };
 
 /**
@@ -68,7 +68,7 @@ export type ClientPost
   | EditedPost;
 
 export function isForumPost(
-  post: ClientPost
+  post: ClientPost,
 ): post is ForumPost {
   // A post is a LocalPost if it has an associated parent object
   // TODO(andrew) confirm that this is the best field to check
@@ -76,7 +76,7 @@ export function isForumPost(
 }
 
 export function isEditedPost(
-  post: ClientPost
+  post: ClientPost,
 ): post is EditedPost {
   // A post is an edited post if it's not a ForumPost, but it
   // does have an address
@@ -84,7 +84,7 @@ export function isEditedPost(
 }
 
 export function isCreatedPost(
-  post: ClientPost
+  post: ClientPost,
 ): post is CreatedPost {
   // A post is a client post if it doesn't have the address field
   return 'state' in post && post.state === 'created';
@@ -108,19 +108,19 @@ export interface ForumData {
 // to refresh it
 export function useForumData(
   collectionId: PublicKey | null,
-  forum: DispatchForum
+  forum: DispatchForum,
 ): {
-  forumData: Loading<ForumData>;
-  addPost: (post: CreatedPost) => void;
-  deletePost: (post: ForumPost) => void;
-  editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
-  update: () => Promise<void>;
-} {
+    forumData: Loading<ForumData>;
+    addPost: (post: CreatedPost) => void;
+    deletePost: (post: ForumPost) => void;
+    editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
+    update: () => Promise<void>;
+  } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
   useEffect(() => {
-      if (isSuccess(forumData) && isInitial(forumData.votes)) {
-        fetchVotes().then((votes) => {
+    if (isSuccess(forumData) && isInitial(forumData.votes)) {
+      fetchVotes().then((votes) => {
         if (isSuccess(votes)) {
           setForumData({
             ...forumData,
@@ -128,12 +128,12 @@ export function useForumData(
           });
         }
       });
-      }
+    }
   }, [forum.wallet, forumData]);
 
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<Result<PublicKey[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getOwners(collectionId, true);
         if (fetchData) {
@@ -150,7 +150,7 @@ export function useForumData(
   }
 
   async function fetchModeratorMint(): Promise<Result<PublicKey>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
@@ -170,7 +170,7 @@ export function useForumData(
   // the fetchModerators() call to its place here
 
   async function fetchDescription(): Promise<Result<Description>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getDescription(collectionId, true);
         if (fetchData) {
@@ -186,13 +186,13 @@ export function useForumData(
     }
   }
   async function fetchForumImage(): Promise<any> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const imgs = await forum.getImageUrls(collectionId);
         if (imgs) {
           return imgs;
         } else {
-          return notFoundError("The banner could not be fetched");
+          return notFoundError('The banner could not be fetched');
         }
       } catch (error: any) {
         return parseError(error);
@@ -201,7 +201,7 @@ export function useForumData(
   }
 
   async function fetchPosts(): Promise<Result<ForumPost[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId, true);
         if (fetchData) {
@@ -218,12 +218,12 @@ export function useForumData(
   }
 
   async function fetchForumPostRestriction(): Promise<
-    Result<PostRestriction>
+  Result<PostRestriction>
   > {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const restriction = await forum.getForumPostRestriction(collectionId);
-        if (restriction) {
+        if (restriction != null) {
           return restriction;
         } else {
           return notFoundError('The restriction was not defined');
@@ -246,7 +246,7 @@ export function useForumData(
     if (isSuccess(forumData)) {
       setForumData({
         ...forumData,
-        posts: forumData.posts.concat(post)
+        posts: forumData.posts.concat(post),
       });
     }
   }
@@ -254,14 +254,14 @@ export function useForumData(
   function editPost(
     post: ForumPost,
     newBody: string,
-    newSubj?: string
+    newSubj?: string,
   ) {
     if (isSuccess(forumData)) {
       const { posts } = forumData;
 
       // Find all posts matching the one we want to edit
       const matchingPosts = posts.filter(p => {
-        return isForumPost(p) && p.address.equals(post.address)
+        return isForumPost(p) && p.address.equals(post.address);
         // Cast to ForumPost here because we know p is a
         // ForumPost, but the typechecker doesn't
       }) as ForumPost[];
@@ -277,7 +277,7 @@ export function useForumData(
       const postToEdit = matchingPosts[0];
 
       const filteredPosts = posts.filter(p => {
-        return p !== postToEdit
+        return p !== postToEdit;
       });
 
       // Add the modified version of the post
@@ -286,9 +286,9 @@ export function useForumData(
         data: {
           ts: postToEdit.data.ts,
           body: newBody,
-          subj: newSubj
+          subj: newSubj,
         },
-        state: 'edited'
+        state: 'edited',
       };
 
       const editedPosts = filteredPosts.concat(editedPost);
@@ -299,7 +299,7 @@ export function useForumData(
 
       setForumData({
         ...forumData,
-        posts: editedPosts
+        posts: editedPosts,
       });
     }
   }
@@ -317,12 +317,12 @@ export function useForumData(
     if (isSuccess(forumData)) {
       setForumData({
         ...forumData,
-        posts: forumData.posts.filter(p => post !== p)
+        posts: forumData.posts.filter(p => post !== p),
       });
     }
   }
   async function fetchVotes(): Promise<Result<ChainVoteEntry[]>> {
-    if (collectionId && forum.permission.readAndWrite && isSuccess(forumData)) {
+    if ((collectionId != null) && forum.permission.readAndWrite && isSuccess(forumData)) {
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
@@ -338,12 +338,11 @@ export function useForumData(
     }
   }
 
-
   /**
    * re-fetch all data related to this forum from chain
    */
   async function update() {
-    if (collectionId) {
+    if (collectionId != null) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
@@ -396,15 +395,15 @@ export function useForumData(
 
 export function useModerators(
   collectionId: PublicKey | null,
-  forum: DispatchForum
+  forum: DispatchForum,
 ): {
-  moderators: Loading<PublicKey[]>,
-    update: () => Promise<void>
-} {
+    moderators: Loading<PublicKey[]>;
+    update: () => Promise<void>;
+  } {
   const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
 
   async function fetchModerators(): Promise<Result<PublicKey[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getModerators(collectionId, true);
         if (fetchData) {
@@ -421,7 +420,7 @@ export function useModerators(
   }
 
   async function update() {
-    if (collectionId) {
+    if (collectionId != null) {
       if (await forum.exists(collectionId)) {
         const fetchResult = await fetchModerators();
         setModerators(fetchResult);
@@ -499,31 +498,30 @@ export function useModal() {
  */
 export function useParticipatingModerators(
   forumData: Loading<ForumData>,
-  forum: DispatchForum
+  forum: DispatchForum,
 ) {
-
   // TODO make this a result type/
   const [moderators, setModerators] = useState<PublicKey[] | null>(null);
 
   async function fetchParticipatingModerators(
-    forumData: ForumData
+    forumData: ForumData,
   ) {
     const { moderatorMint } = forumData;
 
     // Fetch the authors of all posts, unique by base58 key
     const authors = uniqBy(
       forumData.posts.map(({ poster }) => poster),
-      (pkey) => pkey.toBase58()
+      (pkey) => pkey.toBase58(),
     );
 
     // Derive associated token accounts
-    const atas = await Promise.all(authors.map(author => {
+    const atas = await Promise.all(authors.map(async author => {
       return getAssociatedTokenAddress(moderatorMint, author);
     }));
 
     // Fetch the accounts
     const binaryAccounts = await getAccountsInfoPaginated(
-      forum.connection, atas
+      forum.connection, atas,
     );
 
     const pairs = zip(authors, atas, binaryAccounts);
@@ -531,17 +529,17 @@ export function useParticipatingModerators(
     // Filter out the nulls
     const nonnullPairs = pairs.filter(([wallet, ata, account]) => {
       return !isNil(wallet) && !isNil(ata) && !isNil(account);
-    }) as [PublicKey, PublicKey, AccountInfo<Buffer>][];
+    }) as Array<[PublicKey, PublicKey, AccountInfo<Buffer>]>;
 
     // Parse the accounts
-    const parsedAccounts: [PublicKey, PublicKey, Account][] = nonnullPairs.map(([wallet, ata, account]) => {
+    const parsedAccounts: Array<[PublicKey, PublicKey, Account]> = nonnullPairs.map(([wallet, ata, account]) => {
       const unpacked = unpackAccount(ata, account);
       return [wallet, ata, unpacked];
     });
 
     // Filter out only the ones that hold the token
     const tokenHolders = parsedAccounts.filter(([/* skip */, /* skip */, account]) => {
-      return account.amount > 0
+      return account.amount > 0;
     });
 
     const tokenHoldingWallets = tokenHolders.map(([wallet]) => wallet);
@@ -572,9 +570,8 @@ export function useUserIsMod(
   /** The forum object, used for getting the moderator mint */
   forum: DispatchForum,
   /** The user's wallet public key */
-  userPublicKey: PublicKey
+  userPublicKey: PublicKey,
 ): boolean | null {
-
   // At first, we don't know whether the user is a mod, so set to
   // null
   const [userIsMod, setUserIsMod] = useState<boolean | null>(null);
@@ -587,7 +584,7 @@ export function useUserIsMod(
     if (isSuccess(moderatorMint)) {
       const ataAddress = await getAssociatedTokenAddress(moderatorMint, userPublicKey);
       const ataBinary = await forum.connection.getAccountInfo(ataAddress);
-      if (ataBinary) {
+      if (ataBinary != null) {
         const parsedAta = unpackAccount(ataAddress, ataBinary);
         if (parsedAta.amount > 0) {
           return true;
@@ -624,7 +621,7 @@ export function useUserIsMod(
  * track of it here
  */
 export enum ForumIdentity {
-  DegenerateApeAcademy
+  DegenerateApeAcademy,
 }
 
 /**
@@ -632,14 +629,14 @@ export enum ForumIdentity {
  * doesn't have one
  */
 export function useForumIdentity(
-  forumId: PublicKey
+  forumId: PublicKey,
 ): ForumIdentity | null {
   return useMemo(() => {
     if (forumId.equals(
       // TODO(andrew) put this in a constant somewhere? it is
       // nice to have it literally specified at the point of use
       // to avoid confusion
-      new PublicKey('DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD')
+      new PublicKey('DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD'),
     )) {
       return ForumIdentity.DegenerateApeAcademy;
     } else {

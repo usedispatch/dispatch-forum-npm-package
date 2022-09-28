@@ -1,12 +1,12 @@
-import isNil from "lodash/isNil";
-import { ReactNode, useEffect, useMemo, useState } from "react";
-import { PublicKey } from "@solana/web3.js";
-import Markdown from "markdown-to-jsx";
-import Jdenticon from "react-jdenticon";
-import { ForumPost, PostRestriction } from "@usedispatch/client";
-import ReactGA from "react-ga4";
+import isNil from 'lodash/isNil';
+import { ReactNode, useEffect, useMemo, useState } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import Markdown from 'markdown-to-jsx';
+import { ForumPost, PostRestriction } from '@usedispatch/client';
+import ReactGA from 'react-ga4';
+import { ProfileSmall } from '@cardinal/namespaces-components';
 
-import { Gift, Info, MessageSquare, Trash, Lock } from "../../../assets";
+import { Gift, Info, MessageSquare, Trash, Lock } from '../../../assets';
 
 import {
   CollapsibleProps,
@@ -15,19 +15,18 @@ import {
   PermissionsGate,
   TransactionLink,
   Spinner,
-} from "../../common";
-import { CreatePost, GiveAward, PostList, Notification, Votes } from "..";
-import { EditPost } from "./EditPost";
-import { RoleLabel } from "./RoleLabel";
+} from '../../common';
+import { CreatePost, GiveAward, PostList, Notification, Votes } from '..';
+import { EditPost } from './EditPost';
+import { RoleLabel } from './RoleLabel';
 
-import { usePath } from "../../../contexts/DispatchProvider";
+import { usePath } from '../../../contexts/DispatchProvider';
 
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { UserRoleType } from "../../../utils/permissions";
-import { SCOPES } from "../../../utils/permissions";
-import { selectRepliesFromPosts } from "../../../utils/posts";
-import { getIdentity } from "../../../utils/identity";
+import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { UserRoleType, SCOPES } from '../../../utils/permissions';
+import { selectRepliesFromPosts } from '../../../utils/posts';
+import { getIdentity } from '../../../utils/identity';
 import {
   ForumData,
   CreatedPost,
@@ -36,13 +35,13 @@ import {
   useUserIsMod,
   useForumIdentity,
   ForumIdentity,
-} from "../../../utils/hooks";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
+} from '../../../utils/hooks';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
 import {
   restrictionListToString,
   pubkeysToRestriction,
-} from "../../../utils/restrictionListHelper";
+} from '../../../utils/restrictionListHelper';
 
 interface TopicContentProps {
   forum: DispatchForum;
@@ -73,7 +72,7 @@ export function TopicContent(props: TopicContentProps) {
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
-  process.env.REACT_APP_DEBUG_MODE === "true" &&
+  process.env.REACT_APP_DEBUG_MODE === 'true' &&
     console.log(topic.address.toBase58());
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(forumData.collectionId.toBase58());
@@ -81,13 +80,13 @@ export function TopicContent(props: TopicContentProps) {
   const restrictionSetting = topic.settings.find((setting) => {
     return setting.postRestriction;
   });
-  const postRestriction = restrictionSetting?.postRestriction
+  const postRestriction = ((restrictionSetting?.postRestriction) != null)
     ? restrictionSetting.postRestriction.postRestriction
     : ({} as PostRestriction);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
   const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
-    string[]
+  string[]
   >(() => restrictionListToString(postRestriction));
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
@@ -99,13 +98,13 @@ export function TopicContent(props: TopicContentProps) {
     forumData.collectionId,
     forum,
     // TODO(andrew): maybe a better way to mock this up
-    forum.wallet.publicKey || new PublicKey("11111111111111111111111111111111")
+    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111'),
   );
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
-  const [accessToken, setAccessToken] = useState<string>("");
+  const [accessToken, setAccessToken] = useState<string>('');
   const [addingAccessToken, setAddingAccessToken] = useState(false);
 
   const [showGiveAward, setShowGiveAward] = useState(false);
@@ -171,12 +170,12 @@ export function TopicContent(props: TopicContentProps) {
     const tx = await forum.deleteForumPost(
       topic,
       forumData.collectionId,
-      userRoles.includes(UserRoleType.Moderator)
+      userRoles.includes(UserRoleType.Moderator),
     );
 
     if (isSuccess(tx)) {
       setModalInfo({
-        title: "Success!",
+        title: 'Success!',
         type: MessageType.success,
         body: (
           <div className="successBody">
@@ -202,10 +201,10 @@ export function TopicContent(props: TopicContentProps) {
       setDeletingTopic(false);
       setShowDeleteConfirmation(false);
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The topic could not be deleted`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The topic could not be deleted',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
   };
@@ -227,7 +226,7 @@ export function TopicContent(props: TopicContentProps) {
           }
         />
       )}
-      {ReactGA.send("pageview")}
+      {ReactGA.send('pageview')}
 
       {showAddAccessToken && isNil(modalInfo) && (
         <PopUpModal
@@ -314,16 +313,16 @@ export function TopicContent(props: TopicContentProps) {
             });
             setTimeout(
               () => setIsNotificationHidden(true),
-              NOTIFICATION_BANNER_TIMEOUT
+              NOTIFICATION_BANNER_TIMEOUT,
             );
           }}
           onError={(error) => {
             setShowGiveAward(false);
             setModalInfo({
-              title: "Something went wrong!",
+              title: 'Something went wrong!',
               type: MessageType.error,
-              body: `The award could not be given.`,
-              collapsible: { header: "Error", content: error?.message },
+              body: 'The award could not be given.',
+              collapsible: { header: 'Error', content: error?.message },
             });
           }}
         />
@@ -334,10 +333,10 @@ export function TopicContent(props: TopicContentProps) {
             <Votes
               forumData={forumData}
               update={update}
-              onDownVotePost={() =>
+              onDownVotePost={async () =>
                 forum.voteDownForumPost(topic, forumData.collectionId)
               }
-              onUpVotePost={() =>
+              onUpVotePost={async () =>
                 forum.voteUpForumPost(topic, forumData.collectionId)
               }
               post={topic}
@@ -376,7 +375,7 @@ export function TopicContent(props: TopicContentProps) {
               <EditPost
                 post={topic}
                 forumData={forumData}
-                update={() => update()}
+                update={async () => update()}
                 editPostLocal={editPost}
                 showDividers={{ leftDivider: false, rightDivider: true }}
               />
@@ -408,7 +407,7 @@ export function TopicContent(props: TopicContentProps) {
                       <Gift />
                     </button>
                   </PermissionsGate>
-                )
+              )
             }
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
@@ -452,7 +451,7 @@ export function TopicContent(props: TopicContentProps) {
           });
           setTimeout(
             () => setIsNotificationHidden(true),
-            NOTIFICATION_BANNER_TIMEOUT
+            NOTIFICATION_BANNER_TIMEOUT,
           );
           // TODO refresh here
         }}
@@ -476,16 +475,14 @@ function TopicHeader(props: TopicHeaderProps) {
 
   const postedAt = topic
     ? `${topic.data.ts.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "numeric",
-        day: "numeric",
-      })} at ${topic.data.ts.toLocaleTimeString(undefined, {
-        hour: "numeric",
-        minute: "numeric",
-      })}`
-    : "-";
-
-  const identity = getIdentity(topic.poster);
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    })} at ${topic.data.ts.toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: 'numeric',
+    })}`
+    : '-';
 
   return (
     <div className="topicHeader">
@@ -493,18 +490,11 @@ function TopicHeader(props: TopicHeaderProps) {
         <div className="posted">
           <div className="postedBy">
             By
-            <div className="icon">
-              {identity ? (
-                <img
-                  src={identity.profilePicture.href}
-                  style={{ borderRadius: "50%" }}
-                />
-              ) : (
-                <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
-              )}
-            </div>
             <div className="posterId">
-              {identity ? identity.displayName : topic.poster.toBase58()}
+              <ProfileSmall
+                address={topic.poster}
+                connection={forum.connection}
+              />
             </div>
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId
@@ -521,28 +511,30 @@ function TopicHeader(props: TopicHeaderProps) {
               <a
                 href={`https://solscan.io/account/${topic.address}?cluster=${forum.cluster}`}
                 className="transactionLink"
-                target="_blank">
+                target="_blank" rel="noreferrer">
                 <Info />
               </a>
             </div>
           </div>
         </div>
-        {!isEditedPost(topic) ? (
+        {!isEditedPost(topic)
+          ? (
           <div className="subj">
             {isGated && (
               <div className="gatedTopic">
                 <Lock />
               </div>
             )}
-            <Markdown>{topic?.data.subj ?? "subject"}</Markdown>
+            <Markdown>{topic?.data.subj ?? 'subject'}</Markdown>
           </div>
-        ) : (
+          )
+          : (
           <Spinner />
-        )}
+          )}
       </div>
       {!isEditedPost(topic) && (
         <div className="topicBody">
-          <Markdown>{topic?.data.body ?? "body of the topic"}</Markdown>
+          <Markdown>{topic?.data.body ?? 'body of the topic'}</Markdown>
         </div>
       )}
     </div>

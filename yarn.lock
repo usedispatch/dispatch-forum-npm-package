@@ -3161,9 +3161,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@usedispatch/client@npm:^0.15.0":
-  version: 0.15.0
-  resolution: "@usedispatch/client@npm:0.15.0"
+"@usedispatch/client@npm:^0.15.1":
+  version: 0.15.1
+  resolution: "@usedispatch/client@npm:0.15.1"
   dependencies:
     "@bonfida/spl-name-service": ^0.1.30
     "@metaplex-foundation/mpl-token-metadata": ^2.2.2
@@ -3174,7 +3174,7 @@ __metadata:
     axios: ^0.27.2
     crypto-js: ^4.1.1
     lodash: ^4.17.21
-  checksum: 4f8f5ec0b59b671ca3c341d88885cb945eff4abe7df72100989a0371ad863b1aa8d72d1a08f76dae6ed5b5e7c55a9ad996732f11012df116467b697b9391a785
+  checksum: 2935373122802061245015c30e089e9548c2e4e1597a1eabc104b06b6d5a7eb9aafe02cda3b4d0d590095a952ce1b4d6cb40a196376c0e5fbf2529726ed16186
   languageName: node
   linkType: hard
 
@@ -3200,7 +3200,7 @@ __metadata:
     "@types/react-alert": ^5.2.1
     "@typescript-eslint/eslint-plugin": ^5.13.0
     "@typescript-eslint/parser": ^5.0.0
-    "@usedispatch/client": ^0.15.0
+    "@usedispatch/client": ^0.15.1
     assert: ^2.0.0
     async: ^3.2.4
     autoprefixer: ^10.4.0

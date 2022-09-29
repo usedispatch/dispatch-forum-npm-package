@@ -3161,9 +3161,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@usedispatch/client@npm:^0.14.1":
-  version: 0.14.1
-  resolution: "@usedispatch/client@npm:0.14.1"
+"@usedispatch/client@npm:^0.15.0":
+  version: 0.15.0
+  resolution: "@usedispatch/client@npm:0.15.0"
   dependencies:
     "@bonfida/spl-name-service": ^0.1.30
     "@metaplex-foundation/mpl-token-metadata": ^2.2.2
@@ -3171,9 +3171,10 @@ __metadata:
     "@solana/buffer-layout": ^4.0.0
     "@solana/spl-token": ^0.2.0
     "@solana/web3.js": ^1.50.1
+    axios: ^0.27.2
     crypto-js: ^4.1.1
     lodash: ^4.17.21
-  checksum: 1bed502917085a96f95632da7701f60f0101430fa8ae9dc982cff876a25afdaf7354c0cef3ce05164a7a6d311c882a345d1078854af8f6c5f24e9d5249322cec
+  checksum: 4f8f5ec0b59b671ca3c341d88885cb945eff4abe7df72100989a0371ad863b1aa8d72d1a08f76dae6ed5b5e7c55a9ad996732f11012df116467b697b9391a785
   languageName: node
   linkType: hard
 
@@ -3199,7 +3200,7 @@ __metadata:
     "@types/react-alert": ^5.2.1
     "@typescript-eslint/eslint-plugin": ^5.13.0
     "@typescript-eslint/parser": ^5.0.0
-    "@usedispatch/client": ^0.14.1
+    "@usedispatch/client": ^0.15.0
     assert: ^2.0.0
     async: ^3.2.4
     autoprefixer: ^10.4.0
@@ -3834,6 +3835,16 @@ __metadata:
   dependencies:
     follow-redirects: ^1.14.0
   checksum: 44245f24ac971e7458f3120c92f9d66d1fc695e8b97019139de5b0cc65d9b8104647db01e5f46917728edfc0cfd88eb30fc4c55e6053eef4ace76768ce95ff3c
+  languageName: node
+  linkType: hard
+
+"axios@npm:^0.27.2":
+  version: 0.27.2
+  resolution: "axios@npm:0.27.2"
+  dependencies:
+    follow-redirects: ^1.14.9
+    form-data: ^4.0.0
+  checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
   languageName: node
   linkType: hard
 
@@ -5790,6 +5801,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"follow-redirects@npm:^1.14.9":
+  version: 1.15.2
+  resolution: "follow-redirects@npm:1.15.2"
+  peerDependenciesMeta:
+    debug:
+      optional: true
+  checksum: faa66059b66358ba65c234c2f2a37fcec029dc22775f35d9ad6abac56003268baf41e55f9ee645957b32c7d9f62baf1f0b906e68267276f54ec4b4c597c2b190
+  languageName: node
+  linkType: hard
+
 "for-each@npm:^0.3.3":
   version: 0.3.3
   resolution: "for-each@npm:0.3.3"
@@ -5807,6 +5828,17 @@ __metadata:
     combined-stream: ^1.0.8
     mime-types: ^2.1.12
   checksum: b019e8d35c8afc14a2bd8a7a92fa4f525a4726b6d5a9740e8d2623c30e308fbb58dc8469f90415a856698933c8479b01646a9dff33c87cc4e76d72aedbbf860d
+  languageName: node
+  linkType: hard
+
+"form-data@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "form-data@npm:4.0.0"
+  dependencies:
+    asynckit: ^0.4.0
+    combined-stream: ^1.0.8
+    mime-types: ^2.1.12
+  checksum: 01135bf8675f9d5c61ff18e2e2932f719ca4de964e3be90ef4c36aacfc7b9cb2fceb5eca0b7e0190e3383fe51c5b37f4cb80b62ca06a99aaabfcfd6ac7c9328c
   languageName: node
   linkType: hard
 

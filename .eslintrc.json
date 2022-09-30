@@ -48,14 +48,6 @@
             }
         ],
         "@typescript-eslint/no-shadow": "off",
-        "@typescript-eslint/strict-boolean-expressions": [
-            "error",
-            {
-                "allowNullableBoolean": true,
-                "allowNullableString": true,
-                "allowNullableObject": true
-            }
-        ],
         "@typescript-eslint/restrict-template-expressions": [
             "error",
             {

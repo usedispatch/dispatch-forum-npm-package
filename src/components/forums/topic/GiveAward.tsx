@@ -11,6 +11,7 @@ import { ForumPost, WalletInterface } from '@usedispatch/client';
 
 import {
   CollapsibleProps,
+  Input,
   MessageType,
   PopUpModal,
   Spinner,
@@ -61,7 +62,6 @@ interface GiveAwardProps {
 export function GiveAward(props: GiveAwardProps): JSX.Element {
   const { collectionId, post, onCancel, onSuccess, onError } = props;
   const Forum = useForum();
-  const permission = Forum.permission;
 
   const [loading, setLoading] = useState(false);
 
@@ -73,7 +73,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
   } | null>(null);
 
   const [selectedType, setSelectedType] = useState<AwardType>(); // TODO (Ana): include both types later
-  const [selectedAmount, setSelectedAmount] = useState(0);
+  const [selectedAmount, setSelectedAmount] = useState(1.0);
   const [loadingNFT, setLoadingNFT] = useState(false);
   const [selectedNFT, setSelectedNFT] = useState<DisplayableToken>();
   const [nfts, setNFTs] = useState<DisplayableToken[]>([]);
@@ -157,15 +157,14 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
               <div className="iconContainer">
                 <SolanaLogo color="black" />
               </div>
-              <input
-                name="award"
+              <Input
                 className="amountInput"
                 type="number"
                 placeholder="Insert a numeric value bigger than 0"
-                value={selectedAmount}
+                value={1.0}
                 min={0}
-                disabled={!permission.readAndWrite}
-                onChange={e => setSelectedAmount(Number(e.target.value))}
+                step={0.01}
+                onChange={e => setSelectedAmount(parseFloat(e))}
               />
             </div>
           )}
@@ -256,7 +255,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
             ? (
             <button
               className="attachButton"
-              disabled={selectedAmount === 0}
+              disabled={selectedAmount <= 0}
               onClick={async () => attachAward()}
             >
               Send

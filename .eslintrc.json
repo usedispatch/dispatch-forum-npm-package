@@ -9,8 +9,7 @@
         "standard-with-typescript",
         "airbnb-typescript"
     ],
-    "overrides": [
-    ],
+    "overrides": [],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": "latest",
@@ -31,21 +30,30 @@
             "error",
             {
                 "multiline": {
-                  "delimiter": "semi",
-                  "requireLast": true
+                    "delimiter": "semi",
+                    "requireLast": true
                 },
                 "singleline": {
-                  "delimiter": "semi",
-                  "requireLast": false
+                    "delimiter": "semi",
+                    "requireLast": false
                 }
             }
         ],
         "@typescript-eslint/no-misused-promises": [
             "error",
             {
-                "checksVoidReturn":  {
+                "checksVoidReturn": {
                     "attributes": false
-                  }
+                }
+            }
+        ],
+        "@typescript-eslint/no-shadow": "off",
+        "@typescript-eslint/strict-boolean-expressions": [
+            "error",
+            {
+                "allowNullableBoolean": true,
+                "allowNullableString": true,
+                "allowNullableObject": true
             }
         ],
         "@typescript-eslint/restrict-template-expressions": [
@@ -57,5 +65,5 @@
                 "allowNullish": true
             }
         ]
-      }
+    }
 }

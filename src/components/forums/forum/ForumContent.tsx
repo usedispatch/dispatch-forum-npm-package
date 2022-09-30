@@ -126,7 +126,9 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
         const splMint = newPublicKey(newForumAccessToken);
 
         if (isSuccess(splMint)) {
-          const tokenMetadata = await forumObject.connection.getTokenSupply(splMint);
+          const tokenMetadata = await forumObject.connection.getTokenSupply(
+            splMint,
+          );
           restriction = pubkeysToSPLRestriction(
             newForumAccessToken,
             newForumAccessTokenAmount,
@@ -280,7 +282,9 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       try {
         const splMint = newPublicKey(newTopic.SPLaccessToken);
         if (isSuccess(splMint)) {
-          const tokenMetadata = await forumObject.connection.getTokenSupply(splMint);
+          const tokenMetadata = await forumObject.connection.getTokenSupply(
+            splMint,
+          );
           restrictionResult = pubkeysToSPLRestriction(
             newTopic.SPLaccessToken,
             newTopic.SPLamount,
@@ -369,8 +373,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       disabled={!permission.readAndWrite}
       onClick={() => {
         setShowNewTopicModal(true);
-      }}
-    >
+      }}>
       <div className="buttonImageContainer">
         <Plus />
       </div>
@@ -486,8 +489,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     <select
                       value={tokenGateSelection}
                       onChange={e => setTokenGateSelection(e.target.value)}
-                      className="addTokenGateSelect"
-                    >
+                      className="addTokenGateSelect">
                       <option value="">Select a token type</option>
                       <option value="NFT">Metaplex NFT</option>
                       {!isSuccess(forumData.restriction) && (
@@ -558,9 +560,9 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                   </label>
                   {currentForumAccessToken.length === 0
                     ? (
-                    <div className="noRestriction">
-                      The forum has no restriction
-                    </div>
+                      <div className="noRestriction">
+                        The forum has no restriction
+                      </div>
                     )
                     : (
                     <ul>
@@ -576,8 +578,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                                   show: true,
                                   token,
                                 });
-                              }}
-                            >
+                              }}>
                               <Trash />
                             </div>
                           </li>
@@ -597,8 +598,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               okButton={
                 <button
                   className="okButton"
-                  onClick={async () => addAccessToken()}
-                >
+                  onClick={async () => addAccessToken()}>
                   Save
                 </button>
               }
@@ -624,8 +624,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               okButton={
                 <button
                   className="okButton"
-                  onClick={async () => deleteAccessToken()}
-                >
+                  onClick={async () => deleteAccessToken()}>
                   Remove
                 </button>
               }
@@ -639,10 +638,12 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     id="create-topic"
                     title="You are not authorized"
                     body={
-                      isSuccess(forumData.restriction) && !isNil(forumData.restriction.tokenOwnership) && isSuccess(forumData.restriction.tokenOwnership) &&
-                      (forumData.restriction.tokenOwnership.mint.equals(
+                      isSuccess(forumData.restriction) &&
+                      !isNil(forumData.restriction.tokenOwnership) &&
+                      isSuccess(forumData.restriction.tokenOwnership) &&
+                      forumData.restriction.tokenOwnership.mint.equals(
                         forumData.moderatorMint,
-                      ))
+                      )
                         ? 'Oops! Only moderators can create new topics at this time.'
                         : 'Oops! You need a token to participate. Please contact the forum’s moderators.'
                     }
@@ -650,8 +651,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     okButton={
                       <button
                         className="okButton"
-                        onClick={() => setShowNewTopicModal(false)}
-                      >
+                        onClick={() => setShowNewTopicModal(false)}>
                         OK
                       </button>
                     }
@@ -700,8 +700,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                           />
                         </>
                         <PermissionsGate
-                          scopes={[SCOPES.canAddTopicRestriction]}
-                        >
+                          scopes={[SCOPES.canAddTopicRestriction]}>
                           <>
                             {currentForumAccessToken.length > 0 && (
                               <div className="gateCheckbox">
@@ -725,8 +724,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                                 value={tokenGateSelection}
                                 onChange={e =>
                                   setTokenGateSelection(e.target.value)
-                                }
-                              >
+                                }>
                                 <option value="">Select a token type</option>
                                 <option value="NFT">Metaplex NFT</option>
                                 {ungatedNewTopic && (
@@ -797,16 +795,14 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                       <button
                         className="okButton"
                         disabled={newTopic.title.length === 0}
-                        onClick={async () => createTopic()}
-                      >
+                        onClick={async () => createTopic()}>
                         Create
                       </button>
                     }
                     cancelButton={
                       <button
                         className="cancelButton"
-                        onClick={() => setShowNewTopicModal(false)}
-                      >
+                        onClick={() => setShowNewTopicModal(false)}>
                         Cancel
                       </button>
                     }
@@ -825,8 +821,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                 forumData.images.background.length > 0
                   ? `url(${forumData.images?.background})`
                   : undefined,
-            }}
-          >
+            }}>
             {!permission.readAndWrite && <ConnectionAlert />}
             {forumData.collectionId.toBase58() ===
               'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && <StarsAlert />}
@@ -849,8 +844,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                         <button
                           className="moderatorTool"
                           disabled={!permission.readAndWrite}
-                          onClick={() => setShowManageAccessToken(true)}
-                        >
+                          onClick={() => setShowManageAccessToken(true)}>
                           Manage forum access
                         </button>
                       </PermissionsGate>

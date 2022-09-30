@@ -69,7 +69,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     description: '',
     NFTaccessToken: '',
     SPLaccessToken: '',
-    SPLamount: 0,
+    SPLamount: 1,
   });
 
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
@@ -124,15 +124,15 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     } else {
       try {
         const splMint = newPublicKey(newForumAccessToken);
-        const tokenMetadata = await forumObject.connection.getTokenSupply(
-          splMint,
-        );
 
-        restriction = pubkeysToSPLRestriction(
-          newForumAccessToken,
-          newForumAccessTokenAmount,
-          tokenMetadata.value.decimals,
-        );
+        if (isSuccess(splMint)) {
+          const tokenMetadata = await forumObject.connection.getTokenSupply(splMint);
+          restriction = pubkeysToSPLRestriction(
+            newForumAccessToken,
+            newForumAccessTokenAmount,
+            tokenMetadata.value.decimals,
+          );
+        }
       } catch (error) {
         setAddingAccessToken(false);
         setModalInfo({
@@ -272,20 +272,21 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     } else if (!keepGates && addNFTGate && newTopic.NFTaccessToken !== '') {
       restrictionResult = pubkeysToRestriction(newTopic.NFTaccessToken);
     } else if (
-      !isSuccess(forumData.restriction) &&
+      (!isSuccess(forumData.restriction) || ungatedNewTopic) &&
       addSPLGate &&
       newTopic.SPLaccessToken !== ''
     ) {
       // TODO: turn into a util function later
       try {
         const splMint = newPublicKey(newTopic.SPLaccessToken);
-        const tokenMetadata =
-          (await forumObject.connection.getTokenSupply(splMint)) ?? undefined;
-        restrictionResult = pubkeysToSPLRestriction(
-          newTopic.SPLaccessToken,
-          newTopic.SPLamount,
-          tokenMetadata.value.decimals,
-        );
+        if (isSuccess(splMint)) {
+          const tokenMetadata = await forumObject.connection.getTokenSupply(splMint);
+          restrictionResult = pubkeysToSPLRestriction(
+            newTopic.SPLaccessToken,
+            newTopic.SPLamount,
+            tokenMetadata.value.decimals,
+          );
+        }
       } catch (error) {
         setCreatingNewTopic(false);
         setModalInfo({
@@ -303,7 +304,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       // No restriction
       restrictionResult = undefined;
     }
-
+    console.log('restrictionResult', restrictionResult);
     if (isError(restrictionResult)) {
       const error = restrictionResult;
       setCreatingNewTopic(false);
@@ -339,7 +340,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
         description: '',
         NFTaccessToken: '',
         SPLaccessToken: '',
-        SPLamount: 0,
+        SPLamount: 1,
       });
       setShowNewTopicModal(false);
 
@@ -424,6 +425,9 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       setUngatedNewTopic(true);
     } else {
       setUngatedNewTopic(false);
+      if (tokenGateSelection === 'SPL') {
+        setTokenGateSelection('');
+      }
     }
   }, [newTopic.SPLaccessToken, newTopic.NFTaccessToken.length, keepGates]);
 
@@ -514,7 +518,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                   {addSPLGate && (
                     <div className="addSPLToken">
                       <span className="createTopicLabel">
-                        Limit post access by SPL Collection ID
+                        Limit post access by SPL Mint ID
                       </span>
                       <input
                         type="text"
@@ -586,6 +590,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               loading={addingAccessToken}
               onClose={() => {
                 setShowManageAccessToken(false);
+                setAddSPLGate(false);
+                setAddNFTGate(false);
                 setNewForumAccessToken('');
               }}
               okButton={
@@ -633,10 +639,10 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                     id="create-topic"
                     title="You are not authorized"
                     body={
-                      isSuccess(forumData.restriction.tokenOwnership) &&
+                      isSuccess(forumData.restriction) && !isNil(forumData.restriction.tokenOwnership) && isSuccess(forumData.restriction.tokenOwnership) &&
                       (forumData.restriction.tokenOwnership.mint.equals(
                         forumData.moderatorMint,
-                      ) as boolean)
+                      ))
                         ? 'Oops! Only moderators can create new topics at this time.'
                         : 'Oops! You need a token to participate. Please contact the forum’s moderators.'
                     }
@@ -751,7 +757,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                             {addSPLGate && (
                               <div className="addSPLToken">
                                 <span className="createTopicLabel">
-                                  Limit post access by SPL Collection ID
+                                  Limit post access by SPL Mint ID
                                 </span>
                                 <input
                                   type="text"

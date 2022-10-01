@@ -609,7 +609,7 @@ export function useUserIsMod(
     if (userIsMod === null) {
       fetchUserIsMod().then(b => setUserIsMod(b));
     }
-  }, [forumId, forum, userPublicKey]);
+  }, [forumId, userPublicKey]);
 
   return userIsMod;
 }

@@ -50,6 +50,7 @@ interface PostContentProps {
   deletePost: (post: ForumPost) => void;
   onDeletePost: (tx: string) => Promise<void>;
   setPostInFlight: (postInFlight: boolean) => void;
+  userIsMod: boolean;
 }
 
 export function PostContent(props: PostContentProps) {
@@ -66,15 +67,10 @@ export function PostContent(props: PostContentProps) {
     postInFlight,
     setPostInFlight,
     participatingModerators,
+    userIsMod,
   } = props;
 
   const permission = forum.permission;
-
-  const userIsMod = useUserIsMod(
-    forumData.collectionId,
-    forum,
-    forum.wallet.publicKey || new PublicKey('11111111111111111111111111111111'),
-  );
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
@@ -253,7 +249,9 @@ export function PostContent(props: PostContentProps) {
   return (
     <>
       <div
-        className={'postContentContainer'}>
+        className={`postContentContainer ${
+          postInFlight && isLocal ? 'inFlight' : ''
+        }`}>
         {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"

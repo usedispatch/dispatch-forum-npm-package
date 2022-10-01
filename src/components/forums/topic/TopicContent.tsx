@@ -444,6 +444,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
         editPost={editPost}
         deletePost={deletePost}
         topic={topic}
+        userIsMod={userIsMod}
         onDeletePost={async tx => {
           setIsNotificationHidden(false);
           setNotificationContent({

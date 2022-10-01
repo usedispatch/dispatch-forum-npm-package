@@ -8,6 +8,7 @@ import { PostRestriction } from '@usedispatch/client';
 import { Lock, Plus, Trash } from '../../../assets';
 import {
   CollapsibleProps,
+  Input,
   MessageType,
   PermissionsGate,
   PopUpModal,
@@ -40,7 +41,6 @@ import {
   pubkeysToRestriction,
   pubkeysToSPLRestriction,
 } from '../../../utils/restrictionListHelper';
-import Input from '../../../components/common/Input';
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
 import { StarsAlert } from '../StarsAlert';

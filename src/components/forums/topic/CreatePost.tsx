@@ -161,7 +161,7 @@ export function CreatePost(props: CreatePostProps) {
                   placeholder="Type your comment here"
                   required
                   maxLength={800}
-                  disabled={!permission.readAndWrite || postInFlight}
+                  disabled={!permission.readAndWrite}
                   onChange={(event) => {
                     setBodySize(
                       new Buffer(event.target.value, "utf-8").byteLength
@@ -176,7 +176,7 @@ export function CreatePost(props: CreatePostProps) {
                   className="createPostButton"
                   type="submit"
                   disabled={
-                    !permission.readAndWrite || bodySize > 800 || postInFlight
+                    !permission.readAndWrite || bodySize > 800
                   }>
                   Post
                 </button>

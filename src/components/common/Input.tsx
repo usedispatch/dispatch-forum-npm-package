@@ -35,7 +35,6 @@ export function Input(props: Props): JSX.Element {
   };
 
   const onTextChange = (e: any): void => {
-    console.log(e.target.value);
     setTextValue(e.target.value);
 
     if (type === 'number' && !isNaN(parseFloat(e.target.value))) {

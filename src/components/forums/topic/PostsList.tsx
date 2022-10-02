@@ -21,6 +21,7 @@ interface PostListProps {
   onDeletePost: (tx: string) => Promise<void>;
   postInFlight: boolean;
   setPostInFlight: (postInFlight: boolean) => void;
+  userIsMod: boolean;
 }
 
 export function PostList(props: PostListProps) {
@@ -37,6 +38,7 @@ export function PostList(props: PostListProps) {
     postInFlight,
     setPostInFlight,
     participatingModerators,
+    userIsMod,
   } = props;
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
@@ -71,6 +73,7 @@ export function PostList(props: PostListProps) {
                   deletePost={deletePost}
                   postInFlight={postInFlight}
                   setPostInFlight={setPostInFlight}
+                  userIsMod={userIsMod}
                 />
               </div>
             );

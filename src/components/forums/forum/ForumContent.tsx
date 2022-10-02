@@ -308,7 +308,6 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       // No restriction
       restrictionResult = undefined;
     }
-    console.log('restrictionResult', restrictionResult);
     if (isError(restrictionResult)) {
       const error = restrictionResult;
       setCreatingNewTopic(false);

@@ -1,10 +1,9 @@
-import isNil from "lodash/isNil";
-import isNull from "lodash/isNull";
-import Markdown from "markdown-to-jsx";
-import { PublicKey } from "@solana/web3.js";
-import { useEffect, useMemo } from "react";
-import { ForumPost } from "@usedispatch/client";
-import { Helmet } from "react-helmet";
+import isNil from 'lodash/isNil';
+import isNull from 'lodash/isNull';
+import { PublicKey } from '@solana/web3.js';
+import { useEffect, useMemo } from 'react';
+import { ForumPost } from '@usedispatch/client';
+import { Helmet } from 'react-helmet';
 
 import {
   useForumData,
@@ -13,36 +12,36 @@ import {
   isForumPost,
   isEditedPost,
   EditedPost,
-} from "../../utils/hooks";
+} from '../../utils/hooks';
 
-import { Chevron } from "../../assets";
-import { MessageType, Spinner, Link } from "../../components/common";
+import { MessageType, Spinner } from '../../components/common';
 import {
   ConnectionAlert,
   PoweredByDispatch,
   TopicContent,
-} from "../../components/forums";
-import { Loading } from "../../types/loading";
-import { DispatchError } from "../../types/error";
+} from '../../components/forums';
+import { Loading } from '../../types/loading';
+import { DispatchError } from '../../types/error';
 import {
   notFoundError,
   isError,
   isUncategorizedError,
   errorSummary,
-} from "../../utils/error";
-import { isSuccess, isInitial, isPending, pending } from "../../utils/loading";
+} from '../../utils/error';
+import { isSuccess, isInitial, isPending, pending } from '../../utils/loading';
 
-import { useForum, usePath, useRole } from "./../../contexts/DispatchProvider";
-import { getUserRole } from "./../../utils/postbox/userRole";
-import { getCustomStyles } from "../../utils/getCustomStyles";
-import { StarsAlert } from "../../components/forums/StarsAlert";
+import { useForum, usePath, useRole } from './../../contexts/DispatchProvider';
+import { getUserRole } from './../../utils/postbox/userRole';
+import { getCustomStyles } from '../../utils/getCustomStyles';
+import { StarsAlert } from '../../components/forums/StarsAlert';
+import { Breadcrumb } from '../../components/common/Breadcrumb';
 
 interface Props {
   topicId: number;
   collectionId: string;
 }
 
-export const TopicView = (props: Props) => {
+export const TopicView = (props: Props): JSX.Element => {
   const forum = useForum();
   const role = useRole();
   const { permission } = forum;
@@ -55,7 +54,7 @@ export const TopicView = (props: Props) => {
     } catch (error) {
       showModal({
         type: MessageType.error,
-        title: "Invalid Collection ID",
+        title: 'Invalid Collection ID',
       });
       return null;
     }
@@ -63,7 +62,7 @@ export const TopicView = (props: Props) => {
 
   const { forumData, update, addPost, editPost, deletePost } = useForumData(
     collectionPublicKey,
-    forum
+    forum,
   );
   const participatingModerators = useParticipatingModerators(forumData, forum);
 
@@ -73,7 +72,7 @@ export const TopicView = (props: Props) => {
         // This conditional only evaluates to true if `post` is a
         // ForumPost and not a LocalPost-- that is, if it exists
         // on-chain
-        if ("postId" in post) {
+        if ('postId' in post) {
           return (
             (isForumPost(post) || isEditedPost(post)) &&
             post.isTopic &&
@@ -87,10 +86,10 @@ export const TopicView = (props: Props) => {
         // TypeScript checker can't recognize that, so we cast
         // here
       }) as ForumPost | EditedPost;
-      if (post) {
+      if (post !== null && post !== undefined) {
         return post;
       } else {
-        return notFoundError("Post not found");
+        return notFoundError('Post not found');
       }
     } else {
       if (isPending(forumData)) {
@@ -107,7 +106,7 @@ export const TopicView = (props: Props) => {
     if (isSuccess(forumData)) {
       // Filter out all loading components that failed
       const errors = [forumData.owners].filter((loading) =>
-        isError(loading)
+        isError(loading),
       ) as DispatchError[];
 
       setModals(
@@ -115,9 +114,9 @@ export const TopicView = (props: Props) => {
           if (isUncategorizedError(error)) {
             return {
               type: MessageType.error,
-              title: `Error loading`,
+              title: 'Error loading',
               collapsible: {
-                header: "Error",
+                header: 'Error',
                 content: JSON.stringify(error.error),
               },
             };
@@ -126,9 +125,9 @@ export const TopicView = (props: Props) => {
           return {
             type: MessageType.error,
             title: `Error loading ${error.errorKind}`,
-            collapsible: { header: "Error", content: errorSummary(error) },
+            collapsible: { header: 'Error', content: errorSummary(error) },
           };
-        })
+        }),
       );
     }
   }, [forumData]);
@@ -136,7 +135,7 @@ export const TopicView = (props: Props) => {
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(collectionId);
 
-  const updateVotes = (upVoted: boolean) => {
+  const updateVotes = (upVoted: boolean): void => {
     if (isSuccess(topic)) {
       if (upVoted) {
         topic.upVotes += 1;
@@ -149,7 +148,7 @@ export const TopicView = (props: Props) => {
   };
 
   useEffect(() => {
-    update();
+    void update();
     // Update every time the cluster is changed
   }, [forum.cluster]);
 
@@ -157,10 +156,10 @@ export const TopicView = (props: Props) => {
     if (
       !isNil(collectionPublicKey) &&
       !isNil(topic) &&
-      forum.wallet.publicKey &&
+      forum.wallet.publicKey != null &&
       isSuccess(topic)
     ) {
-      getUserRole(forum, collectionPublicKey, role, topic);
+      void getUserRole(forum, collectionPublicKey, role, topic);
     }
   }, [collectionPublicKey, topic, forum.wallet.publicKey]);
 
@@ -191,14 +190,14 @@ export const TopicView = (props: Props) => {
             <div className="topicViewContent">
               {!permission.readAndWrite && <ConnectionAlert />}
               {collectionId ===
-                "DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD" && (
+                'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && (
                 <StarsAlert />
               )}
               <main>
                 <div>
                   {(() => {
                     if (
-                      (collectionPublicKey && isInitial(topic)) ||
+                      ((collectionPublicKey != null) && isInitial(topic)) ||
                       isPending(topic)
                     ) {
                       return (
@@ -207,7 +206,7 @@ export const TopicView = (props: Props) => {
                         </div>
                       );
                     } else if (
-                      collectionPublicKey &&
+                      (collectionPublicKey != null) &&
                       isSuccess(forumData) &&
                       isSuccess(topic)
                     ) {
@@ -216,7 +215,7 @@ export const TopicView = (props: Props) => {
                           <Breadcrumb
                             navigateTo={forumPath}
                             parent={forumData.description.title}
-                            current={topic.data.subj!}
+                            current={isSuccess(topic) ? topic.data.subj : ''}
                           />
                           <TopicContent
                             forumData={forumData}
@@ -244,32 +243,9 @@ export const TopicView = (props: Props) => {
               </main>
             </div>
           </div>
+          <PoweredByDispatch customStyle={customStyle} />
         </div>
       </div>
     </div>
   );
 };
-
-interface BreadcrumbProps {
-  navigateTo: string;
-  parent: string;
-  current: string;
-}
-
-function Breadcrumb(props: BreadcrumbProps) {
-  const { navigateTo, current, parent } = props;
-
-  return (
-    <div className="breadcrumbContainer">
-      <Link className="parent" href={navigateTo}>
-        <Markdown>{parent}</Markdown>
-      </Link>
-      <div className="separationIcon">
-        <Chevron />
-      </div>
-      <div className="current">
-        <Markdown>{current}</Markdown>
-      </div>
-    </div>
-  );
-}

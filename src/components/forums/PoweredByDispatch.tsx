@@ -1,14 +1,14 @@
-import { DispatchLogo } from "../../assets";
+import { DispatchLogo } from '../../assets';
 
 interface PoweredByDispatchProps {
   customStyle: string;
 }
-export function PoweredByDispatch(props: PoweredByDispatchProps) {
+export function PoweredByDispatch(props: PoweredByDispatchProps): JSX.Element {
   return (
     <div className="dsp-">
       <div className="poweredByDispatch">
         <a
-          href="https://twitter.com/usedispatch"
+          href="https://www.dispatch.forum"
           rel="noopener noreferrer"
           target="_blank">
           <DispatchLogo customStyle={props.customStyle} />

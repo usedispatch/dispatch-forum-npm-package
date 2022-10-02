@@ -485,32 +485,7 @@ export function PostContent(props: PostContentProps) {
           <div
             className="repliesSection"
             hidden={replies.length === 0 && !showReplyBox}>
-            <div className="repliesBox">
-              <PostReplies
-                forumData={forumData}
-                participatingModerators={participatingModerators}
-                replies={replies}
-                userRoles={userRoles}
-                topicOwnerId={topicPosterId}
-                update={() => update()}
-                editPost={editPost}
-                onDeletePost={async postToDelete => {
-                  setPostToDelete(postToDelete);
-                  setShowDeleteConfirmation(true);
-                }}
-                onDownVotePost={reply =>
-                  forum.voteDownForumPost(reply, forumData.collectionId)
-                }
-                onUpVotePost={reply =>
-                  forum.voteUpForumPost(reply, forumData.collectionId)
-                }
-                onAwardReply={reply => {
-                  setPostToAward(reply);
-                  setShowGiveAward(true);
-                }}
-              />
-            </div>
-            {showReplyBox && sendingReply && <Spinner />}
+                          {showReplyBox && sendingReply && <Spinner />}
             <div
               ref={replyAreaRef}
               className={`replyFormContainer ${
@@ -543,6 +518,31 @@ export function PostContent(props: PostContentProps) {
                   </button>
                 </div>
               </div>
+            </div>
+            <div className="repliesBox">
+              <PostReplies
+                forumData={forumData}
+                participatingModerators={participatingModerators}
+                replies={replies}
+                userRoles={userRoles}
+                topicOwnerId={topicPosterId}
+                update={() => update()}
+                editPost={editPost}
+                onDeletePost={async postToDelete => {
+                  setPostToDelete(postToDelete);
+                  setShowDeleteConfirmation(true);
+                }}
+                onDownVotePost={reply =>
+                  forum.voteDownForumPost(reply, forumData.collectionId)
+                }
+                onUpVotePost={reply =>
+                  forum.voteUpForumPost(reply, forumData.collectionId)
+                }
+                onAwardReply={reply => {
+                  setPostToAward(reply);
+                  setShowGiveAward(true);
+                }}
+              />
             </div>
           </div>
         </>

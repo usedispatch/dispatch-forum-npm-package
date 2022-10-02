@@ -6,7 +6,7 @@ const postboxErrorCode = {
   // Create post errors
   // 0x0 corresponds to account already in use, in this case most
   // likely means that the post ID is already in use
-  0: 'Too many posts being created, please try again',
+  0: 'This forum is experiencing high on-chain activity. Please try again shortly.',
   6100: 'The provided post ID is too large an increase',
   6101: 'The reply-to account is not a Post account',
   6102: 'Replies cannot have a further reply restriction',
@@ -21,7 +21,7 @@ const postboxErrorCode = {
   6205: 'Missing an NFT from the collection required by the restriction',
   6206: 'Cannot parse a setting',
   6207: 'Extra account offsets invalid for this restriction type',
-  6208: 'Must supply offsets when a post restriction applies',
+  6208: 'Must supply user credentials when post restrictions apply',
   6209: 'We hit the test error',
   6210: 'You have already made this vote, you can only vote up or down once, but you can switch your vote',
 };

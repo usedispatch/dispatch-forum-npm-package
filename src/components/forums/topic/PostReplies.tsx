@@ -13,6 +13,7 @@ import { SCOPES, UserRoleType } from "../../../utils/permissions";
 import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
 import { Result } from "../../../types/error";
 import { getIdentity } from "../../../utils/identity";
+import { sortByVotes } from "../../../utils/posts";
 
 interface PostRepliesProps {
   forumData: ForumData;
@@ -55,7 +56,7 @@ export function PostReplies(props: PostRepliesProps) {
 
   const replies = useMemo(
     () =>
-      props.replies.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
+    {return sortByVotes(props.replies);},
     [props.replies]
   );
 

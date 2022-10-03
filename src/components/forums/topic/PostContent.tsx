@@ -5,7 +5,7 @@ import { ReactNode, useMemo, useRef, useState } from 'react';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
 
-import { Gift, Trash, Reply, Info } from '../../../assets';
+import { Chain, Gift, Trash, Reply } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -14,8 +14,7 @@ import {
   Spinner,
   TransactionLink,
 } from './../../common';
-import { Votes, Notification } from '../../../components/forums';
-import { PostReplies, GiveAward, EditPost, RoleLabel } from '../index';
+import { Votes, Notification, PostReplies, GiveAward, EditPost, RoleLabel } from '../../../components/forums';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
@@ -30,11 +29,11 @@ import {
   isEditedPost,
   isCreatedPost,
   ClientPost,
-  useUserIsMod,
   useForumIdentity,
   ForumIdentity,
 } from '../../../utils/hooks';
 import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
+import { isNil } from 'lodash';
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -53,7 +52,7 @@ interface PostContentProps {
   userIsMod: boolean;
 }
 
-export function PostContent(props: PostContentProps) {
+export function PostContent(props: PostContentProps): JSX.Element {
   const {
     forumData,
     forum,
@@ -79,10 +78,10 @@ export function PostContent(props: PostContentProps) {
   const [deleting, setDeleting] = useState(false);
 
   const [showReplyBox, setShowReplyBox] = useState(false);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
   const [reply, setReply] = useState('');
-  const [sendingReply, setSendingReply] = useState(false);
   const [replySize, setReplySize] = useState(
-    new Buffer(reply, 'utf-8').byteLength,
+    Buffer.from(reply, 'utf-8').byteLength,
   );
 
   const [showGiveAward, setShowGiveAward] = useState(false);
@@ -115,7 +114,7 @@ export function PostContent(props: PostContentProps) {
 
   const replyAreaRef = useRef<HTMLDivElement>(null);
 
-  const updateVotes = (upVoted: boolean) => {
+  const updateVotes = (upVoted: boolean): void => {
     if (isForumPost(post)) {
       if (upVoted) {
         post.upVotes = post.upVotes + 1;
@@ -125,60 +124,51 @@ export function PostContent(props: PostContentProps) {
     }
   };
 
-  const onReplyToPost = async () => {
-    setSendingReply(true);
+  const onReplyToPost = async (): Promise<void> => {
     setPostInFlight(true);
     if (!isForumPost(post)) {
       return;
     }
+
+    setAwaitingConfirmation(true);
     const tx = await forum.replyToForumPost(post, forumData.collectionId, {
       body: reply,
     });
 
+    setAwaitingConfirmation(false);
     if (isSuccess(tx)) {
-      setSendingReply(false);
       setShowReplyBox(false);
       setReply('');
-      setNotification({
-        isHidden: false,
-        content: (
-          <>
-            Posting reply.
-            <TransactionLink transaction={tx!} />
-          </>
-        ),
-        type: MessageType.info,
-      });
 
       const localPost: CreatedPost = {
         data: {
           body: reply,
           ts: new Date(),
         },
-        poster: forum.wallet.publicKey!,
+        poster: forum.wallet.publicKey,
         isTopic: false,
         replyTo: post.address,
         state: 'created',
       };
       addPost(localPost);
-      await forum.connection.confirmTransaction(tx).then(() => {
-        update();
-        setPostInFlight(false);
-        setNotification({
-          isHidden: false,
-          content: (
+
+      await forum.connection.confirmTransaction(tx);
+      await update();
+      setPostInFlight(false);
+      setNotification({
+        isHidden: false,
+        content: (
             <>
               Replied successfully.
-              <TransactionLink transaction={tx!} />
+              <TransactionLink transaction={tx} />
             </>
-          ),
-          type: MessageType.success,
-        });
-        setTimeout(
-          () => setNotification({ isHidden: true }),
-          NOTIFICATION_BANNER_TIMEOUT,
-        );
+        ),
+        type: MessageType.success,
       });
+      setTimeout(
+        () => setNotification({ isHidden: true }),
+        NOTIFICATION_BANNER_TIMEOUT,
+      );
     } else {
       const error = tx;
       setPostInFlight(false);
@@ -187,14 +177,13 @@ export function PostContent(props: PostContentProps) {
       setModalInfo({
         title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The reply could not be sent`,
+        body: 'The reply could not be sent',
         collapsible: { header: 'Error', content: error.message },
       });
-      setSendingReply(false);
     }
   };
 
-  const onDelete = async () => {
+  const onDelete = async (): Promise<void> => {
     setDeleting(true);
     if (!isForumPost(postToDelete)) {
       return;
@@ -206,14 +195,14 @@ export function PostContent(props: PostContentProps) {
     );
     if (isSuccess(tx)) {
       deletePost(postToDelete);
-      onDeletePost(tx);
+      await onDeletePost(tx);
       setModalInfo({
         title: 'Success!',
         type: MessageType.success,
-        body: `The post was deleted`,
+        body: 'The post was deleted',
       });
       setShowDeleteConfirmation(false);
-      await forum.connection.confirmTransaction(tx).then(() => update());
+      await forum.connection.confirmTransaction(tx).then(async () => update());
       setDeleting(false);
     } else {
       const error = tx;
@@ -222,7 +211,7 @@ export function PostContent(props: PostContentProps) {
       setModalInfo({
         title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The post could not be deleted`,
+        body: 'The post could not be deleted',
         collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
@@ -237,14 +226,12 @@ export function PostContent(props: PostContentProps) {
     minute: 'numeric',
   })}`;
 
-  // TODO(andrew) reimplement moderator label later
-  // const moderators = isSuccess(forumData.moderators)
-  //   ? forumData.moderators.map((m) => m.toBase58())
-  //   : [];
-
   const isLocal = isCreatedPost(post);
-
   const identity = getIdentity(post.poster);
+
+  // The gifting UI should be hidden on the apes forum for non-mods.
+  // Therefore, show it if the forum is NOT degen apes, or the user is a mod
+  const showGift = (forumIdentity !== ForumIdentity.DegenerateApeAcademy || userIsMod) && !isNil(forum.wallet.publicKey) && !(forum.wallet.publicKey.equals(post.poster) as boolean);
 
   return (
     <>
@@ -265,22 +252,12 @@ export function PostContent(props: PostContentProps) {
               !deleting && (
                 <a
                   className="acceptDeletePostButton"
-                  onClick={() => onDelete()}>
+                  onClick={async () => onDelete()}>
                   Confirm
                 </a>
               )
             }
             onClose={() => setShowDeleteConfirmation(false)}
-            // cancelButton={
-            //   !deleting && (
-            //     <div
-            //       className="cancelDeletePostButton"
-            //       onClick={() => setShowDeleteConfirmation(false)}
-            //     >
-            //       Cancel
-            //     </div>
-            //   )
-            // }
           />
         )}
         {!isNull(modalInfo) && (
@@ -297,7 +274,7 @@ export function PostContent(props: PostContentProps) {
             }
           />
         )}
-        {showGiveAward && postToAward && (
+        {showGiveAward && (postToAward != null) && (
           <GiveAward
             post={postToAward}
             collectionId={forumData.collectionId}
@@ -319,7 +296,7 @@ export function PostContent(props: PostContentProps) {
               setModalInfo({
                 title: 'Something went wrong!',
                 type: MessageType.error,
-                body: `The award could not be given.`,
+                body: 'The award could not be given.',
                 collapsible: { header: 'Error', content: error?.message },
               });
             }}
@@ -337,20 +314,22 @@ export function PostContent(props: PostContentProps) {
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
-                    {identity ? (
+                    {(identity != null)
+                      ? (
                       <img
                         src={identity.profilePicture.href}
                         style={{ borderRadius: '50%' }}
                       />
-                    ) : (
+                      )
+                      : (
                       <Jdenticon
                         value={post?.poster.toBase58()}
                         alt="posterID"
                       />
-                    )}
+                      )}
                   </div>
                   <div className="walletId">
-                    {identity ? identity.displayName : post.poster.toBase58()}
+                    {(identity != null) ? identity.displayName : post.poster.toBase58()}
                   </div>
                   <RoleLabel
                     topicOwnerId={topicPosterId}
@@ -366,10 +345,10 @@ export function PostContent(props: PostContentProps) {
                           {postedAt}
                           <div className="accountInfo">
                             <a
-                              href={`https://solscan.io/account/${post.address}?cluster=${forum.cluster}`}
+                              href={`https://solscan.io/account/${post.address.toBase58()}?cluster=${forum.cluster}`}
                               className="transactionLink"
-                              target="_blank">
-                              <Info />
+                              target="_blank" rel="noreferrer">
+                              <Chain />
                             </a>
                           </div>
                         </>
@@ -386,16 +365,13 @@ export function PostContent(props: PostContentProps) {
                     } else if (isCreatedPost(post)) {
                       return (
                         <>
-                          Posting
+                          Confirming on chain
                           <div className="posting">
                             <Spinner />
                           </div>
                         </>
                       );
                     } else {
-                      // ForumPost, CreatedPost, and EditedPost
-                      // are the three kinds of ClientPost, so we
-                      // should never get here
                       return null;
                     }
                   })()}
@@ -411,10 +387,10 @@ export function PostContent(props: PostContentProps) {
                       forumData={forumData}
                       update={update}
                       post={post}
-                      onDownVotePost={() =>
+                      onDownVotePost={async () =>
                         forum.voteDownForumPost(post, forumData.collectionId)
                       }
-                      onUpVotePost={() =>
+                      onUpVotePost={async () =>
                         forum.voteUpForumPost(post, forumData.collectionId)
                       }
                       updateVotes={upVoted => updateVotes(upVoted)}
@@ -423,7 +399,7 @@ export function PostContent(props: PostContentProps) {
                   <EditPost
                     post={post}
                     forumData={forumData}
-                    update={() => update()}
+                    update={async () => update()}
                     editPostLocal={editPost}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
@@ -443,12 +419,7 @@ export function PostContent(props: PostContentProps) {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      {
-                        // The gifting UI should be hidden on the apes forum for non-mods.
-                        // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-                        (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                          userIsMod) &&
-                          !forum.wallet.publicKey?.equals(post.poster) && (
+                      { showGift &&
                             <>
                               <button
                                 className="awardButton"
@@ -462,7 +433,6 @@ export function PostContent(props: PostContentProps) {
                               </button>
                               <div className="actionDivider" />
                             </>
-                          )
                       }
                       <button
                         className="replyButton"
@@ -485,11 +455,35 @@ export function PostContent(props: PostContentProps) {
           <div
             className="repliesSection"
             hidden={replies.length === 0 && !showReplyBox}>
-                          {showReplyBox && sendingReply && <Spinner />}
+            <div className="repliesBox">
+              <PostReplies
+                forumData={forumData}
+                participatingModerators={participatingModerators}
+                replies={replies}
+                userRoles={userRoles}
+                topicOwnerId={topicPosterId}
+                update={async () => update()}
+                editPost={editPost}
+                onDeletePost={async (postToDelete) => {
+                  setPostToDelete(postToDelete);
+                  setShowDeleteConfirmation(true);
+                }}
+                onDownVotePost={async (reply) =>
+                  forum.voteDownForumPost(reply, forumData.collectionId)
+                }
+                onUpVotePost={async (reply) =>
+                  forum.voteUpForumPost(reply, forumData.collectionId)
+                }
+                onAwardReply={(reply) => {
+                  setPostToAward(reply);
+                  setShowGiveAward(true);
+                }}
+              />
+            </div>
             <div
               ref={replyAreaRef}
               className={`replyFormContainer ${
-                showReplyBox && !sendingReply ? 'visible' : ''
+                showReplyBox ? 'visible' : ''
               }`}>
               <div className="replyForm">
                 <textarea
@@ -497,7 +491,10 @@ export function PostContent(props: PostContentProps) {
                   className="replyTextArea"
                   maxLength={800}
                   value={reply}
-                  onChange={e => setReply(e.target.value)}
+                  onChange={(e) => {
+                    setReply(e.target.value);
+                    setReplySize(Buffer.from(e.target.value, 'utf-8').byteLength);
+                  }}
                 />
                 <div className="textSize"> {replySize}/800 </div>
                 <div className="buttonsContainer">
@@ -505,7 +502,7 @@ export function PostContent(props: PostContentProps) {
                     className="cancelReplyButton"
                     onClick={() => {
                       setShowReplyBox(false);
-                      new Buffer(reply, 'utf-8').byteLength;
+                      setReplySize(Buffer.from(reply, 'utf-8').byteLength);
                     }}>
                     Cancel
                   </button>
@@ -514,6 +511,7 @@ export function PostContent(props: PostContentProps) {
                     type="submit"
                     disabled={reply.length === 0}
                     onClick={onReplyToPost}>
+                    {awaitingConfirmation && <div className='loading'><Spinner /></div> }
                     Reply
                   </button>
                 </div>
@@ -526,16 +524,16 @@ export function PostContent(props: PostContentProps) {
                 replies={replies}
                 userRoles={userRoles}
                 topicOwnerId={topicPosterId}
-                update={() => update()}
+                update={async () => update()}
                 editPost={editPost}
                 onDeletePost={async postToDelete => {
                   setPostToDelete(postToDelete);
                   setShowDeleteConfirmation(true);
                 }}
-                onDownVotePost={reply =>
+                onDownVotePost={async reply =>
                   forum.voteDownForumPost(reply, forumData.collectionId)
                 }
-                onUpVotePost={reply =>
+                onUpVotePost={async reply =>
                   forum.voteUpForumPost(reply, forumData.collectionId)
                 }
                 onAwardReply={reply => {

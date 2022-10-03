@@ -1,11 +1,7 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode, useMemo, SyntheticEvent } from "react";
-import { PublicKey } from "@solana/web3.js";
-import { ForumPost } from "@usedispatch/client";
-import { Result } from '../../../types/error';
-import { errorSummary } from "../../../utils/error";
-import { isSuccess } from "../../../utils/loading";
-import { CreatedPost } from "../../../utils/hooks";
+import { useState, ReactNode, SyntheticEvent } from 'react';
+import { PublicKey } from '@solana/web3.js';
+import { ForumPost } from '@usedispatch/client';
 
 import {
   CollapsibleProps,
@@ -13,10 +9,14 @@ import {
   PopUpModal,
   Spinner,
   TransactionLink,
-} from "../../common";
-import { Notification } from "..";
-import { useForum } from "../../../contexts/DispatchProvider";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+} from '../../common';
+import { Notification } from '..';
+
+import { useForum } from '../../../contexts/DispatchProvider';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { errorSummary } from '../../../utils/error';
+import { isSuccess } from '../../../utils/loading';
+import { CreatedPost } from '../../../utils/hooks';
 
 interface CreatePostProps {
   topic: ForumPost;
@@ -24,25 +24,24 @@ interface CreatePostProps {
   update: () => Promise<void>;
   addPost: (post: CreatedPost) => void;
   onReload: () => void;
-  postInFlight: boolean;
   setPostInFlight: (postInFlight: boolean) => void;
 }
 
-export function CreatePost(props: CreatePostProps) {
+export function CreatePost(props: CreatePostProps): JSX.Element {
   const {
     collectionId,
     topic,
     onReload,
     update,
     addPost,
-    postInFlight,
     setPostInFlight,
   } = props;
   const Forum = useForum();
   const permission = Forum.permission;
 
-  const [loading, setLoading] = useState(false);
   const [bodySize, setBodySize] = useState(0);
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [newPost, setNewPost] = useState('');
   const [notification, setNotification] = useState<{
     isHidden: boolean;
     content?: string | ReactNode;
@@ -55,41 +54,29 @@ export function CreatePost(props: CreatePostProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const createNewPost = async (event: SyntheticEvent) => {
+  const createNewPost = async (event: SyntheticEvent): Promise<void> => {
     event.preventDefault();
-    setLoading(true);
-    const target = event.target as typeof event.target & {
-      post: { value: string };
-    };
 
-    const post = { body: target.post.value };
+    const post = { body: newPost };
     setPostInFlight(true);
+    setAwaitingConfirmation(true);
     const tx = await Forum.createForumPost(post, topic.postId, collectionId);
 
+    setAwaitingConfirmation(false);
     if (isSuccess(tx)) {
       const localPost: CreatedPost = {
         data: {
           body: post.body,
           ts: new Date(),
         },
-        poster: Forum.wallet.publicKey!,
+        poster: Forum.wallet.publicKey,
         isTopic: false,
         replyTo: topic.address,
-        state: 'created'
+        state: 'created',
       };
       addPost(localPost);
+      setNewPost('');
 
-      setLoading(false);
-      setNotification({
-        isHidden: false,
-        content: (
-          <>
-            Creating new post.
-            <TransactionLink transaction={tx!} />
-          </>
-        ),
-        type: MessageType.info,
-      });
       await Forum.connection.confirmTransaction(tx).then(() => {
         setPostInFlight(false);
         setNotification({
@@ -102,11 +89,10 @@ export function CreatePost(props: CreatePostProps) {
           ),
           type: MessageType.success,
         });
-        update();
-      });
+      }).then(async () => update());
       setTimeout(
         () => setNotification({ isHidden: true }),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
       onReload();
       setBodySize(0);
@@ -114,12 +100,11 @@ export function CreatePost(props: CreatePostProps) {
       const error = tx;
       setPostInFlight(false);
       setNotification({ isHidden: true });
-      setLoading(false);
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: "The new post could not be created",
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The new post could not be created',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
   };
@@ -149,22 +134,19 @@ export function CreatePost(props: CreatePostProps) {
       />
       <div className="createPostContainer">
         <div className="createPostContent">
-          {loading ? (
-            <div className="spinnerContainer">
-              <Spinner />
-            </div>
-          ) : (
             <form onSubmit={createNewPost}>
               <div className="formContainer">
                 <textarea
                   className="postContent"
                   placeholder="Type your comment here"
                   required
+                  value={newPost}
                   maxLength={800}
                   disabled={!permission.readAndWrite}
                   onChange={(event) => {
+                    setNewPost(event.target.value);
                     setBodySize(
-                      new Buffer(event.target.value, "utf-8").byteLength
+                      Buffer.from(event.target.value, 'utf-8').byteLength,
                     );
                   }}
                   name="post"
@@ -178,11 +160,11 @@ export function CreatePost(props: CreatePostProps) {
                   disabled={
                     !permission.readAndWrite || bodySize > 800
                   }>
+                  {awaitingConfirmation && <div className='loading'><Spinner /></div> }
                   Post
                 </button>
               </div>
             </form>
-          )}
         </div>
       </div>
     </>

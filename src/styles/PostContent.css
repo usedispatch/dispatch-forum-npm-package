@@ -167,10 +167,11 @@
       .accountInfo {
         display: flex;
         align-items: center;
+        max-width: 20px;
         padding-left: 5px;
 
         svg {
-          height: 14px;
+          height: 12px;
         }
       }
 
@@ -371,6 +372,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      gap: 10px;
 
       height: 48px;
       padding: 0 30px;
@@ -386,6 +388,15 @@
 
       @media only screen and (max-width: 570px) {
         width: 100%;
+      }
+
+      .loading {
+        height: 18px;
+        width: 18px;
+
+        svg {
+          margin-right: 0;
+        }
       }
 
       &.inFlight {

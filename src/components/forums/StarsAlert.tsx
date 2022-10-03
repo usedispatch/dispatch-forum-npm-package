@@ -7,11 +7,12 @@ export function StarsAlert(): JSX.Element {
         <div className="alertContent">
           <Info />
           <div className="alertText">
-            Please note, Official Degenerate Gold Stars will be minted from the
-            StarB2AzgohiEp5dhsoy3HxuCurPUzbmgKiMd9zxxnL mint program address.
-            Official Gold Stars do not have any links in the metadata, and are
-            stackable SFTs. Stay Safe, Degens, and don&apos;t click random links in
-            NFTs or SFTs!
+            Please note: Official Degenerate Gold Star Voucher NFTs will be
+            minted by Degen9nCBXi84Mw88qAW4YWLZ1azni4AcvDcax1LgTxH and given
+            value using the Degenerate Star Program
+            (StarLA9YsjQc6P21ALscSkXKE7mqUGsjfhCGBwmJPfS). Official Vouchers do
+            not have any links in the metadata. Stay safe Degens—don&apos;t
+            click any random links you aren&apos;t sure about!
           </div>
         </div>
       </div>

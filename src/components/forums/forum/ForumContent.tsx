@@ -47,7 +47,7 @@ import { StarsAlert } from '../StarsAlert';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
-  basicInfo: { title: string; desc: string; gated: boolean };
+  basicInfo: { title: string; desc: string };
   forumData?: ForumData;
   update: () => Promise<void>;
 }
@@ -67,13 +67,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     const forumHeader = (
       <div className="forumContentHeader">
         <div className={'titleBox'}>
-          {basicInfo.gated && (
-            <div className="gatedForum">
-              <Lock />
-            </div>
-          )}
           <Markdown>{basicInfo.title}</Markdown>
-          {/* TODO(andrew) what to render here if title isn't loaded */}
         </div>
         <div className="descriptionBox">
           <div className="description">

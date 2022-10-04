@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { Helmet } from 'react-helmet';
 import { PublicKey } from '@solana/web3.js';
 
-import { MessageType } from '../../components/common';
+import { MessageType, Spinner } from '../../components/common';
 import {
   CreateForum,
   ForumContent,
@@ -61,8 +61,10 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
 
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
+  const [basicInfo, setBasicInfo] = useState<any>();
+
   useEffect(() => {
-    void update();
+    update().catch(console.error);
     // Update every time the cluster is changed
   }, [forumObject.cluster]);
 
@@ -100,19 +102,26 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
             <div className="forumViewContent">
               {(() => {
                 if (isSuccess(forumData)) {
+                  setBasicInfo({ title: forumData.description.title, desc: forumData.description.desc });
                   return (
                     <ForumContent
                       forumObject={forumObject}
                       forumData={forumData}
-                      basicInfo={{ title: forumData.description.title, desc: forumData.description.desc, gated: false }}
+                      basicInfo={basicInfo}
                       update={update}
                     />
                   );
-                } else if (isInitial(forumData) || isPending(forumData)) {
+                } else if (isInitial(forumData)) {
+                  return (
+                    <div className="forumLoading">
+                      <Spinner />
+                    </div>
+                  );
+                } else if (isPending(forumData)) {
                   return (
                     <ForumContent
                       forumObject={forumObject}
-                      basicInfo={{ title: 'test', desc: 'desc', gated: false }}
+                      basicInfo={{ title: 'test', desc: 'desc' }}
                       update={update}
                     />
                   );
@@ -122,6 +131,7 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
                       forumObject={forumObject}
                       collectionId={collectionId}
                       update={update}
+                      onPending={(info) => setBasicInfo(info)}
                     />
                   );
                 } else {

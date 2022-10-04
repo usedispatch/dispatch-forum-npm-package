@@ -26,11 +26,12 @@ import { getIdentity } from '../../../utils/identity';
 interface CreateForumProps {
   forumObject: DispatchForum;
   collectionId: string;
+  onPending: (info: { title: string; desc: string }) => void;
   update: () => Promise<void>;
 }
 
 export function CreateForum(props: CreateForumProps): JSX.Element {
-  const { collectionId, forumObject, update } = props;
+  const { collectionId, forumObject, onPending, update } = props;
   const { wallet } = forumObject;
   const { publicKey } = wallet;
 
@@ -170,6 +171,8 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
     };
 
     const res = await forumObject.createForum(forum);
+    onPending({ title, desc: description });
+    setCreatingNewForum(false);
 
     if (isSuccess(res)) {
       if (!isNil(res.forum)) {
@@ -409,7 +412,6 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
               <div className="textSize">{bodySize}/800</div>
             </div>
             <Collapsible header="Advanced options" content={advancedOptions} />
-            {creatingNewForum && <Spinner />}
             <div className="createForumButtonContainer">
               <button
                 type="submit"
@@ -419,6 +421,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
                   await onCreateForumClick();
                   ReactGA.event('sendForumCreate');
                 }}>
+                {creatingNewForum && <Spinner />}
                 Create forum
               </button>
             </div>

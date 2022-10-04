@@ -1,32 +1,34 @@
-import { useState, useEffect, useMemo, useRef } from "react";
-import { Helmet } from "react-helmet";
-import { PublicKey } from "@solana/web3.js";
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Helmet } from 'react-helmet';
+import { PublicKey } from '@solana/web3.js';
 
-import { MessageType, Spinner } from "../../components/common";
+import { MessageType } from '../../components/common';
 import {
   CreateForum,
   ForumContent,
   PoweredByDispatch,
-} from "../../components/forums";
+} from '../../components/forums';
 
-import { useForum, useRole } from "./../../contexts/DispatchProvider";
-import { getUserRole } from "./../../utils/postbox/userRole";
-import { isSuccess, isInitial, isPending } from "../../utils/loading";
-import { isError, isNotFoundError } from "../../utils/error";
-import { useForumData, useModal } from "../../utils/hooks";
-import { getCustomStyles } from "../../utils/getCustomStyles";
+import { useForum, useRole } from './../../contexts/DispatchProvider';
+import { getUserRole } from './../../utils/postbox/userRole';
+import { isSuccess, isInitial, isPending } from '../../utils/loading';
+import { isError, isNotFoundError } from '../../utils/error';
+import { useForumData, useModal } from '../../utils/hooks';
+import { getCustomStyles } from '../../utils/getCustomStyles';
+import { isNil } from 'lodash';
 
 interface ForumViewProps {
   collectionId: string;
 }
 
-export const ForumView = (props: ForumViewProps) => {
+export const ForumView = (props: ForumViewProps): JSX.Element => {
   const forumObject = useForum();
   const Role = useRole();
   const { wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
-  const [croppedCollectionID, setCroppedCollectionId] = useState<string>("");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [croppedCollectionID, setCroppedCollectionId] = useState<string>('');
 
   const { modal, showModal } = useModal();
 
@@ -38,7 +40,7 @@ export const ForumView = (props: ForumViewProps) => {
       // TODO(andrew) make croppedCollectionID a useMemo() call as well?
       // see https://www.notion.so/usedispatch/Only-Show-Forums-with-valid-Public-Keys-eaf833a2d69a4bc69f760509b4bfee6d
       setCroppedCollectionId(
-        `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`
+        `${collectionId.slice(0, 4)}...${collectionId.slice(-4)}`,
       );
 
       return pubkey;
@@ -46,10 +48,10 @@ export const ForumView = (props: ForumViewProps) => {
       const message = JSON.stringify(error);
       console.log(error);
       showModal({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: "Invalid Collection ID Public Key",
-        collapsible: { header: "Error", content: message },
+        body: 'Invalid Collection ID Public Key',
+        collapsible: { header: 'Error', content: message },
       });
       return null;
     }
@@ -57,19 +59,22 @@ export const ForumView = (props: ForumViewProps) => {
 
   const customStyle = getCustomStyles(collectionId);
 
-  const mount = useRef(false);
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
   useEffect(() => {
-    update();
+    void update();
     // Update every time the cluster is changed
   }, [forumObject.cluster]);
 
-  useEffect(() => {
-    if (isSuccess(forumData) && permission.readAndWrite) {
-      getUserRole(forumObject, collectionPublicKey!, Role);
+  const updateUserRole = useCallback(async () => {
+    if (!isNil(collectionPublicKey) && isSuccess(forumData) && permission.readAndWrite) {
+      await getUserRole(forumObject, collectionPublicKey, Role);
     }
   }, [forumData, publicKey]);
+
+  useEffect(() => {
+    updateUserRole().catch(console.error);
+  }, [updateUserRole]);
 
   const disconnectedView = (
     <div className="disconnectedView">
@@ -99,14 +104,17 @@ export const ForumView = (props: ForumViewProps) => {
                     <ForumContent
                       forumObject={forumObject}
                       forumData={forumData}
+                      basicInfo={{ title: forumData.description.title, desc: forumData.description.desc, gated: false }}
                       update={update}
                     />
                   );
                 } else if (isInitial(forumData) || isPending(forumData)) {
                   return (
-                    <div className="forumLoading">
-                      <Spinner />
-                    </div>
+                    <ForumContent
+                      forumObject={forumObject}
+                      basicInfo={{ title: 'test', desc: 'desc', gated: false }}
+                      update={update}
+                    />
                   );
                 } else if (isNotFoundError(forumData)) {
                   return (
@@ -117,8 +125,7 @@ export const ForumView = (props: ForumViewProps) => {
                     />
                   );
                 } else {
-                  // TODO(andrew) better, more detailed error
-                  // view here
+                  // TODO(andrew) better, more detailed error view here
                   return disconnectedView;
                 }
               })()}

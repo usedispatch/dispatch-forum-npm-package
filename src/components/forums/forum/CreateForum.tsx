@@ -172,14 +172,14 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
     const res = await forumObject.createForum(forum);
 
     if (isSuccess(res)) {
-      if (!isNil(res?.forum)) {
+      if (!isNil(res.forum)) {
         showModal({
           title: 'Success!',
           body: (
             <div className="successBody">
               <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
               <div>
-                {res?.txs.map(tx => (
+                {res.txs.map(tx => (
                   <TransactionLink transaction={tx} key={tx} />
                 ))}
               </div>
@@ -357,8 +357,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
           Create one to create topics, post, share, rate, and gift tokens.
         </div>
         <div
-          className={`createForumForm ${creatingNewForum ? 'creating' : ''}`}
-        >
+          className={`createForumForm ${creatingNewForum ? 'creating' : ''}`}>
           <div className="formBody">
             <div className="formSection">
               <span className="formLabel">
@@ -419,8 +418,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
                 onClick={async () => {
                   await onCreateForumClick();
                   ReactGA.event('sendForumCreate');
-                }}
-              >
+                }}>
                 Create forum
               </button>
             </div>

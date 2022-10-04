@@ -28,7 +28,7 @@ import { useRole } from '../../../contexts/DispatchProvider';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { SCOPES, UserRoleType } from '../../../utils/permissions';
-import { Result } from '../../../types/error';
+import { DispatchError, Result } from '../../../types/error';
 import { isError, errorSummary } from '../../../utils/error';
 import { isSuccess } from '../../../utils/loading';
 import {
@@ -47,11 +47,85 @@ import { StarsAlert } from '../StarsAlert';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
-  forumData: ForumData;
+  basicInfo: { title: string; desc: string; gated: boolean };
+  forumData?: ForumData;
   update: () => Promise<void>;
 }
 
 export function ForumContent(props: ForumContentProps): JSX.Element {
+  const { forumData, forumObject, basicInfo, update } = props;
+  const { permission } = forumObject;
+
+  if (isNil(forumData)) {
+    const confirmingBox = (
+      <div className='confirmingBanner'>
+        <div className='title'>The network is confirming your forum.</div>
+        <div className='subtitle'>When it`s ready, the page will reload itself. This may take a few seconds.</div>
+      </div>
+    );
+
+    const forumHeader = (
+      <div className="forumContentHeader">
+        <div className={'titleBox'}>
+          {basicInfo.gated && (
+            <div className="gatedForum">
+              <Lock />
+            </div>
+          )}
+          <Markdown>{basicInfo.title}</Markdown>
+          {/* TODO(andrew) what to render here if title isn't loaded */}
+        </div>
+        <div className="descriptionBox">
+          <div className="description">
+            <Markdown>{basicInfo.desc}</Markdown>
+          </div>
+          <button
+            className={'createTopicButton'}
+            type="button"
+            disabled
+            >
+            <div className="buttonImageContainer">
+              <Plus />
+            </div>
+            Create Topic
+          </button>
+        </div>
+      </div>
+    );
+
+    return (
+      <div className='confirmingWrapper'>
+        <div className="forumContent">
+          <>{ReactGA.send('pageview')}</>
+          <div className="forumContentBox" >
+            {!permission.readAndWrite && <ConnectionAlert />}
+            {confirmingBox}
+            {forumHeader}
+          </div>
+          <div className="toolsWrapper" />
+          {/* empty topic list */}
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      <PopulatedForumContent
+        forumObject={forumObject}
+        forumData={forumData}
+        update={update}
+      />
+    );
+  }
+}
+
+interface PopulatedForumContentProps {
+  forumObject: DispatchForum;
+  forumData: ForumData;
+  update: () => Promise<void>;
+}
+
+export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.Element {
   const { forumData, forumObject, update } = props;
   const { roles } = useRole();
   const { permission } = forumObject;
@@ -141,7 +215,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error) },
+          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
         });
         setShowManageAccessToken(false);
         return;
@@ -297,7 +371,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error) },
+          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
         });
         setShowNewTopicModal(false);
         return;

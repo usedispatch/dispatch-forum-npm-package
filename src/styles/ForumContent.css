@@ -1,4 +1,39 @@
 @layer components {
+  .confirmingBanner {
+    padding: 24px;
+    margin-bottom: 36px;
+
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgb(65 65 73 / 16%);
+
+    .title {
+      color: #2e008b;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 28px;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 24px;
+      color: #86878e;
+    }
+  }
+
+  .confirmingWrapper {
+    .forumContentHeader {
+      .titleBox {
+        color: #86878e;
+      }
+      .descriptionBox .description {
+        color: #86878e;
+      }
+    }
+  }
+
   .forumContentBox {
     padding: 72px 10% 0;
     background-image: url('assets/default_background.png');
@@ -26,7 +61,7 @@
       margin: 0 auto;
       padding: 24px 0;
 
-      font-size: 36px;
+      font-size: 40px;
       color: #2e008b;
       word-break: break-word;
 

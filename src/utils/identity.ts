@@ -98,6 +98,21 @@ export const identities: Identity[] = [
     publicKey: new PublicKey('85iDLGzsPBsXn7ao83WtRFsQLfqi8LYhYk3xu2uwo9qD'),
     displayName: 'andrew | dispatch',
     profilePicture: new URL('https://raw.githubusercontent.com/usedispatch/assets/main/img/dispatch/dispatch-logo-mark-color-circle-reverse-margin.png')
+  },
+  {
+    publicKey: new PublicKey('2T8MWSB8VyeweT41U7HG12bKVUHU4YKKZeagmy7YCUVe'),
+    displayName: 'Stephen | Metaplex',
+    profilePicture: new URL('https://pbs.twimg.com/profile_images/1572467339043672064/4gZGTTa4_400x400.jpg')
+  },
+  {
+    publicKey: new PublicKey('6o49yAj4bmK35NQjDBDEwtC6LVLr2mjFeZ9MTvhMv9Tw'),
+    displayName: 'Metaplex Foundation',
+    profilePicture: new URL('https://pbs.twimg.com/profile_images/1570901153814089731/wToMbM7E_400x400.jpg')
+  },
+  {
+    publicKey: new PublicKey('73qUJmmCtf4K2LJfqTAuq7n9kJGg7h5Kr5NTt8eQm7Li'),
+    displayName: 'Nhan | Metaplex',
+    profilePicture: new URL('https://i.imgur.com/fICBkm8.png')
   }
 ];
 

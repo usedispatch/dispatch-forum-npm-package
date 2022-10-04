@@ -132,12 +132,35 @@
       }
     }
 
-    .customizeBanner .customizeBannerButton {
-      background: #1d1c1c;
-      border-color: white;
+    .customizeBanner {
+      .customizeBannerButton {
+        background: #1d1c1c;
+        border-color: white;
 
-      svg path {
-        stroke: white;
+        svg path {
+          stroke: white;
+        }
+
+        &:hover {
+          color: white;
+          border-color: white;
+
+          svg path {
+            stroke: white;
+          }
+        }
+      }
+
+      .uploadImageWrapper {
+        .imageSrcInput {
+          color: black;
+        }
+
+        .imageContainer {
+          color: black;
+          background: #999;
+          border: 2px dashed white;
+        }
       }
     }
 

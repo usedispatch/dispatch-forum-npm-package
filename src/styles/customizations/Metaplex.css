@@ -124,20 +124,34 @@
       }
     }
 
-    .customizeBanner .customizeBannerButton {
-      background: #1d1c1c;
-      border-color: white;
-
-      svg path {
-        stroke: white;
-      }
-
-      &:hover {
-        color: #00ffbd;
-        border-color: #00ffbd;
+    .customizeBanner {
+      .customizeBannerButton {
+        background: #1d1c1c;
+        border-color: white;
 
         svg path {
-          stroke: #00ffbd;
+          stroke: white;
+        }
+
+        &:hover {
+          color: #00ffbd;
+          border-color: #00ffbd;
+
+          svg path {
+            stroke: #00ffbd;
+          }
+        }
+      }
+
+      .uploadImageWrapper {
+        .imageSrcInput {
+          color: black;
+        }
+
+        .imageContainer {
+          color: black;
+          background: #999;
+          border: 2px dashed #00ffbd;
         }
       }
     }

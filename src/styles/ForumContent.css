@@ -94,6 +94,7 @@
     border-width: 1px;
     border-color: #b8b9dc;
     border-radius: 6px;
+    color: black;
   }
 
   .gateCheckbox {
@@ -221,6 +222,14 @@
       height: 12px;
       width: 12px;
     }
+  }
+  .addTokenGateSelect {
+    padding: 8px;
+    font-size: 14px;
+    border-width: 1px;
+    border-color: #b8b9dc;
+    border-radius: 6px;
+    color: black;
   }
 
   .createTopicBody {

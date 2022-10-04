@@ -721,6 +721,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                               </div>
                               <select
                                 value={tokenGateSelection}
+                                className="addTokenGateSelect"
                                 onChange={e =>
                                   setTokenGateSelection(e.target.value)
                                 }>

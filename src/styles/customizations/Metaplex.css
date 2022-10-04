@@ -1,12 +1,5 @@
 @layer components {
-  @font-face {
-    font-family: 'BN BOOP';
-    font-style: normal;
-    font-weight: normal;
-    src: url('./assets/BNBoop.otf') format('opentype');
-  }
-
-  .degenApeAcademy {
+  .metaplex {
     /* NOTIFICATION */
     .alertContent {
       background: #30302e;
@@ -97,7 +90,6 @@
       .titleBox,
       .description {
         color: #ffffff;
-        font-family: 'BN BOOP', 'sans-serif';
       }
 
       .description {
@@ -142,11 +134,11 @@
         }
 
         &:hover {
-          color: white;
-          border-color: white;
+          color: #00ffbd;
+          border-color: #00ffbd;
 
           svg path {
-            stroke: white;
+            stroke: #00ffbd;
           }
         }
       }
@@ -159,7 +151,7 @@
         .imageContainer {
           color: black;
           background: #999;
-          border: 2px dashed white;
+          border: 2px dashed #00ffbd;
         }
       }
     }
@@ -170,7 +162,15 @@
 
       font-style: normal;
       font-weight: 400;
-      text-transform: uppercase;
+
+      &:hover {
+        color: #00ffbd;
+        border-color: #00ffbd;
+
+        svg path {
+          fill: #00ffbd;
+        }
+      }
     }
 
     .newAccessToken,
@@ -239,7 +239,6 @@
 
     .tableHeader {
       border-color: white;
-      font-family: 'BN BOOP', 'sans-serif';
     }
 
     .topicListContainer .tableHeader .tableHeaderTitle {
@@ -258,7 +257,11 @@
       }
 
       &:hover {
-        background: #a79854;
+        background: #9993;
+
+        a {
+          color: #00ffbd;
+        }
       }
 
       a {
@@ -347,7 +350,7 @@
         font-weight: 500;
       }
 
-      .headerAndActions .moderatorToolsContainer {
+      .headerAndActions .topicToolsContainer {
         .actionDivider {
           background: white;
         }
@@ -385,7 +388,11 @@
       border: 2px solid #f2f2f0;
 
       color: white;
-      text-transform: uppercase;
+
+      &:hover {
+        color: #00ffbd;
+        border-color: #00ffbd;
+      }
     }
 
     .createPostContent .postContent {
@@ -502,7 +509,6 @@
         border-color: black;
         background: white;
         color: #141313;
-        text-transform: uppercase;
       }
 
       .postReplyButton {
@@ -510,7 +516,11 @@
         border: 2px solid #f2f2f0;
 
         color: white;
-        text-transform: uppercase;
+
+        &:hover {
+          color: #00ffbd;
+          border-color: #00ffbd;
+        }
       }
     }
   }

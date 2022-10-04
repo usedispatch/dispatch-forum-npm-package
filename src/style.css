@@ -1,49 +1,50 @@
-@import "tailwindcss/base";
+@import 'tailwindcss/base';
 
-@import "tailwindcss/components";
+@import 'tailwindcss/components';
 
 /* Common */
-@import "./styles/Collapsible.css";
-@import "./styles/DeleteMesageButton.css";
-@import "./styles/PopUpModal.css";
-@import "./styles/Spinner.css";
-@import "./styles/Tooltip.css";
-@import "./styles/TransactionLink.css";
+@import './styles/Collapsible.css';
+@import './styles/DeleteMesageButton.css';
+@import './styles/PopUpModal.css';
+@import './styles/Spinner.css';
+@import './styles/Tooltip.css';
+@import './styles/TransactionLink.css';
 
 /* Forums */
-@import "./styles/PoweredByDispatch.css";
-@import "./styles/ConnectionAlert.css";
-@import "./styles/StarsAlert.css";
-@import "./styles/Notification.css";
+@import './styles/PoweredByDispatch.css';
+@import './styles/ConnectionAlert.css';
+@import './styles/StarsAlert.css';
+@import './styles/Notification.css';
 
 /* Forum */
-@import "./styles/CreateForum.css";
-@import "./styles/EditForum.css";
-@import "./styles/ForumContent.css";
-@import "./styles/ManageOwners.css";
-@import "./styles/ManageModerator.css";
-@import "./styles/TopicList.css";
-@import "./styles/UploadImage.css";
+@import './styles/CreateForum.css';
+@import './styles/EditForum.css';
+@import './styles/ForumContent.css';
+@import './styles/ManageOwners.css';
+@import './styles/ManageModerator.css';
+@import './styles/TopicList.css';
+@import './styles/UploadImage.css';
 
 /* Topic */
-@import "./styles/CreatePost.css";
-@import "./styles/EditPost.css";
-@import "./styles/GiveAward.css";
-@import "./styles/PostContent.css";
-@import "./styles/PostReplies.css";
-@import "./styles/PostsList.css";
-@import "./styles/RoleLabel.css";
-@import "./styles/TopicContent.css";
-@import "./styles/VotePost.css";
+@import './styles/CreatePost.css';
+@import './styles/EditPost.css';
+@import './styles/GiveAward.css';
+@import './styles/PostContent.css';
+@import './styles/PostReplies.css';
+@import './styles/PostsList.css';
+@import './styles/RoleLabel.css';
+@import './styles/TopicContent.css';
+@import './styles/VotePost.css';
 
 /* Views */
-@import "./styles/ForumView.css";
-@import "./styles/TopicView.css";
+@import './styles/ForumView.css';
+@import './styles/TopicView.css';
 
 /* Customizations */
-@import "styles/customizations/DegenApeAcademy.css";
+@import 'styles/customizations/DegenApeAcademy.css';
+@import 'styles/customizations/Metaplex.css';
 
-@import "tailwindcss/utilities";
+@import 'tailwindcss/utilities';
 
 @layer base {
   blockquote,
@@ -80,7 +81,7 @@
   }
 
   code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;
   }
 }

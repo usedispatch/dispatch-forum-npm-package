@@ -2,8 +2,11 @@ interface DispatchLogoProps {
   customStyle: string;
 }
 
-export function DispatchLogo(props: DispatchLogoProps) {
-  if (props.customStyle === "degenApeAcademy") {
+export function DispatchLogo(props: DispatchLogoProps): JSX.Element {
+  if (
+    props.customStyle === 'degenApeAcademy' ||
+    props.customStyle === 'metaplex'
+  ) {
     return (
       <svg
         width="156"

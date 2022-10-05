@@ -112,7 +112,7 @@ export const identities: Identity[] = [
   {
     publicKey: new PublicKey('73qUJmmCtf4K2LJfqTAuq7n9kJGg7h5Kr5NTt8eQm7Li'),
     displayName: 'Nhan | Metaplex',
-    profilePicture: new URL('https://i.imgur.com/fICBkm8.png')
+    profilePicture: new URL('https://pbs.twimg.com/profile_images/1577359588856197120/TIK6n5gi_400x400.jpg')
   }
 ];
 

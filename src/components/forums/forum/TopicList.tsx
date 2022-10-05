@@ -1,34 +1,63 @@
-import maxBy from "lodash/maxBy";
-import Markdown from "markdown-to-jsx";
-import Jdenticon from "react-jdenticon";
-import { useCallback, useMemo } from "react";
-import { ForumPost } from "@usedispatch/client";
+import { isNil, maxBy } from 'lodash';
+import Markdown from 'markdown-to-jsx';
+import Jdenticon from 'react-jdenticon';
+import { useCallback, useMemo } from 'react';
+import { ForumPost } from '@usedispatch/client';
 
-import { usePath } from "./../../../contexts/DispatchProvider";
-import { Link } from "./../../../components/common";
+import { usePath } from './../../../contexts/DispatchProvider';
+import { Link } from './../../../components/common';
 import {
   selectRepliesFromPosts,
   selectTopics,
   sortByVotes,
   selectForumPosts,
-} from "../../../utils/posts";
-import { isSuccess } from "../../../utils/loading";
+} from '../../../utils/posts';
+import { isSuccess } from '../../../utils/loading';
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { getIdentity } from '../../../utils/identity';
-import { ForumData } from "../../../utils/hooks";
+import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
-  forumData: ForumData;
+  forumData?: ForumData;
 }
 
-export function TopicList({ forumData }: TopicListProps) {
-  const topics = useMemo(() => {
-    const topics = selectTopics(forumData.posts);
-    const sorted = sortByVotes(topics);
-    return selectForumPosts(sorted);
-  }, [forumData]);
+export function TopicList({ forumData }: TopicListProps): JSX.Element {
+  if (isNil(forumData)) {
+    return (
+    <div className="topicListContainer">
+      <div>
+        <table className="tableContainer">
+          <thead>
+            <tr className="tableHeader">
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderText">Topics</div>
+              </th>
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderText posters">Wallets</div>
+              </th>
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderTextCenter">Replies</div>
+              </th>
+              <th className="tableHeaderTitle">
+                <div className="tableHeaderTextCenter">Activity</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <div className="emptyTopicList">No topics yet</div>
+      </div>
+    </div>
+    );
+  } else {
+    const topics = useMemo(() => {
+      const topics = selectTopics(forumData.posts);
+      const sorted = sortByVotes(topics);
+      return selectForumPosts(sorted);
+    }, [forumData]);
 
-  return (
+    return (
     <div className="topicListContainer">
       <div>
         <table className="tableContainer">
@@ -50,6 +79,7 @@ export function TopicList({ forumData }: TopicListProps) {
           </thead>
           <tbody>
             {topics.map((topic, index) => (
+              // eslint-disable-next-line @typescript-eslint/no-use-before-define
               <RowContent key={index} topic={topic} forumData={forumData} />
             ))}
           </tbody>
@@ -59,7 +89,8 @@ export function TopicList({ forumData }: TopicListProps) {
         )}
       </div>
     </div>
-  );
+    );
+  }
 }
 
 interface RowContentProps {
@@ -67,12 +98,12 @@ interface RowContentProps {
   forumData: ForumData;
 }
 
-function RowContent(props: RowContentProps) {
+function RowContent(props: RowContentProps): JSX.Element {
   const { topic, forumData } = props;
   const { buildTopicPath } = usePath();
   const topicPath = buildTopicPath(
     forumData.collectionId.toBase58(),
-    topic.postId
+    topic.postId,
   );
 
   const replies: ForumPost[] = useMemo(() => {
@@ -82,24 +113,24 @@ function RowContent(props: RowContentProps) {
   const activtyDate = useCallback((posts: ForumPost[]) => {
     const dates = posts.map(({ data }) => data.ts);
     const mostRecentDate = maxBy(dates, (date) => date.getTime());
-    if (mostRecentDate) {
+    if (!isNil(mostRecentDate)) {
       const format = (
         mostRecentDate.getFullYear() !== new Date().getFullYear()
           ? {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            }
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          }
           : {
-              year: undefined,
-              month: "short",
-              day: "numeric",
-            }
+            year: undefined,
+            month: 'short',
+            day: 'numeric',
+          }
       ) as Intl.DateTimeFormatOptions;
 
       return mostRecentDate.toLocaleDateString(undefined, { ...format });
     } else {
-      return "-";
+      return '-';
     }
   }, []);
 
@@ -117,12 +148,12 @@ function RowContent(props: RowContentProps) {
               const identity = getIdentity(pkey);
               return (
                 <div key={index} className="icon">
-                  { identity ?
-                    <img
+                  { (identity != null)
+                    ? <img
                       src={identity.profilePicture.href}
                       style={{ borderRadius: '50%' }}
-                    /> :
-                      <Jdenticon value={id} alt="posterID" />
+                    />
+                    : <Jdenticon value={id} alt="posterID" />
                   }
                 </div>
               );
@@ -130,11 +161,11 @@ function RowContent(props: RowContentProps) {
               return null;
             }
           })}
-          {posts.length > 8 ? "..." : null}
+          {posts.length > 8 ? '...' : null}
         </div>
       );
     } else {
-      return "-";
+      return '-';
     }
   }, []);
 
@@ -143,7 +174,7 @@ function RowContent(props: RowContentProps) {
       <th className="rowSubj">
         <Link className="" href={topicPath}>
           <div className="textBox">
-            <Markdown>{topic.data.subj ?? ""}</Markdown>
+            <Markdown>{topic.data.subj ?? ''}</Markdown>
           </div>
         </Link>
       </th>

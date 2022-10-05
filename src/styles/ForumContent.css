@@ -32,6 +32,15 @@
         color: #86878e;
       }
     }
+    .topicListWrapper {
+      .tableHeader {
+        border-color: #86878e;
+      }
+      .tableHeaderTitle,
+      .emptyTopicList {
+        color: #86878e;
+      }
+    }
   }
 
   .forumContentBox {

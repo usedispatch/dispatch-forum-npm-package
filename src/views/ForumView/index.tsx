@@ -1,8 +1,9 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import ReactGA from 'react-ga4';
 import { Helmet } from 'react-helmet';
 import { PublicKey } from '@solana/web3.js';
 
-import { MessageType, Spinner } from '../../components/common';
+import { MessageType, Spinner, TransactionLink } from '../../components/common';
 import {
   CreateForum,
   ForumContent,
@@ -12,10 +13,11 @@ import {
 import { useForum, useRole } from './../../contexts/DispatchProvider';
 import { getUserRole } from './../../utils/postbox/userRole';
 import { isSuccess, isInitial, isPending } from '../../utils/loading';
-import { isError, isNotFoundError } from '../../utils/error';
+import { errorSummary, isError, isNotFoundError } from '../../utils/error';
 import { useForumData, useModal } from '../../utils/hooks';
 import { getCustomStyles } from '../../utils/getCustomStyles';
 import { isNil } from 'lodash';
+import { ForumInfo } from '@usedispatch/client';
 
 interface ForumViewProps {
   collectionId: string;
@@ -61,28 +63,73 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
 
   const { forumData, update } = useForumData(collectionPublicKey, forumObject);
 
-  const [basicInfo, setBasicInfo] = useState<any>();
+  const [creationData, setCreationData] = useState<{ title: string; desc: string }>();
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    update().catch(console.error);
-    // Update every time the cluster is changed
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    update(); // Update every time the cluster is changed
   }, [forumObject.cluster]);
 
-  const updateUserRole = useCallback(async () => {
+  useEffect(() => {
     if (!isNil(collectionPublicKey) && isSuccess(forumData) && permission.readAndWrite) {
-      await getUserRole(forumObject, collectionPublicKey, Role);
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      getUserRole(forumObject, collectionPublicKey, Role);
     }
   }, [forumData, publicKey]);
-
-  useEffect(() => {
-    updateUserRole().catch(console.error);
-  }, [updateUserRole]);
 
   const disconnectedView = (
     <div className="disconnectedView">
       Connect to your wallet in order to see or create a forum
     </div>
   );
+
+  const onCreateForum = async (info: ForumInfo): Promise<void> => {
+    setCreating(true);
+    setCreationData({ title: info.title, desc: info.description });
+    const res = await forumObject.createForum(info);
+
+    if (isSuccess(res)) {
+      if (!isNil(res.forum)) {
+        showModal({
+          title: 'Success!',
+          body: (
+            <div className="successBody">
+              <div>{`The forum '${info.title}' for the collection ${croppedCollectionID} was created`}</div>
+              <div>
+                {res.txs.map(tx => (
+                  <TransactionLink transaction={tx} key={tx} />
+                ))}
+              </div>
+            </div>
+          ),
+          type: MessageType.success,
+        });
+
+        if (!isNil(res.txs)) {
+          await Promise.all(
+            res.txs.map(async tx =>
+              forumObject.connection.confirmTransaction(tx),
+            ),
+          ).then(async () => {
+            await update();
+            setCreating(false);
+          });
+        }
+      }
+      ReactGA.event('successfulForumCreation');
+    } else {
+      setCreating(false);
+      const error = res;
+      ReactGA.event('failedForumCreation');
+      showModal({
+        title: 'Something went wrong!',
+        type: MessageType.error,
+        body: `The forum '${info.title}' for the collection ${croppedCollectionID} could not be created.`,
+        collapsible: { header: 'Error', content: errorSummary(error) },
+      });
+    }
+  };
 
   return (
     <div className="dsp-">
@@ -102,36 +149,34 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
             <div className="forumViewContent">
               {(() => {
                 if (isSuccess(forumData)) {
-                  setBasicInfo({ title: forumData.description.title, desc: forumData.description.desc });
                   return (
                     <ForumContent
                       forumObject={forumObject}
                       forumData={forumData}
-                      basicInfo={basicInfo}
                       update={update}
                     />
                   );
-                } else if (isInitial(forumData)) {
+                } else if (creating) {
+                  return (
+                    <ForumContent
+                      forumObject={forumObject}
+                      basicInfo={creationData}
+                      update={update}
+                    />
+                  );
+                } else if (isPending(forumData) || isInitial(forumData)) {
                   return (
                     <div className="forumLoading">
                       <Spinner />
                     </div>
                   );
-                } else if (isPending(forumData)) {
-                  return (
-                    <ForumContent
-                      forumObject={forumObject}
-                      basicInfo={{ title: 'test', desc: 'desc' }}
-                      update={update}
-                    />
-                  );
-                } else if (isNotFoundError(forumData)) {
+                } else if (isNotFoundError(forumData) && !creating) {
                   return (
                     <CreateForum
                       forumObject={forumObject}
                       collectionId={collectionId}
                       update={update}
-                      onPending={(info) => setBasicInfo(info)}
+                      sendCreateForum={async (info) => onCreateForum(info) }
                     />
                   );
                 } else {

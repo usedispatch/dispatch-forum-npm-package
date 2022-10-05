@@ -47,7 +47,7 @@ import { StarsAlert } from '../StarsAlert';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
-  basicInfo: { title: string; desc: string };
+  basicInfo?: { title: string; desc: string };
   forumData?: ForumData;
   update: () => Promise<void>;
 }
@@ -64,7 +64,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       </div>
     );
 
-    const forumHeader = (
+    if (!isNil(basicInfo)) {
+      const forumHeader = (
       <div className="forumContentHeader">
         <div className={'titleBox'}>
           <Markdown>{basicInfo.title}</Markdown>
@@ -85,9 +86,9 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           </button>
         </div>
       </div>
-    );
+      );
 
-    return (
+      return (
       <div className='confirmingWrapper'>
         <div className="forumContent">
           <>{ReactGA.send('pageview')}</>
@@ -100,7 +101,10 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           {/* empty topic list */}
         </div>
       </div>
-    );
+      );
+    } else {
+      return <Spinner/>;
+    }
   } else {
     return (
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -671,7 +675,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
               }
             />
           )}
-          {removeAccessToken.show && isNil(modalInfo) && (
+          {removeAccessToken.show && !isNil(removeAccessToken.token) && isNil(modalInfo) && (
             <PopUpModal
               id="remove-access-token"
               visible
@@ -679,8 +683,8 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
               body={
                 <div>
                   This action will remove the token
-                  {` ${removeAccessToken.token?.substring(0, 4)}...`}
-                  {`${removeAccessToken.token?.slice(-4)} `} from gating the
+                  {` ${removeAccessToken.token.substring(0, 4)}...`}
+                  {`${removeAccessToken.token.slice(-4)} `} from gating the
                   forum.
                 </div>
               }
@@ -887,7 +891,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
               backgroundImage:
                 !isNil(forumData.images?.background) &&
                 forumData.images.background.length > 0
-                  ? `url(${forumData.images?.background})`
+                  ? `url(${forumData.images?.background as string})`
                   : undefined,
             }}>
             {!permission.readAndWrite && <ConnectionAlert />}

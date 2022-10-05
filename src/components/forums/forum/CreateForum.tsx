@@ -11,13 +11,11 @@ import {
   MessageType,
   Spinner,
   Tooltip,
-  TransactionLink,
 } from '../../common';
 import { Notification } from '..';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { isSuccess } from '../../../utils/loading';
-import { errorSummary } from '../../../utils/error';
 import { useModal } from '../../../utils/hooks';
 import { pubkeysToRestriction } from '../../../utils/restrictionListHelper';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
@@ -26,12 +24,12 @@ import { getIdentity } from '../../../utils/identity';
 interface CreateForumProps {
   forumObject: DispatchForum;
   collectionId: string;
-  onPending: (info: { title: string; desc: string }) => void;
+  sendCreateForum: (info: ForumInfo) => void;
   update: () => Promise<void>;
 }
 
 export function CreateForum(props: CreateForumProps): JSX.Element {
-  const { collectionId, forumObject, onPending, update } = props;
+  const { collectionId, forumObject, sendCreateForum } = props;
   const { wallet } = forumObject;
   const { publicKey } = wallet;
 
@@ -139,7 +137,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
     }
   };
 
-  const createForum = async (): Promise<void> => {
+  const createForum = (): void => {
     setCreatingNewForum(true);
 
     if (isNil(wallet) || isNil(collectionPublicKey)) {
@@ -170,51 +168,8 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
       postRestriction,
     };
 
-    const res = await forumObject.createForum(forum);
-    onPending({ title, desc: description });
-    setCreatingNewForum(false);
-
-    if (isSuccess(res)) {
-      if (!isNil(res.forum)) {
-        showModal({
-          title: 'Success!',
-          body: (
-            <div className="successBody">
-              <div>{`The forum '${title}' for the collection ${croppedCollectionID} was created`}</div>
-              <div>
-                {res.txs.map(tx => (
-                  <TransactionLink transaction={tx} key={tx} />
-                ))}
-              </div>
-            </div>
-          ),
-          type: MessageType.success,
-        });
-
-        if (!isNil(res.txs)) {
-          await Promise.all(
-            res.txs.map(async tx =>
-              forumObject.connection.confirmTransaction(tx),
-            ),
-          ).then(async () => update());
-        }
-      }
-      ReactGA.event('successfulForumCreation');
-    } else {
-      const error = res;
-      ReactGA.event('failedForumCreation');
-      showModal({
-        title: 'Something went wrong!',
-        type: MessageType.error,
-        body: `The forum '${title}' for the collection ${croppedCollectionID} could not be created.`,
-        collapsible: { header: 'Error', content: errorSummary(error) },
-      });
-    }
-    setCreatingNewForum(false);
-  };
-
-  const onCreateForumClick = async (): Promise<void> => {
-    await createForum();
+    sendCreateForum(forum);
+    setTimeout(() => setCreatingNewForum(false), 3000);
   };
 
   const advancedOptions = (
@@ -418,7 +373,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
                 className="acceptCreateForumButton"
                 disabled={creatingNewForum || title.length === 0}
                 onClick={async () => {
-                  await onCreateForumClick();
+                  createForum();
                   ReactGA.event('sendForumCreate');
                 }}>
                 {creatingNewForum && <Spinner />}

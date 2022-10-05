@@ -42,7 +42,10 @@
       opacity: 0.65;
 
       .spinner {
-        margin-top: 16px;
+        sgv {
+          height: 26px;
+          margin-right: 0;
+        }
       }
     }
 

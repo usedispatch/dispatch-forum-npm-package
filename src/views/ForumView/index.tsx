@@ -119,6 +119,7 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
       }
       ReactGA.event('successfulForumCreation');
     } else {
+      setCreationData(undefined);
       setCreating(false);
       const error = res;
       ReactGA.event('failedForumCreation');

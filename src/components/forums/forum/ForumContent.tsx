@@ -7,7 +7,7 @@ import Lottie from 'lottie-react';
 import { PostRestriction } from '@usedispatch/client';
 
 import { Lock, Plus, Trash } from '../../../assets';
-import animationData from '../../../lotties/loader2.json';
+import animationData from '../../../lotties/loader.json';
 import {
   CollapsibleProps,
   Input,
@@ -26,6 +26,7 @@ import {
   ConnectionAlert,
   Notification,
 } from '..';
+import { StarsAlert } from '../StarsAlert';
 import { useRole } from '../../../contexts/DispatchProvider';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
@@ -45,7 +46,6 @@ import {
 } from '../../../utils/restrictionListHelper';
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
-import { StarsAlert } from '../StarsAlert';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -68,7 +68,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               animationData={animationData}
             />
           </div>
-          <div>The network is confirming your forum.</div>
+          <div className='text'>The network is confirming your forum.</div>
         </div>
         <div className='subtitle'>When it`s ready, the page will reload itself. This may take a few seconds.</div>
       </div>

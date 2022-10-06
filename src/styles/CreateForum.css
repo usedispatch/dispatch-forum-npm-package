@@ -40,13 +40,6 @@
 
     &.creating {
       opacity: 0.65;
-
-      .spinner {
-        sgv {
-          height: 26px;
-          margin-right: 0;
-        }
-      }
     }
 
     .formBody {
@@ -263,6 +256,13 @@
     &:disabled {
       cursor: not-allowed;
       opacity: 0.65;
+    }
+
+    .creating {
+      sgv {
+        height: 26px;
+        margin-right: 0;
+      }
     }
   }
 }

@@ -169,7 +169,6 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
     };
 
     sendCreateForum(forum);
-    setTimeout(() => setCreatingNewForum(false), 3000);
   };
 
   const advancedOptions = (
@@ -376,7 +375,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
                   createForum();
                   ReactGA.event('sendForumCreate');
                 }}>
-                {creatingNewForum && <Spinner />}
+                {creatingNewForum && <div className='creating'><Spinner /></div> }
                 Create forum
               </button>
             </div>

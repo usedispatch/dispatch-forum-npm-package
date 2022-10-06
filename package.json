@@ -111,6 +111,7 @@
     "buffer": "^6.0.3",
     "lodash": "^4.17.21",
     "lodash.orderby": "^4.6.0",
+    "lottie-react": "^2.3.1",
     "markdown-to-jsx": "^7.1.7",
     "react-ga4": "^1.4.1",
     "react-helmet": "^6.1.0",

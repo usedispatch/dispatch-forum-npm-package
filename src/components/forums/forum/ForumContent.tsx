@@ -3,9 +3,11 @@ import { PublicKey } from '@solana/web3.js';
 import Markdown from 'markdown-to-jsx';
 import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
+import Lottie from 'lottie-react';
 import { PostRestriction } from '@usedispatch/client';
 
 import { Lock, Plus, Trash } from '../../../assets';
+import animationData from '../../../lotties/loader2.json';
 import {
   CollapsibleProps,
   Input,
@@ -59,7 +61,15 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
   if (isNil(forumData)) {
     const confirmingBox = (
       <div className='confirmingBanner'>
-        <div className='title'>The network is confirming your forum.</div>
+        <div className='title'>
+          <div className='animation'>
+            <Lottie
+              loop
+              animationData={animationData}
+            />
+          </div>
+          <div>The network is confirming your forum.</div>
+        </div>
         <div className='subtitle'>When it`s ready, the page will reload itself. This may take a few seconds.</div>
       </div>
     );

@@ -68,7 +68,7 @@ function TopicHeader(props: TopicHeaderProps): JSX.Element {
           <div className="postedBy">
             By
             <div className="icon">
-              {identity
+              {(identity != null)
                 ? (
                 <img
                   src={identity.profilePicture.href}
@@ -80,7 +80,7 @@ function TopicHeader(props: TopicHeaderProps): JSX.Element {
                 )}
             </div>
             <div className="posterId">
-              {identity ? identity.displayName : topic.poster.toBase58()}
+              {(identity != null) ? identity.displayName : topic.poster.toBase58()}
             </div>
             {/* TODO is it right to show an OP when the topic
             poster is obviously OP? if not, set the topicOwnerId
@@ -167,15 +167,18 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
     return setting.postRestriction;
   });
 
-  const postRestriction: PostRestriction = restrictionSetting?.postRestriction
-    ? restrictionSetting.postRestriction.postRestriction
-    : {};
+  const currentForumAccessToken = useMemo(() => {
+    if (isNil(restrictionSetting) || isNil(restrictionSetting.postRestriction)) {
+      return [] as string[];
+    } else {
+      const postRestriction: PostRestriction = restrictionSetting.postRestriction.postRestriction;
+      return restrictionListToString(postRestriction);
+    }
+  }, []);
+
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [currentForumAccessToken, setCurrentForumAccessToken] = useState<
-  string[]
-  >(() => restrictionListToString(postRestriction));
+
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const permission = forum.permission;
   const [notificationContent, setNotificationContent] = useState<{
@@ -188,13 +191,11 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
     forum,
     // TODO(andrew): maybe a better way to mock this up
     forum.wallet.publicKey ?? new PublicKey('11111111111111111111111111111111'),
-  );
+  ) ?? false;
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [addingAccessToken, setAddingAccessToken] = useState(false);
 
   // TODO Add config access token for topic
   // const [accessToken, setAccessToken] = useState<string>('');
@@ -216,47 +217,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
    * again
    */
   const [postInFlight, setPostInFlight] = useState(false);
-
-  // TODO (Ana): add corresponding function when its available
-  // const addAccessToken = async () => {
-  //   setAddingAccessToken(true);
-  //   try {
-  //     const restriction = pubkeysToRestriction(accessToken, postRestriction);
-  //      TODO: Modify function below
-  //     const tx = await forum.setForumPostRestriction(
-  //       forumData.collectionId,
-  //       restriction
-  //     );
-  //     const currentIds = restrictionListToString(restriction);
-
-  //     setAccessToken("");
-  //     setShowAddAccessToken(false);
-  //     setAddingAccessToken(false);
-  //     setModalInfo({
-  //       title: "Success!",
-  //       type: MessageType.success,
-  //       body: (
-  //         <div className="successBody">
-  //           <div>The access token was added</div>
-  //           <TransactionLink transaction={tx} />
-  //         </div>
-  //       ),
-  //     });
-  //     setCurrentForumAccessToken(currentIds);
-  //   } catch (error: any) {
-  //     setAddingAccessToken(false);
-  //     if (error.code !== 4001) {
-  //       setAccessToken("");
-  //       setShowAddAccessToken(false);
-  //       setModalInfo({
-  //         title: "Something went wrong!",
-  //         type: MessageType.error,
-  //         body: `The access token could not be added`,
-  //         collapsible: { header: "Error", content: JSON.stringify(error) },
-  //       });
-  //     }
-  //   }
-  // };
 
   const onDeleteTopic = async (): Promise<string | undefined> => {
     setDeletingTopic(true);
@@ -328,19 +288,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
           visible
           title="Limit post access"
           body={
-            <div className="">
-              {/* TODO: Add buttons when modifying topic settings is available
-               You can enter one token mint ID here such that only holders of
-              this token can participate in this topic. This mint can be for any
-              spl-token, eg SOL, NFTs, etc.
-              <input
-                type="text"
-                placeholder="Token mint ID"
-                className="newAccessToken"
-                name="accessToken"
-                value={accessToken}
-                onChange={(e) => setAccessToken(e.target.value)}
-              /> */}
+            <div >
               <label className="addModeratorsLabel">
                 Current NFT Collection IDs
               </label>
@@ -354,26 +302,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               })}
             </div>
           }
-          // loading={addingAccessToken}
           onClose={() => setShowAddAccessToken(false)}
-          // TODO: Add buttons when modifying topic settings is available
-          // okButton={
-          //   <button
-          //     className="okButton"
-          //     disabled={accessToken?.length === 0}
-          //     onClick={(e) => addAccessToken()}
-          //   >
-          //     Save
-          //   </button>
-          // }
-          // cancelButton={
-          //   <button
-          //     className="cancelDeleteTopicButton"
-          //     onClick={() => setShowAddAccessToken(false)}
-          //   >
-          //     Cancel
-          //   </button>
-          // }
         />
       )}
       {showDeleteConfirmation && (
@@ -490,8 +419,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               </button>
             </div>
             {
-              // The gifting UI should be hidden on the apes forum for non-mods.
-              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
               (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
                 userIsMod) &&
                 !(forum.wallet.publicKey?.equals(topic.poster) as boolean) && (

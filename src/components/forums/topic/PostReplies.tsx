@@ -12,6 +12,7 @@ import { useForum } from '../../../contexts/DispatchProvider';
 import { SCOPES, UserRoleType } from '../../../utils/permissions';
 import { ForumData, isForumPost, ClientPost } from '../../../utils/hooks';
 import { getIdentity } from '../../../utils/identity';
+import { sortByVotes } from '../../../utils/posts';
 import { Result } from '../../../types/error';
 
 interface PostRepliesProps {
@@ -54,8 +55,7 @@ export function PostReplies(props: PostRepliesProps): JSX.Element {
     })}`;
 
   const replies = useMemo(
-    () =>
-      props.replies.sort((a, b) => b.data.ts.valueOf() - a.data.ts.valueOf()),
+    () => { return sortByVotes(props.replies); },
     [props.replies],
   );
 
@@ -89,7 +89,7 @@ export function PostReplies(props: PostRepliesProps): JSX.Element {
               <div className="replyHeader">
                 <div className="posterId">
                   <div className="icon">
-                    {posterIdentity
+                    {(posterIdentity != null)
                       ? (
                       <img
                         src={posterIdentity.profilePicture.href}
@@ -104,7 +104,7 @@ export function PostReplies(props: PostRepliesProps): JSX.Element {
                       )}
                   </div>
                   <div className="walletId">
-                    {posterIdentity
+                    {(posterIdentity != null)
                       ? posterIdentity.displayName
                       : reply.poster.toBase58()}
                   </div>

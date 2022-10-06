@@ -455,31 +455,6 @@ export function PostContent(props: PostContentProps): JSX.Element {
           <div
             className="repliesSection"
             hidden={replies.length === 0 && !showReplyBox}>
-            <div className="repliesBox">
-              <PostReplies
-                forumData={forumData}
-                participatingModerators={participatingModerators}
-                replies={replies}
-                userRoles={userRoles}
-                topicOwnerId={topicPosterId}
-                update={async () => update()}
-                editPost={editPost}
-                onDeletePost={async (postToDelete) => {
-                  setPostToDelete(postToDelete);
-                  setShowDeleteConfirmation(true);
-                }}
-                onDownVotePost={async (reply) =>
-                  forum.voteDownForumPost(reply, forumData.collectionId)
-                }
-                onUpVotePost={async (reply) =>
-                  forum.voteUpForumPost(reply, forumData.collectionId)
-                }
-                onAwardReply={(reply) => {
-                  setPostToAward(reply);
-                  setShowGiveAward(true);
-                }}
-              />
-            </div>
             <div
               ref={replyAreaRef}
               className={`replyFormContainer ${

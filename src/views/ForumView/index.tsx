@@ -2,9 +2,10 @@ import { ForumPageContent } from '../../components/forums/forum/ForumPageContent
 import { useState, useEffect } from 'react';
 import { getForumID } from '../../utils/getForumID';
 import { useForum } from '../../contexts/DispatchProvider';
+import { ForumIdentifier, SolanartID, ForumID, isSolanartID } from '../../types/ForumIdentifier';
 
 interface ForumViewProps {
-  collectionId: string;
+  collectionId: ForumIdentifier<ForumID | SolanartID>;
 }
 
 export const ForumView = (props: ForumViewProps): JSX.Element => {
@@ -12,13 +13,17 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
   const { cluster } = useForum();
   const [forumKey, setForumKey] = useState<string>();
   useEffect(() => {
-    async function getID(): Promise<void> {
+    async function getID(solanartID: string): Promise<void> {
       if (forumId !== undefined) {
-        const forumId = await getForumID(cluster, props.collectionId);
-        setForumKey(forumId);
+        const id = await getForumID(cluster, solanartID);
+        setForumKey(id);
       }
     }
-    void getID();
+    if (isSolanartID(forumId)) {
+      void getID(forumId.solanartID);
+    } else {
+      setForumKey(forumId.forumID);
+    }
   }, [cluster, forumId]);
 
   return (

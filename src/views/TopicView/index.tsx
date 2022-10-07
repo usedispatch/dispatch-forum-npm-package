@@ -8,6 +8,7 @@ import {
 } from '../../types/ForumIdentifier';
 import { getForumID } from '../../utils/getForumID';
 import { TopicPageContent } from '../../components/forums/topic/TopicPageContent';
+import { Spinner } from '../../components/common';
 interface Props {
   topicId: number;
   forumId: ForumIdentifier<ForumID | SolanartID>;
@@ -41,7 +42,7 @@ export const TopicView = (props: Props): JSX.Element => {
       forumKey !== undefined ? (
         <TopicPageContent forumId={forumKey} topicId={topicId} />
       ) : (
-        <div> loading </div>
+        <Spinner/>
       )}
     </div>
   );

@@ -109,7 +109,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           </div>
           <div className="toolsWrapper" />
           <div className="topicListWrapper">
-            <TopicList />
+            <TopicList
+             />
           </div>
         </div>
       </div>

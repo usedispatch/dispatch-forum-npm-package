@@ -2,6 +2,7 @@ import { ForumPageContent } from '../../components/forums/forum/ForumPageContent
 import { useState, useEffect } from 'react';
 import { getForumID } from '../../utils/getForumID';
 import { useForum } from '../../contexts/DispatchProvider';
+import { Spinner } from '../../components/common';
 import { ForumIdentifier, SolanartID, ForumID, isSolanartID } from '../../types/ForumIdentifier';
 
 interface ForumViewProps {
@@ -9,28 +10,29 @@ interface ForumViewProps {
 }
 
 export const ForumView = (props: ForumViewProps): JSX.Element => {
-  const forumId = props.collectionId;
+  const collectionId = props.collectionId;
   const { cluster } = useForum();
   const [forumKey, setForumKey] = useState<string>();
   useEffect(() => {
     async function getID(solanartID: string): Promise<void> {
-      if (forumId !== undefined) {
-        const id = await getForumID(cluster, solanartID);
-        setForumKey(id);
+      if (collectionId !== undefined) {
+        const forumId = await getForumID(cluster, solanartID);
+        setForumKey(forumId);
       }
     }
-    if (isSolanartID(forumId)) {
-      void getID(forumId.solanartID);
+
+    if (isSolanartID(collectionId)) {
+      void getID(collectionId.solanartID);
     } else {
-      setForumKey(forumId.forumID);
+      setForumKey(collectionId.forumID);
     }
-  }, [cluster, forumId]);
+  }, [cluster, collectionId]);
 
   return (
     <div className="dsp-">
       {(forumKey !== undefined)
         ? <ForumPageContent forumID={forumKey} />
-        : <div> loading </div>
+        : <Spinner/>
       }
     </div>
   );

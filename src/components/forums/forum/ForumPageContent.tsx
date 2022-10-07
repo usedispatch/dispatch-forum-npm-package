@@ -12,7 +12,7 @@ import {
 
 import { useForum, useRole } from '../../../contexts/DispatchProvider';
 import { getUserRole } from './../../../utils/postbox/userRole';
-import { isSuccess } from '../../../utils/loading';
+import { isInitial, isPending, isSuccess } from '../../../utils/loading';
 import { errorSummary, isError, isNotFoundError } from '../../../utils/error';
 import { useForumData, useModal } from '../../../utils/hooks';
 import ReactGA from 'react-ga4';
@@ -142,11 +142,19 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
                 return (
                   <ForumContent
                     forumObject={forumObject}
-                    basicInfo={creationData}
+                    forumData={forumData}
                     update={update}
                   />
                 );
               } else if (creating) {
+                return (
+                  <ForumContent
+                    forumObject={forumObject}
+                    basicInfo={creationData}
+                    update={update}
+                  />
+                );
+              } else if (isPending(forumData) || isInitial(forumData)) {
                 return (
                   <div className="forumLoading">
                     <Spinner />

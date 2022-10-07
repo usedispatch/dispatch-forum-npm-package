@@ -15,8 +15,9 @@ import { getUserRole } from './../../../utils/postbox/userRole';
 import { isSuccess } from '../../../utils/loading';
 import { errorSummary, isError, isNotFoundError } from '../../../utils/error';
 import { useForumData, useModal } from '../../../utils/hooks';
-import { ForumInfo } from '@usedispatch/client';
 import ReactGA from 'react-ga4';
+import { ForumInfo } from '@usedispatch/client';
+
 interface ForumPageContentProps {
   forumID: string;
 }

@@ -1,0 +1,79 @@
+@layer components {
+  .rowContentIcons {
+    display: flex;
+    align-items: center;
+
+    .icon {
+      height: 28px;
+      width: 28px;
+      margin-right: 4px;
+    }
+  }
+
+  .rowSpinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 28px;
+    width: 28px;
+    margin: auto;
+  }
+
+  .row {
+    border-bottom: 1px solid #b8b9dc;
+    height: 4rem;
+
+    &:hover {
+      background: #dbeafe;
+    }
+
+    a {
+      cursor: pointer;
+      color: #000;
+      text-decoration: none;
+    }
+
+    .rowSubj {
+      width: 100%;
+
+      font-weight: 600;
+      text-align: left;
+
+      .textBox {
+        max-width: 600px;
+        width: 600px;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+
+    .rowIconReplies {
+      height: inherit;
+      width: 280px;
+      max-width: 280px;
+      min-width: 280px;
+
+      display: flex;
+      align-items: center;
+    }
+
+    .rowAmountReplies {
+      max-width: 120px;
+      width: 120px;
+
+      color: #414149;
+      text-align: center;
+    }
+
+    .rowDate {
+      max-width: 120px;
+      width: 120px;
+
+      color: #414149;
+      text-align: center;
+    }
+  }
+}

@@ -1,4 +1,70 @@
 @layer components {
+  .confirmingWrapper {
+    .forumContentHeader {
+      .titleBox {
+        color: #b3b4bb;
+      }
+      .descriptionBox {
+        .description {
+          color: #b3b4bb;
+        }
+        .createTopicButton &:disabled {
+          color: #b3b4bb;
+          border-color: #b3b4bb;
+
+          svg path {
+            fill: #b3b4bb;
+          }
+        }
+      }
+    }
+
+    .topicListWrapper {
+      .tableHeader {
+        border-color: #b3b4bb;
+      }
+      .topicListContainer .tableHeader .tableHeaderTitle,
+      .emptyTopicList {
+        color: #b3b4bb;
+      }
+    }
+  }
+
+  .confirmingBanner {
+    padding: 24px;
+    margin-bottom: 36px;
+
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgb(65 65 73 / 16%);
+
+    .animation {
+      max-width: 100px;
+      max-height: 16px;
+      display: flex;
+    }
+
+    .title {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+
+      .text {
+        color: #2e008b;
+        font-size: 22px;
+        font-weight: 600;
+      }
+    }
+
+    .subtitle {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 24px;
+      color: #86878e;
+      opacity: 1;
+    }
+  }
+
   .forumContentBox {
     padding: 72px 10% 0;
     background-image: url('assets/default_background.png');
@@ -26,7 +92,7 @@
       margin: 0 auto;
       padding: 24px 0;
 
-      font-size: 36px;
+      font-size: 40px;
       color: #2e008b;
       word-break: break-word;
 

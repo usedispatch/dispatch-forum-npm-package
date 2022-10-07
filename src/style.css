@@ -23,6 +23,7 @@
 @import './styles/ManageOwners.css';
 @import './styles/ManageModerator.css';
 @import './styles/TopicList.css';
+@import './styles/TopicListRow.css';
 @import './styles/UploadImage.css';
 
 /* Topic */

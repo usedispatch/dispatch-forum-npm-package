@@ -3,9 +3,11 @@ import { PublicKey } from '@solana/web3.js';
 import Markdown from 'markdown-to-jsx';
 import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
+import Lottie from 'lottie-react';
 import { PostRestriction } from '@usedispatch/client';
 
 import { Lock, Plus, Trash } from '../../../assets';
+import animationData from '../../../lotties/loader.json';
 import {
   CollapsibleProps,
   Input,
@@ -24,11 +26,12 @@ import {
   ConnectionAlert,
   Notification,
 } from '..';
+import { StarsAlert } from '../StarsAlert';
 import { useRole } from '../../../contexts/DispatchProvider';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { SCOPES, UserRoleType } from '../../../utils/permissions';
-import { Result } from '../../../types/error';
+import { DispatchError, Result } from '../../../types/error';
 import { isError, errorSummary } from '../../../utils/error';
 import { isSuccess } from '../../../utils/loading';
 import {
@@ -43,15 +46,96 @@ import {
 } from '../../../utils/restrictionListHelper';
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
-import { StarsAlert } from '../StarsAlert';
 
 interface ForumContentProps {
+  forumObject: DispatchForum;
+  basicInfo?: { title: string; desc: string };
+  forumData?: ForumData;
+  update: () => Promise<void>;
+}
+
+export function ForumContent(props: ForumContentProps): JSX.Element {
+  const { forumData, forumObject, basicInfo, update } = props;
+  const { permission } = forumObject;
+
+  if (isNil(forumData)) {
+    const confirmingBox = (
+      <div className='confirmingBanner'>
+        <div className='title'>
+          <div className='animation'>
+            <Lottie
+              loop
+              animationData={animationData}
+            />
+          </div>
+          <div className='text'>The network is confirming your forum.</div>
+        </div>
+        <div className='subtitle'>When it&apos;s ready, the page will reload itself. This may take a few seconds.</div>
+      </div>
+    );
+
+    if (!isNil(basicInfo)) {
+      const forumHeader = (
+      <div className="forumContentHeader">
+        <div className={'titleBox'}>
+          <Markdown>{basicInfo.title}</Markdown>
+        </div>
+        <div className="descriptionBox">
+          <div className="description">
+            <Markdown>{basicInfo.desc}</Markdown>
+          </div>
+          <button
+            className={'createTopicButton'}
+            type="button"
+            disabled
+            >
+            <div className="buttonImageContainer">
+              <Plus />
+            </div>
+            Create Topic
+          </button>
+        </div>
+      </div>
+      );
+
+      return (
+      <div className='confirmingWrapper'>
+        <div className="forumContent">
+          <>{ReactGA.send('pageview')}</>
+          <div className="forumContentBox" >
+            {!permission.readAndWrite && <ConnectionAlert />}
+            {confirmingBox}
+            {forumHeader}
+          </div>
+          <div className="toolsWrapper" />
+          <div className="topicListWrapper">
+            <TopicList />
+          </div>
+        </div>
+      </div>
+      );
+    } else {
+      return <Spinner/>;
+    }
+  } else {
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      <PopulatedForumContent
+        forumObject={forumObject}
+        forumData={forumData}
+        update={update}
+      />
+    );
+  }
+}
+
+interface PopulatedForumContentProps {
   forumObject: DispatchForum;
   forumData: ForumData;
   update: () => Promise<void>;
 }
 
-export function ForumContent(props: ForumContentProps): JSX.Element {
+export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.Element {
   const { forumData, forumObject, update } = props;
   const { roles } = useRole();
   const { permission } = forumObject;
@@ -141,7 +225,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error) },
+          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
         });
         setShowManageAccessToken(false);
         return;
@@ -297,7 +381,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error) },
+          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
         });
         setShowNewTopicModal(false);
         return;
@@ -603,7 +687,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               }
             />
           )}
-          {removeAccessToken.show && isNil(modalInfo) && (
+          {removeAccessToken.show && !isNil(removeAccessToken.token) && isNil(modalInfo) && (
             <PopUpModal
               id="remove-access-token"
               visible
@@ -611,8 +695,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               body={
                 <div>
                   This action will remove the token
-                  {` ${removeAccessToken.token?.substring(0, 4)}...`}
-                  {`${removeAccessToken.token?.slice(-4)} `} from gating the
+                  {` ${removeAccessToken.token.substring(0, 4)}...`}
+                  {`${removeAccessToken.token.slice(-4)} `} from gating the
                   forum.
                 </div>
               }
@@ -819,7 +903,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               backgroundImage:
                 !isNil(forumData.images?.background) &&
                 forumData.images.background.length > 0
-                  ? `url(${forumData.images?.background})`
+                  ? `url(${forumData.images?.background as string})`
                   : undefined,
             }}>
             {!permission.readAndWrite && <ConnectionAlert />}

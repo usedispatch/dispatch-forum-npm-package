@@ -29,7 +29,6 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
   const { wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [croppedCollectionID, setCroppedCollectionId] = useState<string>('');
 
   const { modal, showModal } = useModal();

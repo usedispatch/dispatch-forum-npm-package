@@ -84,7 +84,6 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     content?: string | ReactNode;
     type?: MessageType;
   }>({ isHidden: true });
-  const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [accessList, setAccessList] = useState<PublicKey[]>([]);
 
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
@@ -100,6 +99,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       return restrictionListToString(forumData.restriction);
     } else return [];
   });
+  const [ungatedNewTopic, setUngatedNewTopic] = useState(currentForumAccessToken.length === 0);
   const [newForumAccessToken, setNewForumAccessToken] = useState<string>('');
   const [newForumAccessTokenAmount, setNewForumAccessTokenAmount] =
     useState<number>(1);

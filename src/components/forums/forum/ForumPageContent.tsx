@@ -1,0 +1,175 @@
+import { getCustomStyles } from '../../../utils/getCustomStyles';
+import { useEffect, useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet';
+import { PublicKey } from '@solana/web3.js';
+
+import { MessageType, Spinner, TransactionLink } from '../../../components/common';
+import {
+  CreateForum,
+  ForumContent,
+  PoweredByDispatch,
+} from '../../../components/forums';
+
+import { useForum, useRole } from '../../../contexts/DispatchProvider';
+import { getUserRole } from './../../../utils/postbox/userRole';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary, isError, isNotFoundError } from '../../../utils/error';
+import { useForumData, useModal } from '../../../utils/hooks';
+import { ForumInfo } from '@usedispatch/client';
+import ReactGA from 'react-ga4';
+interface ForumPageContentProps {
+  forumID: string;
+}
+
+export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
+  const { forumID } = props;
+  const forumObject = useForum();
+  const Role = useRole();
+  const { wallet, permission } = forumObject;
+  const { publicKey } = wallet;
+
+  const { modal, showModal } = useModal();
+
+  const customStyle = getCustomStyles(forumID);
+  const [creationData, setCreationData] = useState<{ title: string; desc: string }>();
+  const [creating, setCreating] = useState(false);
+
+  const forumPublicKey = useMemo(() => {
+    try {
+      const pubkey = new PublicKey(forumID);
+      return pubkey;
+    } catch (error) {
+      const message = JSON.stringify(error);
+      console.log(error);
+      showModal({
+        title: 'Something went wrong!',
+        type: MessageType.error,
+        body: 'Invalid Collection ID Public Key',
+        collapsible: { header: 'Error', content: message },
+      });
+      return null;
+    }
+  }, [forumID]);
+  const { forumData, update } = useForumData(forumPublicKey, forumObject);
+
+  const onCreateForum = async (info: ForumInfo): Promise<void> => {
+    setCreating(true);
+    setCreationData({ title: info.title, desc: info.description });
+    const res = await forumObject.createForum(info);
+
+    if (isSuccess(res)) {
+      if (res.forum !== undefined) {
+        showModal({
+          title: 'Success!',
+          body: (
+            <div className="successBody">
+              <div>{`The forum '${info.title}' for the collection ${forumID} was created`}</div>
+              <div>
+                {res.txs.map(tx => (
+                  <TransactionLink transaction={tx} key={tx} />
+                ))}
+              </div>
+            </div>
+          ),
+          type: MessageType.success,
+        });
+
+        if (res.txs !== undefined) {
+          await Promise.all(
+            res.txs.map(async tx =>
+              forumObject.connection.confirmTransaction(tx),
+            ),
+          ).then(async () => {
+            await update();
+            setCreating(false);
+          });
+        }
+      }
+      ReactGA.event('successfulForumCreation');
+    } else {
+      setCreationData(undefined);
+      setCreating(false);
+      const error = res;
+      ReactGA.event('failedForumCreation');
+      showModal({
+        title: 'Something went wrong!',
+        type: MessageType.error,
+        body: `The forum '${info.title}' for the collection ${forumID} could not be created.`,
+        collapsible: { header: 'Error', content: errorSummary(error) },
+      });
+    }
+  };
+
+  useEffect(() => {
+    void update();
+    // Update every time the cluster is changed
+  }, [forumObject.cluster]);
+
+  useEffect(() => {
+    if (
+      isSuccess(forumData) &&
+      permission.readAndWrite &&
+      forumPublicKey !== null
+    ) {
+      void getUserRole(forumObject, forumPublicKey, Role);
+    }
+  }, [forumData, publicKey]);
+
+  const disconnectedView = (
+    <div className="disconnectedView">
+      Connect to your wallet in order to see or create a forum
+    </div>
+  );
+
+  return (
+    <div className={customStyle}>
+      <Helmet>
+        <meta charSet="utf-8" />
+        {isError(forumData) && isNotFoundError(forumData) && (
+          <title>Create Forum for {forumID}</title>
+        )}
+        {isSuccess(forumData) && (
+          <title>{forumData.description.title} -- Forum</title>
+        )}
+      </Helmet>
+      <div className="forumView">
+        {modal}
+        <div className="forumViewContainer">
+          <div className="forumViewContent">
+            {(() => {
+              if (isSuccess(forumData)) {
+                return (
+                  <ForumContent
+                    forumObject={forumObject}
+                    basicInfo={creationData}
+                    update={update}
+                  />
+                );
+              } else if (creating) {
+                return (
+                  <div className="forumLoading">
+                    <Spinner />
+                  </div>
+                );
+              } else if (isNotFoundError(forumData) && !creating) {
+                return (
+                  <CreateForum
+                    forumObject={forumObject}
+                    collectionId={forumID}
+                    update={update}
+                    sendCreateForum={async (info) => onCreateForum(info) }
+                  />
+                );
+              } else {
+                // TODO(andrew) better, more detailed error
+                // view here
+                return disconnectedView;
+              }
+            })()}
+          </div>
+          <PoweredByDispatch customStyle={customStyle} />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,19 +1,19 @@
-import Markdown from "markdown-to-jsx";
-import { useMemo } from "react";
-import { PublicKey } from "@solana/web3.js";
-import Jdenticon from "react-jdenticon";
-import { ForumPost } from "@usedispatch/client";
+import Markdown from 'markdown-to-jsx';
+import { useMemo } from 'react';
+import Jdenticon from 'react-jdenticon';
+import { PublicKey } from '@solana/web3.js';
+import { ForumPost } from '@usedispatch/client';
 
-import { Gift, Info, Trash } from "../../../assets";
-import { PermissionsGate, Spinner } from "../../../components/common";
-import { EditPost, RoleLabel, Votes } from "../index";
+import { Chain, Gift, Trash } from '../../../assets';
+import { PermissionsGate, Spinner } from '../../../components/common';
+import { EditPost, RoleLabel, Votes } from '../index';
 
-import { useForum } from "../../../contexts/DispatchProvider";
-import { SCOPES, UserRoleType } from "../../../utils/permissions";
-import { ForumData, isForumPost, ClientPost } from "../../../utils/hooks";
-import { Result } from "../../../types/error";
-import { getIdentity } from "../../../utils/identity";
-import { sortByVotes } from "../../../utils/posts";
+import { useForum } from '../../../contexts/DispatchProvider';
+import { SCOPES, UserRoleType } from '../../../utils/permissions';
+import { ForumData, isForumPost, ClientPost } from '../../../utils/hooks';
+import { getIdentity } from '../../../utils/identity';
+import { sortByVotes } from '../../../utils/posts';
+import { Result } from '../../../types/error';
 
 interface PostRepliesProps {
   forumData: ForumData;
@@ -29,7 +29,7 @@ interface PostRepliesProps {
   onAwardReply: (post: ForumPost) => void;
 }
 
-export function PostReplies(props: PostRepliesProps) {
+export function PostReplies(props: PostRepliesProps): JSX.Element {
   const {
     forumData,
     participatingModerators,
@@ -44,25 +44,24 @@ export function PostReplies(props: PostRepliesProps) {
   const forum = useForum();
   const permission = forum.permission;
 
-  const postedAt = (reply: ClientPost) =>
+  const postedAt = (reply: ClientPost): string =>
     `${reply.data.ts.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
     })} at ${reply.data.ts.toLocaleTimeString(undefined, {
-      hour: "numeric",
-      minute: "numeric",
+      hour: 'numeric',
+      minute: 'numeric',
     })}`;
 
   const replies = useMemo(
-    () =>
-    {return sortByVotes(props.replies);},
-    [props.replies]
+    () => { return sortByVotes(props.replies); },
+    [props.replies],
   );
 
-  const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost) => {
+  const updateVotes = (upVoted: boolean, replyToUpdate: ForumPost): void => {
     const index = replies.findIndex((r) => {
-      return "postId" in r && r.postId === replyToUpdate.postId;
+      return 'postId' in r && r.postId === replyToUpdate.postId;
     });
     if (upVoted) {
       replyToUpdate.upVotes = replyToUpdate.upVotes + 1;
@@ -74,7 +73,7 @@ export function PostReplies(props: PostRepliesProps) {
   };
 
   if (replies.length === 0) {
-    return null;
+    return <></>;
   }
 
   return (
@@ -86,24 +85,26 @@ export function PostReplies(props: PostRepliesProps) {
 
         return (
           <div key={index}>
-            <div className={`replyContent  ${!isPost ? "inFlight" : ""}`}>
+            <div className={`replyContent  ${!isPost ? 'inFlight' : ''}`}>
               <div className="replyHeader">
                 <div className="posterId">
                   <div className="icon">
-                    {posterIdentity ? (
+                    {(posterIdentity != null)
+                      ? (
                       <img
                         src={posterIdentity.profilePicture.href}
-                        style={{ borderRadius: "50%" }}
+                        style={{ borderRadius: '50%' }}
                       />
-                    ) : (
+                      )
+                      : (
                       <Jdenticon
                         value={reply.poster.toBase58()}
                         alt="posterID"
                       />
-                    )}
+                      )}
                   </div>
                   <div className="walletId">
-                    {posterIdentity
+                    {(posterIdentity != null)
                       ? posterIdentity.displayName
                       : reply.poster.toBase58()}
                   </div>
@@ -114,27 +115,29 @@ export function PostReplies(props: PostRepliesProps) {
                   />
                 </div>
                 <div className="postedAt">
-                  {isPost ? (
+                  {isPost
+                    ? (
                     <>
                       {postedAt(reply)}
                       {/* Only show Address link if post is confirmed */}
                       <div className="accountInfo">
                         <a
-                          href={`https://solscan.io/account/${reply.address}?cluster=${forum.cluster}`}
+                          href={`https://solscan.io/account/${reply.address.toBase58()}?cluster=${forum.cluster}`}
                           className="transactionLink"
-                          target="_blank">
-                          <Info />
+                          target="_blank" rel="noreferrer">
+                          <Chain />
                         </a>
                       </div>
                     </>
-                  ) : (
+                    )
+                    : (
                     <>
-                      Posting
+                      Confirming on chain
                       <div className="posting">
                         <Spinner />
                       </div>
                     </>
-                  )}
+                    )}
                 </div>
               </div>
               <div className="replyBody">
@@ -149,8 +152,8 @@ export function PostReplies(props: PostRepliesProps) {
                         forumData={forumData}
                         update={update}
                         updateVotes={(upVoted) => updateVotes(upVoted, reply)}
-                        onUpVotePost={() => onUpVotePost(reply)}
-                        onDownVotePost={() => onDownVotePost(reply)}
+                        onUpVotePost={async () => onUpVotePost(reply)}
+                        onDownVotePost={async () => onDownVotePost(reply)}
                         post={reply}
                       />
                     </PermissionsGate>
@@ -160,7 +163,7 @@ export function PostReplies(props: PostRepliesProps) {
                     <EditPost
                       post={reply}
                       forumData={forumData}
-                      update={() => update()}
+                      update={async () => update()}
                       editPostLocal={editPost}
                       showDividers={{ leftDivider: true, rightDivider: false }}
                     />
@@ -175,12 +178,12 @@ export function PostReplies(props: PostRepliesProps) {
                       <button
                         className="deleteButton"
                         disabled={!permission.readAndWrite}
-                        onClick={() => onDeletePost(reply)}>
+                        onClick={async () => onDeletePost(reply)}>
                         <Trash />
                       </button>
                     </PermissionsGate>
                     <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                      {!forum.wallet.publicKey?.equals(reply.poster) && (
+                      {!(forum.wallet.publicKey?.equals(reply.poster) as boolean) && (
                         <>
                           <div className="actionDivider" />
                           <button

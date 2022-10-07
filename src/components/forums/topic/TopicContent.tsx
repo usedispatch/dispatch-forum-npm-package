@@ -1,10 +1,12 @@
 import isNil from 'lodash/isNil';
 import { ReactNode, useMemo, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
-import { ForumPost } from '@usedispatch/client';
+import Markdown from 'markdown-to-jsx';
+import Jdenticon from 'react-jdenticon';
+import { ForumPost, PostRestriction } from '@usedispatch/client';
 import ReactGA from 'react-ga4';
 
-import { Gift, MessageSquare, Trash, Lock } from '../../../assets';
+import { Gift, MessageSquare, Trash, Lock, Chain } from '../../../assets';
 
 import {
   CollapsibleProps,
@@ -12,9 +14,9 @@ import {
   PopUpModal,
   PermissionsGate,
   TransactionLink,
+  Spinner,
 } from '../../common';
-import { CreatePost, GiveAward, PostList, Notification, Votes } from '..';
-import { EditPost } from './EditPost';
+import { CreatePost, GiveAward, PostList, Notification, Votes, RoleLabel, EditPost } from '..';
 
 import { usePath } from '../../../contexts/DispatchProvider';
 
@@ -22,6 +24,7 @@ import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 import { UserRoleType, SCOPES } from '../../../utils/permissions';
 import { selectRepliesFromPosts } from '../../../utils/posts';
+import { getIdentity } from '../../../utils/identity';
 import {
   ForumData,
   CreatedPost,
@@ -29,11 +32,101 @@ import {
   useUserIsMod,
   useForumIdentity,
   ForumIdentity,
+  isEditedPost,
 } from '../../../utils/hooks';
 import { isSuccess } from '../../../utils/loading';
 import { errorSummary } from '../../../utils/error';
 import { restrictionListToString } from '../../../utils/restrictionListHelper';
-import { TopicHeader } from './TopicHeader';
+
+interface TopicHeaderProps {
+  topic: ForumPost;
+  forum: DispatchForum;
+  participatingModerators: PublicKey[] | null;
+  isGated: boolean;
+}
+
+function TopicHeader(props: TopicHeaderProps): JSX.Element {
+  const { isGated, topic, forum, participatingModerators } = props;
+
+  const postedAt = !isNil(topic)
+    ? `${topic.data.ts.toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    })} at ${topic.data.ts.toLocaleTimeString(undefined, {
+      hour: 'numeric',
+      minute: 'numeric',
+    })}`
+    : '-';
+
+  const identity = getIdentity(topic.poster);
+
+  return (
+    <div className="topicHeader">
+      <div className="topicTitle">
+        <div className="posted">
+          <div className="postedBy">
+            By
+            <div className="icon">
+              {(identity != null)
+                ? (
+                <img
+                  src={identity.profilePicture.href}
+                  style={{ borderRadius: '50%' }}
+                />
+                )
+                : (
+                <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
+                )}
+            </div>
+            <div className="posterId">
+              {(identity != null) ? identity.displayName : topic.poster.toBase58()}
+            </div>
+            {/* TODO is it right to show an OP when the topic
+            poster is obviously OP? if not, set the topicOwnerId
+            prop to an unrelated key */}
+            <RoleLabel
+              topicOwnerId={topic.poster}
+              posterId={topic.poster}
+              moderators={participatingModerators}
+            />
+          </div>
+          <div className="postedAt">
+            {postedAt}
+            <div className="accountInfo">
+              <a
+                href={`https://solscan.io/account/${topic.address.toBase58()}?cluster=${forum.cluster}`}
+                className="transactionLink"
+                target="_blank" rel="noreferrer">
+                <Chain />
+              </a>
+            </div>
+          </div>
+        </div>
+        {!isEditedPost(topic)
+          ? (
+          <div className="subj">
+            {isGated && (
+              <div className="gatedTopic">
+                <Lock />
+              </div>
+            )}
+            <Markdown>{topic?.data.subj ?? 'subject'}</Markdown>
+          </div>
+          )
+          : (
+          <Spinner />
+          )}
+      </div>
+      {!isEditedPost(topic) && (
+        <div className="topicBody">
+          <Markdown>{topic?.data.body ?? 'body of the topic'}</Markdown>
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface TopicContentProps {
   forum: DispatchForum;
   forumData: ForumData;
@@ -63,19 +156,29 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
   }, [forumData]);
+
+  if (process.env.REACT_APP_DEBUG_MODE === 'true') {
+    console.log(topic.address.toBase58());
+  }
+
   const { buildForumPath } = usePath();
   const forumPath = buildForumPath(forumData.collectionId.toBase58());
   const restrictionSetting = topic.settings.find(setting => {
     return setting.postRestriction;
   });
-  const postRestriction = !isNil(restrictionSetting)
-    ? restrictionSetting.postRestriction
-    : ({} as any);
+
+  const currentForumAccessToken = useMemo(() => {
+    if (isNil(restrictionSetting) || isNil(restrictionSetting.postRestriction)) {
+      return [] as string[];
+    } else {
+      const postRestriction: PostRestriction = restrictionSetting.postRestriction.postRestriction;
+      return restrictionListToString(postRestriction);
+    }
+  }, []);
+
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [deletingTopic, setDeletingTopic] = useState(false);
-  const [currentForumAccessToken] = useState<string[]>(() =>
-    restrictionListToString(postRestriction.postRestriction),
-  );
+
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const permission = forum.permission;
   const [notificationContent, setNotificationContent] = useState<{
@@ -88,7 +191,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
     forum,
     // TODO(andrew): maybe a better way to mock this up
     forum.wallet.publicKey ?? new PublicKey('11111111111111111111111111111111'),
-  );
+  ) ?? false;
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
@@ -115,48 +218,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
    */
   const [postInFlight, setPostInFlight] = useState(false);
 
-  // TODO (Ana): add corresponding function when its available
-  // const addAccessToken = async () => {
-  //   setAddingAccessToken(true);
-  //   try {
-  //     const restriction = pubkeysToRestriction(accessToken, postRestriction);
-  //      TODO: Modify function below
-  //     const tx = await forum.setForumPostRestriction(
-  //       forumData.collectionId,
-  //       restriction
-  //     );
-  //     const currentIds = restrictionListToString(restriction);
-
-  //     setAccessToken("");
-  //     setShowAddAccessToken(false);
-  //     setAddingAccessToken(false);
-  //     setModalInfo({
-  //       title: "Success!",
-  //       type: MessageType.success,
-  //       body: (
-  //         <div className="successBody">
-  //           <div>The access token was added</div>
-  //           <TransactionLink transaction={tx} />
-  //         </div>
-  //       ),
-  //     });
-  //     setCurrentForumAccessToken(currentIds);
-  //   } catch (error: any) {
-  //     setAddingAccessToken(false);
-  //     if (error.code !== 4001) {
-  //       setAccessToken("");
-  //       setShowAddAccessToken(false);
-  //       setModalInfo({
-  //         title: "Something went wrong!",
-  //         type: MessageType.error,
-  //         body: `The access token could not be added`,
-  //         collapsible: { header: "Error", content: JSON.stringify(error) },
-  //       });
-  //     }
-  //   }
-  // };
-
-  const onDeleteTopic = async (): Promise<string> => {
+  const onDeleteTopic = async (): Promise<string | undefined> => {
     setDeletingTopic(true);
     const tx = await forum.deleteForumPost(
       topic,
@@ -226,19 +288,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
           visible
           title="Limit post access"
           body={
-            <div className="">
-              {/* TODO: Add buttons when modifying topic settings is available
-               You can enter one token mint ID here such that only holders of
-              this token can participate in this topic. This mint can be for any
-              spl-token, eg SOL, NFTs, etc.
-              <input
-                type="text"
-                placeholder="Token mint ID"
-                className="newAccessToken"
-                name="accessToken"
-                value={accessToken}
-                onChange={(e) => setAccessToken(e.target.value)}
-              /> */}
+            <div >
               <label className="addModeratorsLabel">
                 Current NFT Collection IDs
               </label>
@@ -247,35 +297,12 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
                   The topic has no restriction
                 </div>
               )}
-              {currentForumAccessToken.map(token => {
-                return (
-                  <div className="currentAccessToken" key={token}>
-                    {token}
-                  </div>
-                );
+              {currentForumAccessToken.map((token) => {
+                return <div key={token} className="currentAccessToken">{token}</div>;
               })}
             </div>
           }
-          // loading={addingAccessToken}
           onClose={() => setShowAddAccessToken(false)}
-          // TODO: Add buttons when modifying topic settings is available
-          // okButton={
-          //   <button
-          //     className="okButton"
-          //     disabled={accessToken?.length === 0}
-          //     onClick={(e) => addAccessToken()}
-          //   >
-          //     Save
-          //   </button>
-          // }
-          // cancelButton={
-          //   <button
-          //     className="cancelDeleteTopicButton"
-          //     onClick={() => setShowAddAccessToken(false)}
-          //   >
-          //     Cancel
-          //   </button>
-          // }
         />
       )}
       {showDeleteConfirmation && (
@@ -392,28 +419,19 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               </button>
             </div>
             {
-              // The gifting UI should be hidden on the apes forum for non-mods.
-              // Therefore, show it if the forum is NOT degen apes, or the user is a mod
               (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                (!isNil(userIsMod) && userIsMod)) &&
-              // disable lint check here since publicKey.equals returns boolean
-              (!isNil(forum.wallet.publicKey) &&
-              // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-              !forum.wallet.publicKey.equals(topic.poster))
-                ? (<PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  <button
-                    className="awardButton"
-                    disabled={!permission.readAndWrite}
-                    onClick={() => setShowGiveAward(true)}
-                  >
-                    <span>Send Token</span>
-                    <Gift />
-                  </button>
-                </PermissionsGate>
-                )
-                : (
-                <></>
-                )
+                userIsMod) &&
+                !(forum.wallet.publicKey?.equals(topic.poster) as boolean) && (
+                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
+                    <button
+                      className="awardButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => setShowGiveAward(true)}>
+                      <span>Send Token</span>
+                      <Gift />
+                    </button>
+                  </PermissionsGate>
+              )
             }
           </div>
           <PermissionsGate scopes={[SCOPES.canCreatePost]}>
@@ -423,7 +441,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               update={update}
               addPost={addPost}
               onReload={() => {}}
-              postInFlight={postInFlight}
               setPostInFlight={setPostInFlight}
             />
           </PermissionsGate>
@@ -444,7 +461,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
         editPost={editPost}
         deletePost={deletePost}
         topic={topic}
-        userIsMod={userIsMod}
+        userIsMod={userIsMod ?? false}
         onDeletePost={async tx => {
           setIsNotificationHidden(false);
           setNotificationContent({

@@ -12,7 +12,7 @@ import {
   Spinner,
   Tooltip,
 } from '../../common';
-import { Notification } from '..';
+import { ConnectionAlert, Notification } from '..';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { isSuccess } from '../../../utils/loading';
@@ -30,7 +30,7 @@ interface CreateForumProps {
 
 export function CreateForum(props: CreateForumProps): JSX.Element {
   const { collectionId, forumObject, sendCreateForum } = props;
-  const { wallet } = forumObject;
+  const { permission, wallet } = forumObject;
   const { publicKey } = wallet;
 
   const [creatingNewForum, setCreatingNewForum] = useState(false);
@@ -309,6 +309,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
           type={notification?.type}
           onClose={() => setNotification({ isHidden: true })}
         />
+        {!permission.readAndWrite && <ConnectionAlert />}
         <div className="createForumTitle">Create New Forum</div>
         <div className="createForumSubtitle">
           Create one to create topics, post, share, rate, and gift tokens.
@@ -370,7 +371,7 @@ export function CreateForum(props: CreateForumProps): JSX.Element {
               <button
                 type="submit"
                 className="acceptCreateForumButton"
-                disabled={creatingNewForum || title.length === 0}
+                disabled={!permission.readAndWrite || creatingNewForum || title.length === 0}
                 onClick={async () => {
                   createForum();
                   ReactGA.event('sendForumCreate');

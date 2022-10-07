@@ -70,7 +70,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           </div>
           <div className='text'>The network is confirming your forum.</div>
         </div>
-        <div className='subtitle'>When it`s ready, the page will reload itself. This may take a few seconds.</div>
+        <div className='subtitle'>When it&apos;s ready, the page will reload itself. This may take a few seconds.</div>
       </div>
     );
 

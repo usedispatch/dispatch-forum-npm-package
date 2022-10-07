@@ -75,7 +75,6 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
   const [showNewTopicModal, setShowNewTopicModal] = useState(false);
   const [creatingNewTopic, setCreatingNewTopic] = useState(false);
   const [newTopicInFlight, setNewTopicInFlight] = useState(false);
-  const [keepGates, setKeepGates] = useState(true);
   const [addNFTGate, setAddNFTGate] = useState(false);
   const [addSPLGate, setAddSPLGate] = useState(false);
   const [tokenGateSelection, setTokenGateSelection] = useState('');
@@ -84,7 +83,6 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
     content?: string | ReactNode;
     type?: MessageType;
   }>({ isHidden: true });
-  const [ungatedNewTopic, setUngatedNewTopic] = useState(false);
   const [accessList, setAccessList] = useState<PublicKey[]>([]);
 
   const [showManageAccessToken, setShowManageAccessToken] = useState(false);
@@ -100,6 +98,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       return restrictionListToString(forumData.restriction);
     } else return [];
   });
+  const [ungatedNewTopic, setUngatedNewTopic] = useState(currentForumAccessToken.length === 0);
+  const [keepGates, setKeepGates] = useState(!ungatedNewTopic);
   const [newForumAccessToken, setNewForumAccessToken] = useState<string>('');
   const [newForumAccessTokenAmount, setNewForumAccessTokenAmount] =
     useState<number>(1);
@@ -491,7 +491,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                       className="addTokenGateSelect">
                       <option value="">Select a token type</option>
                       <option value="NFT">Metaplex NFT</option>
-                      {!isSuccess(forumData.restriction) && (
+                      {currentForumAccessToken.length === 0 && (
                         <option value="SPL">SPL Token</option>
                       )}
                     </select>

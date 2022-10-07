@@ -1,7 +1,7 @@
 export type Result<T> = T | DispatchError;
 
-export type DispatchError
-  = WalletError
+export type DispatchError =
+  | WalletError
   | BadInputError
   | ContractError
   | RateLimitingError
@@ -60,7 +60,7 @@ export interface RateLimitingError {
  * An unknown or uncategorized kind of error
  */
 export interface UncategorizedError {
-  errorKind: 'Uncategorized',
-  message: string,
-  error: any
+  errorKind: 'Uncategorized';
+  message: string;
+  error: any;
 }

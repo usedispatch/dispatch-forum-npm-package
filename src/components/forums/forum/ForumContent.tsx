@@ -491,7 +491,8 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
                       className="addTokenGateSelect">
                       <option value="">Select a token type</option>
                       <option value="NFT">Metaplex NFT</option>
-                      {!isSuccess(forumData.restriction) && (
+                      {console.log(forumData.restriction)}
+                      {currentForumAccessToken.length === 0 && (
                         <option value="SPL">SPL Token</option>
                       )}
                     </select>

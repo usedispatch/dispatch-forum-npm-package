@@ -4,6 +4,7 @@ import {
   Cluster,
 } from '@solana/web3.js';
 import { WalletInterface } from '@usedispatch/client';
+import { SearchContextManager } from '@giphy/react-components';
 import ReactGA from 'react-ga4';
 import {
   FC,
@@ -84,10 +85,12 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
     <ForumContext.Provider value={forum}>
       <PathContext.Provider value={paths}>
         <UserRoleContext.Provider value={userRole}>
-          <DebugWarning />
-          <ThemeContext.Provider value={theme}>
-            {children}
-           </ThemeContext.Provider>
+          <SearchContextManager apiKey="S869Msi1OL3o4bPrwFjLG2bRABGLbvix">
+            <DebugWarning />
+            <ThemeContext.Provider value={theme}>
+              {children}
+            </ThemeContext.Provider>
+          </SearchContextManager>
         </UserRoleContext.Provider>
       </PathContext.Provider>
     </ForumContext.Provider>

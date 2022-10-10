@@ -33,6 +33,7 @@ import {
   ForumIdentity,
 } from '../../../utils/hooks';
 import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
+import { AddGIF } from '../../../components/common/AddGIF';
 import { isNil } from 'lodash';
 
 interface PostContentProps {
@@ -85,6 +86,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
   );
 
   const [showGiveAward, setShowGiveAward] = useState(false);
+  const [showGIFModal, setShowGIFModal] = useState(false);
   const [postToAward, setPostToAward] = useState<ForumPost>();
 
   const [notification, setNotification] = useState<{
@@ -226,6 +228,10 @@ export function PostContent(props: PostContentProps): JSX.Element {
     minute: 'numeric',
   })}`;
 
+  const onGifSelect = (gifURL: any): void => {
+    setReply(reply.concat(`\n ![](${gifURL}) \n`));
+    setShowGIFModal(false);
+  };
   const isLocal = isCreatedPost(post);
   const identity = getIdentity(post.poster);
 
@@ -239,6 +245,21 @@ export function PostContent(props: PostContentProps): JSX.Element {
         className={`postContentContainer ${
           postInFlight && isLocal ? 'inFlight' : ''
         }`}>
+        {
+          showGIFModal && (
+            <PopUpModal
+              id="add-gif-modal"
+              visible
+              title="Add GIF"
+              body={
+                <AddGIF
+                  onGifSelect={onGifSelect}
+                />
+              }
+              onClose={() => setShowGIFModal(false)}
+              />
+          )
+        }
         {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
@@ -472,23 +493,35 @@ export function PostContent(props: PostContentProps): JSX.Element {
                   }}
                 />
                 <div className="textSize"> {replySize}/800 </div>
-                <div className="buttonsContainer">
-                  <button
-                    className="cancelReplyButton"
-                    onClick={() => {
-                      setShowReplyBox(false);
-                      setReplySize(Buffer.from(reply, 'utf-8').byteLength);
-                    }}>
-                    Cancel
-                  </button>
-                  <button
-                    className={'postReplyButton'}
-                    type="submit"
-                    disabled={reply.length === 0}
-                    onClick={onReplyToPost}>
-                    {awaitingConfirmation && <div className='loading'><Spinner /></div> }
-                    Reply
-                  </button>
+                <div className='buttonsWrapper'>
+                  {showReplyBox &&
+                    <button
+                      className="addGIFButton"
+                      disabled={!permission.readAndWrite}
+                      onClick={() => {
+                        setShowGIFModal(true);
+                      }}>
+                      <span>GIF</span>
+                    </button>
+                  }
+                  <div className="buttonsContainer">
+                    <button
+                      className="cancelReplyButton"
+                      onClick={() => {
+                        setShowReplyBox(false);
+                        setReplySize(Buffer.from(reply, 'utf-8').byteLength);
+                      }}>
+                      Cancel
+                    </button>
+                    <button
+                      className={'postReplyButton'}
+                      type="submit"
+                      disabled={reply.length === 0}
+                      onClick={onReplyToPost}>
+                      {awaitingConfirmation && <div className='loading'><Spinner /></div> }
+                      Reply
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

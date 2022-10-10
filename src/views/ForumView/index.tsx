@@ -1,3 +1,5 @@
+import { isNil } from 'lodash';
+import { ForumInfo } from '@usedispatch/client';
 import { useState, useEffect, useMemo } from 'react';
 import ReactGA from 'react-ga4';
 import { Helmet } from 'react-helmet';
@@ -10,14 +12,12 @@ import {
   PoweredByDispatch,
 } from '../../components/forums';
 
-import { useForum, useRole } from './../../contexts/DispatchProvider';
+import { useForum, useRole, useTheme } from './../../contexts/DispatchProvider';
 import { getUserRole } from './../../utils/postbox/userRole';
 import { isSuccess, isInitial, isPending } from '../../utils/loading';
 import { errorSummary, isError, isNotFoundError } from '../../utils/error';
 import { useForumData, useModal } from '../../utils/hooks';
 import { getCustomStyles } from '../../utils/getCustomStyles';
-import { isNil } from 'lodash';
-import { ForumInfo } from '@usedispatch/client';
 
 interface ForumViewProps {
   collectionId: string;
@@ -26,6 +26,7 @@ interface ForumViewProps {
 export const ForumView = (props: ForumViewProps): JSX.Element => {
   const forumObject = useForum();
   const Role = useRole();
+  const theme = useTheme();
   const { wallet, permission } = forumObject;
   const { publicKey } = wallet;
 
@@ -133,6 +134,7 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
 
   return (
     <div className="dsp-">
+      <div className={theme.mode}>
       <div className={customStyle}>
         <Helmet>
           <meta charSet="utf-8" />
@@ -184,8 +186,9 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
                   return disconnectedView;
                 }
               })()}
+              </div>
+              <PoweredByDispatch customStyle={customStyle} />
             </div>
-            <PoweredByDispatch customStyle={customStyle} />
           </div>
         </div>
       </div>

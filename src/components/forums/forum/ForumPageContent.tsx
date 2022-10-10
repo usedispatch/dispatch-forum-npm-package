@@ -10,7 +10,7 @@ import {
   PoweredByDispatch,
 } from '../../../components/forums';
 
-import { useForum, useRole } from '../../../contexts/DispatchProvider';
+import { useForum, useRole, useTheme } from '../../../contexts/DispatchProvider';
 import { getUserRole } from './../../../utils/postbox/userRole';
 import { isInitial, isPending, isSuccess } from '../../../utils/loading';
 import { errorSummary, isError, isNotFoundError } from '../../../utils/error';
@@ -28,7 +28,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
   const Role = useRole();
   const { wallet, permission } = forumObject;
   const { publicKey } = wallet;
-
+  const theme = useTheme();
   const { modal, showModal } = useModal();
 
   const customStyle = getCustomStyles(forumID);
@@ -123,6 +123,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
   );
 
   return (
+  <div className={theme.mode}>
     <div className={customStyle}>
       <Helmet>
         <meta charSet="utf-8" />
@@ -175,10 +176,11 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
                 return disconnectedView;
               }
             })()}
-          </div>
           <PoweredByDispatch customStyle={customStyle} />
+          </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

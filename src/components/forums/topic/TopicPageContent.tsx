@@ -38,6 +38,7 @@ import {
   useForum,
   usePath,
   useRole,
+  useTheme,
 } from './../../../contexts/DispatchProvider';
 import { getUserRole } from './../../../utils/postbox/userRole';
 import { getCustomStyles } from '../../../utils/getCustomStyles';
@@ -55,7 +56,7 @@ export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
   const forum = useForum();
   const { permission } = forum;
   const { forumId, topicId } = props;
-
+  const theme = useTheme();
   const collectionPublicKey: PublicKey | null = useMemo(() => {
     try {
       // TODO show modal if this fails
@@ -187,6 +188,7 @@ export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
   const customStyle = getCustomStyles(forumId);
 
   return (
+    <div className={theme.mode}>
     <div className={customStyle}>
       <Helmet>
         <meta charSet="utf-8" />
@@ -248,9 +250,10 @@ export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
               </div>
             </main>
           </div>
-        </div>
         <PoweredByDispatch customStyle={customStyle} />
+        </div>
       </div>
+    </div>
     </div>
   );
 }

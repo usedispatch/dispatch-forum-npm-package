@@ -158,7 +158,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
   }, [forumData]);
 
   if (process.env.REACT_APP_DEBUG_MODE === 'true') {
-    console.log(topic.address.toBase58());
+    console.log('dsp', topic.address.toBase58());
   }
 
   const { buildForumPath } = usePath();

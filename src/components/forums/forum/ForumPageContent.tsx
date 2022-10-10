@@ -41,7 +41,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
       return pubkey;
     } catch (error) {
       const message = JSON.stringify(error);
-      console.log(error);
+      console.log('dsp', error);
       showModal({
         title: 'Something went wrong!',
         type: MessageType.error,

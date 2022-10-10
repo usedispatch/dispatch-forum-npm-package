@@ -173,7 +173,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
       const error = tx;
       setPostInFlight(false);
       setNotification({ isHidden: true });
-      console.log(error);
+      console.log('dsp', error);
       setModalInfo({
         title: 'Something went wrong!',
         type: MessageType.error,

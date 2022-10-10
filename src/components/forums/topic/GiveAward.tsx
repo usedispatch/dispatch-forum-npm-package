@@ -97,7 +97,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
         </>,
       );
     } catch (error: any) {
-      console.log(error);
+      console.log('dsp', error);
       setLoading(false);
       onError(error);
     }
@@ -123,7 +123,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
         );
       } else {
         const error = tx;
-        console.log(error);
+        console.log('dsp', error);
         setLoading(false);
         onError(error);
       }

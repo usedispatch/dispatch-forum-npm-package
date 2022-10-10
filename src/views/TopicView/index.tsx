@@ -30,7 +30,7 @@ import {
 } from '../../utils/error';
 import { isSuccess, isInitial, isPending, pending } from '../../utils/loading';
 
-import { useForum, usePath, useRole } from './../../contexts/DispatchProvider';
+import { useForum, usePath, useRole, useTheme } from './../../contexts/DispatchProvider';
 import { getUserRole } from './../../utils/postbox/userRole';
 import { getCustomStyles } from '../../utils/getCustomStyles';
 import { StarsAlert } from '../../components/forums/StarsAlert';
@@ -44,6 +44,7 @@ interface Props {
 export const TopicView = (props: Props): JSX.Element => {
   const forum = useForum();
   const role = useRole();
+  const theme = useTheme();
   const { permission } = forum;
   const { modal, showModal, setModals } = useModal();
   const { collectionId, topicId } = props;
@@ -179,71 +180,73 @@ export const TopicView = (props: Props): JSX.Element => {
 
   return (
     <div className="dsp- ">
-      <div className={customStyle}>
-        <Helmet>
-          <meta charSet="utf-8" />
-          {isSuccess(topic) && <title>{topic.data.subj} -- Topic </title>}
-        </Helmet>
-        <div className="topicView">
-          {modal}
-          <div className="topicViewContainer">
-            <div className="topicViewContent">
-              {!permission.readAndWrite && <ConnectionAlert />}
-              {collectionId ===
-                'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && (
-                <StarsAlert />
-              )}
-              <main>
-                <div>
-                  {(() => {
-                    if (
-                      ((collectionPublicKey != null) && isInitial(topic)) ||
-                      isPending(topic)
-                    ) {
-                      return (
-                        <div className="topicViewLoading">
-                          <Spinner />
-                        </div>
-                      );
-                    } else if (
-                      (collectionPublicKey != null) &&
-                      isSuccess(forumData) &&
-                      isSuccess(topic)
-                    ) {
-                      return (
-                        <>
-                          <Breadcrumb
-                            navigateTo={forumPath}
-                            parent={forumData.description.title}
-                            current={isSuccess(topic) ? topic.data.subj : ''}
-                          />
-                          <TopicContent
-                            forumData={forumData}
-                            participatingModerators={participatingModerators}
-                            forum={forum}
-                            topic={topic}
-                            userRoles={role.roles}
-                            update={update}
-                            addPost={addPost}
-                            editPost={editPost}
-                            deletePost={deletePost}
-                            updateVotes={(upVoted) => updateVotes(upVoted)}
-                          />
-                        </>
-                      );
-                    } else if (isNull(collectionPublicKey)) {
-                      return invalidPublicKeyView;
-                    } else {
-                      // TODO(andrew) more sophisticated error
-                      // handling here
-                      return disconnectedView;
-                    }
-                  })()}
-                </div>
-              </main>
+      <div className={theme.mode}>
+        <div className={customStyle}>
+          <Helmet>
+            <meta charSet="utf-8" />
+            {isSuccess(topic) && <title>{topic.data.subj} -- Topic </title>}
+          </Helmet>
+          <div className="topicView">
+            {modal}
+            <div className="topicViewContainer">
+              <div className="topicViewContent">
+                {!permission.readAndWrite && <ConnectionAlert />}
+                {collectionId ===
+                  'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && (
+                  <StarsAlert />
+                )}
+                <main>
+                  <div>
+                    {(() => {
+                      if (
+                        ((collectionPublicKey != null) && isInitial(topic)) ||
+                        isPending(topic)
+                      ) {
+                        return (
+                          <div className="topicViewLoading">
+                            <Spinner />
+                          </div>
+                        );
+                      } else if (
+                        (collectionPublicKey != null) &&
+                        isSuccess(forumData) &&
+                        isSuccess(topic)
+                      ) {
+                        return (
+                          <>
+                            <Breadcrumb
+                              navigateTo={forumPath}
+                              parent={forumData.description.title}
+                              current={isSuccess(topic) ? topic.data.subj : ''}
+                            />
+                            <TopicContent
+                              forumData={forumData}
+                              participatingModerators={participatingModerators}
+                              forum={forum}
+                              topic={topic}
+                              userRoles={role.roles}
+                              update={update}
+                              addPost={addPost}
+                              editPost={editPost}
+                              deletePost={deletePost}
+                              updateVotes={(upVoted) => updateVotes(upVoted)}
+                            />
+                          </>
+                        );
+                      } else if (isNull(collectionPublicKey)) {
+                        return invalidPublicKeyView;
+                      } else {
+                        // TODO(andrew) more sophisticated error
+                        // handling here
+                        return disconnectedView;
+                      }
+                    })()}
+                  </div>
+                </main>
+              </div>
             </div>
+            <PoweredByDispatch customStyle={customStyle} />
           </div>
-          <PoweredByDispatch customStyle={customStyle} />
         </div>
       </div>
     </div>

@@ -24,7 +24,6 @@ export const TopicView = (props: Props): JSX.Element => {
     async function getID(solanartID: string): Promise<void> {
       if (forumId !== undefined) {
         const id = await getForumID(forum.cluster, solanartID);
-        console.log('id', id);
         setForumKey(id);
       }
     }

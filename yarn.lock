@@ -3227,9 +3227,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@usedispatch/client@npm:^0.15.4":
-  version: 0.15.4
-  resolution: "@usedispatch/client@npm:0.15.4"
+"@usedispatch/client@portal:/Users/takumi/Projects/dispatch/msg/usedispatch_client::locator=%40usedispatch%2Fforum%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@usedispatch/client@portal:/Users/takumi/Projects/dispatch/msg/usedispatch_client::locator=%40usedispatch%2Fforum%40workspace%3A."
   dependencies:
     "@bonfida/spl-name-service": ^0.1.30
     "@metaplex-foundation/mpl-token-metadata": ^2.2.2
@@ -3240,9 +3240,8 @@ __metadata:
     "@supabase/supabase-js": ^1.35.7
     crypto-js: ^4.1.1
     lodash: ^4.17.21
-  checksum: 17b4181e4689305f3ffeeccddd199706e6ffccc4a501a1fb4e56410b5bf3ff60f6654be057873a7252fcb1326c96d0937a05a5b04c43d5a9e79b2785407f59ce
   languageName: node
-  linkType: hard
+  linkType: soft
 
 "@usedispatch/forum@workspace:.":
   version: 0.0.0-use.local
@@ -3266,7 +3265,7 @@ __metadata:
     "@types/react-alert": ^5.2.1
     "@typescript-eslint/eslint-plugin": ^5.13.0
     "@typescript-eslint/parser": ^5.0.0
-    "@usedispatch/client": ^0.15.4
+    "@usedispatch/client": ^0.15.5
     assert: ^2.0.0
     async: ^3.2.4
     autoprefixer: ^10.4.0

@@ -3,7 +3,8 @@
     font-family: 'BN BOOP';
     font-style: normal;
     font-weight: normal;
-    src: url('./assets/BNBoop.otf') format('opentype');
+    src: url('https://aiqrzujttjxgjhumjcky.supabase.co/storage/v1/object/public/forum-images/BNBoop.otf')
+      format('opentype');
   }
 
   .degenApeAcademy {

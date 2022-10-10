@@ -67,7 +67,7 @@
 
   .forumContentBox {
     padding: 72px 10% 0;
-    background-image: url('assets/default_background.png');
+    background-image: url('https://aiqrzujttjxgjhumjcky.supabase.co/storage/v1/object/public/forum-images/default_background.png');
     background-position: bottom;
     background-size: cover;
 

@@ -204,7 +204,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
 
   const [modalInfo, setModalInfo] = useState<{
     title: string | ReactNode;
-    type: MessageType;
+    type?: MessageType;
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
   } | null>(null);
@@ -224,24 +224,28 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
       userRoles.includes(UserRoleType.Moderator),
     );
 
+    setShowDeleteConfirmation(false);
+    setModalInfo({
+      title: 'Confirming',
+      body: (
+        <div>
+          The topic is being deleted and you will be redirected back to the forum
+        </div>
+      ),
+    });
+
     if (isSuccess(tx)) {
+      await forum.connection.confirmTransaction(tx);
       setModalInfo({
         title: 'Success!',
         type: MessageType.success,
         body: (
-          <div className="successBody">
-            <div>
-              The topic is being deleted and you will be redirected back to the
-              forum momentarily
-            </div>
+          <div>
+            Topic deleted
           </div>
         ),
       });
-
-      setDeletingTopic(false);
-      setShowDeleteConfirmation(false);
       location.assign(`${forumPath}${location.search}`);
-      await forum.connection.confirmTransaction(tx);
     } else {
       const error = tx;
       setDeletingTopic(false);
@@ -264,6 +268,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
           title={modalInfo.title}
           messageType={modalInfo.type}
           body={modalInfo.body}
+          loading={deletingTopic}
           collapsible={modalInfo.collapsible}
           okButton={
             <button className="okButton" onClick={() => setModalInfo(null)}>

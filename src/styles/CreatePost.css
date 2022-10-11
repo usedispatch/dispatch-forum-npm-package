@@ -69,6 +69,7 @@
     padding-top: 16px;
 
     @media only screen and (max-width: 570px) {
+      display: flex;
       flex-direction: column;
       gap: 6px;
     }
@@ -138,8 +139,7 @@
     }
 
     &:disabled {
-      color: white;
-      background: #9ca3af;
+      opacity: 0.6;
       cursor: not-allowed;
     }
   }

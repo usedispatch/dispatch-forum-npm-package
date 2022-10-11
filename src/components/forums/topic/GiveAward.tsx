@@ -181,7 +181,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
                       There are no available NFTs in your wallet
                     </div>
                   )}
-                  {nfts.map((nft, index) => (
+                  {nfts.map((nft, index) => nft.uri !== undefined && (
                     <div
                       key={index}
                       className={`giftContainer ${

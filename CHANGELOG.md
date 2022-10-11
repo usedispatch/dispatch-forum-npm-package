@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+# [0.5.10] 2022-10-10
+
+- forum: Interface Update ([#174](https://github.com/usedispatch/dispatch-forum-npm-package/pull/174))
+
+To migrate to the new Solanart interface, you need to update your `dispatch-forum` dependency to `0.5.10` and update your `dispatch-forum` import to the new interface:
+
+```js
+import { ForumView } from '@usedispatch/forum';
+
+...
+<ForumView collectionId={collectionId as string} />
+```
+
+to 
+
+```js
+import { ForumView, SolanartID } from "@usedispatch/forum";
+...
+<ForumView collectionId={{solanartID: solanartID} as SolanartID} />
+```
+
 # [0.2.4] 2022-08-08
 
 - forum: Performance improvements & Bug Fixes ([#66](https://github.com/usedispatch/dispatch-forum-npm-package/pull/66))([#71](https://github.com/usedispatch/dispatch-forum-npm-package/pull/71))

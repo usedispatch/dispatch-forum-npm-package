@@ -6,7 +6,7 @@ import {
   SolanartID,
   isSolanartID,
 } from '../../types/ForumIdentifier';
-import { getForumID } from '../../utils/getForumID';
+import { getForumID } from '../../utils/apiHelper';
 import { TopicPageContent } from '../../components/forums/topic/TopicPageContent';
 import { Spinner } from '../../components/common';
 interface Props {

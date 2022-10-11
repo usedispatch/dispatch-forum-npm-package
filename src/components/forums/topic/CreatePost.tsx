@@ -11,6 +11,8 @@ import {
   TransactionLink,
 } from '../../common';
 import { Notification } from '..';
+import { AddGIF } from '../../../components/common/AddGIF';
+import { DispatchError } from '../../../types/error';
 
 import { useForum } from '../../../contexts/DispatchProvider';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
@@ -39,9 +41,10 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
   const Forum = useForum();
   const permission = Forum.permission;
 
+  const [showGIFModal, setShowGIFModal] = useState(false);
   const [bodySize, setBodySize] = useState(0);
+  const [bodyContent, setBodyContent] = useState('');
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
-  const [newPost, setNewPost] = useState('');
   const [notification, setNotification] = useState<{
     isHidden: boolean;
     content?: string | ReactNode;
@@ -54,16 +57,22 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
+  const onGifSelect = (gifURL: string): void => {
+    setBodyContent(bodyContent.concat(`\n ![](${gifURL}) \n`));
+    setShowGIFModal(false);
+  };
+
   const createNewPost = async (event: SyntheticEvent): Promise<void> => {
     event.preventDefault();
 
-    const post = { body: newPost };
+    const post = { body: bodyContent };
     setPostInFlight(true);
     setAwaitingConfirmation(true);
     const tx = await Forum.createForumPost(post, topic.postId, collectionId);
-
     setAwaitingConfirmation(false);
-    if (isSuccess(tx)) {
+    setBodyContent('');
+
+    if (isSuccess(tx) && isSuccess(Forum.wallet)) {
       const localPost: CreatedPost = {
         data: {
           body: post.body,
@@ -75,7 +84,6 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
         state: 'created',
       };
       addPost(localPost);
-      setNewPost('');
 
       await Forum.connection.confirmTransaction(tx).then(() => {
         setPostInFlight(false);
@@ -104,7 +112,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
         title: 'Something went wrong!',
         type: MessageType.error,
         body: 'The new post could not be created',
-        collapsible: { header: 'Error', content: errorSummary(error) },
+        collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
       });
     }
   };
@@ -126,6 +134,15 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
           }
         />
       )}
+      {showGIFModal && (
+        <PopUpModal
+          id="add-gif-modal"
+          visible
+          title="Add GIF"
+          body={<AddGIF onGifSelect={onGifSelect} />}
+          onClose={() => setShowGIFModal(false)}
+        />
+      )}
       <Notification
         hidden={notification.isHidden}
         content={notification?.content}
@@ -134,20 +151,19 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
       />
       <div className="createPostContainer">
         <div className="createPostContent">
-            <form onSubmit={createNewPost}>
+            <div>
               <div className="formContainer">
                 <textarea
                   className="postContent"
                   placeholder="Type your comment here"
-                  required
-                  value={newPost}
                   maxLength={800}
                   disabled={!permission.readAndWrite}
-                  onChange={(event) => {
-                    setNewPost(event.target.value);
+                  value={bodyContent}
+                  onChange={event => {
                     setBodySize(
                       Buffer.from(event.target.value, 'utf-8').byteLength,
                     );
+                    setBodyContent(event.target.value);
                   }}
                   name="post"
                 />
@@ -155,16 +171,31 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
               <div className="textSize">{bodySize}/800</div>
               <div className="buttonContainer">
                 <button
+                  className="addGIFButton"
+                  disabled={!permission.readAndWrite}
+                  onClick={() => {
+                    setShowGIFModal(true);
+                  }}>
+                  <span>GIF</span>
+                </button>
+                <button
                   className="createPostButton"
                   type="submit"
-                  disabled={
-                    !permission.readAndWrite || bodySize > 800
-                  }>
-                  {awaitingConfirmation && <div className='loading'><Spinner /></div> }
+                  disabled={!permission.readAndWrite || bodySize > 800}
+                  onClick={async (e) => {
+                    if (bodyContent.length > 0) {
+                      await createNewPost(e);
+                    }
+                  }}>
+                  {awaitingConfirmation && (
+                    <div className='loading'>
+                      <Spinner />
+                      </div>
+                  )}
                   Post
                 </button>
               </div>
-            </form>
+            </div>
         </div>
       </div>
     </>

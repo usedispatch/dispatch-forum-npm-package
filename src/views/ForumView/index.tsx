@@ -5,6 +5,8 @@ import { useForum } from '../../contexts/DispatchProvider';
 import { Spinner } from '../../components/common';
 import { ForumIdentifier, SolanartID, ForumID, isSolanartID } from '../../types/ForumIdentifier';
 import * as web3 from '@solana/web3.js';
+import { newPublicKey } from '../../utils/postbox/validateNewPublicKey';
+import { isSuccess } from '../../utils/loading';
 interface ForumViewProps {
   collectionId: ForumIdentifier<ForumID | SolanartID>;
 }
@@ -17,12 +19,13 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
     async function getID(solanartId: string): Promise<void> {
       if (collectionId !== undefined) {
         const forumId = await getForumID(cluster, solanartId);
-        if (forumId !== undefined) {
+        const forumPubKey = newPublicKey(forumId);
+        if (isSuccess(forumPubKey)) {
           setForumKey(forumId);
         } else {
-          const newForumId = web3.Keypair.generate().publicKey.toBase58();
+          const newForumId = web3.Keypair.generate().publicKey;
           await addSolanartIdToForum(cluster, solanartId, newForumId);
-          setForumKey(newForumId);
+          setForumKey(newForumId.toBase58());
         }
       }
     }

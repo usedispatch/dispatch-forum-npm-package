@@ -189,7 +189,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
   const userIsMod = useUserIsMod(
     forumData.collectionId,
     forum,
-    // TODO(andrew): maybe a better way to mock this up
     forum.wallet.publicKey ?? new PublicKey('11111111111111111111111111111111'),
   ) ?? false;
 
@@ -208,7 +207,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
     type: MessageType;
     body?: string | ReactNode;
     collapsible?: CollapsibleProps;
-    okPath?: string;
   } | null>(null);
 
   /**
@@ -218,7 +216,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
    */
   const [postInFlight, setPostInFlight] = useState(false);
 
-  const onDeleteTopic = async (): Promise<string | undefined> => {
+  const onDeleteTopic = async (): Promise<void> => {
     setDeletingTopic(true);
     const tx = await forum.deleteForumPost(
       topic,
@@ -236,19 +234,14 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               The topic is being deleted and you will be redirected back to the
               forum momentarily
             </div>
-            <TransactionLink transaction={tx} />
           </div>
         ),
-        okPath: forumPath,
-      });
-      setShowDeleteConfirmation(false);
-      // When the topic is confirmed deleted, redirect to the
-      // parent URL (the main forum)
-      await forum.connection.confirmTransaction(tx).then(() => {
-        location.assign(`${forumPath}${location.search}`);
       });
 
-      return tx;
+      setDeletingTopic(false);
+      setShowDeleteConfirmation(false);
+      location.assign(`${forumPath}${location.search}`);
+      await forum.connection.confirmTransaction(tx);
     } else {
       const error = tx;
       setDeletingTopic(false);
@@ -259,7 +252,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
         body: 'The topic could not be deleted',
         collapsible: { header: 'Error', content: errorSummary(error) },
       });
-      return 'The topic could not be deleted';
     }
   };
 
@@ -281,7 +273,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
         />
       )}
       {ReactGA.send('pageview')}
-
       {showAddAccessToken && isNil(modalInfo) && (
         <PopUpModal
           id="add-access-token"

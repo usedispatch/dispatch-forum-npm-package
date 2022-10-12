@@ -39,7 +39,7 @@
 
     .notificationText {
       font-weight: 500;
-      font-size: 14px;
+      font-size: 16px;
       color: white;
     }
 
@@ -161,7 +161,7 @@
       border: 2px solid #f2f2f0;
 
       font-style: normal;
-      font-weight: 400;
+      font-weight: 600;
 
       &:hover {
         color: #6e59b1;
@@ -248,11 +248,10 @@
     .row {
       border-bottom: 1px solid white;
       font-family: 'Raleway', 'sans-serif';
-      font-weight: 400;
-      font-size: 14px;
+      font-weight: 600;
 
       .rowSubj {
-        font-weight: 400;
+        font-weight: 600;
         line-height: 2;
       }
 

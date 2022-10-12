@@ -6,7 +6,7 @@ interface DispatchLogoProps {
 export function DispatchLogo(props: DispatchLogoProps): JSX.Element {
   if (
     props.customStyle === 'degenApeAcademy' ||
-    props.customStyle === 'metaplex' || props.mode === 'dark'
+    props.customStyle === 'metaplex' || props.customStyle === 'solana' || props.mode === 'dark'
   ) {
     return (
       <svg

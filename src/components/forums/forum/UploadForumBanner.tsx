@@ -20,7 +20,7 @@ import { errorSummary } from '../../../utils/error';
 interface UploadForumBannerProps {
   collectionId: PublicKey;
   currentBannerURL: string;
-  onSetImageURL: (url: string) => void;
+  onSetImageURL: (url: string) => Promise<void>;
 }
 
 export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
@@ -80,7 +80,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
         () => setNotificationContent({ isHidden: true }),
         NOTIFICATION_BANNER_TIMEOUT,
       );
-      onSetImageURL(forumImage.imageURL);
+      await onSetImageURL(forumImage.imageURL);
       reset();
     } else {
       reset();
@@ -155,7 +155,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
             okButton={
               <button
                 className="okButton"
-                onClick={async () => onSave()}
+                onClick={onSave}
               >
                 Save
               </button>

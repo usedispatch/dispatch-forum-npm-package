@@ -122,7 +122,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
       <PopulatedForumContent
         forumObject={forumObject}
-        forumData={forumData}
+        initialForumData={forumData}
         update={update}
       />
     );
@@ -131,17 +131,24 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
 
 interface PopulatedForumContentProps {
   forumObject: DispatchForum;
-  forumData: ForumData;
+  initialForumData: ForumData;
   update: () => Promise<void>;
 }
 
 export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.Element {
-  const { forumData, forumObject, update } = props;
+  const { initialForumData, forumObject, update } = props;
   const { roles } = useRole();
   const { permission } = forumObject;
 
+  const [forumData, setForumData] = useState<ForumData>(initialForumData);
+
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
+  const onUpdateImage = async (imageUrl: string): Promise<void> => {
+    const { images } = forumData;
+    setForumData({ ...forumData, images: { ...images, background: imageUrl } });
+    await update();
+  };
   const [newTopic, setNewTopic] = useState<{
     title: string;
     description: string;
@@ -936,7 +943,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
                   }
                   <EditForum forumData={forumData} update={update} />
                   <UploadForumBanner
-                    onSetImageURL={async () => update()}
+                    onSetImageURL={onUpdateImage}
                     collectionId={forumData.collectionId}
                     currentBannerURL={forumData.images?.background ?? ''}
                   />

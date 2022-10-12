@@ -20,6 +20,10 @@
       max-width: 70%;
       height: 50%;
     }
+
+    .poweredByGiphy {
+      margin: 0rem 1rem 1rem 0rem;
+    }
   }
 
   .createPostContent {

@@ -138,7 +138,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
               <div className="formContainer">
                 <textarea
                   className="postContent"
-                  placeholder="Type your comment here"
+                  placeholder="Type your comment here. We support markdown! "
                   required
                   value={newPost}
                   maxLength={800}

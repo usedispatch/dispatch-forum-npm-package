@@ -462,7 +462,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
               }`}>
               <div className="replyForm">
                 <textarea
-                  placeholder="Type your reply here"
+                  placeholder="Type your reply here. We support markdown!"
                   className="replyTextArea"
                   maxLength={800}
                   value={reply}

@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode, useMemo } from 'react';
+import { useState, ReactNode } from 'react';
 import { PublicKey } from '@solana/web3.js';
 
 import { Info, Edit } from '../../../assets';
@@ -20,7 +20,7 @@ import { errorSummary } from '../../../utils/error';
 interface UploadForumBannerProps {
   collectionId: PublicKey;
   currentBannerURL: string;
-  onSetImageURL: (url: string) => void;
+  onSetImageURL: (url: string) => Promise<void>;
 }
 
 export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
@@ -57,18 +57,6 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
       saving: false,
     });
 
-  const typeError = useMemo(() => {
-    if (forumImage.imageURL.length > 0) {
-      const type = forumImage.imageURL.substring(
-        forumImage.imageURL.lastIndexOf('.') + 1,
-      );
-
-      return type.toLowerCase() !== 'png';
-    }
-
-    return false;
-  }, [forumImage.imageURL]);
-
   const onSave = async (): Promise<void> => {
     setForumImage({ ...forumImage, saving: true });
 
@@ -92,7 +80,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
         () => setNotificationContent({ isHidden: true }),
         NOTIFICATION_BANNER_TIMEOUT,
       );
-      onSetImageURL(forumImage.imageURL);
+      await onSetImageURL(forumImage.imageURL);
       reset();
     } else {
       reset();
@@ -145,7 +133,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                         <Info />
                       </div>
                     }
-                    message="Banners should be .png format and 1400px x 900px"
+                    message="Banners should be 1400px x 900px"
                   />
                 </div>
                 <input
@@ -158,13 +146,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                 />
                 {forumImage.imageURL.length > 0 && (
                   <div className="imageContainer">
-                    {typeError
-                      ? (
-                      <div>the image must be of png type </div>
-                      )
-                      : (
-                      <img src={forumImage.imageURL} alt="" />
-                      )}
+                    <img src={forumImage.imageURL} alt="" />
                   </div>
                 )}
               </div>
@@ -173,8 +155,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
             okButton={
               <button
                 className="okButton"
-                disabled={typeError}
-                onClick={async () => onSave()}
+                onClick={onSave}
               >
                 Save
               </button>

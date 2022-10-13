@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil';
-import { ReactNode, useRef } from 'react';
+import { ReactNode, useRef, useEffect } from 'react';
 
 import { Close, Success, Warning, Error, Info } from '../../assets';
 
@@ -53,6 +53,18 @@ export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
   const modalRef = useRef<HTMLInputElement>(null);
 
   const icon = getMessageTypeIcon(props.messageType);
+  const eventKeyDown = (event): (e: any) => void => {
+    if (event.key === 'Escape') {
+      props.onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', eventKeyDown);
+    return () => {
+      document.removeEventListener('keydown', eventKeyDown);
+    };
+  }, [props.onClose]);
 
   return (
     <div className="dsp-"
@@ -65,12 +77,7 @@ export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
           className="modal-toggle"
           ref={modalRef}
         />
-        <div className="modalContainer" tabIndex={0}
-          onKeyDownCapture={(e) => {
-            if (e.key === 'Escape') {
-              props.onClose();
-            }
-          }}>
+        <div className="modalContainer" tabIndex={0}>
           <div className="modalBox">
             <div className="modalTitle">
               <div className="titleTextIcon">

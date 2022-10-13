@@ -272,6 +272,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
                 OK
               </a>
             }
+            onClose={() => setModalInfo(null)}
           />
         )}
         {showGiveAward && (postToAward != null) && (

@@ -1,6 +1,6 @@
-import isNil from "lodash/isNil";
-import { useState, ReactNode, useMemo } from "react";
-import Jdenticon from "react-jdenticon";
+import isNil from 'lodash/isNil';
+import { useState, ReactNode, useMemo } from 'react';
+import Jdenticon from 'react-jdenticon';
 
 import {
   CollapsibleProps,
@@ -8,17 +8,17 @@ import {
   PermissionsGate,
   PopUpModal,
   TransactionLink,
-} from "../../common";
-import { Notification } from "..";
-import { useForum } from "../../../contexts/DispatchProvider";
+} from '../../common';
+import { Notification } from '..';
+import { useForum } from '../../../contexts/DispatchProvider';
 
-import { ForumData, useModerators } from "../../../utils/hooks";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary, isError } from "../../../utils/error";
-import { newPublicKey } from "../../../utils/postbox/validateNewPublicKey";
-import { SCOPES } from "../../../utils/permissions";
-import { getIdentity } from "../../../utils/identity";
+import { ForumData, useModerators } from '../../../utils/hooks';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary, isError } from '../../../utils/error';
+import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
+import { SCOPES } from '../../../utils/permissions';
+import { getIdentity } from '../../../utils/identity';
 
 interface ManageModeratorsProps {
   forumData: ForumData;
@@ -35,7 +35,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
   // value that can be edited client-side
   const { moderators, update: updateMods } = useModerators(
     forumData.collectionId,
-    forumObject
+    forumObject,
   );
 
   const [manageModerators, setManageModerators] = useState<{
@@ -44,14 +44,14 @@ export function ManageModerators(props: ManageModeratorsProps) {
     addingNewModerator: boolean;
   }>({
     show: false,
-    newModerator: "",
+    newModerator: '',
     addingNewModerator: false,
   });
 
   const resetInitialValues = () => {
     setManageModerators({
       show: false,
-      newModerator: "",
+      newModerator: '',
       addingNewModerator: false,
     });
   };
@@ -83,16 +83,16 @@ export function ManageModerators(props: ManageModeratorsProps) {
       setManageModerators({ ...manageModerators, addingNewModerator: true });
       resetInitialValues();
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The moderator could not be added`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The moderator could not be added',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
       return;
     }
     const tx = await forumObject.addModerator(
       moderatorId,
-      forumData.collectionId
+      forumData.collectionId,
     );
     if (isSuccess(tx)) {
       resetInitialValues();
@@ -101,26 +101,26 @@ export function ManageModerators(props: ManageModeratorsProps) {
         content: (
           <>
             The moderator was added.
-            <TransactionLink transaction={tx!} />
+            <TransactionLink transaction={tx} />
           </>
         ),
         type: MessageType.success,
       });
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
 
-      forumObject.connection.confirmTransaction(tx!).then(() => updateMods());
+      forumObject.connection.confirmTransaction(tx).then(async () => updateMods());
     } else {
       const error = tx;
       setManageModerators({ ...manageModerators, addingNewModerator: true });
       resetInitialValues();
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The moderator could not be added`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The moderator could not be added',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
   };
@@ -140,10 +140,11 @@ export function ManageModerators(props: ManageModeratorsProps) {
           <PopUpModal
             id="add-moderators"
             visible
-            title={"Manage moderators"}
+            title={'Manage moderators'}
             body={
               <div className="manageModeratorsBody">
-                {moderatorsFetched ? (
+                {moderatorsFetched
+                  ? (
                   <>
                     <label className="manageModeratorsLabel">Add new</label>
                     <input
@@ -169,17 +170,19 @@ export function ManageModerators(props: ManageModeratorsProps) {
                           <li key={m} className="currentModerators">
                             <>
                               <div className="iconContainer">
-                                {identity ? (
+                                {(identity != null)
+                                  ? (
                                   <img
                                     src={identity.profilePicture.href}
-                                    style={{ borderRadius: "50%" }}
+                                    style={{ borderRadius: '50%' }}
                                   />
-                                ) : (
+                                  )
+                                  : (
                                   <Jdenticon value={m} alt="moderatorId" />
-                                )}
+                                  )}
                               </div>
                               <div className="displayName">
-                                {identity ? identity.displayName : m}
+                                {(identity != null) ? identity.displayName : m}
                               </div>
                             </>
                           </li>
@@ -187,29 +190,32 @@ export function ManageModerators(props: ManageModeratorsProps) {
                       })}
                     </ul>
                   </>
-                ) : (
+                  )
+                  : (
                   <div className="emptyList">
                     Click to load the list of current moderators
                   </div>
-                )}
+                  )}
               </div>
             }
             loading={manageModerators.addingNewModerator}
             okButton={
-              moderatorsFetched ? (
+              moderatorsFetched
+                ? (
                 <button
                   className="okButton"
                   disabled={!manageModerators.newModerator.length}
-                  onClick={() => addModerator()}>
+                  onClick={async () => addModerator()}>
                   Save
                 </button>
-              ) : (
+                )
+                : (
                 <button
                   className="okButton fetchModerators"
                   onClick={updateMods}>
                   Fetch moderators
                 </button>
-              )
+                )
             }
             onClose={() => resetInitialValues()}
           />
@@ -227,6 +233,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
                 OK
               </a>
             }
+            onClose={() => setModalInfo(null)}
           />
         )}
         <PermissionsGate scopes={[SCOPES.canEditMods]}>

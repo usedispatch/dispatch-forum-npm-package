@@ -240,6 +240,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
               OK
             </a>
           }
+          onClose={() => setModalInfo(null)}
         />
       )}
       <PopUpModal

@@ -286,6 +286,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
                 OK
               </a>
             }
+            onClose={() => setModalInfo(null)}
           />
         )}
         <PermissionsGate scopes={[SCOPES.canAddOwner]}>

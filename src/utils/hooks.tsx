@@ -39,8 +39,8 @@ export interface Description {
  * on-chain. Should not be allowed to be interacted with
  */
 export type CreatedPost = Pick<
-  ForumPost,
-  'data' | 'replyTo' | 'isTopic' | 'poster'
+ForumPost,
+'data' | 'replyTo' | 'isTopic' | 'poster'
 > & { state: 'created' };
 
 /**
@@ -96,12 +96,12 @@ export function useForumData(
   collectionId: PublicKey | null,
   forum: DispatchForum,
 ): {
-  forumData: Loading<ForumData>;
-  addPost: (post: CreatedPost) => void;
-  deletePost: (post: ForumPost) => void;
-  editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
-  update: () => Promise<void>;
-} {
+    forumData: Loading<ForumData>;
+    addPost: (post: CreatedPost) => void;
+    deletePost: (post: ForumPost) => void;
+    editPost: (post: ForumPost, newBody: string, newSubj?: string) => void;
+    update: () => Promise<void>;
+  } {
   const [forumData, setForumData] = useState<Loading<ForumData>>(initial());
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export function useForumData(
 
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<Result<PublicKey[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getOwners(collectionId, true);
         if (fetchData) {
@@ -136,7 +136,7 @@ export function useForumData(
   }
 
   async function fetchModeratorMint(): Promise<Result<PublicKey>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
@@ -156,7 +156,7 @@ export function useForumData(
   // the fetchModerators() call to its place here
 
   async function fetchDescription(): Promise<Result<Description>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getDescription(collectionId, true);
         if (fetchData) {
@@ -172,7 +172,7 @@ export function useForumData(
     }
   }
   async function fetchForumImage(): Promise<any> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const imgs = await forum.getImageUrls(collectionId);
         if (imgs) {
@@ -187,7 +187,7 @@ export function useForumData(
   }
 
   async function fetchPosts(): Promise<Result<ForumPost[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId, true);
         if (fetchData) {
@@ -204,10 +204,10 @@ export function useForumData(
   }
 
   async function fetchForumPostRestriction(): Promise<Result<PostRestriction>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const restriction = await forum.getForumPostRestriction(collectionId);
-        if (restriction) {
+        if (restriction != null) {
           return restriction;
         } else {
           return notFoundError('The restriction was not defined');
@@ -302,7 +302,7 @@ export function useForumData(
     }
   }
   async function fetchVotes(): Promise<Result<ChainVoteEntry[]>> {
-    if (collectionId && forum.permission.readAndWrite && isSuccess(forumData)) {
+    if ((collectionId != null) && forum.permission.readAndWrite && isSuccess(forumData)) {
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
@@ -322,7 +322,7 @@ export function useForumData(
    * re-fetch all data related to this forum from chain
    */
   async function update() {
-    if (collectionId) {
+    if (collectionId != null) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
@@ -385,13 +385,13 @@ export function useModerators(
   collectionId: PublicKey | null,
   forum: DispatchForum,
 ): {
-  moderators: Loading<PublicKey[]>;
-  update: () => Promise<void>;
-} {
+    moderators: Loading<PublicKey[]>;
+    update: () => Promise<void>;
+  } {
   const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
 
   async function fetchModerators(): Promise<Result<PublicKey[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getModerators(collectionId, true);
         if (fetchData) {
@@ -408,7 +408,7 @@ export function useModerators(
   }
 
   async function update() {
-    if (collectionId) {
+    if (collectionId != null) {
       if (await forum.exists(collectionId)) {
         const fetchResult = await fetchModerators();
         setModerators(fetchResult);
@@ -461,6 +461,7 @@ export function useModal() {
               OK
             </a>
           }
+          onClose={close}
         />
       );
     } else {
@@ -502,7 +503,7 @@ export function useParticipatingModerators(
 
     // Derive associated token accounts
     const atas = await Promise.all(
-      authors.map(author => {
+      authors.map(async author => {
         return getAssociatedTokenAddress(moderatorMint, author);
       }),
     );
@@ -518,10 +519,10 @@ export function useParticipatingModerators(
     // Filter out the nulls
     const nonnullPairs = pairs.filter(([wallet, ata, account]) => {
       return !isNil(wallet) && !isNil(ata) && !isNil(account);
-    }) as [PublicKey, PublicKey, AccountInfo<Buffer>][];
+    }) as Array<[PublicKey, PublicKey, AccountInfo<Buffer>]>;
 
     // Parse the accounts
-    const parsedAccounts: [PublicKey, PublicKey, Account][] = nonnullPairs.map(
+    const parsedAccounts: Array<[PublicKey, PublicKey, Account]> = nonnullPairs.map(
       ([wallet, ata, account]) => {
         const unpacked = unpackAccount(ata, account);
         return [wallet, ata, unpacked];
@@ -581,7 +582,7 @@ export function useUserIsMod(
         userPublicKey,
       );
       const ataBinary = await forum.connection.getAccountInfo(ataAddress);
-      if (ataBinary) {
+      if (ataBinary != null) {
         const parsedAta = unpackAccount(ataAddress, ataBinary);
         if (parsedAta.amount > 0) {
           return true;

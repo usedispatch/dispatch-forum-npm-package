@@ -94,7 +94,7 @@ export function Votes(props: VotesProps) {
       );
     } else {
       const error = tx;
-      console.log(error);
+      console.log('dsp', error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,
@@ -131,7 +131,7 @@ export function Votes(props: VotesProps) {
       setLoading(false);
     } else {
       const error = tx;
-      console.log(error);
+      console.log('dsp', error);
       setModalInfo({
         title: "Something went wrong!",
         type: MessageType.error,

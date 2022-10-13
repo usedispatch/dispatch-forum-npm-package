@@ -1,6 +1,6 @@
 {
   "name": "@usedispatch/forum",
-  "version": "0.5.7",
+  "version": "0.5.12",
   "description": "Dispatch forum",
   "source": [
     "src/index.ts",
@@ -102,11 +102,13 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
+    "@giphy/js-fetch-api": "^4.4.0",
+    "@giphy/react-components": "^6.2.0",
     "@parcel/config-default": "^2.7.0",
     "@solana/spl-token": "^0.3.1",
     "@solana/web3.js": "^1.50.1",
     "@types/lodash": "^4.14.185",
-    "@usedispatch/client": "^0.15.4",
+    "@usedispatch/client": "^0.15.7",
     "bs58": "^5.0.0",
     "buffer": "^6.0.3",
     "lodash": "^4.17.21",

@@ -14,7 +14,6 @@ import {
   Input,
   MessageType,
   PopUpModal,
-  Spinner,
   TransactionLink,
 } from '../../common';
 
@@ -74,7 +73,6 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
 
   const [selectedType, setSelectedType] = useState<AwardType>(); // TODO (Ana): include both types later
   const [selectedAmount, setSelectedAmount] = useState(1.0);
-  const [loadingNFT, setLoadingNFT] = useState(false);
   const [selectedNFT, setSelectedNFT] = useState<DisplayableToken>();
   const [nfts, setNFTs] = useState<DisplayableToken[]>([]);
 
@@ -97,7 +95,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
         </>,
       );
     } catch (error: any) {
-      console.log(error);
+      console.log('dsp', error);
       setLoading(false);
       onError(error);
     }
@@ -123,7 +121,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
         );
       } else {
         const error = tx;
-        console.log(error);
+        console.log('dsp', error);
         setLoading(false);
         onError(error);
       }
@@ -131,11 +129,19 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
   };
 
   const getNFTsForCurrentUser = async (): Promise<void> => {
-    setLoadingNFT(true);
     const nftsForUser = await Forum.getNFTMetadataForCurrentUser();
     if (isSuccess(nftsForUser)) {
-      setNFTs(nftsForUser);
-      setLoadingNFT(false);
+      nftsForUser.map(async nft => {
+        await nft
+          .then(nft => {
+            if (isSuccess(nft)) {
+              setNFTs(prev => [...prev, nft]);
+            }
+          })
+          .catch(error => {
+            console.log('dsp', error);
+          });
+      });
     } else {
       onError(nftsForUser);
     }
@@ -149,8 +155,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
 
   const content = (
     <div className="awardContent">
-      {!isNil(selectedType)
-        ? (
+      {!isNil(selectedType) ? (
         <>
           {selectedType === AwardType.SOL && (
             <div className="amountInputContainer">
@@ -168,37 +173,37 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
               />
             </div>
           )}
-          {selectedType === AwardType.NFT &&
-            (loadingNFT
-              ? (
-              <Spinner />
-              )
-              : (
-              <div className="giftsContainer">
-                <div className="giftsGrid">
-                  {nfts.length === 0 && (
-                    <div className="noAvailableNFT">
-                      There are no available NFTs in your wallet
-                    </div>
-                  )}
-                  {nfts.map((nft, index) => (
+          {selectedType === AwardType.NFT && (
+            // (loadingNFT ? (
+            //   <Spinner />
+            // ) : (
+            <div className="giftsContainer">
+              <div className="giftsGrid">
+                {nfts.length === 0
+                  ? (
+                  <div className="noAvailableNFT">
+                    There are no available NFTs in your wallet
+                  </div>
+                  )
+                  : (
+                    nfts.map((nft, index) => (
                     <div
                       key={index}
                       className={`giftContainer ${
                         nft.mint === selectedNFT?.mint ? 'selectedNFT' : ''
                       }`}
-                      onClick={() => setSelectedNFT(nft)}
-                    >
+                      onClick={() => setSelectedNFT(nft)}>
                       <img src={nft.uri.toString()} />
                       <div className="giftName">{nft.name}</div>
                     </div>
-                  ))}
-                </div>
+                    ))
+                  )}
               </div>
-              ))}
+            </div>
+          )}
+          {/* // ))} */}
         </>
-        )
-        : (
+      ) : (
         <div>
           You can award one of your NFTs or select a custom amount of SOL
           <div className="typeSelector">
@@ -207,21 +212,19 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
               onClick={async () => {
                 setSelectedType(AwardType.NFT);
                 await getNFTsForCurrentUser();
-              }}
-            >
+              }}>
               <Plus />
               NFT
             </button>
             <button
               className="solType"
-              onClick={() => setSelectedType(AwardType.SOL)}
-            >
+              onClick={() => setSelectedType(AwardType.SOL)}>
               <SolanaLogo color="white" />
               SOL
             </button>
           </div>
         </div>
-        )}
+      )}
     </div>
   );
 
@@ -256,8 +259,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
             <button
               className="attachButton"
               disabled={selectedAmount <= 0}
-              onClick={async () => attachAward()}
-            >
+              onClick={async () => attachAward()}>
               Send
             </button>
             )
@@ -265,8 +267,7 @@ export function GiveAward(props: GiveAwardProps): JSX.Element {
             <button
               className="confirmAndAwardButton"
               disabled={isNil(selectedNFT)}
-              onClick={async () => transferNFT()}
-            >
+              onClick={async () => transferNFT()}>
               Send
             </button>
             ))

@@ -1,13 +1,5 @@
 @layer components {
-  @font-face {
-    font-family: 'BN BOOP';
-    font-style: normal;
-    font-weight: normal;
-    src: url('https://aiqrzujttjxgjhumjcky.supabase.co/storage/v1/object/public/forum-images/BNBoop.otf')
-      format('opentype');
-  }
-
-  .degenApeAcademy {
+  .dark {
     /* NOTIFICATION */
     .alertContent {
       background: #30302e;
@@ -47,7 +39,7 @@
 
     .notificationText {
       font-weight: 500;
-      font-size: 14px;
+      font-size: 16px;
       color: white;
     }
 
@@ -98,7 +90,6 @@
       .titleBox,
       .description {
         color: #ffffff;
-        font-family: 'BN BOOP', 'sans-serif';
       }
 
       .description {
@@ -143,11 +134,11 @@
         }
 
         &:hover {
-          color: white;
-          border-color: white;
+          color: #6e59b1;
+          border-color: #6e59b1;
 
           svg path {
-            stroke: white;
+            stroke: #6e59b1;
           }
         }
       }
@@ -160,7 +151,7 @@
         .imageContainer {
           color: black;
           background: #999;
-          border: 2px dashed white;
+          border: 2px dashed #6e59b1;
         }
       }
     }
@@ -170,8 +161,16 @@
       border: 2px solid #f2f2f0;
 
       font-style: normal;
-      font-weight: 400;
-      text-transform: uppercase;
+      font-weight: 600;
+
+      &:hover {
+        color: #6e59b1;
+        border-color: #6e59b1;
+
+        svg path {
+          fill: #6e59b1;
+        }
+      }
     }
 
     .newAccessToken,
@@ -240,7 +239,6 @@
 
     .tableHeader {
       border-color: white;
-      font-family: 'BN BOOP', 'sans-serif';
     }
 
     .topicListContainer .tableHeader .tableHeaderTitle {
@@ -250,16 +248,19 @@
     .row {
       border-bottom: 1px solid white;
       font-family: 'Raleway', 'sans-serif';
-      font-weight: 400;
-      font-size: 14px;
+      font-weight: 600;
 
       .rowSubj {
-        font-weight: 400;
+        font-weight: 600;
         line-height: 2;
       }
 
       &:hover {
-        background: #a79854;
+        background: #9999991c;
+
+        a {
+          color: #6e59b1;
+        }
       }
 
       a {
@@ -348,7 +349,7 @@
         font-weight: 500;
       }
 
-      .headerAndActions .moderatorToolsContainer {
+      .headerAndActions .topicToolsContainer {
         .actionDivider {
           background: white;
         }
@@ -386,7 +387,11 @@
       border: 2px solid #f2f2f0;
 
       color: white;
-      text-transform: uppercase;
+
+      &:hover {
+        color: #6e59b1;
+        border-color: #6e59b1;
+      }
     }
 
     .createPostContent .postContent {
@@ -503,7 +508,6 @@
         border-color: black;
         background: white;
         color: #141313;
-        text-transform: uppercase;
       }
 
       .postReplyButton {
@@ -511,7 +515,11 @@
         border: 2px solid #f2f2f0;
 
         color: white;
-        text-transform: uppercase;
+
+        &:hover {
+          color: #6e59b1;
+          border-color: #6e59b1;
+        }
       }
     }
   }

@@ -41,9 +41,14 @@
 @import './styles/ForumView.css';
 @import './styles/TopicView.css';
 
+/* Themes */
+@import './styles/themes/Dark.css';
+@import './styles/themes/Light.css';
+
 /* Customizations */
 @import 'styles/customizations/DegenApeAcademy.css';
 @import 'styles/customizations/Metaplex.css';
+@import 'styles/customizations/Solana.css';
 
 @import 'tailwindcss/utilities';
 

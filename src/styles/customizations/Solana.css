@@ -1,13 +1,5 @@
 @layer components {
-  @font-face {
-    font-family: 'BN BOOP';
-    font-style: normal;
-    font-weight: normal;
-    src: url('https://aiqrzujttjxgjhumjcky.supabase.co/storage/v1/object/public/forum-images/BNBoop.otf')
-      format('opentype');
-  }
-
-  .degenApeAcademy {
+  .solana {
     /* NOTIFICATION */
     .alertContent {
       background: #30302e;
@@ -98,7 +90,6 @@
       .titleBox,
       .description {
         color: #ffffff;
-        font-family: 'BN BOOP', 'sans-serif';
       }
 
       .description {
@@ -143,11 +134,11 @@
         }
 
         &:hover {
-          color: white;
-          border-color: white;
+          color: rgb(20, 241, 149);
+          border-color: rgb(20, 241, 149);
 
           svg path {
-            stroke: white;
+            stroke: rgb(20, 241, 149);
           }
         }
       }
@@ -160,7 +151,7 @@
         .imageContainer {
           color: black;
           background: #999;
-          border: 2px dashed white;
+          border: 2px dashed rgb(20, 241, 149);
         }
       }
     }
@@ -171,7 +162,15 @@
 
       font-style: normal;
       font-weight: 400;
-      text-transform: uppercase;
+
+      &:hover {
+        color: rgb(20, 241, 149);
+        border-color: rgb(20, 241, 149);
+
+        svg path {
+          fill: rgb(20, 241, 149);
+        }
+      }
     }
 
     .newAccessToken,
@@ -240,7 +239,6 @@
 
     .tableHeader {
       border-color: white;
-      font-family: 'BN BOOP', 'sans-serif';
     }
 
     .topicListContainer .tableHeader .tableHeaderTitle {
@@ -259,7 +257,11 @@
       }
 
       &:hover {
-        background: #a79854;
+        background: #9993;
+
+        a {
+          color: rgb(20, 241, 149);
+        }
       }
 
       a {
@@ -348,7 +350,7 @@
         font-weight: 500;
       }
 
-      .headerAndActions .moderatorToolsContainer {
+      .headerAndActions .topicToolsContainer {
         .actionDivider {
           background: white;
         }
@@ -386,7 +388,11 @@
       border: 2px solid #f2f2f0;
 
       color: white;
-      text-transform: uppercase;
+
+      &:hover {
+        color: rgb(20, 241, 149);
+        border-color: rgb(20, 241, 149);
+      }
     }
 
     .createPostContent .postContent {
@@ -503,7 +509,6 @@
         border-color: black;
         background: white;
         color: #141313;
-        text-transform: uppercase;
       }
 
       .postReplyButton {
@@ -511,7 +516,11 @@
         border: 2px solid #f2f2f0;
 
         color: white;
-        text-transform: uppercase;
+
+        &:hover {
+          color: rgb(20, 241, 149);
+          border-color: rgb(20, 241, 149);
+        }
       }
     }
   }

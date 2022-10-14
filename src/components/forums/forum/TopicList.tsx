@@ -1,8 +1,6 @@
 import { isNil } from 'lodash';
 import { useMemo } from 'react';
 
-import { TopicInFlightRow, TopicListRow } from './TopicListRow';
-
 import {
   selectTopics,
   sortByVotes,
@@ -10,12 +8,13 @@ import {
 } from '../../../utils/posts';
 import { ForumData } from '../../../utils/hooks';
 
+import { TopicListRow } from './TopicListRow';
+
 interface TopicListProps {
   forumData?: ForumData;
-  topicInFlight?: { title: string };
 }
 
-export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Element {
+export function TopicList({ forumData }: TopicListProps): JSX.Element {
   if (isNil(forumData)) {
     return (
     <div className="topicListContainer">
@@ -72,7 +71,6 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
             </tr>
           </thead>
           <tbody>
-            {!isNil(topicInFlight) && <TopicInFlightRow title={topicInFlight.title} />}
             {topics.map((topic, index) => (
               <TopicListRow key={index} topic={topic} forumData={forumData} />
             ))}

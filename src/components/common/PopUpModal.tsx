@@ -67,7 +67,10 @@ export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
   }, [props.onClose]);
 
   return (
-    <div className="dsp-" hidden={!props.visible}>
+    <div
+      className="dsp-"
+      hidden={!props.visible}
+    >
       <div className="popUpModal">
         <input
           type="checkbox"

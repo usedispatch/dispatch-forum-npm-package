@@ -53,7 +53,7 @@ export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
   const modalRef = useRef<HTMLInputElement>(null);
 
   const icon = getMessageTypeIcon(props.messageType);
-  const eventKeyDown = (event): (e: any) => void => {
+  const eventKeyDown = (event: KeyboardEvent): void => {
     if (event.key === 'Escape') {
       props.onClose();
     }
@@ -67,9 +67,7 @@ export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
   }, [props.onClose]);
 
   return (
-    <div className="dsp-"
-    hidden={!props.visible}
-   >
+    <div className="dsp-" hidden={!props.visible}>
       <div className="popUpModal">
         <input
           type="checkbox"
@@ -84,17 +82,15 @@ export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
                 {!isNil(props.messageType) && icon}
                 {props.title}
               </div>
-              {(props.onClose != null) && (
-                <label
-                  htmlFor={props.id}
-                  className="modalClose"
-                  onClick={props.onClose}
-                >
-                  <div className="closeIcon">
-                    <Close />
-                  </div>
-                </label>
-              )}
+              <label
+                htmlFor={props.id}
+                className="modalClose"
+                onClick={props.onClose}
+              >
+                <div className="closeIcon">
+                  <Close />
+                </div>
+              </label>
             </div>
             <div className={`modalBody ${isNil(props.loading) ? '' : (props.loading ? 'loading' : '')}`}>
               {props.body}

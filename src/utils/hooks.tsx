@@ -119,7 +119,7 @@ export function useForumData(
 
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<Result<PublicKey[]>> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const fetchData = await forum.getOwners(collectionId, true);
         if (fetchData) {
@@ -136,7 +136,7 @@ export function useForumData(
   }
 
   async function fetchModeratorMint(): Promise<Result<PublicKey>> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
@@ -156,7 +156,7 @@ export function useForumData(
   // the fetchModerators() call to its place here
 
   async function fetchDescription(): Promise<Result<Description>> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const fetchData = await forum.getDescription(collectionId, true);
         if (fetchData) {
@@ -172,7 +172,7 @@ export function useForumData(
     }
   }
   async function fetchForumImage(): Promise<any> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const imgs = await forum.getImageUrls(collectionId);
         if (imgs) {
@@ -187,7 +187,7 @@ export function useForumData(
   }
 
   async function fetchPosts(): Promise<Result<ForumPost[]>> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId, true);
         if (fetchData) {
@@ -204,7 +204,7 @@ export function useForumData(
   }
 
   async function fetchForumPostRestriction(): Promise<Result<PostRestriction>> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const restriction = await forum.getForumPostRestriction(collectionId);
         if (restriction != null) {
@@ -302,7 +302,7 @@ export function useForumData(
     }
   }
   async function fetchVotes(): Promise<Result<ChainVoteEntry[]>> {
-    if ((collectionId != null) && forum.permission.readAndWrite && isSuccess(forumData)) {
+    if ((collectionId) && forum.permission.readAndWrite && isSuccess(forumData)) {
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
@@ -322,7 +322,7 @@ export function useForumData(
    * re-fetch all data related to this forum from chain
    */
   async function update() {
-    if (collectionId != null) {
+    if (collectionId) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
@@ -391,7 +391,7 @@ export function useModerators(
   const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
 
   async function fetchModerators(): Promise<Result<PublicKey[]>> {
-    if (collectionId != null) {
+    if (collectionId) {
       try {
         const fetchData = await forum.getModerators(collectionId, true);
         if (fetchData) {
@@ -408,7 +408,7 @@ export function useModerators(
   }
 
   async function update() {
-    if (collectionId != null) {
+    if (collectionId) {
       if (await forum.exists(collectionId)) {
         const fetchResult = await fetchModerators();
         setModerators(fetchResult);

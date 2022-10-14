@@ -176,7 +176,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
                 return disconnectedView;
               }
             })()}
-          <PoweredByDispatch customStyle={customStyle} />
+            <PoweredByDispatch customStyle={customStyle} />
           </div>
         </div>
       </div>

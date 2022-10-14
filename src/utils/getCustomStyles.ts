@@ -8,9 +8,9 @@ export function getCustomStyles(collectionID: string): string {
     case 'B2qpsPkDVwS4ecDNNJ3jyzaLkXsPtpJcUnHdo9uBkrHy':
       result = 'metaplex';
       break;
-    case '6ThcrupJDDxxKKsDdGy1xjEkZdrZGsjt33B6iyK8VhP9':
-      result = 'solana';
-      break;
+    // case '6ThcrupJDDxxKKsDdGy1xjEkZdrZGsjt33B6iyK8VhP9':
+    //   result = 'solana';
+    //   break;
     default:
       break;
   }

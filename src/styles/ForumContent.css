@@ -8,6 +8,7 @@
         .description {
           color: #b3b4bb;
         }
+
         .createTopicButton &:disabled {
           color: #b3b4bb;
           border-color: #b3b4bb;
@@ -248,47 +249,7 @@
       }
     }
   }
-  .createTopicButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    white-space: nowrap;
 
-    padding: 16px;
-    border-radius: 6px;
-
-    background: #3f1d96;
-    color: white;
-    font-size: 14px;
-    text-align: center;
-    text-transform: capitalize;
-    font-weight: 600;
-
-    @media only screen and (max-width: 570px) {
-      width: 100%;
-    }
-
-    &:hover {
-      opacity: 0.85;
-    }
-
-    &:disabled {
-      color: #7c7b7c;
-      background: #ffffff;
-      border: 1px solid #7c7b7c;
-      cursor: not-allowed;
-
-      svg path {
-        fill: #7c7b7c;
-      }
-    }
-
-    .buttonImageContainer {
-      margin-right: 5px;
-      height: 12px;
-      width: 12px;
-    }
-  }
   .addTokenGateSelect {
     padding: 8px;
     font-size: 14px;
@@ -296,44 +257,6 @@
     border-color: #b8b9dc;
     border-radius: 6px;
     color: black;
-  }
-
-  .createTopicBody {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-
-    width: 100%;
-  }
-
-  .createTopicLabel {
-    padding-left: 4px;
-    padding-right: 4px;
-
-    font-size: 16px;
-    font-weight: 500;
-  }
-
-  .createTopicTitleInput {
-    width: 100%;
-    font-size: 14px;
-    padding: 12px;
-    margin-top: 4px;
-    margin-bottom: 16px;
-
-    border-color: #d1d5db;
-    border-width: 1px;
-    border-radius: 6px;
-  }
-
-  .createTopicTitleInput:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-  }
-
-  .createTopicTextArea {
-    padding-top: 4px;
-    height: 144px;
   }
 
   .successBody {

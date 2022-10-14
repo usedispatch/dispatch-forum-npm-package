@@ -28,45 +28,6 @@
       background: #dbeafe;
     }
 
-    &.topicInFlight {
-      opacity: 0.75;
-      background: #bdddf445;
-      cursor: not-allowed;
-
-      .rowSubjInFlight {
-        display: flex;
-        align-items: center;
-        gap: 20px;
-
-        .textBox {
-          max-width: 500px;
-          width: unset;
-        }
-      }
-
-      .confirmingTopic {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-
-        max-width: 100px;
-        width: 100px;
-        padding: 0 5px;
-        font-weight: 400;
-        font-size: 14px;
-        color: #414149;
-      }
-
-      .loading {
-        height: 18px;
-        width: 18px;
-
-        svg {
-          margin-right: 0;
-        }
-      }
-    }
-
     a {
       cursor: pointer;
       color: #000;

@@ -4,7 +4,7 @@ import Markdown from 'markdown-to-jsx';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
 
-import { Link, Spinner } from '../../../components/common';
+import { Link } from '../../../components/common';
 
 import { ForumData } from '../../../utils/hooks';
 import { getIdentity } from '../../../utils/identity';
@@ -114,28 +114,5 @@ export function TopicListRow(props: TopicListRowProps): JSX.Element {
           </Link>
         </td>
       </tr>
-  );
-}
-
-export function TopicInFlightRow({ title }: { title: string }): JSX.Element {
-  return (
-  <tr className="row topicInFlight">
-    <th className="rowSubj">
-      <div className='rowSubjInFlight'>
-        <div className="textBox">
-          {title}
-        </div>
-         <div className='confirmingTopic'>
-          confirming
-          <div className='loading'>
-            <Spinner />
-          </div>
-        </div>
-      </div>
-    </th>
-    <td className="rowIconReplies" > - </td>
-    <td className="rowAmountReplies" > - </td>
-    <td className="rowDate" > - </td>
-  </tr>
   );
 }

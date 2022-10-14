@@ -88,18 +88,6 @@
     margin: auto;
   }
 
-  .inFlight {
-    opacity: 0.75;
-    height: 46px;
-    background: #bdddf445;
-    width: 100%;
-
-    text-align: left;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
   .emptyTopicList {
     width: 100%;
     min-width: 100%;

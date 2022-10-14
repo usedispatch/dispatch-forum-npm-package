@@ -3,7 +3,6 @@ export * from './Notification';
 export * from './PoweredByDispatch';
 
 export * from './forum/CreateForum';
-export * from './forum/CreateTopic';
 export * from './forum/EditForum';
 export * from './forum/ForumContent';
 export * from './forum/ManageModerators';

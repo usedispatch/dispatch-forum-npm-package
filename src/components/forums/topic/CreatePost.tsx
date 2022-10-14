@@ -132,6 +132,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
               OK
             </a>
           }
+          onClose={() => setModalInfo(null)}
         />
       )}
       {showGIFModal && (

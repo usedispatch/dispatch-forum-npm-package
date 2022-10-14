@@ -115,6 +115,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                 OK
               </a>
             }
+            onClose={() => setModalInfo(null)}
           />
         )}
         {forumImage.showUploadImage && (

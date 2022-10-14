@@ -561,6 +561,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
               messageType={modalInfo.type}
               body={modalInfo.body}
               collapsible={modalInfo.collapsible}
+              onClose={() => setModalInfo(null)}
               okButton={
                 <a className="okButton" onClick={() => setModalInfo(null)}>
                   OK
@@ -746,6 +747,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
                         OK
                       </button>
                     }
+                    onClose={() => setShowNewTopicModal(false)}
                   />
                 );
               } else {
@@ -754,6 +756,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
                     id="create-topic"
                     visible
                     title={'Create new Topic'}
+                    onClose={() => setShowNewTopicModal(false)}
                     body={
                       <div className="createTopicBody">
                         <>

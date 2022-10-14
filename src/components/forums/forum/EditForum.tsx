@@ -178,6 +178,7 @@ export function EditForum(props: EditForumProps) {
             messageType={modalInfo.type}
             body={modalInfo.body}
             collapsible={modalInfo.collapsible}
+            onClose={() => setModalInfo(null)}
             okButton={
               <a className="okButton" onClick={() => setModalInfo(null)}>
                 OK

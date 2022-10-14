@@ -1,16 +1,16 @@
 import isNil from 'lodash/isNil';
-import { ReactNode, useRef } from "react";
+import { ReactNode, useRef, useEffect } from 'react';
 
-import { Close, Success, Warning, Error, Info } from "../../assets";
+import { Close, Success, Warning, Error, Info } from '../../assets';
 
-import { CollapsibleProps, Collapsible } from "./Collapsible";
-import { Spinner } from "./Spinner";
+import { CollapsibleProps, Collapsible } from './Collapsible';
+import { Spinner } from './Spinner';
 
 export enum MessageType {
-  success = "success",
-  warning = "warning",
-  error = "error",
-  info = "info",
+  success = 'success',
+  warning = 'warning',
+  error = 'error',
+  info = 'info',
 }
 
 export function getMessageTypeIcon(type?: MessageType): ReactNode {
@@ -46,19 +46,31 @@ interface PopUpModalProps {
   messageType?: MessageType;
   okButton?: ReactNode;
   cancelButton?: ReactNode;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
-export const PopUpModal = (props: PopUpModalProps) => {
+export const PopUpModal = (props: PopUpModalProps): JSX.Element => {
   const modalRef = useRef<HTMLInputElement>(null);
-  if (modalRef.current) {
-    modalRef.current.checked = props.visible;
-  }
 
   const icon = getMessageTypeIcon(props.messageType);
+  const eventKeyDown = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      props.onClose();
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', eventKeyDown);
+    return () => {
+      document.removeEventListener('keydown', eventKeyDown);
+    };
+  }, [props.onClose]);
 
   return (
-    <div className="dsp-">
+    <div
+      className="dsp-"
+      hidden={!props.visible}
+    >
       <div className="popUpModal">
         <input
           type="checkbox"
@@ -66,46 +78,48 @@ export const PopUpModal = (props: PopUpModalProps) => {
           className="modal-toggle"
           ref={modalRef}
         />
-        <div className="modalContainer">
+        <div className="modalContainer" tabIndex={0}>
           <div className="modalBox">
             <div className="modalTitle">
               <div className="titleTextIcon">
                 {!isNil(props.messageType) && icon}
                 {props.title}
               </div>
-              {props.onClose && (
-                <label
-                  htmlFor={props.id}
-                  className="modalClose"
-                  onClick={props.onClose}
-                >
-                  <div className="closeIcon">
-                    <Close />
-                  </div>
-                </label>
-              )}
+              <label
+                htmlFor={props.id}
+                className="modalClose"
+                onClick={props.onClose}
+              >
+                <div className="closeIcon">
+                  <Close />
+                </div>
+              </label>
             </div>
-            <div className={`modalBody ${props.loading ? "loading" : ""}`}>
+            <div className={`modalBody ${isNil(props.loading) ? '' : (props.loading ? 'loading' : '')}`}>
               {props.body}
             </div>
-            {props.collapsible ? (
+            {(props.collapsible != null)
+              ? (
               <div className="modalCollapsible">
                 <Collapsible
                   content={props.collapsible.content}
                   header={props.collapsible.header}
                 />
               </div>
-            ) : undefined}
-            {props.loading ? (
+              )
+              : undefined}
+            {!isNil(props.loading) && props.loading
+              ? (
               <div className="modalLoading">
                 <Spinner />
               </div>
-            ) : (
+              )
+              : (
               <div className="modalActionsContainer">
                 <div className="cancelAction">{props.cancelButton}</div>
                 <div className="acceptAction">{props.okButton}</div>
               </div>
-            )}
+              )}
           </div>
         </div>
       </div>

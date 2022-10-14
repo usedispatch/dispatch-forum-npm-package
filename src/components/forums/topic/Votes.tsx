@@ -1,21 +1,21 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode, useEffect } from "react";
-import { ForumPost } from "@usedispatch/client";
+import { useState, ReactNode, useEffect } from 'react';
+import { ForumPost } from '@usedispatch/client';
 
-import { Success, Vote } from "../../../assets";
+import { Success, Vote } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
   Spinner,
   TransactionLink,
-} from "../../common";
-import { Notification } from "..";
-import { useForum } from "./../../../contexts/DispatchProvider";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
-import { errorSummary } from "../../../utils/error";
-import { ForumData } from "../../../utils/hooks";
-import { isSuccess } from "../../../utils/loading";
+} from '../../common';
+import { Notification } from '..';
+import { useForum } from './../../../contexts/DispatchProvider';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { errorSummary } from '../../../utils/error';
+import { ForumData } from '../../../utils/hooks';
+import { isSuccess } from '../../../utils/loading';
 import { Result } from '../../../types/error';
 
 interface VotesProps {
@@ -51,10 +51,10 @@ export function Votes(props: VotesProps) {
 
   const setVotes = async () => {
     if (isSuccess(forumData.votes)) {
-    const vote = forumData.votes.find((v) => v.postId === post.postId);
+      const vote = forumData.votes.find((v) => v.postId === post.postId);
       // redundancy needed for wallet change case and
       // either upvote or downvote previously set to true
-    if (vote?.upVote) {
+      if (vote?.upVote) {
         setAlreadyUpVoted(true);
         setAlreadyDownVoted(false);
       } else if (vote?.upVote === false) {
@@ -62,10 +62,10 @@ export function Votes(props: VotesProps) {
         setAlreadyUpVoted(false);
       }
     }
-  }
+  };
 
-  useEffect(() => { 
-    setVotes()
+  useEffect(() => {
+    setVotes();
   }, [forumData.votes]);
 
   const upVotePost = async () => {
@@ -90,16 +90,16 @@ export function Votes(props: VotesProps) {
       });
       setTimeout(
         () => setIsNotificationHidden(true),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
     } else {
       const error = tx;
       console.log('dsp', error);
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: "The post could not be up voted",
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The post could not be up voted',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
       setLoading(false);
     }
@@ -126,17 +126,17 @@ export function Votes(props: VotesProps) {
       });
       setTimeout(
         () => setIsNotificationHidden(true),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
       setLoading(false);
     } else {
       const error = tx;
       console.log('dsp', error);
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: "The post could not be down voted.",
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The post could not be down voted.',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
 
       setLoading(false);
@@ -158,6 +158,7 @@ export function Votes(props: VotesProps) {
               OK
             </a>
           }
+          onClose={() => setModalInfo(null)}
         />
       )}
       <div className="votePostContainer">
@@ -169,20 +170,22 @@ export function Votes(props: VotesProps) {
         />
         <div className="votePostContent">
           <button
-            className={`votePostButton upVote` + (alreadyUpVoted ? "d" : "")}
+            className={'votePostButton upVote' + (alreadyUpVoted ? 'd' : '')}
             disabled={alreadyUpVoted || !permission.readAndWrite}
             onClick={upVotePost}>
             <Vote isUpVote />
           </button>
-          {loading ? (
+          {loading
+            ? (
             <div className="spinnerContainer">
               <Spinner />
             </div>
-          ) : (
+            )
+            : (
             <div className="currentVotes">{post.upVotes - post.downVotes}</div>
-          )}
+            )}
           <button
-            className={`votePostButton downVote`+ (alreadyDownVoted ? "d" : "")}
+            className={'votePostButton downVote' + (alreadyDownVoted ? 'd' : '')}
             disabled={alreadyDownVoted || !permission.readAndWrite}
             onClick={downVotePost}>
             <Vote />

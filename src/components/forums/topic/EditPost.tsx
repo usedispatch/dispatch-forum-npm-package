@@ -1,22 +1,22 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode } from "react";
-import { ForumPost } from "@usedispatch/client";
+import { useState, ReactNode } from 'react';
+import { ForumPost } from '@usedispatch/client';
 
-import { Edit } from "../../../assets";
+import { Edit } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
   TransactionLink,
-} from "../../common";
-import { Notification } from "../../forums";
+} from '../../common';
+import { Notification } from '../../forums';
 
-import { useForum } from "../../../contexts/DispatchProvider";
+import { useForum } from '../../../contexts/DispatchProvider';
 
-import { ForumData } from "../../../utils/hooks";
-import { isSuccess } from "../../../utils/loading";
-import { errorSummary } from "../../../utils/error";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { ForumData } from '../../../utils/hooks';
+import { isSuccess } from '../../../utils/loading';
+import { errorSummary } from '../../../utils/error';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 
 interface EditPostProps {
   post: ForumPost;
@@ -36,9 +36,9 @@ export function EditPost(props: EditPostProps) {
     body: string;
     subj: string;
     loading?: boolean;
-  }>({ show: false, body: post.data.body ?? "", subj: post.data.subj ?? "" });
+  }>({ show: false, body: post.data.body ?? '', subj: post.data.subj ?? '' });
   const [bodySize, setBodySize] = useState(
-    new Buffer(post.data.body, "utf-8").byteLength
+    new Buffer(post.data.body, 'utf-8').byteLength,
   );
   const [notificationContent, setNotificationContent] = useState<{
     isHidden: boolean;
@@ -55,10 +55,10 @@ export function EditPost(props: EditPostProps) {
   const resetToInitialValues = () => {
     setEditPost({
       show: false,
-      body: post.data.body ?? "",
-      subj: post.data.subj ?? "",
+      body: post.data.body ?? '',
+      subj: post.data.subj ?? '',
     });
-    setBodySize(new Buffer(post.data.body, "utf-8").byteLength);
+    setBodySize(new Buffer(post.data.body, 'utf-8').byteLength);
   };
 
   const editPostInfo = async () => {
@@ -69,7 +69,6 @@ export function EditPost(props: EditPostProps) {
       meta: post.data.meta,
     });
     if (isSuccess(tx)) {
-
       setEditPost({
         show: false,
         loading: false,
@@ -82,7 +81,7 @@ export function EditPost(props: EditPostProps) {
         type: MessageType.success,
         content: (
           <>
-            The {` ${post.isTopic ? "topic" : "post"} `}was edited.
+            The {` ${post.isTopic ? 'topic' : 'post'} `}was edited.
             <TransactionLink transaction={tx} />
           </>
         ),
@@ -92,21 +91,21 @@ export function EditPost(props: EditPostProps) {
       editPostLocal(post, editPost.body, editPost.subj);
 
       // When the transaction is confirmed, update for real
-      forumObject.connection.confirmTransaction(tx).then(() => update());
+      forumObject.connection.confirmTransaction(tx).then(async () => update());
 
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
     } else {
       setEditPost({ ...editPost, loading: false });
       const error = tx;
       resetToInitialValues();
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The ${post.isTopic ? "topic" : "post"} could not be edited`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: `The ${post.isTopic ? 'topic' : 'post'} could not be edited`,
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
   };
@@ -128,7 +127,7 @@ export function EditPost(props: EditPostProps) {
           <PopUpModal
             id="edit-post"
             visible
-            title={post.isTopic ? "Edit topic" : "Edit post"}
+            title={post.isTopic ? 'Edit topic' : 'Edit post'}
             body={
               <div className="editPostBody">
                 {post.isTopic && (
@@ -147,14 +146,14 @@ export function EditPost(props: EditPostProps) {
                 )}
                 <div>
                   <label className="editPostLabel">
-                    {post.isTopic ? "Topic description" : "Post content"}
+                    {post.isTopic ? 'Topic description' : 'Post content'}
                   </label>
                   <textarea
                     maxLength={800}
                     placeholder={
                       post.isTopic
-                        ? "New topic description"
-                        : "New post content"
+                        ? 'New topic description'
+                        : 'New post content'
                     }
                     className="editPostInput description"
                     value={editPost.body}
@@ -177,7 +176,7 @@ export function EditPost(props: EditPostProps) {
                     ? editPost.subj.length === 0
                     : editPost.body.length === 0) || bodySize > 800
                 }
-                onClick={() => editPostInfo()}>
+                onClick={async () => editPostInfo()}>
                 Save
               </button>
             }
@@ -196,6 +195,7 @@ export function EditPost(props: EditPostProps) {
                 OK
               </a>
             }
+            onClose={() => setModalInfo(null)}
           />
         )}
         {showDividers.leftDivider && <div className="actionDivider" />}

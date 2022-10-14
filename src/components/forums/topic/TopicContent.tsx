@@ -275,6 +275,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               OK
             </button>
           }
+          onClose={() => setModalInfo(null)}
         />
       )}
       {ReactGA.send('pageview')}

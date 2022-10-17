@@ -113,12 +113,6 @@
       }
     }
 
-    .forumContentHeader {
-      .descriptionBox {
-        font: 'Raleway', 'sans-serif';
-      }
-    }
-
     .customizeBanner {
       .customizeBannerButton {
         background: #1d1c1c;
@@ -197,6 +191,12 @@
     .editForumContainer .editForumBody .editForumInput,
     .editForumContainer .editForumBody .editForumInput.description {
       color: black;
+    }
+
+    .manageOwnersContainer .okButton.add {
+      background: transparent;
+      border: none;
+      color: white;
     }
 
     .manageOwnersInput,
@@ -402,6 +402,20 @@
     .postContentContainer {
       color: white;
       background: #1d1c1c;
+      &.inFlight {
+        opacity: 0.75;
+        cursor: progress;
+        background: #bdddf445;
+      }
+    }
+
+    .searchBarWrapper {
+      color: black !important;
+    }
+
+    .addGIFButton {
+      color: white;
+      border-color: white;
     }
 
     .acceptDeletePostButton {

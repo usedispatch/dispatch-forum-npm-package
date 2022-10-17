@@ -165,6 +165,10 @@
 
       &.add {
         height: 42px;
+        background: transparent;
+        color: #454196;
+        width: auto;
+        padding: 0 8px;
       }
 
       @media only screen and (max-width: 570px) {

@@ -12,10 +12,10 @@ import { ForumData } from '../../../utils/hooks';
 
 interface TopicListProps {
   forumData?: ForumData;
-  topicInFlight?: { title: string };
+  topicsInFlight: { title: string }[];
 }
 
-export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Element {
+export function TopicList({ forumData, topicsInFlight }: TopicListProps): JSX.Element {
   if (isNil(forumData)) {
     return (
     <div className="topicListContainer">
@@ -72,7 +72,9 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
             </tr>
           </thead>
           <tbody>
-            {!isNil(topicInFlight) && <TopicInFlightRow title={topicInFlight.title} />}
+            {topicsInFlight.map((t, index) => (
+              <TopicInFlightRow key={index} title={t.title} />
+            ))}
             {topics.map((topic, index) => (
               <TopicListRow key={index} topic={topic} forumData={forumData} />
             ))}

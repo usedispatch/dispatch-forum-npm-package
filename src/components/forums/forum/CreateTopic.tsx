@@ -410,6 +410,7 @@ export function CreateTopic(props: CreateTopicProps): JSX.Element {
           messageType={modalInfo.type}
           body={modalInfo.body}
           collapsible={modalInfo.collapsible}
+          onClose={() => setModalInfo(null)}
           okButton={
             <a className="okButton" onClick={() => setModalInfo(null)}>
               OK
@@ -425,6 +426,7 @@ export function CreateTopic(props: CreateTopicProps): JSX.Element {
           body={modalContent.body}
           loading={creatingNewTopic}
           okButton={modalContent.okButton}
+          onClose={() => setShowNewTopicModal(false)}
         />
       )}
       <button

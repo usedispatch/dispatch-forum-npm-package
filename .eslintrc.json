@@ -27,6 +27,12 @@
     ],
     "rules": {
         "no-console": "off",
+        "@typescript-eslint/array-type": [
+            "error",
+            {
+                "default": "array"
+            }
+        ],
         "@typescript-eslint/member-delimiter-style": [
             "error",
             {

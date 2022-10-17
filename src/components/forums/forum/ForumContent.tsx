@@ -108,8 +108,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
           </div>
           <div className="toolsWrapper" />
           <div className="topicListWrapper">
-            <TopicList
-             />
+            <TopicList topicsInFlight={[]}/>
           </div>
         </div>
       </div>
@@ -149,7 +148,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
     await update();
   };
 
-  const [newTopicInFlight, setNewTopicInFlight] = useState<{ title: string }>();
+  const [newTopicInFlight, setNewTopicInFlight] = useState<{ title: string }[]>([]);
   const [addNFTGate, setAddNFTGate] = useState(false);
   const [addSPLGate, setAddSPLGate] = useState(false);
   const [tokenGateSelection, setTokenGateSelection] = useState('');
@@ -366,7 +365,15 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
           forumData={forumData}
           update={update}
           currentForumAccessToken={currentForumAccessToken}
-          topicInFlight={(title) => setNewTopicInFlight(title.length > 0 ? { title } : undefined)}
+          topicInFlight={(title) => {
+            let newTopics = newTopicInFlight;
+            if (title.length > 0) {
+              newTopics.concat({ title });
+            } else {
+              newTopics = [];
+            }
+            setNewTopicInFlight(newTopics);
+          }}
         />
       </div>
     </div>
@@ -618,7 +625,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
           </div>
           {!isNil(forumData.collectionId) && (
             <div className="topicListWrapper">
-              <TopicList forumData={forumData} topicInFlight={newTopicInFlight}/>
+              <TopicList forumData={forumData} topicsInFlight={newTopicInFlight}/>
             </div>
           )}
         </>

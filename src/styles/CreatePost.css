@@ -15,6 +15,7 @@
   .gifModal {
     max-height: 40vh;
     max-width: 60vw;
+    margin: auto;
 
     .gifGrid {
       max-width: 70%;

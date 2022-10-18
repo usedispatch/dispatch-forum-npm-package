@@ -89,7 +89,6 @@
     .forumView,
     .forumViewContainer {
       background: #141313;
-      font-family: 'Raleway', 'sans-serif';
     }
 
     .forumContentHeader {
@@ -98,11 +97,6 @@
       .titleBox,
       .description {
         color: #ffffff;
-        font-family: 'BN BOOP', 'sans-serif';
-      }
-
-      .description {
-        font-family: 'Raleway', 'sans-serif';
       }
     }
 
@@ -124,12 +118,6 @@
 
       .actionDivider {
         background: white;
-      }
-    }
-
-    .forumContentHeader {
-      .descriptionBox {
-        font: 'Raleway', 'sans-serif';
       }
     }
 
@@ -255,7 +243,6 @@
 
     .row {
       border-bottom: 1px solid white;
-      font-family: 'Raleway', 'sans-serif';
       font-weight: 400;
       font-size: 14px;
 
@@ -278,12 +265,10 @@
     .topicViewContainer {
       color: white;
       background: #141313;
-      font-family: 'Raleway', 'sans-serif';
       font-weight: 500;
     }
 
     .disconnectedTopicView {
-      font-family: 'Raleway', 'sans-serif';
       background: #1d1c1c;
     }
 
@@ -302,7 +287,6 @@
     }
 
     .topicHeader {
-      font-family: 'Raleway', 'sans-serif';
       font-size: 24px;
     }
 
@@ -345,7 +329,6 @@
     .topicContentBox {
       color: white;
       background: #1d1c1c;
-      font-family: 'Raleway', 'sans-serif';
 
       .commentsContainer,
       .headerAndActions .topicHeader .posted .postedBy .posterId,
@@ -407,16 +390,11 @@
     /* POSTS  */
     .emptyPostsList {
       background: #1d1c1c;
-
-      .text {
-        font-family: 'Raleway', 'sans-serif';
-      }
     }
 
     .postContentContainer {
       color: white;
       background: #1d1c1c;
-      font-family: 'Raleway', 'sans-serif';
 
       &.inFlight {
         opacity: 0.75;
@@ -475,7 +453,6 @@
     /* REPLIES  */
     .repliesContainer {
       color: white;
-      font-family: 'Raleway', 'sans-serif';
     }
 
     .replyHeader {

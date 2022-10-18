@@ -6,9 +6,12 @@ import Jdenticon from 'react-jdenticon';
 import { ForumPost, PostRestriction } from '@usedispatch/client';
 import ReactGA from 'react-ga4';
 
-import { Gift, MessageSquare, Trash, Lock, Chain } from '../../../assets';
+import {
+  Gift, MessageSquare, Trash, Lock,
+} from '../../../assets';
 
 import {
+  AccountInfoLink,
   CollapsibleProps,
   MessageType,
   PopUpModal,
@@ -93,14 +96,7 @@ function TopicHeader(props: TopicHeaderProps): JSX.Element {
           </div>
           <div className="postedAt">
             {postedAt}
-            <div className="accountInfo">
-              <a
-                href={`https://solscan.io/account/${topic.address.toBase58()}?cluster=${forum.cluster}`}
-                className="transactionLink"
-                target="_blank" rel="noreferrer">
-                <Chain />
-              </a>
-            </div>
+            <AccountInfoLink href={`https://solscan.io/account/${topic.address.toBase58()}?cluster=${forum.cluster}`} />
           </div>
         </div>
         {!isEditedPost(topic)

@@ -5,8 +5,9 @@ import { ReactNode, useMemo, useRef, useState } from 'react';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
 
-import { Chain, Gift, Trash, Reply } from '../../../assets';
+import { Gift, Trash, Reply } from '../../../assets';
 import {
+  AccountInfoLink,
   CollapsibleProps,
   MessageType,
   PermissionsGate,
@@ -228,7 +229,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
     minute: 'numeric',
   })}`;
 
-  const onGifSelect = (gifURL: any): void => {
+  const onGifSelect = (gifURL: string): void => {
     setReply(reply.concat(`\n ![](${gifURL}) \n`));
     setShowGIFModal(false);
   };
@@ -365,14 +366,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       return (
                         <>
                           {postedAt}
-                          <div className="accountInfo">
-                            <a
-                              href={`https://solscan.io/account/${post.address.toBase58()}?cluster=${forum.cluster}`}
-                              className="transactionLink"
-                              target="_blank" rel="noreferrer">
-                              <Chain />
-                            </a>
-                          </div>
+                          <AccountInfoLink href={`https://solscan.io/account/${post.address.toBase58()}?cluster=${forum.cluster}`} />
                         </>
                       );
                     } else if (isEditedPost(post)) {

@@ -3,6 +3,7 @@
 @import 'tailwindcss/components';
 
 /* Common */
+@import './styles/AccountInfoLink.css';
 @import './styles/Collapsible.css';
 @import './styles/DeleteMesageButton.css';
 @import './styles/PopUpModal.css';

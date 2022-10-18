@@ -4,8 +4,8 @@ import Jdenticon from 'react-jdenticon';
 import { PublicKey } from '@solana/web3.js';
 import { ForumPost } from '@usedispatch/client';
 
-import { Chain, Gift, Trash } from '../../../assets';
-import { PermissionsGate, Spinner } from '../../../components/common';
+import { Gift, Trash } from '../../../assets';
+import { AccountInfoLink, PermissionsGate, Spinner } from '../../../components/common';
 import { EditPost, RoleLabel, Votes } from '../index';
 
 import { useForum } from '../../../contexts/DispatchProvider';
@@ -120,14 +120,7 @@ export function PostReplies(props: PostRepliesProps): JSX.Element {
                     <>
                       {postedAt(reply)}
                       {/* Only show Address link if post is confirmed */}
-                      <div className="accountInfo">
-                        <a
-                          href={`https://solscan.io/account/${reply.address.toBase58()}?cluster=${forum.cluster}`}
-                          className="transactionLink"
-                          target="_blank" rel="noreferrer">
-                          <Chain />
-                        </a>
-                      </div>
+                      <AccountInfoLink href={`https://solscan.io/account/${reply.address.toBase58()}?cluster=${forum.cluster}`} />
                     </>
                     )
                     : (

@@ -1,3 +1,4 @@
+export * from './AccountInfoLink';
 export * from './Collapsible';
 export * from './DebugWarning';
 export * from './Input';

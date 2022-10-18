@@ -1,12 +1,12 @@
-import { PublicKey } from "@solana/web3.js";
-import { useMemo } from "react";
-import { ForumPost } from "@usedispatch/client";
+import { PublicKey } from '@solana/web3.js';
+import { useMemo } from 'react';
+import { ForumPost } from '@usedispatch/client';
 
-import { PostContent } from "../../forums";
-import { DispatchForum } from "../../../utils/postbox/postboxWrapper";
-import { UserRoleType } from "../../../utils/permissions";
-import { ForumData, CreatedPost } from "../../../utils/hooks";
-import { selectRepliesFromPosts, sortByVotes } from "../../../utils/posts";
+import { PostContent } from '../../forums';
+import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
+import { UserRoleType } from '../../../utils/permissions';
+import { ForumData, CreatedPost } from '../../../utils/hooks';
+import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
 
 interface PostListProps {
   forum: DispatchForum;
@@ -24,7 +24,7 @@ interface PostListProps {
   userIsMod: boolean;
 }
 
-export function PostList(props: PostListProps) {
+export function PostList(props: PostListProps): JSX.Element {
   const {
     forumData,
     forum,
@@ -56,9 +56,9 @@ export function PostList(props: PostListProps) {
       {posts.length === 0
         ? emptyList
         : posts.map((post) => {
-            return (
+          return (
               // HACK: Use the timestring for key value here because the postId and address may not be present on `LocalPost`s
-              <div key={`post_${post.data.ts.toLocaleTimeString()}`}>
+              <div key={`post_${post.data.body}`}>
                 <PostContent
                   forum={forum}
                   forumData={forumData}
@@ -76,8 +76,8 @@ export function PostList(props: PostListProps) {
                   userIsMod={userIsMod}
                 />
               </div>
-            );
-          })}
+          );
+        })}
     </div>
   );
 }

@@ -9,7 +9,7 @@
 
       padding: 14px;
       position: absolute;
-      top: 12%;
+      top: 24px;
       right: 2%;
 
       background: #ffffff;
@@ -29,8 +29,8 @@
         opacity: 0.65;
       }
 
-      @media only screen and (max-width: 480px) {
-        top: 15%;
+      @media only screen and (max-width: 570px) {
+        top: 12px;
       }
     }
 

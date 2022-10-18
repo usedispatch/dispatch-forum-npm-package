@@ -535,6 +535,10 @@
       .walletId {
         color: white;
       }
+
+      .accountInfo svg path {
+        fill: white;
+      }
     }
 
     .replyBody {

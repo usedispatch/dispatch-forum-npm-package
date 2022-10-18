@@ -111,6 +111,35 @@
       }
     }
 
+    /* CREATING FORUM */
+    .createForumForm .formBody .acceptCreateForumButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+    }
+
+    .confirmingWrapper {
+      .forumContentHeader .titleBox {
+        color: #b3b4bb;
+      }
+
+      .topicListWrapper {
+        .tableHeader {
+          border-color: #b3b4bb;
+        }
+        .topicListContainer .tableHeader .tableHeaderTitle,
+        .emptyTopicList {
+          color: #b3b4bb;
+        }
+      }
+    }
+
+    .confirmingBanner {
+      background: #141313;
+      .title .text {
+        color: white;
+      }
+    }
+
     /* FORUM */
     .forumView,
     .forumViewContainer {
@@ -211,9 +240,9 @@
 
     .forumContent {
       .cancelButton {
-        border-color: black;
-        background: white;
-        color: #141313;
+        color: white;
+        background: transparent;
+        border-color: white;
       }
       .okButton {
         background: #141313;
@@ -324,6 +353,10 @@
 
     .topicHeader {
       font-size: 24px;
+
+      .accountInfo svg path {
+        fill: white;
+      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -463,6 +496,10 @@
         color: white;
       }
 
+      .accountInfo svg path {
+        fill: white;
+      }
+
       .box .postBody {
         color: white;
       }
@@ -497,6 +534,10 @@
     .replyHeader {
       .walletId {
         color: white;
+      }
+
+      .accountInfo svg path {
+        fill: white;
       }
     }
 
@@ -537,9 +578,13 @@
 
     .repliesSection {
       .cancelReplyButton {
-        border-color: black;
-        background: white;
-        color: #141313;
+        border-color: white;
+        background: #1d1c1c;
+        color: white;
+
+        @media only screen and (max-width: 570px) {
+          border: none;
+        }
       }
 
       .postReplyButton {

@@ -83,6 +83,7 @@
     border-radius: 12px 12px 0 0;
     box-shadow: 0px 0px 12px #00000029;
     background: white;
+    font-family: 'BN BOOP', 'sans-serif';
 
     .titleBox {
       display: flex;

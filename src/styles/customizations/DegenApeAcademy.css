@@ -178,9 +178,9 @@
 
     .forumContent {
       .cancelButton {
-        border-color: black;
-        background: white;
-        color: #141313;
+        color: white;
+        background: transparent;
+        border-color: white;
       }
       .okButton {
         background: #141313;
@@ -289,6 +289,10 @@
 
     .topicHeader {
       font-size: 24px;
+
+      .accountInfo svg path {
+        fill: white;
+      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -499,10 +503,14 @@
 
     .repliesSection {
       .cancelReplyButton {
-        border-color: black;
-        background: white;
-        color: #141313;
+        border-color: white;
+        background: #1d1c1c;
+        color: white;
         text-transform: uppercase;
+
+        @media only screen and (max-width: 570px) {
+          border: none;
+        }
       }
 
       .postReplyButton {

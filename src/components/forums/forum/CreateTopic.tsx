@@ -27,7 +27,6 @@ interface CreateTopicProps {
   currentForumAccessToken: string[];
   update: () => Promise<void>;
   topicInFlight: (title: string) => void;
-  onTopicCreated: () => void;
 }
 
 export function CreateTopic(props: CreateTopicProps): JSX.Element {
@@ -171,7 +170,6 @@ export function CreateTopic(props: CreateTopicProps): JSX.Element {
 
       await forumObject.connection.confirmTransaction(tx);
       await update();
-      props.onTopicCreated();
     } else {
       const error = tx;
       setCreatingNewTopic(false);

@@ -1,7 +1,7 @@
 import isNil from 'lodash/isNil';
 import { PublicKey } from '@solana/web3.js';
 import Markdown from 'markdown-to-jsx';
-import { useState, ReactNode, useEffect, useMemo, useCallback } from 'react';
+import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
 import Lottie from 'lottie-react';
 
@@ -142,6 +142,9 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
   const { buildTopicPath } = usePath();
 
   const [forumData, setForumData] = useState<ForumData>(initialForumData);
+  useEffect(() => {
+    setForumData(initialForumData);
+  }, [initialForumData]);
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
@@ -348,17 +351,16 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
     }
   };
 
-  const onTopicCreated = useCallback((): void => {
-    console.log('oncreate', initialForumData.posts);
-    const topics = initialForumData.posts.filter(p => p.isTopic);
-    console.log('selected', topics, topics[0]);
-    const topicPath = buildTopicPath(initialForumData.collectionId.toBase58(), (topics[0] as ForumPost).postId);
-    console.log('path', topicPath);
-    setNewTopicInFlight(undefined);
-    // location.assign(`${forumPath}${location.search}`);
-  }, [initialForumData]);
+  useEffect(() => {
+    if (!isNil(newTopicInFlight)) {
+      const topics = initialForumData.posts.filter(p => p.isTopic);
+      const topicPath = buildTopicPath(initialForumData.collectionId.toBase58(), (topics[0] as ForumPost).postId);
+      location.assign(`${topicPath}${location.search}`);
+      setNewTopicInFlight(undefined);
+    }
+  }, [initialForumData.posts]);
 
-  const forumHeader = useMemo(() => (
+  const forumHeader = (
     <div className="forumContentHeader">
       <div className={'titleBox'}>
         {currentForumAccessToken.length > 0 && (
@@ -385,11 +387,10 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
             }
           }}
           update={update}
-          onTopicCreated={onTopicCreated}
         />
       </div>
     </div>
-  ), [initialForumData]);
+  );
 
   useEffect(() => {
     parseCollectionList(newForumAccessToken);

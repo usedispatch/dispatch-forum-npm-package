@@ -16,7 +16,7 @@ import { SCOPES } from '../../../utils/permissions';
 import { Result } from '../../../types/error';
 import { isNil } from 'lodash';
 
-type ReplyEntityProps = {
+interface ReplyEntityProps {
   reply: ClientPost;
   topicOwnerId: PublicKey;
   participatingModerators: PublicKey[] | null;
@@ -28,7 +28,7 @@ type ReplyEntityProps = {
   editPost: (post: ForumPost, newText: string) => void;
   onAwardReply: (post: ForumPost) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
-};
+}
 
 const ReplyEntity = ({
   reply,
@@ -42,7 +42,7 @@ const ReplyEntity = ({
   editPost,
   onAwardReply,
   onDeletePost,
-}: ReplyEntityProps) => {
+}: ReplyEntityProps): JSX.Element => {
   const forum = useForum();
   const replyContainer = useRef<null | HTMLDivElement>(null);
 
@@ -62,7 +62,7 @@ const ReplyEntity = ({
 
   useEffect(() => {
     const { location: { hash } } = window;
-    if (!isNil(replyContainer.current) && isPost && hash && hash.split('#')[1] === reply.address.toBase58()) {
+    if (!isNil(replyContainer.current) && isPost && hash.split('#')[1] === reply.address.toBase58()) {
       replyContainer.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [replyContainer]);
@@ -182,7 +182,7 @@ const ReplyEntity = ({
             )}
           </div>
         </div>
-    );
+  );
 };
 
 export { ReplyEntity };

@@ -34,6 +34,7 @@
 @import './styles/PostContent.css';
 @import './styles/PostReplies.css';
 @import './styles/PostsList.css';
+@import './styles/ReplyEntity.css';
 @import './styles/RoleLabel.css';
 @import './styles/TopicContent.css';
 @import './styles/VotePost.css';
@@ -90,5 +91,9 @@
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 }

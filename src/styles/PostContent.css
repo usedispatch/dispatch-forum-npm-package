@@ -475,4 +475,12 @@
       }
     }
   }
+
+  .actionDivider {
+    width: 1px;
+    height: 22px;
+    margin: 0 10px;
+
+    background: #cac9cb;
+  }
 }

@@ -1,7 +1,7 @@
 import isNull from 'lodash/isNull';
 import { PublicKey } from '@solana/web3.js';
 import Markdown from 'markdown-to-jsx';
-import { ReactNode, useMemo, useRef, useState } from 'react';
+import { ReactNode, useMemo, useRef, useState, useEffect } from 'react';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
 
@@ -15,7 +15,9 @@ import {
   Spinner,
   TransactionLink,
 } from './../../common';
-import { Votes, Notification, PostReplies, GiveAward, EditPost, RoleLabel } from '../../../components/forums';
+import {
+  Votes, Notification, PostReplies, GiveAward, EditPost, RoleLabel, SharePost,
+} from '../../../components/forums';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
@@ -71,6 +73,8 @@ export function PostContent(props: PostContentProps): JSX.Element {
     userIsMod,
   } = props;
 
+  const postContainer = useRef<null | HTMLDivElement>(null);
+
   const permission = forum.permission;
 
   const forumIdentity = useForumIdentity(forumData.collectionId);
@@ -104,6 +108,13 @@ export function PostContent(props: PostContentProps): JSX.Element {
   } | null>(null);
 
   const post = useMemo(() => props.post, [props.post]);
+
+  useEffect(() => {
+    const { location: { hash } } = window;
+    if (!isNil(postContainer.current) && isForumPost(post) && hash.split('#')[1] === post.address.toBase58()) {
+      postContainer.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [postContainer]);
 
   const replies = useMemo(() => {
     if (isForumPost(post)) {
@@ -333,7 +344,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
         />
         <>
           <div className="postContentBox">
-            <div className="box">
+            <div className="box" ref={postContainer}>
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
@@ -419,6 +430,12 @@ export function PostContent(props: PostContentProps): JSX.Element {
                     editPostLocal={editPost}
                     showDividers={{ leftDivider: true, rightDivider: false }}
                   />
+                  {isForumPost(post) && (
+                    <>
+                      <div className="actionDivider" />
+                      <SharePost postAddress={post.address.toBase58()} />
+                    </>
+                  )}
                   <PermissionsGate scopes={[SCOPES.canCreateReply]}>
                     <div className="right">
                       <PermissionsGate

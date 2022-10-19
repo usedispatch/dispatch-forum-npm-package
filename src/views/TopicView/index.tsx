@@ -9,15 +9,21 @@ import {
 import { getForumID } from '../../utils/apiHelper';
 import { TopicPageContent } from '../../components/forums/topic/TopicPageContent';
 import { Spinner } from '../../components/common';
-interface Props {
+
+interface TopicViewProps {
   topicId: number;
   forumId: ForumIdentifier<ForumID | SolanartID>;
+  showTitle?: boolean;
 }
 
-export const TopicView = (props: Props): JSX.Element => {
+const defaultProps: TopicViewProps = {
+  showTitle: true,
+};
+
+export const TopicView = (props: TopicViewProps): JSX.Element => {
   const forum = useForum();
 
-  const { forumId, topicId } = props;
+  const { forumId, topicId, showTitle } = props;
   const [forumKey, setForumKey] = useState<string>();
 
   useEffect(() => {
@@ -39,10 +45,12 @@ export const TopicView = (props: Props): JSX.Element => {
       {
       // eslint-disable-next-line multiline-ternary
       forumKey !== undefined ? (
-        <TopicPageContent forumId={forumKey} topicId={topicId} />
+        <TopicPageContent forumId={forumKey} topicId={topicId} showTitle={showTitle}/>
       ) : (
         <Spinner/>
       )}
     </div>
   );
 };
+
+TopicView.defaultProps = defaultProps;

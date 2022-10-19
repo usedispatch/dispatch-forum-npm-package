@@ -20,10 +20,11 @@ import { ForumInfo } from '@usedispatch/client';
 
 interface ForumPageContentProps {
   forumID: string;
+  showTitle?: boolean;
 }
 
 export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
-  const { forumID } = props;
+  const { forumID, showTitle } = props;
   const forumObject = useForum();
   const Role = useRole();
   const { wallet, permission } = forumObject;
@@ -125,7 +126,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
   return (
   <div className={theme.mode}>
     <div className={customStyle}>
-      <Helmet>
+      {showTitle === true && <Helmet>
         <meta charSet="utf-8" />
         {isError(forumData) && isNotFoundError(forumData) && (
           <title>Create Forum for {forumID}</title>
@@ -133,7 +134,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
         {isSuccess(forumData) && (
           <title>{forumData.description.title} -- Forum</title>
         )}
-      </Helmet>
+      </Helmet>}
       <div className="forumView">
         {modal}
         <div className="forumViewContainer">

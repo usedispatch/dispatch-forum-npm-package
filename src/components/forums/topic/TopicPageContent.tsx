@@ -48,6 +48,7 @@ import { Breadcrumb } from '../../../components/common/Breadcrumb';
 interface TopicPageContentProps {
   forumId: string;
   topicId: number;
+  showTitle: boolean;
 }
 
 export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
@@ -55,7 +56,7 @@ export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
   const role = useRole();
   const forum = useForum();
   const { permission } = forum;
-  const { forumId, topicId } = props;
+  const { forumId, topicId, showTitle } = props;
   const theme = useTheme();
   const collectionPublicKey: PublicKey | null = useMemo(() => {
     try {
@@ -190,10 +191,10 @@ export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
   return (
     <div className={theme.mode}>
     <div className={customStyle}>
-      <Helmet>
+      {showTitle && <Helmet>
         <meta charSet="utf-8" />
         {isSuccess(topic) && <title>{topic.data.subj} -- Topic </title>}
-      </Helmet>
+      </Helmet>}
       <div className="topicView">
         {modal}
         <div className="topicViewContainer">

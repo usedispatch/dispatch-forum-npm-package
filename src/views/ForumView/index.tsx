@@ -7,12 +7,18 @@ import { ForumIdentifier, SolanartID, ForumID, isSolanartID } from '../../types/
 import * as web3 from '@solana/web3.js';
 import { newPublicKey } from '../../utils/postbox/validateNewPublicKey';
 import { isSuccess } from '../../utils/loading';
+
 interface ForumViewProps {
   collectionId: ForumIdentifier<ForumID | SolanartID>;
+  showTitle?: boolean;
 }
 
+const defaultProps: ForumViewProps = {
+  showTitle: true,
+};
+
 export const ForumView = (props: ForumViewProps): JSX.Element => {
-  const collectionId = props.collectionId;
+  const { collectionId, showTitle } = props;
   const { cluster } = useForum();
   const [forumKey, setForumKey] = useState<string>();
   useEffect(() => {
@@ -40,9 +46,11 @@ export const ForumView = (props: ForumViewProps): JSX.Element => {
   return (
     <div className="dsp-">
       {(forumKey !== undefined)
-        ? <ForumPageContent forumID={forumKey} />
+        ? <ForumPageContent forumID={forumKey} showTitle={showTitle}/>
         : <Spinner/>
       }
     </div>
   );
 };
+
+ForumView.defaultProps = defaultProps;

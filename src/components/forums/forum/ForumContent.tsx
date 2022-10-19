@@ -352,7 +352,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
   };
 
   useEffect(() => {
-    if (!isNil(newTopicInFlight)) {
+    if (!isNil(newTopicInFlight)) { // once topics are updated, redirect to new topic
       const topics = initialForumData.posts.filter(p => p.isTopic);
       const topicPath = buildTopicPath(initialForumData.collectionId.toBase58(), (topics[0] as ForumPost).postId);
       location.assign(`${topicPath}${location.search}`);

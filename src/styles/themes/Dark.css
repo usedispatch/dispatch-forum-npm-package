@@ -303,6 +303,10 @@
       color: white;
     }
 
+    .row.topicInFlight .confirmingTopic {
+      color: white;
+    }
+
     .row {
       border-bottom: 1px solid white;
       font-weight: 600;

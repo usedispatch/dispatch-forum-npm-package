@@ -122,6 +122,45 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
     </div>
   );
 
+  const content = useMemo(() => {
+    if (isSuccess(forumData)) {
+      return (
+        <ForumContent
+          forumObject={forumObject}
+          forumData={forumData}
+          update={update}
+        />
+      );
+    } else if (creating) {
+      return (
+        <ForumContent
+          forumObject={forumObject}
+          basicInfo={creationData}
+          update={update}
+        />
+      );
+    } else if (isPending(forumData) || isInitial(forumData)) {
+      return (
+        <div className="forumLoading">
+          <Spinner />
+        </div>
+      );
+    } else if (isNotFoundError(forumData) && !creating) {
+      return (
+        <CreateForum
+          forumObject={forumObject}
+          collectionId={forumID}
+          update={update}
+          sendCreateForum={async (info) => onCreateForum(info) }
+        />
+      );
+    } else {
+      // TODO(andrew) better, more detailed error
+      // view here
+      return disconnectedView;
+    }
+  }, [forumData]);
+
   return (
   <div className={theme.mode}>
     <div className={customStyle}>
@@ -138,44 +177,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
         {modal}
         <div className="forumViewContainer">
           <div className="forumViewContent">
-            {(() => {
-              if (isSuccess(forumData)) {
-                return (
-                  <ForumContent
-                    forumObject={forumObject}
-                    forumData={forumData}
-                    update={update}
-                  />
-                );
-              } else if (creating) {
-                return (
-                  <ForumContent
-                    forumObject={forumObject}
-                    basicInfo={creationData}
-                    update={update}
-                  />
-                );
-              } else if (isPending(forumData) || isInitial(forumData)) {
-                return (
-                  <div className="forumLoading">
-                    <Spinner />
-                  </div>
-                );
-              } else if (isNotFoundError(forumData) && !creating) {
-                return (
-                  <CreateForum
-                    forumObject={forumObject}
-                    collectionId={forumID}
-                    update={update}
-                    sendCreateForum={async (info) => onCreateForum(info) }
-                  />
-                );
-              } else {
-                // TODO(andrew) better, more detailed error
-                // view here
-                return disconnectedView;
-              }
-            })()}
+            {content}
             <PoweredByDispatch customStyle={customStyle} />
           </div>
         </div>

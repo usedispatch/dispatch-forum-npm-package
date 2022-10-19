@@ -4,7 +4,7 @@ import { PostRestriction } from '@usedispatch/client';
 
 import { Plus } from '../../../assets';
 
-import { CollapsibleProps, Input, MessageType, PermissionsGate, PopUpModal, TransactionLink } from '../../../components/common';
+import { CollapsibleProps, Input, MessageType, PermissionsGate, PopUpModal, Spinner, TransactionLink } from '../../../components/common';
 import {
   Notification,
 } from '..';
@@ -438,9 +438,13 @@ export function CreateTopic(props: CreateTopicProps): JSX.Element {
         onClick={() => {
           setShowNewTopicModal(true);
         }}>
-        <div className="buttonImageContainer">
-          <Plus />
+        {awaitingConfirmation
+          ? <div className="loading">
+          <Spinner />
         </div>
+          : <div className="buttonImageContainer">
+          <Plus />
+        </div>}
         Create Topic
       </button>
     </div>

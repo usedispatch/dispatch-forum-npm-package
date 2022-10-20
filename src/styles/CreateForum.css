@@ -262,6 +262,7 @@
     }
 
     .creating {
+      width: 28px;
       sgv {
         height: 26px;
         margin-right: 0;

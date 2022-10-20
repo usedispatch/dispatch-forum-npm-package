@@ -159,7 +159,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
       // view here
       return disconnectedView;
     }
-  }, [forumData]);
+  }, [forumData, creating]);
 
   return (
   <div className={theme.mode}>

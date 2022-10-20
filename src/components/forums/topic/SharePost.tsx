@@ -21,7 +21,7 @@ const SharePost = ({ postAddress }: SharePostProps): JSX.Element => {
     setNotification({
       isHidden: false,
       content: 'Link copied successfully',
-      type: MessageType.success,
+      type: MessageType.info,
     });
     setTimeout(
       () => setNotification({ isHidden: true }),

@@ -9,7 +9,7 @@ interface SharePostProps {
   postAddress: string;
 }
 
-const SharePost = ({ postAddress }: SharePostProps): JSX.Element => {
+export function SharePost({ postAddress }: SharePostProps): JSX.Element {
   const [notification, setNotification] = useState<{
     isHidden: boolean;
     content?: string;
@@ -17,7 +17,8 @@ const SharePost = ({ postAddress }: SharePostProps): JSX.Element => {
   }>({ isHidden: true });
 
   const handleClick = async (): Promise<any> => {
-    await navigator.clipboard.writeText(`${window.location.href}#${postAddress}`);
+    window.location.replace(`#${postAddress}`);
+    await navigator.clipboard.writeText(window.location.href);
     setNotification({
       isHidden: false,
       content: 'Link copied successfully',
@@ -38,12 +39,8 @@ const SharePost = ({ postAddress }: SharePostProps): JSX.Element => {
         onClose={() => setNotification({ isHidden: true })}
       />
       <button type="button" onClick={handleClick}>
-      <a href={`#${postAddress}`}>
-        <Chain />
-      </a>
+      <Chain />
     </button>
     </>
   );
 };
-
-export { SharePost };

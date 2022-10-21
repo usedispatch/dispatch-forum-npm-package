@@ -30,7 +30,7 @@ interface ReplyEntityProps {
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
 }
 
-const ReplyEntity = ({
+export function ReplyEntity({
   reply,
   topicOwnerId,
   participatingModerators,
@@ -42,7 +42,7 @@ const ReplyEntity = ({
   editPost,
   onAwardReply,
   onDeletePost,
-}: ReplyEntityProps): JSX.Element => {
+}: ReplyEntityProps): JSX.Element {
   const forum = useForum();
   const replyContainer = useRef<null | HTMLDivElement>(null);
 
@@ -184,5 +184,3 @@ const ReplyEntity = ({
         </div>
   );
 };
-
-export { ReplyEntity };

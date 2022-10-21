@@ -460,6 +460,12 @@
       }
     }
 
+    .accountInfo {
+      svg path {
+        stroke: #86878e;
+      }
+    }
+
     /* POSTS  */
     .emptyPostsList {
       background: #1d1c1c;

@@ -4,6 +4,7 @@ export * from './Close';
 export * from './DispatchLogo';
 export * from './Edit';
 export * from './Error';
+export * from './ExternalLink';
 export * from './ForumLogo';
 export * from './Gear';
 export * from './Gift';

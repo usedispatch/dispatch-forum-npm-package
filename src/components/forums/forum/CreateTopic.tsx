@@ -201,16 +201,8 @@ export function CreateTopic(props: CreateTopicProps): JSX.Element {
   }, [newTopic.SPLaccessToken, newTopic.NFTaccessToken.length, keepGates]);
 
   useEffect(() => {
-    if (tokenGateSelection === 'NFT') {
-      setAddNFTGate(true);
-      setAddSPLGate(false);
-    } else if (tokenGateSelection === 'SPL') {
-      setAddNFTGate(false);
-      setAddSPLGate(true);
-    } else {
-      setAddNFTGate(false);
-      setAddSPLGate(false);
-    }
+    setAddNFTGate(tokenGateSelection === 'NFT');
+    setAddSPLGate(tokenGateSelection === 'SPL');
   }, [tokenGateSelection]);
 
   let modalContent: {

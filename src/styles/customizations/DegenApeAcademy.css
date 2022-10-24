@@ -288,10 +288,6 @@
 
     .topicHeader {
       font-size: 24px;
-
-      .accountInfo svg path {
-        fill: white;
-      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -519,6 +515,11 @@
         color: white;
         text-transform: uppercase;
       }
+    }
+  }
+  .accountInfo {
+    svg path {
+      stroke: #86878e;
     }
   }
 }

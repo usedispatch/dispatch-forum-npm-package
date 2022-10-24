@@ -289,10 +289,6 @@
 
     .topicHeader {
       font-size: 24px;
-
-      .accountInfo svg path {
-        fill: white;
-      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -526,6 +522,11 @@
           border-color: #00ffbd;
         }
       }
+    }
+  }
+  .accountInfo {
+    svg path {
+      stroke: #86878e;
     }
   }
 }

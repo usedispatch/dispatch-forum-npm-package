@@ -351,10 +351,6 @@
 
     .topicHeader {
       font-size: 24px;
-
-      .accountInfo svg path {
-        fill: white;
-      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -500,10 +496,6 @@
         color: white;
       }
 
-      .accountInfo svg path {
-        fill: white;
-      }
-
       .box .postBody {
         color: white;
       }
@@ -538,10 +530,6 @@
     .replyHeader {
       .walletId {
         color: white;
-      }
-
-      .accountInfo svg path {
-        fill: white;
       }
     }
 

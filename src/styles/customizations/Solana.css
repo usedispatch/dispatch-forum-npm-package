@@ -279,13 +279,23 @@
       color: white;
     }
 
-    .breadcrumbContainer,
-    .parent {
-      color: #999999;
-      font-weight: 500;
+    .breadcrumbContainer {
+      .parent {
+        color: #999999;
+        font-weight: 500;
 
-      svg path {
-        stroke: #999999;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+
+        svg path {
+          stroke: #999999;
+        }
+      }
+      .current {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
     }
 

@@ -925,7 +925,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
           <div className="toolsWrapper">
             <PermissionsGate scopes={[SCOPES.canEditForum]}>
               <div className="moderatorToolsContainer">
-                <div>Owner tools: </div>
+                <div>Manage tools: </div>
                 <div className="tools">
                   <div className="lock">
                     <Lock />
@@ -940,7 +940,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
                           className="moderatorTool"
                           disabled={!permission.readAndWrite}
                           onClick={() => setShowManageAccessToken(true)}>
-                          Manage forum access
+                          Forum access
                         </button>
                       </PermissionsGate>
                     )

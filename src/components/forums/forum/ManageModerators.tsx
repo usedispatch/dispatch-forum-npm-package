@@ -243,7 +243,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
             onClick={() =>
               setManageModerators({ ...manageModerators, show: true })
             }>
-            Manage moderators
+            Moderators
           </button>
         </PermissionsGate>
       </div>

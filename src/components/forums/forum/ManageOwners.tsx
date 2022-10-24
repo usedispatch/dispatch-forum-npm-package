@@ -295,7 +295,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
             disabled={!permission.readAndWrite}
             onClick={() => setManageOwners({ ...manageOwners, show: true })}
           >
-            Manage owners
+            Owners
           </button>
         </PermissionsGate>
       </div>

@@ -95,11 +95,11 @@
       font-size: 40px;
       color: #2e008b;
       word-break: break-word;
+      line-height: 32px;
 
       @media only screen and (max-width: 570px) {
         flex-direction: column;
         margin: 0 8px;
-        padding: 12px 0;
 
         font-size: 26px;
       }
@@ -372,7 +372,6 @@
     }
 
     @media only screen and (max-width: 570px) {
-      padding: 12px;
       gap: 14px;
       flex-wrap: wrap;
       justify-content: flex-start;

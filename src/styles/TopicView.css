@@ -14,6 +14,10 @@
       color: #4a279c;
       text-decoration: none;
 
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
       &:hover {
         opacity: 0.65;
       }
@@ -32,6 +36,9 @@
 
     .current {
       overflow-wrap: anywhere;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 

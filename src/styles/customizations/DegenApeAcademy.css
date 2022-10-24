@@ -175,6 +175,7 @@
 
     .gatedForum,
     .lock,
+    .manageOwnersButton,
     .editForumButton {
       svg path {
         stroke: white;

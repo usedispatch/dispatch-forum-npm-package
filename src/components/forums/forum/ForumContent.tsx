@@ -927,9 +927,6 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
               <div className="moderatorToolsContainer">
                 <div>Manage tools: </div>
                 <div className="tools">
-                  <div className="lock">
-                    <Lock />
-                  </div>
                   <ManageOwners forumData={forumData} />
                   <ManageModerators forumData={forumData} />
                   {

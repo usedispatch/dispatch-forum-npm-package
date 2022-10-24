@@ -179,7 +179,6 @@
     .customizeBanner {
       .customizeBannerButton {
         background: #1d1c1c;
-        border-color: white;
 
         svg path {
           stroke: white;
@@ -187,7 +186,6 @@
 
         &:hover {
           color: #6e59b1;
-          border-color: #6e59b1;
 
           svg path {
             stroke: #6e59b1;

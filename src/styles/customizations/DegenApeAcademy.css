@@ -125,7 +125,6 @@
     .customizeBanner {
       .customizeBannerButton {
         background: #1d1c1c;
-        border-color: white;
 
         svg path {
           stroke: white;

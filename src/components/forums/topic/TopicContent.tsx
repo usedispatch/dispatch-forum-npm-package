@@ -32,7 +32,6 @@ import {
   ForumData,
   CreatedPost,
   EditedPost,
-  useUserIsMod,
   useForumIdentity,
   ForumIdentity,
   isEditedPost,
@@ -182,12 +181,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
     type: MessageType;
   }>();
 
-  const userIsMod = useUserIsMod(
-    forumData.collectionId,
-    forum,
-    forum.wallet.publicKey ?? new PublicKey('11111111111111111111111111111111'),
-  ) ?? false;
-
+  const userIsMod = userRoles.includes(UserRoleType.Moderator);
   const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);

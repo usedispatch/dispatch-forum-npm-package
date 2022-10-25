@@ -90,6 +90,11 @@
       .description {
         color: #ffffff;
       }
+
+      .titleBox {
+        line-height: 32px;
+        padding: 24px 0;
+      }
     }
 
     .toolsWrapper {
@@ -169,6 +174,7 @@
 
     .gatedForum,
     .lock,
+    .manageOwnersButton,
     .editForumButton {
       svg path {
         stroke: white;

@@ -1,20 +1,20 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode, useMemo } from "react";
+import { useState, ReactNode, useMemo } from 'react';
 
-import { Edit } from "../../../assets";
+import { Edit } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
   TransactionLink,
-} from "../../common";
-import { Notification } from "../../forums";
-import { useForum } from "../../../contexts/DispatchProvider";
+} from '../../common';
+import { Notification } from '../../forums';
+import { useForum } from '../../../contexts/DispatchProvider';
 
-import { ForumData } from "../../../utils/hooks";
-import { errorSummary } from "../../../utils/error";
-import { isSuccess } from "../../../utils/loading";
-import { NOTIFICATION_BANNER_TIMEOUT } from "../../../utils/consts";
+import { ForumData } from '../../../utils/hooks';
+import { errorSummary } from '../../../utils/error';
+import { isSuccess } from '../../../utils/loading';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 
 interface EditForumProps {
   forumData: ForumData;
@@ -26,7 +26,7 @@ export function EditForum(props: EditForumProps) {
   const forumObject = useForum();
   const { permission } = forumObject;
   const [bodySize, setBodySize] = useState(
-    new Buffer(forumData.description.desc, "utf-8").byteLength
+    new Buffer(forumData.description.desc, 'utf-8').byteLength,
   );
   const [editForum, setEditForum] = useState<{
     show: boolean;
@@ -57,11 +57,10 @@ export function EditForum(props: EditForumProps) {
 
   const editForumInfo = async () => {
     setEditForum({ ...editForum, loading: true });
-    const desc = { title: editForum.title!, desc: editForum.description! };
+    const desc = { title: editForum.title, desc: editForum.description };
 
     const tx = await forumObject.setDescription(forumData.collectionId, desc);
     if (isSuccess(tx)) {
-
       await update();
       setBodySize(0);
       setEditForum({ show: false, title: desc.title, description: desc.desc });
@@ -77,16 +76,16 @@ export function EditForum(props: EditForumProps) {
       });
       setTimeout(
         () => setNotificationContent({ isHidden: true }),
-        NOTIFICATION_BANNER_TIMEOUT
+        NOTIFICATION_BANNER_TIMEOUT,
       );
     } else {
       const error = tx;
       setEditForum({ ...editForum, loading: false });
       setModalInfo({
-        title: "Something went wrong!",
+        title: 'Something went wrong!',
         type: MessageType.error,
-        body: `The forum could not be edited`,
-        collapsible: { header: "Error", content: errorSummary(error) },
+        body: 'The forum could not be edited',
+        collapsible: { header: 'Error', content: errorSummary(error) },
       });
     }
   };
@@ -136,7 +135,7 @@ export function EditForum(props: EditForumProps) {
                         description: e.target.value,
                       });
                       setBodySize(
-                        new Buffer(e.target.value, "utf-8").byteLength
+                        new Buffer(e.target.value, 'utf-8').byteLength,
                       );
                     }}
                   />
@@ -152,7 +151,7 @@ export function EditForum(props: EditForumProps) {
                 description: forumData.description.desc,
               });
               setBodySize(
-                new Buffer(forumData.description.desc, "utf-8").byteLength
+                new Buffer(forumData.description.desc, 'utf-8').byteLength,
               );
             }}
             okButton={
@@ -164,7 +163,7 @@ export function EditForum(props: EditForumProps) {
                     editForum.title.length > 0
                   ) || bodySize > 800
                 }
-                onClick={() => editForumInfo()}>
+                onClick={async () => editForumInfo()}>
                 Save
               </button>
             }
@@ -191,7 +190,7 @@ export function EditForum(props: EditForumProps) {
           className="editForumButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditForum({ ...editForum, show: true })}>
-          <Edit /> Edit forum
+          <Edit /> Edit
         </button>
       </div>
     </div>

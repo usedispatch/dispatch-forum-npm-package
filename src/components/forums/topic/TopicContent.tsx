@@ -69,7 +69,6 @@ function TopicHeader(props: TopicHeaderProps): JSX.Element {
       <div className="topicTitle">
         <div className="posted">
           <div className="postedBy">
-            By
             <div className="icon">
               {(identity != null)
                 ? (

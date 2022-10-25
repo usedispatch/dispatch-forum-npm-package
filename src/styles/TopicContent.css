@@ -185,7 +185,7 @@
             display: flex;
             height: 16px;
             width: 16px;
-            margin: 0 2px 0 6px;
+            margin-right: 2px;
             align-items: center;
           }
 
@@ -203,7 +203,7 @@
 
             @media only screen and (max-width: 480px) {
               max-width: 70px;
-              margin-right: 4px;
+              margin-right: 2px;
             }
           }
         }

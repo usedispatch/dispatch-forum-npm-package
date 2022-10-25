@@ -2,7 +2,9 @@
   .breadcrumbContainer {
     display: flex;
     align-items: center;
-    padding: 16px 24px 12px;
+    padding-top: 16px;
+    padding-bottom: 12px;
+    padding-right: 24px;
 
     color: #4a279c;
     font-weight: 300;
@@ -31,6 +33,7 @@
       svg {
         width: 12px;
         height: 12px;
+        transform: rotate(180deg);
       }
     }
 

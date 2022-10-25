@@ -224,7 +224,6 @@ export function TopicPageContent(props: TopicPageContentProps): JSX.Element {
                         <Breadcrumb
                           navigateTo={forumPath}
                           parent={forumData.description.title}
-                          current={isSuccess(topic.data) && topic.data.subj !== undefined ? topic.data.subj : ''}
                         />
                         <TopicContent
                           forumData={forumData}

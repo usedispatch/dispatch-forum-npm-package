@@ -184,7 +184,6 @@
     .customizeBanner {
       .customizeBannerButton {
         background: #1d1c1c;
-        border-color: white;
 
         svg path {
           stroke: white;
@@ -192,7 +191,6 @@
 
         &:hover {
           color: #6e59b1;
-          border-color: #6e59b1;
 
           svg path {
             stroke: #6e59b1;
@@ -373,10 +371,6 @@
 
     .topicHeader {
       font-size: 24px;
-
-      .accountInfo svg path {
-        fill: white;
-      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -522,10 +516,6 @@
         color: white;
       }
 
-      .accountInfo svg path {
-        fill: white;
-      }
-
       .box .postBody {
         color: white;
       }
@@ -560,10 +550,6 @@
     .replyHeader {
       .walletId {
         color: white;
-      }
-
-      .accountInfo svg path {
-        fill: white;
       }
     }
 

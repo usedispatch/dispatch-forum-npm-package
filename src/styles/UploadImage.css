@@ -14,7 +14,7 @@
 
       background: #ffffff;
       border-radius: 8px;
-      border: 1px solid #383b8b;
+      box-shadow: 0px 10px 12px 0px #00000029;
 
       svg path {
         stroke: #454196;
@@ -31,6 +31,7 @@
 
       @media only screen and (max-width: 570px) {
         top: 12px;
+        right: 5%;
       }
     }
 

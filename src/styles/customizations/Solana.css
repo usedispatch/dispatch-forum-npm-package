@@ -121,7 +121,6 @@
     .customizeBanner {
       .customizeBannerButton {
         background: #1d1c1c;
-        border-color: white;
 
         svg path {
           stroke: white;
@@ -129,7 +128,6 @@
 
         &:hover {
           color: rgb(20, 241, 149);
-          border-color: rgb(20, 241, 149);
 
           svg path {
             stroke: rgb(20, 241, 149);
@@ -311,10 +309,6 @@
 
     .topicHeader {
       font-size: 24px;
-
-      .accountInfo svg path {
-        fill: white;
-      }
     }
 
     .editPostContainer .editPostBody .editPostInput {
@@ -549,6 +543,11 @@
           border-color: rgb(20, 241, 149);
         }
       }
+    }
+  }
+  .accountInfo {
+    svg path {
+      stroke: #86878e;
     }
   }
 }

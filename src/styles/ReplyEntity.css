@@ -8,7 +8,6 @@
       background: #bdddf445;
       padding: 18px 18px;
       border-radius: 12px;
-      display: contents;
     }
   }
 
@@ -64,7 +63,7 @@
 
       @media only screen and (max-width: 480px) {
         max-width: 70px;
-        margin-right: 2px
+        margin-right: 2px;
       }
     }
 

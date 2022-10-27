@@ -7,8 +7,8 @@ import {
   selectTopics,
   sortByVotes,
   selectForumPosts,
-} from '../../../utils/posts';
-import { ForumData } from '../../../utils/hooks';
+} from '../../../../utils/posts';
+import { ForumData } from '../../../../utils/hooks';
 
 interface TopicListProps {
   forumData?: ForumData;
@@ -16,42 +16,16 @@ interface TopicListProps {
 }
 
 export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Element {
-  if (isNil(forumData)) {
-    return (
-    <div className="topicListContainer">
-      <div>
-        <table className="tableContainer">
-          <thead>
-            <tr className="tableHeader">
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderText">Topics</div>
-              </th>
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderText posters">Wallets</div>
-              </th>
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderTextCenter">Replies</div>
-              </th>
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderTextCenter">Activity</div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-          </tbody>
-        </table>
-        <div className="emptyTopicList">No topics yet</div>
-      </div>
-    </div>
-    );
-  } else {
-    const topics = useMemo(() => {
+  const topics = useMemo(() => {
+    if (!isNil(forumData)) {
       const topics = selectTopics(forumData.posts);
       const sorted = sortByVotes(topics);
       return selectForumPosts(sorted);
-    }, [forumData]);
+    }
+    return [];
+  }, [forumData]);
 
-    return (
+  return(
     <div className="topicListContainer">
       <div>
         <table className="tableContainer">
@@ -72,19 +46,14 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
             </tr>
           </thead>
           <tbody>
-            {!isNil(topicInFlight) && (
-              <TopicInFlightRow title={topicInFlight.title} />
-            )}
-            {topics.map((topic, index) => (
+            {!isNil(topicInFlight) && <TopicInFlightRow title={topicInFlight.title} />}
+            {!isNil(forumData) && topics.map((topic, index) => (
               <TopicListRow key={index} topic={topic} forumData={forumData} />
             ))}
           </tbody>
         </table>
-        {topics.length === 0 && (
-          <div className="emptyTopicList">No topics yet</div>
-        )}
+        {(isNil(forumData) || topics.length === 0) && <div className="emptyTopicList">No topics yet</div>}
       </div>
     </div>
-    );
-  }
-}
+  );
+};

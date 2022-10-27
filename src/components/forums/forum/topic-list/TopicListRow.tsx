@@ -4,14 +4,14 @@ import Markdown from 'markdown-to-jsx';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
 
-import { Link, Spinner } from '../../../components/common';
+import { Link, Spinner } from '../../../../components/common';
 
-import { ForumData } from '../../../utils/hooks';
-import { getIdentity } from '../../../utils/identity';
-import { isSuccess } from '../../../utils/loading';
-import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
-import { selectForumPosts, selectRepliesFromPosts } from '../../../utils/posts';
-import { usePath } from '../../../contexts/DispatchProvider';
+import { ForumData } from '../../../../utils/hooks';
+import { getIdentity } from '../../../../utils/identity';
+import { isSuccess } from '../../../../utils/loading';
+import { newPublicKey } from '../../../../utils/postbox/validateNewPublicKey';
+import { selectForumPosts, selectRepliesFromPosts } from '../../../../utils/posts';
+import { usePath } from '../../../../contexts/DispatchProvider';
 
 interface TopicListRowProps {
   topic: ForumPost;

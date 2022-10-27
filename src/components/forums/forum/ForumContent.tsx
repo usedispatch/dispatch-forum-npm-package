@@ -17,7 +17,6 @@ import {
   Spinner,
 } from '../../common';
 import {
-  TopicList,
   EditForum,
   ManageOwners,
   ManageModerators,
@@ -47,6 +46,7 @@ import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
 import { ForumPost } from '@usedispatch/client';
 import { usePath } from '../../../contexts/DispatchProvider';
+import { TopicList } from './topic-list';
 
 interface ForumContentProps {
   forumObject: DispatchForum;

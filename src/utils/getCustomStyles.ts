@@ -11,6 +11,9 @@ export function getCustomStyles(collectionID: string): string {
     case '6ThcrupJDDxxKKsDdGy1xjEkZdrZGsjt33B6iyK8VhP9':
       result = 'solana';
       break;
+    case 'AWuH8QVibFvJMgzvRmwyCtWN5Vrwd55tURPzjpsFR8ut':
+      result = 'solanaSpace';
+      break;
     default:
       break;
   }

@@ -14,6 +14,7 @@ interface PostRepliesProps {
   userRoles: UserRoleType[];
   replies: ClientPost[];
   topicOwnerId: PublicKey;
+  showGift: boolean;
   update: () => Promise<void>;
   editPost: (post: ForumPost, newText: string) => void;
   onDeletePost: (postToDelete: ForumPost) => Promise<void>;
@@ -32,6 +33,7 @@ export function PostReplies(props: PostRepliesProps): JSX.Element {
     onUpVotePost,
     onAwardReply,
     update,
+    showGift,
     editPost,
   } = props;
 
@@ -73,6 +75,7 @@ export function PostReplies(props: PostRepliesProps): JSX.Element {
           editPost={editPost}
           onAwardReply={onAwardReply}
           onDeletePost={onDeletePost}
+          showGift={showGift}
         />
       ))}
     </div>

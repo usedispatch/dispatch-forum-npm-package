@@ -272,6 +272,22 @@
     }
 
     /* TOPIC */
+    .topicListRowAsMobileContainer {
+      border-bottom-color: white;
+    }
+
+    .topicListAsMobileTitle {
+      border-color: white;
+      color: white;
+    }
+
+    .TopicListAsMobileTitle,
+    .topicListRowAsMobileBottomData,
+    .topicListRowAsMobilePostersContainer,
+    .topicListRowAsMobileTitle {
+      color: white;
+    }
+
     .topicView,
     .topicViewContainer {
       color: white;

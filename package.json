@@ -118,6 +118,7 @@
     "react-ga4": "^1.4.1",
     "react-helmet": "^6.1.0",
     "react-jdenticon": "^1.0.0",
+    "react-twitter-embed": "^4.0.4",
     "save": "^2.5.0"
   },
   "peerDependencies": {

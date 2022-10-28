@@ -586,8 +586,8 @@
       font-family: Circular;
       background: white;
       color: black;
-      border-color: black;
-      border-width: 0;
+      border-color: #cac9cb;
+      border-width: 1px;
 
       &::placeholder {
         color: #5f5f5f;

@@ -375,10 +375,10 @@
         font-family: Circular;
         background: #141313;
         border: 1px solid #30302e;
-        color: #30302e;
+        color: white;
 
         svg path {
-          fill: #30302e;
+          fill: white;
         }
       }
 
@@ -642,7 +642,7 @@
     color: black;
     a {
       svg {
-        path{
+        path {
           fill: black;
           &:nth-child(3) {
             fill: white;

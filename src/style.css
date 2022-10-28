@@ -25,7 +25,9 @@
 @import './styles/ManageOwners.css';
 @import './styles/ManageModerator.css';
 @import './styles/TopicList.css';
+@import './styles/TopicListAsMobile.css';
 @import './styles/TopicListRow.css';
+@import './styles/TopicListRowAsMobile.css';
 @import './styles/UploadImage.css';
 
 /* Topic */

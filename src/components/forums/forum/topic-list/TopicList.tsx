@@ -9,6 +9,8 @@ import {
   selectForumPosts,
 } from '../../../../utils/posts';
 import { ForumData } from '../../../../utils/hooks';
+import { useMediaQuery } from '../../../../utils/useMediaQuery';
+import { TopicListAsMobile } from './TopicListaAsMobile';
 
 interface TopicListProps {
   forumData?: ForumData;
@@ -16,6 +18,8 @@ interface TopicListProps {
 }
 
 export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Element {
+  const isMobile = useMediaQuery(`(max-width: 768px)`);
+
   const topics = useMemo(() => {
     if (!isNil(forumData)) {
       const topics = selectTopics(forumData.posts);
@@ -25,10 +29,13 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
     return [];
   }, [forumData]);
 
-  return(
-    <div className="topicListContainer">
-      <div>
-        <table className="tableContainer">
+  function renderTopics(): JSX.Element {
+    if (isMobile) {
+      return <TopicListAsMobile topics={topics} topicInFlight={topicInFlight} forumData={forumData} />
+    }
+
+    return (
+      <table className="tableContainer">
           <thead>
             <tr className="tableHeader">
               <th className="tableHeaderTitle">
@@ -52,6 +59,13 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
             ))}
           </tbody>
         </table>
+    );
+  }
+
+  return(
+    <div className="topicListContainer">
+      <div>
+        {renderTopics()}
         {(isNil(forumData) || topics.length === 0) && <div className="emptyTopicList">No topics yet</div>}
       </div>
     </div>

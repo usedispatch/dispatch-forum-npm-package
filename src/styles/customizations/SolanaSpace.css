@@ -628,16 +628,6 @@
     }
   }
 
-  .createForumTitle {
-    color: black;
-    font-family: Circular;
-  }
-
-  .acceptCreateForumButton {
-    font-family: Circular;
-    background-color: black;
-  }
-
   .poweredByDispatch {
     color: black;
     a {

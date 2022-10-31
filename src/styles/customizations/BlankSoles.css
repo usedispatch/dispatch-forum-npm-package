@@ -1,0 +1,638 @@
+@layer components {
+  .blankSoles {
+    box-shadow: 0 8px 16px #41414933;
+    color: black;
+
+    /* NOTIFICATION */
+    .alertContent {
+      
+      background: white;
+      border: 1px solid #999999;
+
+      .alertText {
+        color: #30302e;
+      }
+    }
+
+    .notificationContainer {
+      
+      .closeContainer svg path {
+        stroke: #30302e;
+        fill: #30302e;
+      }
+
+      &.info {
+        background: white;
+        border: 1px solid #397bad;
+      }
+
+      &.error {
+        background: white;
+        border: 1px solid #e86143;
+      }
+
+      &.warning {
+        background: white;
+        border: 1px solid #ffb549;
+      }
+
+      &.success {
+        background: white;
+        border: 1px solid #84b971;
+      }
+    }
+
+    .notificationText {
+      font-weight: 500;
+      font-size: 14px;
+      color: #30302e;
+    }
+
+    /* POPUP MODAL */
+    .popUpModal {
+      .modalContainer .modalBox {
+        color: #30302e;
+        background: white;
+        border: 1px solid #999999;
+      }
+
+      .modalClose .closeIcon {
+        svg path {
+          fill: #30302e;
+        }
+      }
+
+      .modalActionsContainer .acceptAction .okButton,
+      .modalActionsContainer .acceptAction .okInfoButton {
+        background: white;
+        border: 1px solid #30302e;
+        color: #30302e;
+        
+      }
+    }
+
+    .collapsibleContainer {
+      background: #d9d9d9;
+      color: white;
+      
+      border: 1px solid #999999;
+
+      .visibilityButton {
+        svg path {
+          stroke: white;
+        }
+      }
+    }
+
+    /* FORUM */
+    .forumView,
+    .forumViewContainer {
+      
+      background: white;
+    }
+
+    .forumContentHeader {
+      background: white;
+
+      .titleBox,
+      .description {
+        color: #1d1c1c;
+        
+      }
+
+      .titleBox {
+        line-height: 32px;
+        padding: 24px 0;
+      }
+    }
+
+    .toolsWrapper {
+      background: white;
+      
+    }
+
+    .moderatorToolsContainer {
+      background: white;
+      border-top: 1px solid #30302e;
+      color: #1d1c1c;
+      
+
+      .manageOwnersButton,
+      .manageModeratorsButton,
+      .moderatorTool,
+      .editForumButton {
+        color: #d1d1d1;
+        
+      }
+
+      .actionDivider {
+        background: #30302e;
+      }
+    }
+
+    .customizeBanner {
+      
+      .customizeBannerButton {
+        
+        background: #1d1c1c;
+        
+
+        svg path {
+          stroke: #30302e;
+        }
+
+        &:hover {
+          color: rgb(20, 241, 149);
+
+          svg path {
+            stroke: rgb(20, 241, 149);
+          }
+        }
+      }
+
+      .uploadImageWrapper {
+        .imageSrcInput {
+          color: black;
+          
+        }
+
+        .imageContainer {
+          color: black;
+          background: white;
+          border: 2px dashed rgb(20, 241, 149);
+          
+        }
+      }
+    }
+
+    .createTopicButton {
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      font-style: normal;
+      font-weight: 400;
+      
+
+      &:hover {
+        color: rgb(20, 241, 149);
+        border-color: rgb(20, 241, 149);
+
+        svg path {
+          fill: rgb(20, 241, 149);
+        }
+      }
+    }
+
+    .newAccessToken,
+    .createTopicTitleInput {
+      color: black;
+      
+    }
+
+    .gatedForum,
+    .lock,
+    .manageOwnersButton,
+    .editForumButton {
+      svg path {
+        stroke: #30302e;
+      }
+    }
+
+    .forumContent {
+      .cancelButton {
+        color: #30302e;
+        background: transparent;
+        border-color: #30302e;
+        
+      }
+      .okButton {
+        background: #141313;
+        border: 1px solid #30302e;
+        color: #30302e;
+        
+      }
+    }
+
+    .editForumContainer .editForumBody .editForumInput,
+    .editForumContainer .editForumBody .editForumInput.description {
+      color: black;
+      
+    }
+
+    .manageOwnersContainer .okButton.add {
+      background: transparent;
+      border: none;
+      color: #30302e;
+      
+    }
+
+    .manageOwnersInput,
+    .manageModeratorsInput {
+      color: black;
+      
+    }
+
+    .manageModeratorsContainer .currentModerators,
+    .manageOwnersContainer .currentOwners,
+    .currentToken {
+      color: #999;
+      
+    }
+
+    .currentToken svg path {
+      fill: #b0b0b0;
+    }
+
+    /* TOPIC LIST */
+    .topicListContainer,
+    .emptyTopicList {
+      background: white;
+      color: #30302e;
+      
+    }
+
+    @media only screen and (max-width: 768px) {
+      .topicListContainer {
+        
+        box-shadow: 0px 4px 12px rgb(0 0 0 / 16%),
+          inset -4px 0px 8px 0 rgb(255 255 255 / 16%);
+      }
+    }
+
+    .current {
+      display: flex;
+      
+    }
+
+    .tableHeader {
+      border-color: #30302e;
+      
+    }
+
+    .topicListContainer .tableHeader .tableHeaderTitle {
+      color: #30302e;
+      
+    }
+
+    .row.topicInFlight .confirmingTopic {
+      color: #30302e;
+      
+    }
+
+    .row {
+      border-bottom: 1px solid #30302e;
+      font-weight: 400;
+      font-size: 14px;
+      
+
+      .rowSubj {
+        font-weight: 400;
+        line-height: 2;
+        
+      }
+
+      &:hover {
+        background: #9993;
+
+        a {
+          color: rgb(20, 241, 149);
+        }
+      }
+
+      a {
+        color: #30302e;
+      }
+    }
+
+    /* TOPIC */
+    .topicView,
+    .topicViewContainer {
+      color: #30302e;
+      background: white;
+      font-weight: 500;
+      
+    }
+
+    .disconnectedTopicView {
+      background: white;
+      
+    }
+
+    .posted {
+      
+      color: #30302e;
+    }
+
+    .breadcrumbContainer {
+      .parent {
+        
+        color: #999999;
+        font-weight: 500;
+
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+
+        svg path {
+          stroke: #999999;
+        }
+      }
+      .current {
+        
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+    }
+
+    .topicHeader {
+      
+      font-size: 24px;
+    }
+
+    .editPostContainer .editPostBody .editPostInput {
+      
+      color: black;
+    }
+
+    .editPostButton {
+      color: #b0b0b0;
+      
+      svg path {
+        stroke: #b0b0b0;
+      }
+    }
+
+    .votePostContainer .votePostContent .currentVotes {
+      
+      color: #30302e;
+    }
+
+    .awardContent {
+      .typeSelector .nftType {
+        
+        background: #141313;
+        border: 1px solid #30302e;
+        color: white;
+
+        svg path {
+          fill: white;
+        }
+      }
+
+      .giftsContainer .giftsGrid .selectedNFT {
+        
+        color: #30302e;
+        border: 1px solid #30302e;
+      }
+
+      .amountInput {
+        
+        color: black;
+      }
+    }
+
+    .topicContentBox {
+      
+      color: #30302e;
+      background: white;
+
+      .commentsContainer,
+      .headerAndActions .topicHeader .posted .postedBy .posterId,
+      .headerAndActions .topicHeader .topicBody {
+        color: #30302e;
+        font-weight: 500;
+      }
+
+      .headerAndActions .topicToolsContainer {
+        .actionDivider {
+          background: #30302e;
+          
+        }
+
+        .moderatorTool,
+        .awardButton {
+          
+          color: #b0b0b0;
+        }
+
+        .awardButton {
+          svg path {
+            stroke: #b0b0b0;
+          }
+        }
+
+        .delete svg path {
+          fill: #b0b0b0;
+        }
+
+        .lock svg path {
+          stroke: #b0b0b0;
+        }
+      }
+    }
+
+    .okButton,
+    .acceptDeleteTopicButton {
+      
+      background: #141313;
+      border: 1px solid #30302e;
+      color: #30302e;
+    }
+
+    .createPostButton {
+      
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      color: white;
+
+      &:hover {
+        color: rgb(20, 241, 149);
+        border-color: rgb(20, 241, 149);
+      }
+    }
+
+    .createPostContent .postContent {
+      background: white;
+      
+      color: black;
+
+      &::placeholder {
+        color: #5f5f5f;
+      }
+    }
+
+    /* POSTS  */
+    .emptyPostsList {
+      
+      background: white;
+    }
+
+    .postContentContainer {
+      
+      color: black;
+      background: white;
+
+      &.inFlight {
+        opacity: 0.75;
+        cursor: progress;
+        background: #bdddf445;
+      }
+    }
+
+    .searchBarWrapper {
+      
+      color: black !important;
+    }
+
+    .addGIFButton {
+      
+      color: #30302e;
+      border-color: #30302e;
+    }
+
+    .acceptDeletePostButton {
+      
+      background: #141313;
+      border: 2px solid #f2f2f0;
+
+      color: #30302e;
+    }
+
+    .postContentBox {
+      
+      .box .postHeader .walletId {
+        
+        color: #30302e;
+      }
+
+      .box .postBody {
+        
+        color: #30302e;
+      }
+
+      .actionsContainer {
+        
+        .replyButton {
+          
+          color: #b0b0b0;
+
+          svg path {
+            fill: #b0b0b0;
+          }
+        }
+
+        .awardButton {
+          
+          color: #b0b0b0;
+          svg path {
+            stroke: #b0b0b0;
+          }
+        }
+
+        .deleteButton svg path {
+          fill: #b0b0b0;
+        }
+      }
+    }
+
+    /* REPLIES  */
+    .repliesContainer {
+      
+      color: #30302e;
+    }
+
+    .replyHeader {
+      
+      .walletId {
+        
+        color: #30302e;
+      }
+    }
+
+    .replyBody {
+      
+      color: #30302e;
+    }
+
+    .replyActionsContainer {
+      
+      .replyButton {
+        
+        color: #b0b0b0;
+
+        svg path {
+          fill: #b0b0b0;
+        }
+      }
+
+      .awardButton {
+        
+        color: #b0b0b0;
+        svg path {
+          stroke: #b0b0b0;
+        }
+      }
+
+      .deleteButton svg path {
+        fill: #b0b0b0;
+      }
+    }
+
+    .replyTextArea {
+      
+      background: white;
+      color: black;
+      border-color: #cac9cb;
+      border-width: 1px;
+
+      &::placeholder {
+        color: #5f5f5f;
+      }
+    }
+
+    .repliesSection {
+      
+      .cancelReplyButton {
+        
+        border-color: #30302e;
+        background: white;
+        color: #30302e;
+
+        @media only screen and (max-width: 570px) {
+          border: none;
+        }
+      }
+
+      .postReplyButton {
+        
+        background: black;
+        border: 2px solid #f2f2f0;
+
+        color: white;
+
+        &:hover {
+          color: rgb(20, 241, 149);
+          border-color: rgb(20, 241, 149);
+        }
+      }
+    }
+  }
+  .accountInfo {
+    
+    svg path {
+      stroke: #86878e;
+    }
+  }
+
+  .createForumTitle {
+    color: black;
+    
+  }
+
+  .acceptCreateForumButton {
+    
+    background-color: black;
+  }
+}

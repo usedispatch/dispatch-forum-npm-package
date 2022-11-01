@@ -42,18 +42,33 @@ import { getUserRole } from './../../../utils/postbox/userRole';
 import { getCustomStyles } from '../../../utils/getCustomStyles';
 import { NewsPagePosts } from './NewsPagePosts';
 
+// {
+//   "post_id": "2offuiAEPGBZRk5iNs6ocr6jVaAN6VLZDXa9kaDLhahS",
+//   "content": "@everyone Hope you guys are ready for t00bs trading once mint ends!\n\nThe t00bs trading page is live! Be the first to see txs happen LIVE: https://www.tensor.trade/trade/t00bs",
+//   "createdat": null,
+//   "sourcetype": "discord",
+//   "authorid": "1012130660053434468",
+//   "authorusername": "Tensor #📣｜announcements",
+//   "authoravatar": "bcf80735baeaa43aa90c6786d57248ff",
+//   "srcmsgid": "1016541137730813964",
+//   "srcguildid": null,
+//   "srcchannelid": "1016541137730813964",
+//   "onchain": false,
+//   "score": 1
+// }
+
 export interface NewsPost {
-  id: PublicKey;
+  post_id: string;
   content: string;
-  created_at: string;
-  sourceType: string;
-  authorId: string;
-  authorUsername: string;
-  authorAvatar: string;
-  srcMsgId: string;
-  srcGuildId: string;
-  srcChannelId: string;
-  onChain: boolean;
+  createdat: string;
+  sourcetype: string;
+  authorid: string;
+  authorusername: string;
+  authoravatar: string;
+  srcmsgid: string;
+  srcguildid: string;
+  srcchannelid: string;
+  onchain: boolean;
   score: number;
   // chainId?: PublicKey;
 }

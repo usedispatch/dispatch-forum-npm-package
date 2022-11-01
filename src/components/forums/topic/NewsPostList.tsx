@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import { useMemo } from 'react';
 import { DispatchConnection, Forum, ForumPost } from '@usedispatch/client';
 
-import { NewsFeed, PostContent } from '../../forums';
+import { NewsFeed, NewsPost, PostContent } from '../../forums';
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { UserRoleType } from '../../../utils/permissions';
 import { ForumData, CreatedPost } from '../../../utils/hooks';
@@ -24,6 +24,8 @@ interface NewsPostListProps {
   userIsMod: boolean;
   newsposts: NewsFeed;
 }
+
+export type NewsPostAsForumPost = ForumPost & NewsPost;
 
 export default function NewsPostList(props: NewsPostListProps): JSX.Element {
   const {
@@ -54,9 +56,9 @@ export default function NewsPostList(props: NewsPostListProps): JSX.Element {
       forum: new Forum(new DispatchConnection(forum.connection, forum.wallet), new PublicKey('2offuiAEPGBZRk5iNs6ocr6jVaAN6VLZDXa9kaDLhahS')),
       isTopic: false,
       parent: topic,
-      address: new PublicKey(post.id),
+      address: new PublicKey(post.post_id),
       postId: 10,
-      poster: new PublicKey(post.id),
+      poster: new PublicKey(post.post_id),
       data: {
         body: post.content,
         ts: new Date(),
@@ -64,7 +66,8 @@ export default function NewsPostList(props: NewsPostListProps): JSX.Element {
       upVotes: 0,
       downVotes: 0,
       settings: [],
-    } as ForumPost;
+      ...post,
+    } as NewsPostAsForumPost;
   });
 
   const feedPosts = [...posts, ...newsPagePostAsClientPost];

@@ -637,33 +637,4 @@
     font-family: Circular;
     background-color: black;
   }
-
-  .poweredByDispatch {
-    color: black;
-    a {
-      svg {
-        path {
-          fill: black;
-          &:nth-child(3) {
-            fill: white;
-          }
-          &:nth-child(4) {
-            fill: white;
-          }
-          &:nth-child(5) {
-            fill: white;
-          }
-          &:nth-child(6) {
-            fill: white;
-          }
-          &:nth-child(7) {
-            fill: white;
-          }
-          &:nth-child(8) {
-            fill: white;
-          }
-        }
-      }
-    }
-  }
 }

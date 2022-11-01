@@ -61,7 +61,7 @@ export default function NewsPostList(props: NewsPostListProps): JSX.Element {
       poster: new PublicKey(post.post_id),
       data: {
         body: post.content,
-        ts: new Date(),
+        ts: new Date(post.createdat),
       },
       upVotes: 0,
       downVotes: 0,
@@ -71,7 +71,6 @@ export default function NewsPostList(props: NewsPostListProps): JSX.Element {
   });
 
   const feedPosts = [...posts, ...newsPagePostAsClientPost];
-  console.log(feedPosts);
   const emptyList = (
     <div className="emptyPostsList">
       <div className="text">The topic has no comments</div>

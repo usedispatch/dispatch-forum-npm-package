@@ -27,6 +27,7 @@
 @import './styles/TopicList.css';
 @import './styles/TopicListRow.css';
 @import './styles/UploadImage.css';
+@import './styles/UploadTopicImage.css';
 
 /* Topic */
 @import './styles/CreatePost.css';

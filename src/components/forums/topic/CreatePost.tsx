@@ -18,7 +18,8 @@ import { useForum } from '../../../contexts/DispatchProvider';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 import { errorSummary } from '../../../utils/error';
 import { isSuccess } from '../../../utils/loading';
-import { CreatedPost } from '../../../utils/hooks';
+import { CreatedPost, ForumData } from '../../../utils/hooks';
+import { UploadTopicImage } from './UploadTopicImage';
 
 interface CreatePostProps {
   topic: ForumPost;
@@ -27,6 +28,7 @@ interface CreatePostProps {
   addPost: (post: CreatedPost) => void;
   onReload: () => void;
   setPostInFlight: (postInFlight: boolean) => void;
+  forumData: ForumData;
 }
 
 export function CreatePost(props: CreatePostProps): JSX.Element {
@@ -37,6 +39,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
     update,
     addPost,
     setPostInFlight,
+    forumData,
   } = props;
   const Forum = useForum();
   const permission = Forum.permission;
@@ -179,6 +182,10 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
                   }}>
                   <span>GIF</span>
                 </button>
+                <UploadTopicImage
+                  onSetImageURL={() => update()}
+                  currentBanner={forumData.images.background}
+                />
                 <button
                   className="createPostButton"
                   type="submit"

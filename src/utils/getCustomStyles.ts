@@ -1,8 +1,6 @@
 export function getCustomStyles(collectionID: string): string {
   let result = '';
 
-  console.log(collectionID);
-
   switch (collectionID) {
     case 'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD':
       result = 'degenApeAcademy';

@@ -654,10 +654,9 @@ export function useBundlr(): WebBundlr | null {
     // Assume that if we're using devnet, it will be the standard
     // public Solana devnet endpoint. If so, use the bundlr
     // devnet endpoint, if so use the bundlr mainnet
-    const bundlrEndpoint =
-      forum.connection.rpcEndpoint === clusterApiUrl('devnet') ?
-      'https://devnet.bundlr.network' :
-      'http://node1.bundlr.network';
+    const bundlrEndpoint = forum.connection.rpcEndpoint.includes('devnet')
+      ? 'https://devnet.bundlr.network'
+      : 'http://node1.bundlr.network';
 
     if (forum.wallet.wallet) {
       const bundlr = new WebBundlr(

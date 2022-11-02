@@ -5,6 +5,7 @@ import { WebBundlr } from "@bundlr-network/client";
 
 import { MessageType, PopUpModal, Spinner } from "../../common";
 import { Notification } from "..";
+import { UploadImageLogo } from '../../../assets/UploadImageLogo';
 
 import { useBundlr } from "../../../utils/hooks";
 import { useForum } from "../../../contexts/DispatchProvider";
@@ -83,8 +84,6 @@ export function UploadTopicImage(props: UploadTopicImageProps) {
       }
       // Upload
       setImages(imageList);
-      // Set the image URL once it is loaded TODO replace this with Arweave
-      onSetImageURL(imageList[0].data_url);
     } catch (error: any) {
       console.log(error);
       setProccessingImage(false);
@@ -92,17 +91,7 @@ export function UploadTopicImage(props: UploadTopicImageProps) {
   };
 
   const onSave = () => {
-    try {
-      // setLoadingImage(true)
-      // await forumObject.setImageUrls(
-      //   forumData.collectionId,
-      //   bannerImage.href
-      // );
-      // onSetImageUrl
-      // setLoadingImage(false)
-    } catch (error) {
-      // setLoadingImage(false)
-    }
+    onSetImageURL(images[0].data_url);
   };
 
   return (
@@ -209,7 +198,7 @@ export function UploadTopicImage(props: UploadTopicImageProps) {
           className="customizeBannerButton"
           disabled={!permission.readAndWrite}
           onClick={() => setShowUploadImage(true)}>
-          upload image
+          <UploadImageLogo />
         </button>
       </div>
     </div>

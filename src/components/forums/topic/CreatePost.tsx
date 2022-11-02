@@ -65,6 +65,10 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
     setShowGIFModal(false);
   };
 
+  const onUploadImage = (imageUrl: URL): void => {
+    setBodyContent(bodyContent.concat(`\n ![](${imageUrl}) \n`));
+  };
+
   const createNewPost = async (event: SyntheticEvent): Promise<void> => {
     event.preventDefault();
 
@@ -183,7 +187,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
                   <span>GIF</span>
                 </button>
                 <UploadTopicImage
-                  onSetImageURL={() => update()}
+                  onSetImageURL={onUploadImage}
                   currentBanner={forumData.images.background}
                 />
                 <button

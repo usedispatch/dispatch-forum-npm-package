@@ -22,7 +22,9 @@ interface TopicListRowProps {
 }
 
 export function TopicListRow(props: TopicListRowProps): JSX.Element {
-  const { topic, forumData, isMobile = false } = props;
+  const {
+    topic, forumData, isMobile = false,
+  } = props;
   const { buildTopicPath } = usePath();
   const topicPath = buildTopicPath(
     forumData.collectionId.toBase58(),
@@ -97,9 +99,8 @@ export function TopicListRow(props: TopicListRowProps): JSX.Element {
       <Link className="TopicListRowAsMobileLink" href={topicPath}>
         <TopicListRowAsMobile
           topic={topic}
-          icons={icons(replies)}
-          numberOfReplies={replies.length}
           lastActivityDate={activtyDate(replies)}
+          numberOfReplies={replies.length}
         />
       </Link>
     );

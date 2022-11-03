@@ -14,34 +14,85 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
-  color: #1E1E26;
-  margin-bottom: 15px;
+  color: #2E008B;
+  margin-bottom: 4px;
 }
 
-.topicListRowAsMobilePostersContainer {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  color: #414149;
-}
-
-.topicListRowAsMobilePostersText {
+.topicListRowAsMobileBody {
   font-family: Manrope;
   font-style: normal;
   font-weight: 400;
-  font-size: 14px;
-  line-height: 20px;
-  margin-right: 4px;
+  font-size: 12px;
+  line-height: 16px;
+
+  color: #414149;
 }
 
 .topicListRowAsMobileBottomData {
   display: flex;
   justify-content: space-between;
   margin-bottom: 16px;
-  color: #86878E;
+  margin-top: 12px;
+}
+
+.topicListRowAsMobileLastActivity {
   font-family: Manrope;
   font-style: normal;
   font-weight: 400;
+  font-size: 12px;
+  line-height: 16px;
+
+  color: #86878E;
+}
+
+.topicListRowAsMobilecommentsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: auto 0 0 0;
+
+  text-align: center;
+  font-size: 14px;
+  font-weight: 400;
+  color: #414149;
+}
+
+.topicListRowAsMobileImage {
+  margin-right: 4px;
+  svg {
+    height: 16px;
+    width: 16px;
+
+    path {
+      fill: #7b7b7b;
+    }
+  }
+}
+
+.topicListRowAsMobileNumberOfReplies {
+  font-family: Manrope;
+  font-style: normal;
+  font-weight: 600;
   font-size: 14px;
   line-height: 20px;
+  color: #414149;
+}
+
+.topicListRowAsMobilecommentsComments {
+  display: flex;
+  flex-direction: row;
+  margin-right: 24px;
+}
+
+.topicListRowAsMobileVotesContainer {
+  display: flex;
+}
+
+.topicListRowAsMobileVotes {
+  font-family: Manrope;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #414149;
 }

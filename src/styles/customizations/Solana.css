@@ -276,14 +276,9 @@
       border-bottom-color: white;
     }
 
-    .topicListAsMobileTitle {
-      border-color: white;
-      color: white;
-    }
-
-    .TopicListAsMobileTitle,
+    .topicListAsMobileTitle,
+    .topicListRowAsMobileBody,
     .topicListRowAsMobileBottomData,
-    .topicListRowAsMobilePostersContainer,
     .topicListRowAsMobileTitle {
       color: white;
     }

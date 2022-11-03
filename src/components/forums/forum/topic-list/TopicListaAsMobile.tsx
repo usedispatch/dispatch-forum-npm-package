@@ -20,7 +20,7 @@ export function TopicListAsMobile({ topics, topicInFlight, forumData }: TopicLis
     <>
       <div className="topicListAsMobileTitle">Topics</div>
       {topics.map((topic, index) => (
-        <TopicListRow key={index} topic={topic} forumData={forumData} isMobile />
+        <TopicListRow key={index} topic={topic} forumData={forumData} isMobile  />
       ))}
     </>
   );

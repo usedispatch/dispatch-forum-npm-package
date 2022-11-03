@@ -10,8 +10,8 @@ import {
   Spinner,
   TransactionLink,
 } from '../../common';
-import { Notification } from '..';
-import { useForum } from './../../../contexts/DispatchProvider';
+import { Notification } from '../Notification';
+import { useForum } from '../../../contexts/DispatchProvider';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 import { errorSummary } from '../../../utils/error';
 import { ForumData } from '../../../utils/hooks';

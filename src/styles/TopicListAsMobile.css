@@ -1,19 +1,10 @@
 .topicListAsMobileTitle {
-  border-bottom-width: 1px;
-  border-color: #2e008b;
-  color: #2e008b;
-  padding-bottom: 8px;
+  color: #B8B9DC;
+  padding-bottom: 20px;
 
-  font-weight: 400;
-  font-size: 22px;
-  text-align: left;
-  text-transform: none;
-
-  &.posters {
-    font-size: 20px;
-    width: 280px;
-    margin: 0 0 0 auto;
-    max-width: 280px;
-    min-width: 280px;
-  }
+  font-family: Manrope;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
 }

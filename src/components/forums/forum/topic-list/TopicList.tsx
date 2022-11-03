@@ -1,4 +1,4 @@
-import { isNil } from 'lodash';
+import { isNil, update } from 'lodash';
 import { useMemo } from 'react';
 
 import { TopicInFlightRow, TopicListRow } from './TopicListRow';
@@ -31,7 +31,9 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
 
   function renderTopics(): JSX.Element {
     if (isMobile) {
-      return <TopicListAsMobile topics={topics} topicInFlight={topicInFlight} forumData={forumData} />
+      return (
+        <TopicListAsMobile topics={topics} topicInFlight={topicInFlight} forumData={forumData} />
+      );
     }
 
     return (

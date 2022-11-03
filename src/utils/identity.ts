@@ -113,6 +113,11 @@ export const identities: Identity[] = [
     publicKey: new PublicKey('73qUJmmCtf4K2LJfqTAuq7n9kJGg7h5Kr5NTt8eQm7Li'),
     displayName: 'Nhan | Metaplex',
     profilePicture: new URL('https://pbs.twimg.com/profile_images/1577359588856197120/TIK6n5gi_400x400.jpg')
+  },
+  {
+    publicKey: new PublicKey('Aj4LWdVWWjAAG34Q7nCPGT9X5RNPcxJG8Yo5Ku9MJaU6'),
+    displayName: 'Solana Spaces',
+    profilePicture: new URL('https://pbs.twimg.com/profile_images/1583182250581102623/AOrgeepS_400x400.jpg')
   }
 ];
 

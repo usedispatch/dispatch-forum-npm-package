@@ -1,14 +1,11 @@
 @layer components {
   .solanaSpace {
-    body {
-      font-family: Dia;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 24px;
-    }
+    box-shadow: 0 8px 16px #41414933;
+    color: black;
 
     /* NOTIFICATION */
     .alertContent {
+      font-family: Circular;
       background: white;
       border: 1px solid #999999;
 
@@ -18,6 +15,7 @@
     }
 
     .notificationContainer {
+      font-family: Circular;
       .closeContainer svg path {
         stroke: #30302e;
         fill: #30302e;
@@ -48,6 +46,7 @@
       font-weight: 500;
       font-size: 14px;
       color: #30302e;
+      font-family: Circular;
     }
 
     /* POPUP MODAL */
@@ -56,6 +55,7 @@
         color: #30302e;
         background: white;
         border: 1px solid #999999;
+        font-family: Circular;
       }
 
       .modalClose .closeIcon {
@@ -66,15 +66,17 @@
 
       .modalActionsContainer .acceptAction .okButton,
       .modalActionsContainer .acceptAction .okInfoButton {
-        background: #141313;
+        background: white;
         border: 1px solid #30302e;
         color: #30302e;
+        font-family: Circular;
       }
     }
 
     .collapsibleContainer {
       background: #d9d9d9;
       color: white;
+      font-family: Circular;
       border: 1px solid #999999;
 
       .visibilityButton {
@@ -87,15 +89,17 @@
     /* FORUM */
     .forumView,
     .forumViewContainer {
-      background: #141313;
+      font-family: Circular;
+      background: white;
     }
 
     .forumContentHeader {
-      background: #1d1c1c;
+      background: white;
 
       .titleBox,
       .description {
-        color: #ffffff;
+        color: #1d1c1c;
+        font-family: Circular;
       }
 
       .titleBox {
@@ -105,19 +109,22 @@
     }
 
     .toolsWrapper {
-      background: #1d1c1c;
+      background: white;
+      font-family: Circular;
     }
 
     .moderatorToolsContainer {
-      background: #1d1c1c;
+      background: white;
       border-top: 1px solid #30302e;
-      color: #999999;
+      color: #1d1c1c;
+      font-family: Circular;
 
       .manageOwnersButton,
       .manageModeratorsButton,
       .moderatorTool,
       .editForumButton {
         color: #d1d1d1;
+        font-family: Circular;
       }
 
       .actionDivider {
@@ -126,8 +133,11 @@
     }
 
     .customizeBanner {
+      font-family: Circular;
       .customizeBannerButton {
+        font-family: Circular;
         background: #1d1c1c;
+        font-family: Circular;
 
         svg path {
           stroke: #30302e;
@@ -145,12 +155,14 @@
       .uploadImageWrapper {
         .imageSrcInput {
           color: black;
+          font-family: Circular;
         }
 
         .imageContainer {
           color: black;
-          background: #999;
+          background: white;
           border: 2px dashed rgb(20, 241, 149);
+          font-family: Circular;
         }
       }
     }
@@ -161,6 +173,7 @@
 
       font-style: normal;
       font-weight: 400;
+      font-family: Circular;
 
       &:hover {
         color: rgb(20, 241, 149);
@@ -175,6 +188,7 @@
     .newAccessToken,
     .createTopicTitleInput {
       color: black;
+      font-family: Circular;
     }
 
     .gatedForum,
@@ -191,34 +205,40 @@
         color: #30302e;
         background: transparent;
         border-color: #30302e;
+        font-family: Circular;
       }
       .okButton {
         background: #141313;
         border: 1px solid #30302e;
         color: #30302e;
+        font-family: Circular;
       }
     }
 
     .editForumContainer .editForumBody .editForumInput,
     .editForumContainer .editForumBody .editForumInput.description {
       color: black;
+      font-family: Circular;
     }
 
     .manageOwnersContainer .okButton.add {
       background: transparent;
       border: none;
       color: #30302e;
+      font-family: Circular;
     }
 
     .manageOwnersInput,
     .manageModeratorsInput {
       color: black;
+      font-family: Circular;
     }
 
     .manageModeratorsContainer .currentModerators,
     .manageOwnersContainer .currentOwners,
     .currentToken {
       color: #999;
+      font-family: Circular;
     }
 
     .currentToken svg path {
@@ -228,12 +248,14 @@
     /* TOPIC LIST */
     .topicListContainer,
     .emptyTopicList {
-      background: #1d1c1c;
+      background: white;
       color: #30302e;
+      font-family: Circular;
     }
 
     @media only screen and (max-width: 768px) {
       .topicListContainer {
+        font-family: Circular;
         box-shadow: 0px 4px 12px rgb(0 0 0 / 16%),
           inset -4px 0px 8px 0 rgb(255 255 255 / 16%);
       }
@@ -241,28 +263,34 @@
 
     .current {
       display: flex;
+      font-family: Circular;
     }
 
     .tableHeader {
       border-color: #30302e;
+      font-family: Circular;
     }
 
     .topicListContainer .tableHeader .tableHeaderTitle {
       color: #30302e;
+      font-family: Circular;
     }
 
     .row.topicInFlight .confirmingTopic {
       color: #30302e;
+      font-family: Circular;
     }
 
     .row {
       border-bottom: 1px solid #30302e;
       font-weight: 400;
       font-size: 14px;
+      font-family: Circular;
 
       .rowSubj {
         font-weight: 400;
         line-height: 2;
+        font-family: Circular;
       }
 
       &:hover {
@@ -282,20 +310,24 @@
     .topicView,
     .topicViewContainer {
       color: #30302e;
-      background: #141313;
+      background: white;
       font-weight: 500;
+      font-family: Circular;
     }
 
     .disconnectedTopicView {
-      background: #1d1c1c;
+      background: white;
+      font-family: Circular;
     }
 
     .posted {
+      font-family: Circular;
       color: #30302e;
     }
 
     .breadcrumbContainer {
       .parent {
+        font-family: Circular;
         color: #999999;
         font-weight: 500;
 
@@ -308,6 +340,7 @@
         }
       }
       .current {
+        font-family: Circular;
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
@@ -315,48 +348,56 @@
     }
 
     .topicHeader {
+      font-family: Circular;
       font-size: 24px;
     }
 
     .editPostContainer .editPostBody .editPostInput {
+      font-family: Circular;
       color: black;
     }
 
     .editPostButton {
       color: #b0b0b0;
+      font-family: Circular;
       svg path {
         stroke: #b0b0b0;
       }
     }
 
     .votePostContainer .votePostContent .currentVotes {
+      font-family: Circular;
       color: #30302e;
     }
 
     .awardContent {
       .typeSelector .nftType {
+        font-family: Circular;
         background: #141313;
         border: 1px solid #30302e;
-        color: #30302e;
+        color: white;
 
         svg path {
-          fill: #30302e;
+          fill: white;
         }
       }
 
       .giftsContainer .giftsGrid .selectedNFT {
+        font-family: Circular;
         color: #30302e;
         border: 1px solid #30302e;
       }
 
       .amountInput {
+        font-family: Circular;
         color: black;
       }
     }
 
     .topicContentBox {
+      font-family: Circular;
       color: #30302e;
-      background: #1d1c1c;
+      background: white;
 
       .commentsContainer,
       .headerAndActions .topicHeader .posted .postedBy .posterId,
@@ -368,10 +409,12 @@
       .headerAndActions .topicToolsContainer {
         .actionDivider {
           background: #30302e;
+          font-family: Circular;
         }
 
         .moderatorTool,
         .awardButton {
+          font-family: Circular;
           color: #b0b0b0;
         }
 
@@ -393,16 +436,18 @@
 
     .okButton,
     .acceptDeleteTopicButton {
+      font-family: Circular;
       background: #141313;
       border: 1px solid #30302e;
       color: #30302e;
     }
 
     .createPostButton {
+      font-family: Circular;
       background: #141313;
       border: 2px solid #f2f2f0;
 
-      color: #30302e;
+      color: white;
 
       &:hover {
         color: rgb(20, 241, 149);
@@ -411,7 +456,8 @@
     }
 
     .createPostContent .postContent {
-      background: #d9d9d9;
+      background: white;
+      font-family: Circular;
       color: black;
 
       &::placeholder {
@@ -421,12 +467,14 @@
 
     /* POSTS  */
     .emptyPostsList {
-      background: #1d1c1c;
+      font-family: Circular;
+      background: white;
     }
 
     .postContentContainer {
-      color: #30302e;
-      background: #1d1c1c;
+      font-family: Circular;
+      color: black;
+      background: white;
 
       &.inFlight {
         opacity: 0.75;
@@ -436,15 +484,18 @@
     }
 
     .searchBarWrapper {
+      font-family: Circular;
       color: black !important;
     }
 
     .addGIFButton {
+      font-family: Circular;
       color: #30302e;
       border-color: #30302e;
     }
 
     .acceptDeletePostButton {
+      font-family: Circular;
       background: #141313;
       border: 2px solid #f2f2f0;
 
@@ -452,16 +503,21 @@
     }
 
     .postContentBox {
+      font-family: Circular;
       .box .postHeader .walletId {
+        font-family: Circular;
         color: #30302e;
       }
 
       .box .postBody {
+        font-family: Circular;
         color: #30302e;
       }
 
       .actionsContainer {
+        font-family: Circular;
         .replyButton {
+          font-family: Circular;
           color: #b0b0b0;
 
           svg path {
@@ -470,6 +526,7 @@
         }
 
         .awardButton {
+          font-family: Circular;
           color: #b0b0b0;
           svg path {
             stroke: #b0b0b0;
@@ -484,21 +541,27 @@
 
     /* REPLIES  */
     .repliesContainer {
+      font-family: Circular;
       color: #30302e;
     }
 
     .replyHeader {
+      font-family: Circular;
       .walletId {
+        font-family: Circular;
         color: #30302e;
       }
     }
 
     .replyBody {
+      font-family: Circular;
       color: #30302e;
     }
 
     .replyActionsContainer {
+      font-family: Circular;
       .replyButton {
+        font-family: Circular;
         color: #b0b0b0;
 
         svg path {
@@ -507,6 +570,7 @@
       }
 
       .awardButton {
+        font-family: Circular;
         color: #b0b0b0;
         svg path {
           stroke: #b0b0b0;
@@ -519,9 +583,11 @@
     }
 
     .replyTextArea {
-      background: #d9d9d9;
+      font-family: Circular;
+      background: white;
       color: black;
-      border-width: 0;
+      border-color: #cac9cb;
+      border-width: 1px;
 
       &::placeholder {
         color: #5f5f5f;
@@ -529,9 +595,11 @@
     }
 
     .repliesSection {
+      font-family: Circular;
       .cancelReplyButton {
+        font-family: Circular;
         border-color: #30302e;
-        background: #1d1c1c;
+        background: white;
         color: #30302e;
 
         @media only screen and (max-width: 570px) {
@@ -540,10 +608,11 @@
       }
 
       .postReplyButton {
-        background: #141313;
+        font-family: Circular;
+        background: black;
         border: 2px solid #f2f2f0;
 
-        color: #30302e;
+        color: white;
 
         &:hover {
           color: rgb(20, 241, 149);
@@ -553,8 +622,19 @@
     }
   }
   .accountInfo {
+    font-family: Circular;
     svg path {
       stroke: #86878e;
     }
+  }
+
+  .createForumTitle {
+    color: black;
+    font-family: Circular;
+  }
+
+  .acceptCreateForumButton {
+    font-family: Circular;
+    background-color: black;
   }
 }

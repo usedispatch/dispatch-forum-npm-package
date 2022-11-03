@@ -21,6 +21,7 @@ interface ReplyEntityProps {
   topicOwnerId: PublicKey;
   participatingModerators: PublicKey[] | null;
   forumData: ForumData;
+  showGift: boolean;
   update: () => Promise<void>;
   updateVotes: (upVoted: boolean, replyToUpdate: ForumPost) => void;
   onUpVotePost: (post: ForumPost) => Promise<Result<string>>;
@@ -36,6 +37,7 @@ export function ReplyEntity({
   participatingModerators,
   forumData,
   update,
+  showGift,
   updateVotes,
   onUpVotePost,
   onDownVotePost,
@@ -165,7 +167,7 @@ export function ReplyEntity({
                   </button>
                 </PermissionsGate>
                 <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                  {!(forum.wallet.publicKey?.equals(reply.poster) as boolean) && (
+                  {showGift && (
                     <>
                       <div className="actionDivider" />
                       <button
@@ -183,4 +185,4 @@ export function ReplyEntity({
           </div>
         </div>
   );
-};
+}

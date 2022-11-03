@@ -543,6 +543,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
                 participatingModerators={participatingModerators}
                 replies={replies}
                 userRoles={userRoles}
+                showGift={showGift}
                 topicOwnerId={topicPosterId}
                 update={async () => update()}
                 editPost={editPost}

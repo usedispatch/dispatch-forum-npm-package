@@ -224,6 +224,8 @@
       background-color: black;
     }
 
+    .topicListRowAsMobileVotes,
+    .topicListRowAsMobileNumberOfReplies,
     .topicListAsMobileTitle,
     .topicListRowAsMobileBody,
     .topicListRowAsMobileBottomData,

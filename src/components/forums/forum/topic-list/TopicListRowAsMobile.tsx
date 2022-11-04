@@ -14,24 +14,6 @@ export function TopicListRowAsMobile(props: TopicListRowAsMobileProps): JSX.Elem
   const { data: { subj, body }, upVotes, downVotes } = topic;
   const currentVotes = upVotes - downVotes;
 
-  const renderVotes = () => {
-    if (currentVotes === 0) {
-      return (
-        <>
-          <Vote isUpVote={currentVotes > 0} disabled />
-          <span className="topicListRowAsMobileVotes">{currentVotes}</span>
-          <Vote disabled />
-        </>
-      );
-    }
-    return (
-      <>
-        <Vote isUpVote={currentVotes > 0} />
-        <span className="topicListRowAsMobileVotes">{currentVotes}</span>
-      </>
-    );
-  };
-
   return (
     <div className='topicListRowAsMobileContainer'>
       <h3 className='topicListRowAsMobileTitle'>{subj}</h3>
@@ -45,7 +27,9 @@ export function TopicListRowAsMobile(props: TopicListRowAsMobileProps): JSX.Elem
             <span className="topicListRowAsMobileNumberOfReplies">{numberOfReplies}</span>
           </div>
           <div className="topicListRowAsMobileVotesContainer">
-            {renderVotes()}
+            {currentVotes >= 0 && <Vote isUpVote={currentVotes > 0} disabled={currentVotes === 0} />}
+            <span className="topicListRowAsMobileVotes">{currentVotes}</span>
+            {currentVotes <= 0 && <Vote disabled={currentVotes === 0} />}
           </div>
         </div>
         <span className='topicListRowAsMobileLastActivity'>

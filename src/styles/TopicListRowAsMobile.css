@@ -58,6 +58,8 @@
 }
 
 .topicListRowAsMobileImage {
+  display: flex;
+  align-items: center;
   margin-right: 4px;
   svg {
     height: 16px;
@@ -86,6 +88,7 @@
 
 .topicListRowAsMobileVotesContainer {
   display: flex;
+  align-items: center;  
 }
 
 .topicListRowAsMobileVotes {
@@ -95,4 +98,6 @@
   font-size: 14px;
   line-height: 20px;
   color: #414149;
+  margin-left: 4px;
+  margin-right: 4px;
 }

@@ -1,16 +1,16 @@
-import * as _ from "lodash";
-import { useState, ReactNode, useMemo } from "react";
+import { useState } from "react";
 import ImageUploading, { ImageListType } from "react-images-uploading";
 import { WebBundlr } from "@bundlr-network/client";
 import Lottie from 'lottie-react';
 
 import animationData from '../../../lotties/loader.json';
-import { MessageType, PopUpModal, Spinner } from "../../common";
-import { Notification } from "..";
+import { MessageType, PopUpModal} from "../../common";
 import { UploadImageLogo } from '../../../assets/UploadImageLogo';
+import { errorSummary } from '../../../utils/error';
 
 import { useBundlr } from "../../../utils/hooks";
 import { useForum } from "../../../contexts/DispatchProvider";
+import { isNil } from "lodash";
 
 // TODO(andrew) move this to a utils file
 async function uploadFileWithBundlr(
@@ -54,6 +54,7 @@ export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImagePr
 
   const [images, setImages] = useState<any[]>([]);
   const [proccessingImage, setProccessingImage] = useState(false);
+  const [uploadError, setUploadError] = useState(null);
 
   const bundlr = useBundlr();
 
@@ -76,33 +77,52 @@ export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImagePr
       setProccessingImage(false);
     } catch (error: any) {
       console.log(error);
+      setUploadError(error);
       setProccessingImage(false);
     }
   };
 
   return (
-    <ImageUploading
-        value={images}
-        onChange={handleChange}
-        maxNumber={1}
-        dataURLKey="data_url"
-      >
-        {({ onImageUpload }) => (
-          proccessingImage
-          ? (
-            <div className="uploadTopicImageAnimation">
-              <Lottie loop animationData={animationData} />
-            </div>
-          )
-          : (
-            <button
-              className="uploadTopicImageButton"
-              disabled={!permission.readAndWrite || !!imageUrl}
-              onClick={onImageUpload}>
-              <UploadImageLogo className="uploadTopicImageIcon" />
-            </button>
-          )
-        )}
-    </ImageUploading>
+    <>
+      {!isNil(uploadError) && (
+        <PopUpModal
+          id="vote-info"
+          visible
+          title="Something went wrong!"
+          messageType={MessageType.error}
+          body="Could not be uploaded the picture"
+          collapsible={{ header: 'Error', content: errorSummary(uploadError) }}
+          okButton={
+            <a className="okButton" onClick={() => setUploadError(null)}>
+              OK
+            </a>
+          }
+          onClose={() => setUploadError(null)}
+        />
+      )}
+      <ImageUploading
+          value={images}
+          onChange={handleChange}
+          maxNumber={1}
+          dataURLKey="data_url"
+        >
+          {({ onImageUpload }) => (
+            proccessingImage
+            ? (
+              <div className="uploadTopicImageAnimation">
+                <Lottie loop animationData={animationData} />
+              </div>
+            )
+            : (
+              <button
+                className="uploadTopicImageButton"
+                disabled={!permission.readAndWrite || !!imageUrl}
+                onClick={onImageUpload}>
+                <UploadImageLogo className="uploadTopicImageIcon" />
+              </button>
+            )
+          )}
+      </ImageUploading>
+    </>
   );
 }

@@ -656,7 +656,7 @@ export function useBundlr(): WebBundlr | null {
     // devnet endpoint, if so use the bundlr mainnet
     const bundlrEndpoint = forum.connection.rpcEndpoint.includes('devnet')
       ? 'https://devnet.bundlr.network'
-      : 'http://node1.bundlr.network';
+      : 'https://node1.bundlr.network';
 
     if (forum.wallet.wallet) {
       const bundlr = new WebBundlr(

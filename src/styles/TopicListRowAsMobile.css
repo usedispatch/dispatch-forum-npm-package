@@ -3,9 +3,9 @@
 }
 
 .topicListRowAsMobileContainer {
-  border-bottom: 1px solid #B8B9DC;
-  margin-top: 16px;
-  margin-bottom: 16px;
+  background-color: white;
+  padding: 16;
+  margin-bottom: 10px;
 }
 
 .topicListRowAsMobileTitle {
@@ -31,7 +31,6 @@
 .topicListRowAsMobileBottomData {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 16px;
   margin-top: 12px;
 }
 

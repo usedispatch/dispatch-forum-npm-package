@@ -219,8 +219,9 @@
     }
 
     /* TOPIC LIST */
+    .topicListAsMobileTitle,
     .topicListRowAsMobileContainer {
-      border-bottom-color: white;
+      background-color: black;
     }
 
     .topicListAsMobileTitle,

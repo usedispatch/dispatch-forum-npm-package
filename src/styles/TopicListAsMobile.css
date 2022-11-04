@@ -1,6 +1,9 @@
 .topicListAsMobileTitle {
   color: #B8B9DC;
-  padding-bottom: 20px;
+  padding-bottom: 4px;
+  padding-left: 16px;
+  padding-top: 8px;
+  background-color: white;
 
   font-family: Manrope;
   font-style: normal;

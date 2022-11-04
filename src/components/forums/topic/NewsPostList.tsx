@@ -61,7 +61,7 @@ export default function NewsPostList(props: NewsPostListProps): JSX.Element {
       poster: new PublicKey(post.post_id),
       data: {
         body: post.content,
-        ts: new Date(post.createdat),
+        ts: new Date(post.created_at),
       },
       upVotes: 0,
       downVotes: 0,

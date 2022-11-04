@@ -42,35 +42,19 @@ import { getUserRole } from './../../../utils/postbox/userRole';
 import { getCustomStyles } from '../../../utils/getCustomStyles';
 import { NewsPagePosts } from './NewsPagePosts';
 
-// {
-//   "post_id": "2offuiAEPGBZRk5iNs6ocr6jVaAN6VLZDXa9kaDLhahS",
-//   "content": "@everyone Hope you guys are ready for t00bs trading once mint ends!\n\nThe t00bs trading page is live! Be the first to see txs happen LIVE: https://www.tensor.trade/trade/t00bs",
-//   "createdat": null,
-//   "sourcetype": "discord",
-//   "authorid": "1012130660053434468",
-//   "authorusername": "Tensor #📣｜announcements",
-//   "authoravatar": "bcf80735baeaa43aa90c6786d57248ff",
-//   "srcmsgid": "1016541137730813964",
-//   "srcguildid": null,
-//   "srcchannelid": "1016541137730813964",
-//   "onchain": false,
-//   "score": 1
-// }
-
 export interface NewsPost {
   post_id: string;
   content: string;
-  createdat: string;
-  sourcetype: string;
-  authorid: string;
-  authorusername: string;
-  authoravatar: string;
-  srcmsgid: string;
-  srcguildid: string;
-  srcchannelid: string;
-  onchain: boolean;
+  created_at: string;
+  source_type: string;
+  author_id: string;
+  author_username: string;
+  author_avatar: string;
+  src_msg_id: string;
+  src_guild_id: string;
+  src_channel_id: string;
+  on_chain: boolean;
   score: number;
-  // chainId?: PublicKey;
 }
 
 export interface NewsFeed {
@@ -83,15 +67,16 @@ interface NewsPageContentProps {
 
 export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
   const { NewsfeedPosts } = props;
-  console.log(NewsfeedPosts);
   const { modal, setModals } = useModal();
   const role = useRole();
   const forum = useForum();
   const { permission } = forum;
   const theme = useTheme();
-  const forumId = '2offuiAEPGBZRk5iNs6ocr6jVaAN6VLZDXa9kaDLhahS';
+
+  // TODO: move to consts
+  const forumId = '6ThcrupJDDxxKKsDdGy1xjEkZdrZGsjt33B6iyK8VhP9';
+  const topicId = 20;
   const collectionPublicKey = new PublicKey(forumId);
-  const topicId = 1;
 
   const { forumData, update, addPost, editPost, deletePost } = useForumData(
     collectionPublicKey,
@@ -101,8 +86,6 @@ export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
   const participatingModerators = useParticipatingModerators(forumData, forum);
   const topic: Loading<ForumPost | EditedPost> = useMemo(() => {
     if (isSuccess(forumData)) {
-      console.log('useEffect2');
-
       const post = forumData.posts.find(post => {
         // This conditional only evaluates to true if `post` is a
         // ForumPost and not a LocalPost-- that is, if it exists
@@ -128,7 +111,6 @@ export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
       }
     } else {
       if (isPending(forumData)) {
-        console.log(pending);
         return pending();
       } else {
         return forumData;
@@ -137,7 +119,6 @@ export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
   }, [forumData, topicId]);
 
   useEffect(() => {
-    console.log('useEffect');
     // When forumData is updated, find all errors associated with
     // it and show them in the modal
     if (isSuccess(forumData)) {
@@ -182,15 +163,12 @@ export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
   };
 
   useEffect(() => {
-    console.log('useEffect3');
-
     void update();
     // Update every time the cluster is changed
   }, [forum.cluster]);
 
   useEffect(() => {
-    console.log('useEffect4', collectionPublicKey.toBase58(), topic, forum.wallet.publicKey.toBase58());
-
+    console.log(collectionPublicKey, topic, forum.wallet.publicKey)
     if (
       !isNil(collectionPublicKey) &&
       !isNil(topic) &&
@@ -199,7 +177,7 @@ export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
     ) {
       void getUserRole(forum, collectionPublicKey, role, topic);
     }
-  }, []);
+  }, [topic]);
 
   const invalidPublicKeyView = (
     <div className="disconnectedTopicView">

@@ -1,6 +1,6 @@
 {
   "name": "@usedispatch/forum",
-  "version": "0.5.17",
+  "version": "0.5.18",
   "description": "Dispatch forum",
   "source": [
     "src/index.ts",

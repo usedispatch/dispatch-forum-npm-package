@@ -168,7 +168,7 @@ export function NewsPageContent(props: NewsPageContentProps): JSX.Element {
   }, [forum.cluster]);
 
   useEffect(() => {
-    console.log(collectionPublicKey, topic, forum.wallet.publicKey)
+    console.log(collectionPublicKey, topic, forum.wallet.publicKey);
     if (
       !isNil(collectionPublicKey) &&
       !isNil(topic) &&

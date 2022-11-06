@@ -46,7 +46,6 @@ async function uploadFileWithBundlr(
 
   const form = new FormData();
   form.append('image', new Blob([file], { type: 'application/octet-stream' }));
-
   const req = await fetch('https://api.imgbb.com/1/upload?key=4ebf7683ff468ee661cff435b6dede07', {
     method: 'POST',
     body: form,
@@ -62,10 +61,10 @@ async function uploadFileWithBundlr(
 
 interface UploadTopicImageProps {
   onSetImageURL: (url: URL) => void;
-  // imageUrl: string;
+  imageUrl: string;
 }
 
-export function UploadTopicImage({ onSetImageURL }: UploadTopicImageProps): JSX.Element {
+export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImageProps): JSX.Element {
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -133,7 +132,7 @@ export function UploadTopicImage({ onSetImageURL }: UploadTopicImageProps): JSX.
               : (
               <button
                 className="uploadTopicImageButton"
-                disabled={!permission.readAndWrite}
+                disabled={!permission.readAndWrite || imageUrl.length > 0}
                 onClick={onImageUpload}>
                 <UploadImageLogo className="uploadTopicImageIcon" />
               </button>

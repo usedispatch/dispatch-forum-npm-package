@@ -43,6 +43,7 @@ import {
 import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
 import { AddGIF } from '../../../components/common/AddGIF';
 import { isNil } from 'lodash';
+import { UploadTopicImage } from './UploadTopicImage';
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -98,6 +99,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
   const [showGiveAward, setShowGiveAward] = useState(false);
   const [showGIFModal, setShowGIFModal] = useState(false);
   const [postToAward, setPostToAward] = useState<ForumPost>();
+  const [imageUrl, setImageUrl] = useState('');
 
   const [notification, setNotification] = useState<{
     isHidden: boolean;
@@ -163,6 +165,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
     if (isSuccess(tx)) {
       setShowReplyBox(false);
       setReply('');
+      setImageUrl('');
 
       const localPost: CreatedPost = {
         data: {
@@ -254,6 +257,11 @@ export function PostContent(props: PostContentProps): JSX.Element {
     setReply(reply.concat(`\n ![](${gifURL}) \n`));
     setShowGIFModal(false);
   };
+  const onUploadImage = (imageUrl: URL): void => {
+    setReply(reply.concat(`\n ![](${imageUrl}) \n`));
+    setImageUrl(`${imageUrl}`);
+  };
+
   const isLocal = isCreatedPost(post);
   const identity = getIdentity(post.poster);
 
@@ -514,8 +522,9 @@ export function PostContent(props: PostContentProps): JSX.Element {
                   }}
                 />
                 <div className="textSize"> {replySize}/800 </div>
-                <div className="buttonsWrapper">
-                  {showReplyBox && (
+                <div className='buttonsWrapper'>
+                  {showReplyBox &&
+                    <div className="leftButtons">
                     <button
                       className="addGIFButton"
                       disabled={!permission.readAndWrite}
@@ -524,7 +533,9 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       }}>
                       <span>GIF</span>
                     </button>
-                  )}
+                    <UploadTopicImage onSetImageURL={onUploadImage} imageUrl={imageUrl} />
+                  </div>
+                  }
                   <div className="buttonsContainer">
                     <button
                       className="cancelReplyButton"

@@ -19,6 +19,7 @@ import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 import { errorSummary } from '../../../utils/error';
 import { isSuccess } from '../../../utils/loading';
 import { CreatedPost } from '../../../utils/hooks';
+import { UploadTopicImage } from './UploadTopicImage';
 
 interface CreatePostProps {
   topic: ForumPost;
@@ -45,6 +46,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
   const [bodySize, setBodySize] = useState(0);
   const [bodyContent, setBodyContent] = useState('');
   const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
   const [notification, setNotification] = useState<{
     isHidden: boolean;
     content?: string | ReactNode;
@@ -62,6 +64,11 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
     setShowGIFModal(false);
   };
 
+  const onUploadImage = (imageUrl: URL): void => {
+    setBodyContent(bodyContent.concat(`\n ![](${imageUrl}) \n`));
+    setImageUrl(`${imageUrl}`);
+  };
+
   const createNewPost = async (event: SyntheticEvent): Promise<void> => {
     event.preventDefault();
 
@@ -71,6 +78,7 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
     const tx = await Forum.createForumPost(post, topic.postId, collectionId);
     setAwaitingConfirmation(false);
     setBodyContent('');
+    setImageUrl('');
 
     if (isSuccess(tx) && isSuccess(Forum.wallet)) {
       const localPost: CreatedPost = {
@@ -171,14 +179,17 @@ export function CreatePost(props: CreatePostProps): JSX.Element {
               </div>
               <div className="textSize">{bodySize}/800</div>
               <div className="buttonContainer">
-                <button
-                  className="addGIFButton"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => {
-                    setShowGIFModal(true);
-                  }}>
-                  <span>GIF</span>
-                </button>
+                <div className="leftButtons">
+                  <button
+                    className="addGIFButton"
+                    disabled={!permission.readAndWrite}
+                    onClick={() => {
+                      setShowGIFModal(true);
+                    }}>
+                    <span>GIF</span>
+                  </button>
+                  <UploadTopicImage onSetImageURL={onUploadImage} imageUrl={imageUrl} />
+                </div>
                 <button
                   className="createPostButton"
                   type="submit"

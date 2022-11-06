@@ -428,6 +428,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               addPost={addPost}
               onReload={() => {}}
               setPostInFlight={setPostInFlight}
+              forumData={forumData}
             />
           </PermissionsGate>
         </div>

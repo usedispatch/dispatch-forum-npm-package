@@ -374,15 +374,19 @@
       }
     }
 
+    .leftButtons {
+      display: flex;
+    }
+
     .addGIFButton {
       display: flex;
       align-items: center;
-      height: 26px;
-      padding: 5px;
-      margin: 0 auto 0 0;
+      height: 28px;
+      width: 28px;
+      margin-right: 20px;
 
       border-radius: 4px;
-      border: 1px solid #3f1d96;
+      border: 2px solid #3f1d96;
 
       color: #3f1d96;
       text-align: center;
@@ -390,6 +394,7 @@
       font-size: 14px;
       font-weight: 600;
       text-transform: capitalize;
+      justify-content: center;
 
       &:hover {
         opacity: 0.85;

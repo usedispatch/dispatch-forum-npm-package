@@ -31,7 +31,8 @@
     "build:staging": "yarn clean && NODE_ENV=production yarn parcel build && cp README.md ./dist",
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
-    "lint": "lint-staged"
+    "lint": "lint-staged",
+    "bump-patch": "yarn parcel build && npm version patch"
   },
   "lint-staged": {
     "unstaged": "true",

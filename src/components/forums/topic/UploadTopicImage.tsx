@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import ImageUploading, { ImageListType } from 'react-images-uploading';
-import { WebBundlr } from '@bundlr-network/client';
 import Lottie from 'lottie-react';
 
 import animationData from '../../../lotties/loader.json';
@@ -25,11 +24,7 @@ import { isNil } from 'lodash';
 // TODO(andrew) move this to a utils file
 async function uploadFileWithBundlr(
   file: File,
-  bundlr: WebBundlr,
 ): Promise<URL> {
-  const arrayBuffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(arrayBuffer);
-
   // Get the number of bytes necessary for uploading the image
   // const price = await bundlr.getPrice(bytes.length);
 
@@ -49,13 +44,9 @@ async function uploadFileWithBundlr(
   // const id = tx.id;
   // const url = new URL(`https://arweave.net/${id}`);
 
-  // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
-  // @ts-ignore
-  const base64String = btoa(String.fromCharCode.apply(null, bytes));
-
   const form = new FormData();
-  form.append('image', base64String);
-  // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+  form.append('image', new Blob([file], { type: 'application/octet-stream' }));
+
   const req = await fetch('https://api.imgbb.com/1/upload?key=4ebf7683ff468ee661cff435b6dede07', {
     method: 'POST',
     body: form,
@@ -71,10 +62,10 @@ async function uploadFileWithBundlr(
 
 interface UploadTopicImageProps {
   onSetImageURL: (url: URL) => void;
-  imageUrl: string;
+  // imageUrl: string;
 }
 
-export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImageProps) {
+export function UploadTopicImage({ onSetImageURL }: UploadTopicImageProps): JSX.Element {
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -84,20 +75,20 @@ export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImagePr
 
   const bundlr = useBundlr();
 
-  const handleChange = async (imageList: ImageListType) => {
+  const handleChange = async (imageList: ImageListType): Promise<void> => {
     setProccessingImage(true);
     try {
       // The component only allows 1 file
       const file = imageList[0].file;
-      if (!file) {
+      if (file == null) {
         console.error('Could not get file for the uploaded image');
         return;
       }
-      if (!bundlr) {
+      if (bundlr == null) {
         console.error('Could not initialize bundlr');
         return;
       }
-      const url = await uploadFileWithBundlr(file, bundlr);
+      const url = await uploadFileWithBundlr(file);
       onSetImageURL(url);
       setImages(imageList);
       setProccessingImage(false);
@@ -142,7 +133,7 @@ export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImagePr
               : (
               <button
                 className="uploadTopicImageButton"
-                disabled={!permission.readAndWrite || !!imageUrl}
+                disabled={!permission.readAndWrite}
                 onClick={onImageUpload}>
                 <UploadImageLogo className="uploadTopicImageIcon" />
               </button>

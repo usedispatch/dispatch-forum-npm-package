@@ -426,7 +426,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
               <div className="postBody">
                 <Markdown>{post?.data.body}</Markdown>
               </div>
-              {isForumPost(post) && (
+              {(isForumPost(post) && post.author_username === undefined) && (
                 <div className="actionsContainer">
                   <PermissionsGate scopes={[SCOPES.canVote]}>
                     <Votes

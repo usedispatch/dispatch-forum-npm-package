@@ -6,7 +6,7 @@ import { NewsFeed, NewsPost, PostContent } from '../../forums';
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { UserRoleType } from '../../../utils/permissions';
 import { ForumData, CreatedPost } from '../../../utils/hooks';
-import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
+import { selectRepliesFromPosts } from '../../../utils/posts';
 
 interface NewsPostListProps {
   forum: DispatchForum;
@@ -47,7 +47,8 @@ export default function NewsPostList(props: NewsPostListProps): JSX.Element {
 
   const posts = useMemo(() => {
     const posts = selectRepliesFromPosts(forumData.posts, topic);
-    return sortByVotes(posts);
+    // return sortByVotes(posts);
+    return posts;
   }, [forumData]);
 
   const newsPagePostAsClientPost = newsposts.posts.map((post) => {

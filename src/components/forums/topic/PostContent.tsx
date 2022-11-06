@@ -377,7 +377,9 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       />
                       )}
                   </div>
-                  {post.author_username ? post.author_username : post.poster.toBase58()}
+                  <div className="walletId">
+                    {post.author_username ? post.author_username : post.poster.toBase58()}
+                  </div>
                   <RoleLabel
                     topicOwnerId={topicPosterId}
                     posterId={post?.poster}

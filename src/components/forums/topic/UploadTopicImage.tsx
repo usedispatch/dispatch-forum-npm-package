@@ -119,7 +119,6 @@ export function UploadTopicImage({ onSetImageURL, imageUrl }: UploadTopicImagePr
       <ImageUploading
           value={images}
           onChange={handleChange}
-          maxNumber={1}
           dataURLKey="data_url"
         >
           {({ onImageUpload }) => (

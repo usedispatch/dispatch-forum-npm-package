@@ -29,6 +29,7 @@
 @import './styles/TopicListRow.css';
 @import './styles/TopicListRowAsMobile.css';
 @import './styles/UploadImage.css';
+@import './styles/UploadTopicImage.css';
 
 /* Topic */
 @import './styles/CreatePost.css';

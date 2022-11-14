@@ -451,6 +451,12 @@
       border-color: white;
     }
 
+    .uploadTopicImageIcon {
+      path {
+        stroke: white;
+      }
+    }
+
     .acceptDeletePostButton {
       background: #141313;
       border: 2px solid #f2f2f0;

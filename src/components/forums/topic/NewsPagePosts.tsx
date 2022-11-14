@@ -1,127 +1,38 @@
 import isNil from 'lodash/isNil';
 import { ReactNode, useMemo, useState } from 'react';
 import { PublicKey } from '@solana/web3.js';
-import Markdown from 'markdown-to-jsx';
-import Jdenticon from 'react-jdenticon';
 import { ForumPost, PostRestriction } from '@usedispatch/client';
 import ReactGA from 'react-ga4';
 
 import {
-  Gift, MessageSquare, Trash, Lock,
+  MessageSquare,
 } from '../../../assets';
 
 import {
-  AccountInfoLink,
   CollapsibleProps,
   MessageType,
   PopUpModal,
   PermissionsGate,
   TransactionLink,
-  Spinner,
 } from '../../common';
-import { CreatePost, GiveAward, PostList, Notification, RoleLabel, EditPost, Votes } from '..';
-
+import { CreatePost, GiveAward, Notification, Votes, NewsFeed } from '..';
+import NewsPostList from './NewsPostList';
 import { usePath } from '../../../contexts/DispatchProvider';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 import { UserRoleType, SCOPES } from '../../../utils/permissions';
 import { selectRepliesFromPosts } from '../../../utils/posts';
-import { getIdentity } from '../../../utils/identity';
 import {
   ForumData,
   CreatedPost,
   EditedPost,
-  useForumIdentity,
-  ForumIdentity,
-  isEditedPost,
 } from '../../../utils/hooks';
 import { isSuccess } from '../../../utils/loading';
 import { errorSummary } from '../../../utils/error';
 import { restrictionListToString } from '../../../utils/restrictionListHelper';
 
-interface TopicHeaderProps {
-  topic: ForumPost;
-  forum: DispatchForum;
-  participatingModerators: PublicKey[] | null;
-  isGated: boolean;
-}
-
-function TopicHeader(props: TopicHeaderProps): JSX.Element {
-  const { isGated, topic, forum, participatingModerators } = props;
-
-  const postedAt = !isNil(topic)
-    ? `${topic.data.ts.toLocaleDateString(undefined, {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    })} at ${topic.data.ts.toLocaleTimeString(undefined, {
-      hour: 'numeric',
-      minute: 'numeric',
-    })}`
-    : '-';
-
-  const identity = getIdentity(topic.poster);
-
-  return (
-    <div className="topicHeader">
-      <div className="topicTitle">
-        <div className="posted">
-          <div className="postedBy">
-            <div className="icon">
-              {(identity != null)
-                ? (
-                <img
-                  src={identity.profilePicture.href}
-                  style={{ borderRadius: '50%' }}
-                />
-                )
-                : (
-                <Jdenticon value={topic.poster.toBase58()} alt="posterID" />
-                )}
-            </div>
-            <div className="posterId">
-              {(identity != null) ? identity.displayName : topic.poster.toBase58()}
-            </div>
-            {/* TODO is it right to show an OP when the topic
-            poster is obviously OP? if not, set the topicOwnerId
-            prop to an unrelated key */}
-            <RoleLabel
-              topicOwnerId={topic.poster}
-              posterId={topic.poster}
-              moderators={participatingModerators}
-            />
-          </div>
-          <div className="postedAt">
-            {postedAt}
-            <AccountInfoLink href={`https://solscan.io/account/${topic.address.toBase58()}?cluster=${forum.cluster}`} />
-          </div>
-        </div>
-        {!isEditedPost(topic)
-          ? (
-          <div className="subj">
-            {isGated && (
-              <div className="gatedTopic">
-                <Lock />
-              </div>
-            )}
-            <Markdown>{topic?.data.subj ?? 'subject'}</Markdown>
-          </div>
-          )
-          : (
-          <Spinner />
-          )}
-      </div>
-      {!isEditedPost(topic) && (
-        <div className="topicBody">
-          <Markdown>{topic?.data.body ?? 'body of the topic'}</Markdown>
-        </div>
-      )}
-    </div>
-  );
-}
-
-interface TopicContentProps {
+interface NewsPagePostsProps {
   forum: DispatchForum;
   forumData: ForumData;
   participatingModerators: PublicKey[] | null;
@@ -131,10 +42,11 @@ interface TopicContentProps {
   deletePost: (post: ForumPost) => void;
   topic: ForumPost | EditedPost;
   userRoles: UserRoleType[];
+  newsposts: NewsFeed;
   updateVotes: (upVoted: boolean) => void;
 }
 
-export function TopicContent(props: TopicContentProps): JSX.Element {
+export function NewsPagePosts(props: NewsPagePostsProps): JSX.Element {
   const {
     forum,
     forumData,
@@ -146,6 +58,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
     updateVotes,
     topic,
     participatingModerators,
+    newsposts,
   } = props;
   const replies = useMemo(() => {
     return selectRepliesFromPosts(forumData.posts, topic);
@@ -174,14 +87,12 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
   const [deletingTopic, setDeletingTopic] = useState(false);
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
-  const permission = forum.permission;
   const [notificationContent, setNotificationContent] = useState<{
     content: string | ReactNode;
     type: MessageType;
   }>();
 
   const userIsMod = userRoles.includes(UserRoleType.Moderator);
-  const forumIdentity = useForumIdentity(forumData.collectionId);
 
   const [showAddAccessToken, setShowAddAccessToken] = useState(false);
 
@@ -360,67 +271,6 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
           </div>
         </div>
         <div className="headerAndActions">
-          <TopicHeader
-            topic={topic}
-            forum={forum}
-            participatingModerators={participatingModerators}
-            isGated={currentForumAccessToken.length > 0}
-          />
-          <div className="topicToolsContainer">
-            <div className="topicTools">
-              <PermissionsGate
-                scopes={[SCOPES.canDeleteTopic]}
-                posterKey={topic.poster}
-              >
-                <button
-                  className="moderatorTool"
-                  disabled={!permission.readAndWrite}
-                  onClick={() => setShowDeleteConfirmation(true)}
-                >
-                  <div className="delete">
-                    <Trash />
-                  </div>
-                </button>
-                <div className="actionDivider" />
-              </PermissionsGate>
-              <EditPost
-                post={topic}
-                forumData={forumData}
-                update={async () => update()}
-                editPostLocal={editPost}
-                showDividers={{ leftDivider: false, rightDivider: true }}
-              />
-              <div className="lock">
-                <Lock />
-              </div>
-              <button
-                className="moderatorTool"
-                disabled={!permission.readAndWrite}
-                onClick={() => setShowAddAccessToken(true)}
-              >
-                <span>Manage post access</span>
-                <div className="lock">
-                  <Lock />
-                </div>
-              </button>
-            </div>
-            {
-              (forumIdentity !== ForumIdentity.DegenerateApeAcademy ||
-                userIsMod) &&
-                !(forum.wallet.publicKey?.equals(topic.poster) as boolean) && (
-                  <PermissionsGate scopes={[SCOPES.canCreateReply]}>
-                    <button
-                      className="awardButton"
-                      disabled={!permission.readAndWrite}
-                      onClick={() => setShowGiveAward(true)}>
-                      <span>Send Token</span>
-                      <Gift />
-                    </button>
-                  </PermissionsGate>
-              )
-            }
-          </div>
-          <PermissionsGate scopes={[SCOPES.canCreatePost]}>
             <CreatePost
               topic={topic}
               collectionId={forumData.collectionId}
@@ -428,9 +278,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               addPost={addPost}
               onReload={() => {}}
               setPostInFlight={setPostInFlight}
-              forumData={forumData}
             />
-          </PermissionsGate>
         </div>
       </div>
       <Notification
@@ -439,8 +287,9 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
         type={notificationContent?.type}
         onClose={() => setIsNotificationHidden(true)}
       />
-      <PostList
+      <NewsPostList
         forum={forum}
+        newsposts={newsposts}
         forumData={forumData}
         participatingModerators={participatingModerators}
         update={update}

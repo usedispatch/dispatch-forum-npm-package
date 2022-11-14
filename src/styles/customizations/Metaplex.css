@@ -219,6 +219,21 @@
     }
 
     /* TOPIC LIST */
+    .topicListAsMobileTitle,
+    .topicListRowAsMobileContainer {
+      background-color: black;
+    }
+
+    .topicListRowAsMobileVotes,
+    .topicListRowAsMobileNumberOfReplies,
+    .topicListAsMobileTitle,
+    .topicListRowAsMobileBody,
+    .topicListRowAsMobileBottomData,
+    .topicListRowAsMobileTitle {
+      color: white;
+    }
+
+
     .topicListContainer,
     .emptyTopicList {
       background: #1d1c1c;

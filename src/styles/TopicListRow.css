@@ -7,7 +7,16 @@
       height: 28px;
       width: 28px;
       margin-right: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
+  }
+
+  .iconAsMobile {
+    height: 16px;
+    width: 16px;
+    margin-right: 2px;
   }
 
   .rowSpinner {

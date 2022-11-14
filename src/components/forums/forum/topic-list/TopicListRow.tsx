@@ -4,22 +4,27 @@ import Markdown from 'markdown-to-jsx';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
 
-import { Link, Spinner } from '../../../components/common';
+import { Link, Spinner } from '../../../../components/common';
 
-import { ForumData } from '../../../utils/hooks';
-import { getIdentity } from '../../../utils/identity';
-import { isSuccess } from '../../../utils/loading';
-import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
-import { selectForumPosts, selectRepliesFromPosts } from '../../../utils/posts';
-import { usePath } from '../../../contexts/DispatchProvider';
+import { ForumData } from '../../../../utils/hooks';
+import { getIdentity } from '../../../../utils/identity';
+import { isSuccess } from '../../../../utils/loading';
+import { newPublicKey } from '../../../../utils/postbox/validateNewPublicKey';
+import { selectForumPosts, selectRepliesFromPosts } from '../../../../utils/posts';
+import { usePath } from '../../../../contexts/DispatchProvider';
+
+import { TopicListRowAsMobile } from './TopicListRowAsMobile';
 
 interface TopicListRowProps {
   topic: ForumPost;
   forumData: ForumData;
+  isMobile?: boolean;
 }
 
 export function TopicListRow(props: TopicListRowProps): JSX.Element {
-  const { topic, forumData } = props;
+  const {
+    topic, forumData, isMobile = false,
+  } = props;
   const { buildTopicPath } = usePath();
   const topicPath = buildTopicPath(
     forumData.collectionId.toBase58(),
@@ -67,13 +72,13 @@ export function TopicListRow(props: TopicListRowProps): JSX.Element {
               if (isSuccess(pkey)) {
                 const identity = getIdentity(pkey);
                 return (
-                  <div key={index} className="icon">
+                  <div key={index} className={isMobile ? 'iconAsMobile' : 'icon'}>
                     { (identity != null)
                       ? <img
                         src={identity.profilePicture.href}
                         style={{ borderRadius: '50%' }}
                       />
-                      : <Jdenticon value={id} alt="posterID" />
+                      : <Jdenticon value={id} alt="posterID" size={isMobile ? '16' : '100%'} />
                     }
                   </div>
                 );
@@ -88,6 +93,18 @@ export function TopicListRow(props: TopicListRowProps): JSX.Element {
       return '-';
     }
   }, []);
+
+  if (isMobile) {
+    return (
+      <Link className="TopicListRowAsMobileLink" href={topicPath}>
+        <TopicListRowAsMobile
+          topic={topic}
+          lastActivityDate={activtyDate(replies)}
+          numberOfReplies={replies.length}
+        />
+      </Link>
+    );
+  }
 
   return (
       <tr className="row ">

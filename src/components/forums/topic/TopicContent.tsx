@@ -19,7 +19,7 @@ import {
   TransactionLink,
   Spinner,
 } from '../../common';
-import { CreatePost, GiveAward, PostList, Notification, Votes, RoleLabel, EditPost } from '..';
+import { CreatePost, GiveAward, PostList, Notification, RoleLabel, EditPost, Votes } from '..';
 
 import { usePath } from '../../../contexts/DispatchProvider';
 

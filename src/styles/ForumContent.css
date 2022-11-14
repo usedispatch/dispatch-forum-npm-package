@@ -471,7 +471,7 @@
     margin: 0 10%;
 
     @media only screen and (max-width: 570px) {
-      margin: 0 5%;
+      margin: 0;
     }
   }
 }

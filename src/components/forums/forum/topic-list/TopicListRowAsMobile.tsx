@@ -27,7 +27,7 @@ export function TopicListRowAsMobile(props: TopicListRowAsMobileProps): JSX.Elem
             <span className="topicListRowAsMobileNumberOfReplies">{numberOfReplies}</span>
           </div>
           <div className="topicListRowAsMobileVotesContainer">
-            {currentVotes >= 0 && <Vote isUpVote={currentVotes > 0} disabled={currentVotes === 0} />}
+            {currentVotes >= 0 && <Vote isUpVote={currentVotes >= 0} disabled={currentVotes === 0} />}
             <span className="topicListRowAsMobileVotes">{currentVotes}</span>
             {currentVotes <= 0 && <Vote disabled={currentVotes === 0} />}
           </div>

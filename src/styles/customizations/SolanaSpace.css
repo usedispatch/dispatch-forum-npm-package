@@ -494,6 +494,12 @@
       border-color: #30302e;
     }
 
+    .uploadTopicImageIcon {
+      path {
+        stroke: #30302e;
+      }
+    }
+
     .acceptDeletePostButton {
       font-family: Circular;
       background: #141313;

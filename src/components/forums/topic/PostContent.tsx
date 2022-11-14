@@ -4,7 +4,15 @@ import Markdown from 'markdown-to-jsx';
 import { ReactNode, useMemo, useRef, useState, useEffect } from 'react';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
-
+import {
+  Votes,
+  Notification,
+  PostReplies,
+  GiveAward,
+  EditPost,
+  RoleLabel,
+  SharePost,
+} from '../../../components/forums';
 import { Gift, Trash, Reply } from '../../../assets';
 import {
   AccountInfoLink,
@@ -15,9 +23,6 @@ import {
   Spinner,
   TransactionLink,
 } from './../../common';
-import {
-  Votes, Notification, PostReplies, GiveAward, EditPost, RoleLabel, SharePost,
-} from '../../../components/forums';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
@@ -38,6 +43,7 @@ import {
 import { selectRepliesFromPosts, sortByVotes } from '../../../utils/posts';
 import { AddGIF } from '../../../components/common/AddGIF';
 import { isNil } from 'lodash';
+import { UploadTopicImage } from './UploadTopicImage';
 
 interface PostContentProps {
   forum: DispatchForum;
@@ -93,6 +99,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
   const [showGiveAward, setShowGiveAward] = useState(false);
   const [showGIFModal, setShowGIFModal] = useState(false);
   const [postToAward, setPostToAward] = useState<ForumPost>();
+  const [imageUrl, setImageUrl] = useState('');
 
   const [notification, setNotification] = useState<{
     isHidden: boolean;
@@ -108,10 +115,15 @@ export function PostContent(props: PostContentProps): JSX.Element {
   } | null>(null);
 
   const post = useMemo(() => props.post, [props.post]);
-
   useEffect(() => {
-    const { location: { hash } } = window;
-    if (!isNil(postContainer.current) && isForumPost(post) && hash.split('#')[1] === post.address.toBase58()) {
+    const {
+      location: { hash },
+    } = window;
+    if (
+      !isNil(postContainer.current) &&
+      isForumPost(post) &&
+      hash.split('#')[1] === post.address.toBase58()
+    ) {
       postContainer.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [postContainer]);
@@ -153,6 +165,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
     if (isSuccess(tx)) {
       setShowReplyBox(false);
       setReply('');
+      setImageUrl('');
 
       const localPost: CreatedPost = {
         data: {
@@ -172,10 +185,10 @@ export function PostContent(props: PostContentProps): JSX.Element {
       setNotification({
         isHidden: false,
         content: (
-            <>
-              Replied successfully.
-              <TransactionLink transaction={tx} />
-            </>
+          <>
+            Replied successfully.
+            <TransactionLink transaction={tx} />
+          </>
         ),
         type: MessageType.success,
       });
@@ -244,12 +257,20 @@ export function PostContent(props: PostContentProps): JSX.Element {
     setReply(reply.concat(`\n ![](${gifURL}) \n`));
     setShowGIFModal(false);
   };
+  const onUploadImage = (imageUrl: URL): void => {
+    setReply(reply.concat(`\n ![](${imageUrl}) \n`));
+    setImageUrl(`${imageUrl}`);
+  };
+
   const isLocal = isCreatedPost(post);
   const identity = getIdentity(post.poster);
 
   // The gifting UI should be hidden on the apes forum for non-mods.
   // Therefore, show it if the forum is NOT degen apes, or the user is a mod
-  const showGift = (forumIdentity !== ForumIdentity.DegenerateApeAcademy || userIsMod) && !isNil(forum.wallet.publicKey) && !(forum.wallet.publicKey.equals(post.poster) as boolean);
+  const showGift =
+    (forumIdentity !== ForumIdentity.DegenerateApeAcademy || userIsMod) &&
+    !isNil(forum.wallet.publicKey) &&
+    !(forum.wallet.publicKey.equals(post.poster) as boolean);
 
   return (
     <>
@@ -257,21 +278,15 @@ export function PostContent(props: PostContentProps): JSX.Element {
         className={`postContentContainer ${
           postInFlight && isLocal ? 'inFlight' : ''
         }`}>
-        {
-          showGIFModal && (
-            <PopUpModal
-              id="add-gif-modal"
-              visible
-              title="Add GIF"
-              body={
-                <AddGIF
-                  onGifSelect={onGifSelect}
-                />
-              }
-              onClose={() => setShowGIFModal(false)}
-              />
-          )
-        }
+        {showGIFModal && (
+          <PopUpModal
+            id="add-gif-modal"
+            visible
+            title="Add GIF"
+            body={<AddGIF onGifSelect={onGifSelect} />}
+            onClose={() => setShowGIFModal(false)}
+          />
+        )}
         {isNull(modalInfo) && showDeleteConfirmation && (
           <PopUpModal
             id="post-delete-confirmation"
@@ -308,7 +323,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
             onClose={() => setModalInfo(null)}
           />
         )}
-        {showGiveAward && (postToAward != null) && (
+        {showGiveAward && postToAward != null && (
           <GiveAward
             post={postToAward}
             collectionId={forumData.collectionId}
@@ -348,7 +363,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
               <div className="postHeader">
                 <div className="posterId">
                   <div className="icon">
-                    {(identity != null)
+                    {identity != null
                       ? (
                       <img
                         src={identity.profilePicture.href}
@@ -363,7 +378,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       )}
                   </div>
                   <div className="walletId">
-                    {(identity != null) ? identity.displayName : post.poster.toBase58()}
+                    {post.author_username ? post.author_username : post.poster.toBase58()}
                   </div>
                   <RoleLabel
                     topicOwnerId={topicPosterId}
@@ -377,7 +392,11 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       return (
                         <>
                           {postedAt}
-                          <AccountInfoLink href={`https://solscan.io/account/${post.address.toBase58()}?cluster=${forum.cluster}`} />
+                          <AccountInfoLink
+                            href={`https://solscan.io/account/${post.address.toBase58()}?cluster=${
+                              forum.cluster
+                            }`}
+                          />
                         </>
                       );
                     } else if (isEditedPost(post)) {
@@ -407,7 +426,7 @@ export function PostContent(props: PostContentProps): JSX.Element {
               <div className="postBody">
                 <Markdown>{post?.data.body}</Markdown>
               </div>
-              {isForumPost(post) && (
+              {(isForumPost(post) && post.author_username === undefined) && (
                 <div className="actionsContainer">
                   <PermissionsGate scopes={[SCOPES.canVote]}>
                     <Votes
@@ -452,21 +471,21 @@ export function PostContent(props: PostContentProps): JSX.Element {
                         </button>
                         <div className="actionDivider" />
                       </PermissionsGate>
-                      { showGift &&
-                            <>
-                              <button
-                                className="awardButton"
-                                disabled={!permission.readAndWrite}
-                                onClick={() => {
-                                  setPostToAward(post);
-                                  setShowGiveAward(true);
-                                }}>
-                                <span>Send Token</span>
-                                <Gift />
-                              </button>
-                              <div className="actionDivider" />
-                            </>
-                      }
+                      {showGift && (
+                        <>
+                          <button
+                            className="awardButton"
+                            disabled={!permission.readAndWrite}
+                            onClick={() => {
+                              setPostToAward(post);
+                              setShowGiveAward(true);
+                            }}>
+                            <span>Send Token</span>
+                            <Gift />
+                          </button>
+                          <div className="actionDivider" />
+                        </>
+                      )}
                       <button
                         className="replyButton"
                         disabled={!permission.readAndWrite}
@@ -490,23 +509,24 @@ export function PostContent(props: PostContentProps): JSX.Element {
             hidden={replies.length === 0 && !showReplyBox}>
             <div
               ref={replyAreaRef}
-              className={`replyFormContainer ${
-                showReplyBox ? 'visible' : ''
-              }`}>
+              className={`replyFormContainer ${showReplyBox ? 'visible' : ''}`}>
               <div className="replyForm">
                 <textarea
                   placeholder="Type your reply here. We support markdown!"
                   className="replyTextArea"
                   maxLength={800}
                   value={reply}
-                  onChange={(e) => {
+                  onChange={e => {
                     setReply(e.target.value);
-                    setReplySize(Buffer.from(e.target.value, 'utf-8').byteLength);
+                    setReplySize(
+                      Buffer.from(e.target.value, 'utf-8').byteLength,
+                    );
                   }}
                 />
                 <div className="textSize"> {replySize}/800 </div>
                 <div className='buttonsWrapper'>
                   {showReplyBox &&
+                    <div className="leftButtons">
                     <button
                       className="addGIFButton"
                       disabled={!permission.readAndWrite}
@@ -515,6 +535,8 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       }}>
                       <span>GIF</span>
                     </button>
+                    <UploadTopicImage onSetImageURL={onUploadImage} imageUrl={imageUrl} />
+                  </div>
                   }
                   <div className="buttonsContainer">
                     <button
@@ -530,7 +552,11 @@ export function PostContent(props: PostContentProps): JSX.Element {
                       type="submit"
                       disabled={reply.length === 0}
                       onClick={onReplyToPost}>
-                      {awaitingConfirmation && <div className='loading'><Spinner /></div> }
+                      {awaitingConfirmation && (
+                        <div className="loading">
+                          <Spinner />
+                        </div>
+                      )}
                       Reply
                     </button>
                   </div>

@@ -22,3 +22,4 @@ export * from './topic/RoleLabel';
 export * from './topic/SharePost';
 export * from './topic/TopicContent';
 export * from './topic/Votes';
+export * from './topic/NewsPageContent';

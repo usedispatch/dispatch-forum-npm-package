@@ -1,0 +1,15 @@
+@layer components {
+  .uploadTopicImageAnimation {
+    max-width: 100px;
+    max-height: 16px;
+    display: flex;
+  }
+
+  .uploadTopicImageButton {
+    align-self: flex-start;
+  }
+
+  /* .uploadTopicImageIcon {
+    fill: #3f1d96;
+  } */
+}

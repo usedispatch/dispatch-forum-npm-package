@@ -1,23 +1,23 @@
-import { useState } from "react";
-import { Chevron } from "../../assets";
+import { useState } from 'react';
+import { Chevron } from '../../assets';
 
 export interface CollapsibleProps {
   content: any;
   header?: string;
 }
 
-export const Collapsible = (props: CollapsibleProps) => {
+export const Collapsible = (props: CollapsibleProps): JSX.Element => {
   const { header, content } = props;
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <div className="collapsibleContainer">
       <div
         className="collapsibleHeaderContainer"
         onClick={() => setIsOpen(!isOpen)}>
-        <div className="collapsibleHeader">{header ?? ""}</div>
+        <div className="collapsibleHeader">{header ?? ''}</div>
         <button className="visibilityButton">
-          <Chevron direction={isOpen ? "up" : "down"} />
+          <Chevron direction={isOpen ? 'up' : 'down'} />
         </button>
       </div>
       <div className="collapsibleContent" hidden={!isOpen}>

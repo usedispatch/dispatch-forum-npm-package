@@ -138,7 +138,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
                   />
                 </div>
                 <input
-                  placeholder="add URL for new banner"
+                  placeholder="Add URL for new banner"
                   className={'imageSrcInput'}
                   value={forumImage.imageURL}
                   onChange={e =>
@@ -156,6 +156,7 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
             okButton={
               <button
                 className="okButton"
+                disabled={forumImage.imageURL.length === 0 || forumImage.saving}
                 onClick={onSave}
               >
                 Save

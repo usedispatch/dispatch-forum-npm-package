@@ -2,7 +2,7 @@ import isNil from 'lodash/isNil';
 import { useState, ReactNode, useEffect } from 'react';
 import { ForumPost } from '@usedispatch/client';
 
-import { Success, Vote } from '../../../assets';
+import { Vote } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -27,10 +27,10 @@ interface VotesProps {
   updateVotes: (upVoted: boolean) => void;
 }
 
-export function Votes(props: VotesProps) {
+export function Votes(props: VotesProps): JSX.Element {
   const Forum = useForum();
   const permission = Forum.permission;
-  const { post, onDownVotePost, onUpVotePost, updateVotes, update, forumData } = props;
+  const { post, onDownVotePost, onUpVotePost, updateVotes, forumData } = props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
@@ -49,7 +49,7 @@ export function Votes(props: VotesProps) {
     collapsible?: CollapsibleProps;
   } | null>(null);
 
-  const setVotes = async () => {
+  const setVotes = async (): Promise<void> => {
     if (isSuccess(forumData.votes)) {
       const vote = forumData.votes.find((v) => v.postId === post.postId);
       // redundancy needed for wallet change case and
@@ -65,10 +65,11 @@ export function Votes(props: VotesProps) {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     setVotes();
   }, [forumData.votes]);
 
-  const upVotePost = async () => {
+  const upVotePost = async (): Promise<void> => {
     setLoading(true);
 
     const tx = await onUpVotePost();
@@ -105,7 +106,7 @@ export function Votes(props: VotesProps) {
     }
   };
 
-  const downVotePost = async (event: React.SyntheticEvent) => {
+  const downVotePost = async (event: React.SyntheticEvent): Promise<void> => {
     event.preventDefault();
     setLoading(true);
 

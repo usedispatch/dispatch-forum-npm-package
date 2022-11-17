@@ -71,11 +71,7 @@ export interface IForum {
   exists: (collectionPublicKey: PublicKey) => Promise<boolean>;
 
   // Create a postbox for a given collection ID
-  createForum: (
-    forumInfo: ForumInfo
-  ) => Promise<
-  Result<{ forum: Forum; txs: string[] }>
-  >;
+  createForum: (forumInfo: ForumInfo) => Promise<Result<{ forum: Forum; txs: string[] }>>;
 
   // Get the description of the forum: title and blurb
   getDescription: (collectionId: PublicKey) => Promise<Result<{
@@ -1038,6 +1034,187 @@ export class DispatchForum implements IForum {
       console.log('dsp', error);
       return parseError(error);
     }
+  };
+}
+
+
+export class DispatchForumV2 implements IForum {
+  constructor() {
+  }
+
+  exists = async (collectionPublicKey: PublicKey): Promise<boolean> => {
+  };
+
+  createForum = async (forumInfo: ForumInfo): Promise<Result<string>> => {
+  };
+
+  isOwner = async (collectionId: PublicKey): Promise<boolean> => {
+  };
+
+  isModerator = async (collectionId: PublicKey): Promise<boolean> => {
+  };
+
+  // Get the description of the forum: title and blurb
+  getDescription = async (
+    collectionId: PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false,
+  ): Promise<Result<{
+    title: string;
+    desc: string;
+  }>> => {
+  };
+
+  setImageUrls = async (collectionId: PublicKey, image: string): Promise<Result<string>> => {
+  };
+
+  getImageUrls = async (collectionId: PublicKey): Promise<Result<any>> => {
+  };
+
+  getModeratorMint = async (
+    collectionId: PublicKey,
+    assumeExists = false,
+  ): Promise<Result<PublicKey>> => {
+  };
+
+  setDescription = async (collectionId: PublicKey, desc: {
+    title: string;
+    desc: string;
+  }): Promise<Result<string>> => {
+  };
+
+  addModerator = async (newMod: PublicKey, collectionId: PublicKey): Promise<Result<string>> => {
+  };
+
+  setOwners = async (newOwners: PublicKey[], collectionId: PublicKey): Promise<Result<string>> => {
+  };
+
+  getModerators = async (
+    collectionId: PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false,
+  ): Promise<Result<PublicKey[]>> => {
+  };
+
+  getOwners = async (
+    collectionId: PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false,
+  ): Promise<Result<PublicKey[]>> => {
+  };
+
+  getForumForCollection = async (
+    collectionId: PublicKey,
+  ): Promise<Result<Forum>> => {
+  };
+
+  getTopicsForForum = async (
+    collectionId: PublicKey,
+  ): Promise<Result<ForumPost[]>> => {
+  };
+
+  getPostsForForum = async (
+    collectionId: PublicKey,
+    // If this parameter is set, skip checking whether the forum
+    // exists on-chain
+    assumeExists = false,
+  ): Promise<Result<ForumPost[]>> => {
+  };
+
+  canCreateTopic = async (
+    collectionId: PublicKey,
+  ): Promise<boolean> => {
+  };
+
+  createTopic = async (
+    topic: { subj?: string; body: string; meta?: any },
+    collectionId: PublicKey,
+    postRestriction?: PostRestriction,
+  ): Promise<Result<string>> => {
+  };
+
+  getTopicData = async (
+    topicId: number,
+    collectionId: PublicKey,
+  ): Promise<Result<ForumPost>> => {
+  };
+
+  canPost = async (
+    collectionId: PublicKey,
+    topic: ForumPost,
+  ): Promise<boolean> => {
+  };
+
+  createForumPost = async (
+    post: {
+      subj?: string;
+      body: string;
+      meta?: any;
+    },
+    topicId: number,
+    collectionId: PublicKey,
+  ): Promise<Result<string>> => {
+  };
+
+  editForumPost = async (collectionId: PublicKey, post: ForumPost, newPostData: {
+    subj?: string;
+    body: string;
+    meta?: any;
+  }): Promise<Result<string>> => {
+  };
+
+  getTopicMessages = async (topicId: number, collectionId: PublicKey): Promise<Result<ForumPost[]>> => {
+  };
+
+  deleteForumPost = async (post: ForumPost, collectionId: PublicKey, asMod?: boolean): Promise<Result<string>> => {
+  };
+
+  voteUpForumPost = async (post: ForumPost, collectionId: PublicKey): Promise<Result<string>> => {
+  };
+
+  voteDownForumPost = async (post: ForumPost, collectionId: PublicKey): Promise<Result<string>> => {
+  };
+
+  replyToForumPost = async (
+    replyToPost: ForumPost, collectionId: PublicKey,
+    post: {
+      subj?: string;
+      body: string;
+      meta?: any;
+    }): Promise<Result<string>> => {
+  };
+
+  getReplies = async (topic: ForumPost, collectionId: PublicKey): Promise<Result<ForumPost[]>> => {
+  };
+
+  getForumPostRestriction = async (collectionId: PublicKey) => {
+  };
+
+  setForumPostRestriction = async (collectionId: PublicKey, restriction: PostRestriction) => {
+  };
+
+  deleteForumPostRestriction = async (collectionId: PublicKey) => {
+  };
+
+  canVote = async (collectionId: PublicKey, post: ForumPost) => {
+  };
+
+  getVote = async (collectionId: PublicKey, post: ForumPost) => {
+  };
+
+  getVotes = async (collectionId: PublicKey) => {
+  };
+
+  getNFTsForCurrentUser = async () => {
+  };
+
+  getNFTMetadataForCurrentUser = async (): Promise<Array<Promise<Result<DisplayableToken>>> | DispatchError> => {
+  };
+
+  transferNFTs = async (receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection) => Promise<string>) => {
   };
 }
 

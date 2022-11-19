@@ -1,22 +1,22 @@
-import { getCustomStyles } from '../../../utils/getCustomStyles';
-import { useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { PublicKey } from '@solana/web3.js';
-
-import { MessageType, Spinner, TransactionLink } from '../../../components/common';
 import {
   CreateForum,
   ForumContent,
   PoweredByDispatch,
 } from '../../../components/forums';
-
-import { useForum, useRole, useTheme } from '../../../contexts/DispatchProvider';
-import { getUserRole } from './../../../utils/postbox/userRole';
-import { isInitial, isPending, isSuccess } from '../../../utils/loading';
+import { MessageType, Spinner, TransactionLink } from '../../../components/common';
 import { errorSummary, isError, isNotFoundError } from '../../../utils/error';
+import { isInitial, isPending, isSuccess } from '../../../utils/loading';
+import { useEffect, useMemo, useState } from 'react';
+import { useForum, useRole, useTheme } from '../../../contexts/DispatchProvider';
 import { useForumData, useModal } from '../../../utils/hooks';
-import ReactGA from 'react-ga4';
+
+import { DispatchForumV2 } from '../../../utils/postbox/postboxWrapperV2';
 import { ForumInfo } from '@usedispatch/client';
+import { Helmet } from 'react-helmet';
+import { PublicKey } from '@solana/web3.js';
+import ReactGA from 'react-ga4';
+import { getCustomStyles } from '../../../utils/getCustomStyles';
+import { getUserRole } from './../../../utils/postbox/userRole';
 
 interface ForumPageContentProps {
   forumID: string;
@@ -27,7 +27,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
   const { forumID, showTitle } = props;
   const forumObject = useForum();
   const Role = useRole();
-  const { wallet, permission } = forumObject;
+  const { wallet, permission, connection, cluster } = forumObject;
   const { publicKey } = wallet;
   const theme = useTheme();
   const { modal, showModal } = useModal();
@@ -57,7 +57,9 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
   const onCreateForum = async (info: ForumInfo): Promise<void> => {
     setCreating(true);
     setCreationData({ title: info.title, desc: info.description });
-    const res = await forumObject.createForum(info);
+    // create new ForumObject with postboxwrapper v2
+    const forumObjectV2 = new DispatchForumV2(wallet, connection, cluster);
+    const res = await forumObjectV2.createForum(info);
 
     if (isSuccess(res)) {
       if (res.forum !== undefined) {

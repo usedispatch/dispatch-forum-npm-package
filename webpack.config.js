@@ -33,6 +33,7 @@ module.exports = {
             path: require.resolve('path-browserify'),
             zlib: false,
             assert: require.resolve('assert'),
+            fs: false,
         },
         symlinks: false
   },

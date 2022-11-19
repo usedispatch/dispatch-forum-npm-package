@@ -1,51 +1,50 @@
-import isNil from 'lodash/isNil';
-import { PublicKey } from '@solana/web3.js';
-import Markdown from 'markdown-to-jsx';
-import { useState, ReactNode, useEffect } from 'react';
-import ReactGA from 'react-ga4';
-import Lottie from 'lottie-react';
-
-import { Lock, Plus, Trash } from '../../../assets';
-import animationData from '../../../lotties/loader.json';
 import {
   CollapsibleProps,
   Input,
   MessageType,
   PermissionsGate,
   PopUpModal,
-  TransactionLink,
   Spinner,
+  TransactionLink,
 } from '../../common';
 import {
-  TopicList,
-  EditForum,
-  ManageOwners,
-  ManageModerators,
-  UploadForumBanner,
   ConnectionAlert,
-  Notification,
   CreateTopic,
+  EditForum,
+  ManageModerators,
+  ManageOwners,
+  Notification,
+  TopicList,
+  UploadForumBanner,
 } from '..';
-import { StarsAlert } from '../StarsAlert';
-
-import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
-import { SCOPES } from '../../../utils/permissions';
 import { DispatchError, Result } from '../../../types/error';
-import { isError, errorSummary } from '../../../utils/error';
-import { isSuccess } from '../../../utils/loading';
 import {
   ForumData,
-  useForumIdentity,
   ForumIdentity,
+  useForumIdentity,
 } from '../../../utils/hooks';
+import { Lock, Plus, Trash } from '../../../assets';
+import { ReactNode, useEffect, useState } from 'react';
+import { errorSummary, isError } from '../../../utils/error';
 import {
-  restrictionListToString,
   pubkeysToRestriction,
   pubkeysToSPLRestriction,
+  restrictionListToString,
 } from '../../../utils/restrictionListHelper';
-import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
-import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
+
+import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { ForumPost } from '@usedispatch/client';
+import Lottie from 'lottie-react';
+import Markdown from 'markdown-to-jsx';
+import { PublicKey } from '@solana/web3.js';
+import ReactGA from 'react-ga4';
+import { SCOPES } from '../../../utils/permissions';
+import { StarsAlert } from '../StarsAlert';
+import animationData from '../../../lotties/loader.json';
+import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
+import isNil from 'lodash/isNil';
+import { isSuccess } from '../../../utils/loading';
+import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { usePath } from '../../../contexts/DispatchProvider';
 
 interface ForumContentProps {

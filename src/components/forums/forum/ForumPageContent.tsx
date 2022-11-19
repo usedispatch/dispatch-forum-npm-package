@@ -78,18 +78,18 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
           type: MessageType.success,
         });
 
-        if (res.txs !== undefined) {
-          await Promise.all(
-            res.txs.map(async tx =>
-              forumObject.connection.confirmTransaction(tx),
-            ),
-          ).then(async () => {
-            await update();
-            setCreating(false);
-          });
-        }
+        // if (res.txs !== undefined) {
+        //   await Promise.all(
+        //     res.txs.map(async tx =>
+        //       forumObject.connection.confirmTransaction(tx),
+        //     ),
+        //   ).then(async () => {
+        //     await update();
+        //     setCreating(false);
+        //   });
+        // }
       }
-      ReactGA.event('successfulForumCreation');
+      await ReactGA.event('successfulForumCreation');
     } else {
       setCreationData(undefined);
       setCreating(false);

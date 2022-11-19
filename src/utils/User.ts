@@ -25,6 +25,7 @@ export class User {
     void CivicProfile.get(wallet.publicKey.toBase58())
       .then((profile) => {
         this.did = profile;
+        console.log(profile);
       })
       .catch((err) => {
         this.did = undefined;

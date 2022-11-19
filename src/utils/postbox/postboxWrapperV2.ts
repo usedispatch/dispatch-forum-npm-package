@@ -1094,4 +1094,4 @@ export class DispatchForumV2 implements IForum {
   };
 }
 
-export const MainForum = DispatchForum;
+export const MainForum = DispatchForumV2;

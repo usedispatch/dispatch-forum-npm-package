@@ -16,9 +16,7 @@
         }
 
         @media only screen and (max-width: 480px) {
-          width: 220px;
-          left: -60px;
-          bottom: 17px;
+          width: 200px;
         }
       }
     }
@@ -43,8 +41,8 @@
     /* Position the tooltip */
     visibility: hidden;
     position: absolute;
-    left: 16px;
-    bottom: 16px;
+    left: 20px;
+    top: 0;
     z-index: 1;
   }
 }

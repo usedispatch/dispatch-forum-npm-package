@@ -95,7 +95,7 @@
     .identity {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 5px;
 
       .displayName {
         max-width: 330px;
@@ -104,7 +104,7 @@
         white-space: nowrap;
 
         @media only screen and (max-width: 480px) {
-          max-width: 310px;
+          max-width: 250px;
         }
 
         @media only screen and (max-width: 370px) {
@@ -115,6 +115,7 @@
       .iconContainer {
         heigh: 22px;
         width: 22px;
+        margin-right: 0;
       }
     }
 

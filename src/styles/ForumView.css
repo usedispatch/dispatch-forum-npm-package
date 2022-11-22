@@ -100,7 +100,7 @@
     width: 100%;
 
     .forumViewContent {
-      min-height: calc(100vh - 80px);
+      min-height: calc(100vh - 64px);
       height: 100%;
       width: 100%;
       margin: 0;
@@ -108,6 +108,10 @@
 
       .forumLoading {
         padding-top: 192px;
+      }
+
+      @media only screen and (max-width: 570px) {
+        min-height: calc(100vh - 56px);
       }
     }
   }

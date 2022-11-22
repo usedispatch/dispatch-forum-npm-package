@@ -14,8 +14,13 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
-  color: #2E008B;
+  color: #2e008b;
   margin-bottom: 4px;
+
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 .topicListRowAsMobileBody {
@@ -26,6 +31,11 @@
   line-height: 16px;
 
   color: #414149;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .topicListRowAsMobileBottomData {
@@ -41,7 +51,7 @@
   font-size: 12px;
   line-height: 16px;
 
-  color: #86878E;
+  color: #86878e;
 }
 
 .topicListRowAsMobilecommentsContainer {
@@ -87,7 +97,7 @@
 
 .topicListRowAsMobileVotesContainer {
   display: flex;
-  align-items: center;  
+  align-items: center;
 }
 
 .topicListRowAsMobileVotes {

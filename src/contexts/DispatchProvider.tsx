@@ -1,11 +1,8 @@
-import { isNil } from 'lodash';
 import {
-  Connection,
   Cluster,
+  Connection,
 } from '@solana/web3.js';
-import { WalletInterface } from '@usedispatch/client';
-import { SearchContextManager } from '@giphy/react-components';
-import ReactGA from 'react-ga4';
+import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
 import {
   FC,
   ReactNode,
@@ -15,9 +12,12 @@ import {
   useState,
 } from 'react';
 
-import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
-import { UserRoleType } from './../utils/permissions';
 import { DebugWarning } from './../components/common/DebugWarning';
+import ReactGA from 'react-ga4';
+import { SearchContextManager } from '@giphy/react-components';
+import { UserRoleType } from './../utils/permissions';
+import { WalletInterface } from '@usedispatch/client';
+import { isNil } from 'lodash';
 
 export interface DispatchAppProps {
   wallet: WalletInterface;
@@ -66,7 +66,26 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
   themeMode,
 }) => {
   ReactGA.initialize('G-QD3BDH1D5P');
-
+  /**
+   * anyone who wants to init a forum passes in dispatchUser object, 
+   * dispatchConnection object, and forumId
+   * 
+   * npm-package maintains forum object and how forum interacts with connection and user
+   * 
+   * when frontpage integrates npm-package, it...
+   * a. creates user object
+   * b. creates connection object
+   * c. gives forumId to package
+   * 
+   * 
+   * 
+   * ** code to create user object from wallet lives in a new library called dispatchUser
+   * ** anyone can create their own user through dispatchUser
+   * 
+   * user is used by 'frontpage' to be created from wallet, as it is used across forums
+   * forum only maintains context of forumId and it's own info (posts, topics, etc)
+   * user class is defined in client library (as well as connection)
+   */
   const forum = useMemo(
     () => new MainForum(wallet, connection, cluster),
     [wallet, connection, cluster],

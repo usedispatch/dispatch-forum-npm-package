@@ -1,8 +1,3 @@
-import isNil from 'lodash/isNil';
-import { useState, ReactNode, useEffect } from 'react';
-import { ForumPost } from '@usedispatch/client';
-
-import { Vote } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -10,13 +5,18 @@ import {
   Spinner,
   TransactionLink,
 } from '../../common';
-import { Notification } from '../Notification';
-import { useForum } from '../../../contexts/DispatchProvider';
-import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
-import { errorSummary } from '../../../utils/error';
+import { ReactNode, useEffect, useState } from 'react';
+
 import { ForumData } from '../../../utils/hooks';
-import { isSuccess } from '../../../utils/loading';
+import { ForumPost } from '@usedispatch/client';
+import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
+import { Notification } from '../Notification';
 import { Result } from '../../../types/error';
+import { Vote } from '../../../assets';
+import { errorSummary } from '../../../utils/error';
+import isNil from 'lodash/isNil';
+import { isSuccess } from '../../../utils/loading';
+import { useForum } from '../../../contexts/DispatchProvider';
 
 interface VotesProps {
   post: ForumPost;
@@ -54,6 +54,8 @@ export function Votes(props: VotesProps): JSX.Element {
       const vote = forumData.votes.find((v) => v.postId === post.postId);
       // redundancy needed for wallet change case and
       // either upvote or downvote previously set to true
+
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
       if (vote?.upVote) {
         setAlreadyUpVoted(true);
         setAlreadyDownVoted(false);

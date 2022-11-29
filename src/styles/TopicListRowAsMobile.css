@@ -9,7 +9,7 @@
 }
 
 .topicListRowAsMobileTitle {
-  font-family: Manrope;
+  font-family: Manrope, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
@@ -24,7 +24,7 @@
 }
 
 .topicListRowAsMobileBody {
-  font-family: Manrope;
+  font-family: Manrope, sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -45,7 +45,7 @@
 }
 
 .topicListRowAsMobileLastActivity {
-  font-family: Manrope;
+  font-family: Manrope, sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 12px;
@@ -81,7 +81,7 @@
 }
 
 .topicListRowAsMobileNumberOfReplies {
-  font-family: Manrope;
+  font-family: Manrope, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -101,7 +101,7 @@
 }
 
 .topicListRowAsMobileVotes {
-  font-family: Manrope;
+  font-family: Manrope, sans-serif;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;

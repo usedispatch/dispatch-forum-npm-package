@@ -1,38 +1,39 @@
 import {
+  APIForum,
+  ChainVoteEntry,
   DispatchConnection,
   Forum,
   ForumInfo,
   ForumPost,
-  WalletInterface,
   PostRestriction,
-  getMintsForOwner,
-  getMetadataForOwner,
+  ServerTransactionSignature,
   VoteType,
-  ChainVoteEntry,
+  WalletInterface,
+  getMetadataForOwner,
+  getMintsForOwner,
 } from '@usedispatch/client';
 import {
+  Cluster,
+  Connection,
   PublicKey,
   Transaction,
-  Connection,
-  Cluster,
 } from '@solana/web3.js';
-
+import { DispatchError, Result } from '../../types/error';
 import {
-  getAssociatedTokenAddress,
+  badInputError,
+  notFoundError,
+} from '../../utils/error';
+import {
   createAssociatedTokenAccountInstruction,
   createTransferCheckedInstruction,
   getAccount,
+  getAssociatedTokenAddress,
 } from '@solana/spl-token';
 
+import { isSuccess } from '../../utils/loading';
 import {
   parseError,
 } from '../parseErrors';
-import { DispatchError, Result } from '../../types/error';
-import {
-  notFoundError,
-  badInputError,
-} from '../../utils/error';
-import { isSuccess } from '../../utils/loading';
 import { stringToURL } from '../../utils/url';
 
 enum UserCategory {
@@ -76,6 +77,8 @@ export interface IForum {
   ) => Promise<
   Result<{ forum: Forum; txs: string[] }>
   >;
+
+  followForum: (forumId: PublicKey) => Promise<Result<ServerTransactionSignature>>;
 
   // Get the description of the forum: title and blurb
   getDescription: (collectionId: PublicKey) => Promise<Result<{
@@ -184,7 +187,7 @@ export interface IForum {
 
   getNFTsForCurrentUser: () => Promise<Result<PublicKey[]>>;
 
-  getNFTMetadataForCurrentUser: () => Promise<Array<Promise<Result<DisplayableToken>>> | DispatchError>;
+  getNFTMetadataForCurrentUser: () => Promise<Promise<Result<DisplayableToken>>[] | DispatchError>;
 
   transferNFTs: (receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection) => Promise<string>) => Promise<Result<string>>;
 }
@@ -203,7 +206,7 @@ export class DispatchForum implements IForum {
     this.wallet = wallet;
     this.cluster = cluster;
 
-    if (wallet.publicKey && conn) {
+    if ((wallet.publicKey != null) && conn) {
       this.permission = { readAndWrite: true };
     } else {
       // TODO(andrew) properly type this to an optional wallet to
@@ -236,7 +239,7 @@ export class DispatchForum implements IForum {
 
     try {
       const collectionPublicKey = new PublicKey(forumInfo.collectionId);
-      if (owner.publicKey) {
+      if (owner.publicKey != null) {
         const forumAsOwner = new Forum(
           new DispatchConnection(conn, owner, { cluster: this.cluster }),
           collectionPublicKey,
@@ -266,6 +269,21 @@ export class DispatchForum implements IForum {
       }
     } catch (error) {
       return parseError(error);
+    }
+  };
+
+  followForum = async (collectionId: PublicKey): Promise<Result<ServerTransactionSignature>> => {
+    try {
+      const { connection, wallet, cluster } = this;
+      console.log('followForum', collectionId.toBase58());
+      const forum = new APIForum(
+        new DispatchConnection(connection, wallet, { cluster }),
+        collectionId,
+      );
+      console.log('followForum1', forum);
+      return await forum.followForum(collectionId, wallet.publicKey);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -301,7 +319,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      if (owner.publicKey) {
+      if (owner.publicKey != null) {
         const forum = new Forum(
           new DispatchConnection(conn, owner, { cluster: this.cluster }),
           collectionId,
@@ -371,7 +389,7 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      if (owner.publicKey) {
+      if (owner.publicKey != null) {
         const forum = new Forum(
           new DispatchConnection(conn, owner, { cluster: this.cluster }),
           collectionId,
@@ -906,13 +924,13 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getNFTMetadataForCurrentUser = async (): Promise<Array<Promise<Result<DisplayableToken>>> | DispatchError> => {
+  getNFTMetadataForCurrentUser = async (): Promise<Promise<Result<DisplayableToken>>[] | DispatchError> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
       const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
-      const displayableMetadataPromises: Array<Promise<Result<DisplayableToken>>> = metadataForOwner.map(async ({ mint, data }) => {
+      const displayableMetadataPromises: Promise<Result<DisplayableToken>>[] = metadataForOwner.map(async ({ mint, data }) => {
         // Remove NUL bytes from name and URI
         const name = data.name.replaceAll('\x00', '');
         const uri = data.uri.replaceAll('\x00', '');

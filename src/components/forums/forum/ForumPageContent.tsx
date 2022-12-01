@@ -1,22 +1,21 @@
-import { getCustomStyles } from '../../../utils/getCustomStyles';
-import { useEffect, useMemo, useState } from 'react';
-import { Helmet } from 'react-helmet';
-import { PublicKey } from '@solana/web3.js';
-
-import { MessageType, Spinner, TransactionLink } from '../../../components/common';
 import {
   CreateForum,
   ForumContent,
   PoweredByDispatch,
 } from '../../../components/forums';
-
-import { useForum, useRole, useTheme } from '../../../contexts/DispatchProvider';
-import { getUserRole } from './../../../utils/postbox/userRole';
-import { isInitial, isPending, isSuccess } from '../../../utils/loading';
+import { MessageType, Spinner, TransactionLink } from '../../../components/common';
 import { errorSummary, isError, isNotFoundError } from '../../../utils/error';
+import { isInitial, isPending, isSuccess } from '../../../utils/loading';
+import { useEffect, useMemo, useState } from 'react';
+import { useForum, useRole, useTheme } from '../../../contexts/DispatchProvider';
 import { useForumData, useModal } from '../../../utils/hooks';
-import ReactGA from 'react-ga4';
+
 import { ForumInfo } from '@usedispatch/client';
+import { Helmet } from 'react-helmet';
+import { PublicKey } from '@solana/web3.js';
+import ReactGA from 'react-ga4';
+import { getCustomStyles } from '../../../utils/getCustomStyles';
+import { getUserRole } from './../../../utils/postbox/userRole';
 
 interface ForumPageContentProps {
   forumID: string;
@@ -53,6 +52,11 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
     }
   }, [forumID]);
   const { forumData, update } = useForumData(forumPublicKey, forumObject);
+
+  const followForum = async (): Promise<void> => {
+    const res = await forumObject.followForum(new PublicKey(forumID));
+    console.log(res);
+  };
 
   const onCreateForum = async (info: ForumInfo): Promise<void> => {
     setCreating(true);
@@ -177,6 +181,9 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
       <div className="forumView">
         {modal}
         <div className="forumViewContainer">
+          <button onClick={async () => followForum()}>
+            Follow
+          </button>
           <div className="forumViewContent">
             {content}
             <PoweredByDispatch customStyle={customStyle} />

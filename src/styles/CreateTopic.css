@@ -1,4 +1,8 @@
 @layer components {
+  .createTopic {
+    width: 100%;
+  }
+
   .createTopicButton {
     display: flex;
     align-items: center;
@@ -7,6 +11,7 @@
 
     padding: 16px;
     border-radius: 6px;
+    width: 100%;
 
     background: #3f1d96;
     color: white;

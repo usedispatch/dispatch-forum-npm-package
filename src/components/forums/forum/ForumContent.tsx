@@ -61,62 +61,58 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
 
   if (isNil(forumData)) {
     const confirmingBox = (
-      <div className='confirmingBanner'>
-        <div className='title'>
-          <div className='animation'>
-            <Lottie
-              loop
-              animationData={animationData}
-            />
+      <div className="confirmingBanner">
+        <div className="title">
+          <div className="animation">
+            <Lottie loop animationData={animationData} />
           </div>
-          <div className='text'>The network is confirming your forum.</div>
+          <div className="text">The network is confirming your forum.</div>
         </div>
-        <div className='subtitle'>When it&apos;s ready, the page will reload itself. This may take a few seconds.</div>
+        <div className="subtitle">
+          When it&apos;s ready, the page will reload itself. This may take a few
+          seconds.
+        </div>
       </div>
     );
 
     if (!isNil(basicInfo)) {
       const forumHeader = (
-      <div className="forumContentHeader">
-        <div className={'titleBox'}>
-          <Markdown>{basicInfo.title}</Markdown>
-        </div>
-        <div className="descriptionBox">
-          <div className="description">
-            <Markdown>{basicInfo.desc}</Markdown>
+        <div className="forumContentHeader">
+          <div className={'titleBox'}>
+            <Markdown>{basicInfo.title}</Markdown>
           </div>
-          <button
-            className={'createTopicButton'}
-            type="button"
-            disabled
-            >
-            <div className="buttonImageContainer">
-              <Plus />
+          <div className="descriptionBox">
+            <div className="description">
+              <Markdown>{basicInfo.desc}</Markdown>
             </div>
-            Create Topic
-          </button>
+            <button className={'createTopicButton'} type="button" disabled>
+              <div className="buttonImageContainer">
+                <Plus />
+              </div>
+              Create Topic
+            </button>
+          </div>
         </div>
-      </div>
       );
 
       return (
-      <div className='confirmingWrapper'>
-        <div className="forumContent">
-          <>{ReactGA.send('pageview')}</>
-          <div className="forumContentBox" >
-            {!permission.readAndWrite && <ConnectionAlert />}
-            {confirmingBox}
-            {forumHeader}
-          </div>
-          <div className="toolsWrapper" />
-          <div className="topicListWrapper">
-            <TopicList />
+        <div className="confirmingWrapper">
+          <div className="forumContent">
+            <>{ReactGA.send('pageview')}</>
+            <div className="forumContentBox">
+              {!permission.readAndWrite && <ConnectionAlert />}
+              {confirmingBox}
+              {forumHeader}
+            </div>
+            <div className="toolsWrapper" />
+            <div className="topicListWrapper">
+              <TopicList />
+            </div>
           </div>
         </div>
-      </div>
       );
     } else {
-      return <Spinner/>;
+      return <Spinner />;
     }
   } else {
     return (
@@ -136,7 +132,9 @@ interface PopulatedForumContentProps {
   update: () => Promise<void>;
 }
 
-export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.Element {
+export function PopulatedForumContent(
+  props: PopulatedForumContentProps,
+): JSX.Element {
   const { initialForumData, forumObject, update } = props;
   const { permission } = forumObject;
   const { buildTopicPath } = usePath();
@@ -220,7 +218,10 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
           title: 'Something went wrong!',
           type: MessageType.error,
           body: 'The topic could not be created',
-          collapsible: { header: 'Error', content: errorSummary(error as DispatchError) },
+          collapsible: {
+            header: 'Error',
+            content: errorSummary(error as DispatchError),
+          },
         });
         setShowManageAccessToken(false);
         return;
@@ -352,9 +353,13 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
   };
 
   useEffect(() => {
-    if (!isNil(newTopicInFlight)) { // once topics are updated, redirect to new topic
+    if (!isNil(newTopicInFlight)) {
+      // once topics are updated, redirect to new topic
       const topics = initialForumData.posts.filter(p => p.isTopic);
-      const topicPath = buildTopicPath(initialForumData.collectionId.toBase58(), (topics[0] as ForumPost).postId);
+      const topicPath = buildTopicPath(
+        initialForumData.collectionId.toBase58(),
+        (topics[0] as ForumPost).postId,
+      );
       location.assign(`${topicPath}${location.search}`);
       setNewTopicInFlight(undefined);
     }
@@ -379,7 +384,7 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
           forumObject={forumObject}
           forumData={initialForumData}
           currentForumAccessToken={currentForumAccessToken}
-          topicInFlight={(title) => {
+          topicInFlight={title => {
             if (title === '') {
               setNewTopicInFlight(undefined);
             } else {
@@ -411,15 +416,19 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
 
   return (
     <div className="dsp- ">
-      <div className="forumContent">
+      <div className="forumContentWrapper">
+        <div
+          className="forumBanner"
+          style={{
+            backgroundImage:
+              !isNil(forumData.images?.background) &&
+              forumData.images.background.length > 0
+                ? `url(${forumData.images?.background as string})`
+                : undefined,
+          }}
+        />
         <>
           {ReactGA.send('pageview')}
-          <Notification
-            hidden={notification.isHidden}
-            content={notification?.content}
-            type={notification?.type}
-            onClose={() => setNotification({ isHidden: true })}
-          />
           {!isNil(modalInfo) && (
             <PopUpModal
               id="create-topic-info"
@@ -519,9 +528,9 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
                   </label>
                   {currentForumAccessToken.length === 0
                     ? (
-                      <div className="noRestriction">
-                        The forum has no restriction
-                      </div>
+                    <div className="noRestriction">
+                      The forum has no restriction
+                    </div>
                     )
                     : (
                     <ul>
@@ -563,81 +572,92 @@ export function PopulatedForumContent(props: PopulatedForumContentProps): JSX.El
               }
             />
           )}
-          {removeAccessToken.show && !isNil(removeAccessToken.token) && isNil(modalInfo) && (
-            <PopUpModal
-              id="remove-access-token"
-              visible
-              title="Are you sure you want to remove NFT Collection ID?"
-              body={
-                <div>
-                  This action will remove the token
-                  {` ${removeAccessToken.token.substring(0, 4)}...`}
-                  {`${removeAccessToken.token.slice(-4)} `} from gating the
-                  forum.
-                </div>
-              }
-              loading={removeAccessToken.removing}
-              onClose={() =>
-                setRemoveAccessToken({ show: false, removing: false })
-              }
-              okButton={
-                <button
-                  className="okButton"
-                  onClick={async () => deleteAccessToken()}>
-                  Remove
-                </button>
-              }
-            />
+          {removeAccessToken.show &&
+            !isNil(removeAccessToken.token) &&
+            isNil(modalInfo) && (
+              <PopUpModal
+                id="remove-access-token"
+                visible
+                title="Are you sure you want to remove NFT Collection ID?"
+                body={
+                  <div>
+                    This action will remove the token
+                    {` ${removeAccessToken.token.substring(0, 4)}...`}
+                    {`${removeAccessToken.token.slice(-4)} `} from gating the
+                    forum.
+                  </div>
+                }
+                loading={removeAccessToken.removing}
+                onClose={() =>
+                  setRemoveAccessToken({ show: false, removing: false })
+                }
+                okButton={
+                  <button
+                    className="okButton"
+                    onClick={async () => deleteAccessToken()}>
+                    Remove
+                  </button>
+                }
+              />
           )}
-          <div
-            className="forumContentBox"
-            style={{
-              backgroundImage:
-                !isNil(forumData.images?.background) &&
-                forumData.images.background.length > 0
-                  ? `url(${forumData.images?.background as string})`
-                  : undefined,
-            }}>
+          <div className="forumContent">
+            <Notification
+              hidden={notification.isHidden}
+              content={notification?.content}
+              type={notification?.type}
+              onClose={() => setNotification({ isHidden: true })}
+            />
             {!permission.readAndWrite && <ConnectionAlert />}
             {forumData.collectionId.toBase58() ===
               'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && <StarsAlert />}
-            {forumHeader}
-          </div>
-          <div className="toolsWrapper">
-            <PermissionsGate scopes={[SCOPES.canEditForum]}>
-              <div className="moderatorToolsContainer">
-                <div>Manage tools: </div>
-                <div className="tools">
-                  <ManageOwners forumData={forumData} />
-                  <ManageModerators forumData={forumData} />
-                  {
-                    // The manage users UI should be hidden for DAA
-                    forumIdentity !== ForumIdentity.DegenerateApeAcademy && (
-                      <PermissionsGate scopes={[SCOPES.canAddForumRestriction]}>
-                        <button
-                          className="moderatorTool"
-                          disabled={!permission.readAndWrite}
-                          onClick={() => setShowManageAccessToken(true)}>
-                          Forum access
-                        </button>
-                      </PermissionsGate>
-                    )
-                  }
-                  <EditForum forumData={forumData} update={update} />
-                  <UploadForumBanner
-                    onSetImageURL={onUpdateImage}
-                    collectionId={forumData.collectionId}
-                    currentBannerURL={forumData.images?.background ?? ''}
-                  />
+            <div className="forumContentColumns">
+              <div className="column">
+                {!isNil(forumData.collectionId) && (
+                  <div className="topicListWrapper">
+                    <TopicList
+                      forumData={forumData}
+                      topicInFlight={newTopicInFlight}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="column">
+                {forumHeader}
+                <div className="toolsWrapper">
+                  <PermissionsGate scopes={[SCOPES.canEditForum]}>
+                    <div className="moderatorToolsContainer">
+                      <div>Manage tools: </div>
+                      <div className="tools">
+                        <ManageOwners forumData={forumData} />
+                        <ManageModerators forumData={forumData} />
+                        {
+                          // The manage users UI should be hidden for DAA
+                          forumIdentity !==
+                            ForumIdentity.DegenerateApeAcademy && (
+                            <PermissionsGate
+                              scopes={[SCOPES.canAddForumRestriction]}>
+                              <button
+                                className="moderatorTool"
+                                disabled={!permission.readAndWrite}
+                                onClick={() => setShowManageAccessToken(true)}>
+                                Forum access
+                              </button>
+                            </PermissionsGate>
+                          )
+                        }
+                        <EditForum forumData={forumData} update={update} />
+                        <UploadForumBanner
+                          onSetImageURL={onUpdateImage}
+                          collectionId={forumData.collectionId}
+                          currentBannerURL={forumData.images?.background ?? ''}
+                        />
+                      </div>
+                    </div>
+                  </PermissionsGate>
                 </div>
               </div>
-            </PermissionsGate>
-          </div>
-          {!isNil(forumData.collectionId) && (
-            <div className="topicListWrapper">
-              <TopicList forumData={forumData} topicInFlight={newTopicInFlight}/>
             </div>
-          )}
+          </div>
         </>
       </div>
     </div>

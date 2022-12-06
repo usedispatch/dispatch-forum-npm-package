@@ -18,15 +18,16 @@ import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 
 interface EditForumProps {
   forumData: ForumData;
+  buttonText?: string;
   update: () => Promise<void>;
 }
 
-export function EditForum(props: EditForumProps) {
-  const { forumData, update } = props;
+export function EditForum(props: EditForumProps): JSX.Element | null {
+  const { forumData, update, buttonText } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
   const [bodySize, setBodySize] = useState(
-    new Buffer(forumData.description.desc, 'utf-8').byteLength,
+    Buffer.from(forumData.description.desc, 'utf-8').byteLength,
   );
   const [editForum, setEditForum] = useState<{
     show: boolean;
@@ -55,7 +56,7 @@ export function EditForum(props: EditForumProps) {
     return forumObject.isOwner(forumData.collectionId);
   }, [forumObject]);
 
-  const editForumInfo = async () => {
+  const editForumInfo = async (): Promise<void> => {
     setEditForum({ ...editForum, loading: true });
     const desc = { title: editForum.title, desc: editForum.description };
 
@@ -135,7 +136,7 @@ export function EditForum(props: EditForumProps) {
                         description: e.target.value,
                       });
                       setBodySize(
-                        new Buffer(e.target.value, 'utf-8').byteLength,
+                        Buffer.from(e.target.value, 'utf-8').byteLength,
                       );
                     }}
                   />
@@ -151,7 +152,7 @@ export function EditForum(props: EditForumProps) {
                 description: forumData.description.desc,
               });
               setBodySize(
-                new Buffer(forumData.description.desc, 'utf-8').byteLength,
+                Buffer.from(forumData.description.desc, 'utf-8').byteLength,
               );
             }}
             okButton={
@@ -190,7 +191,7 @@ export function EditForum(props: EditForumProps) {
           className="editForumButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditForum({ ...editForum, show: true })}>
-          <Edit /> Edit
+          {buttonText ?? <> <Edit /> Edit </>}
         </button>
       </div>
     </div>

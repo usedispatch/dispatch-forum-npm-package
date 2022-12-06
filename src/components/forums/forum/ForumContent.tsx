@@ -11,31 +11,24 @@ import {
   CollapsibleProps,
   Input,
   MessageType,
-  PermissionsGate,
   PopUpModal,
   TransactionLink,
   Spinner,
 } from '../../common';
 import {
-  EditForum,
-  ManageOwners,
-  ManageModerators,
-  UploadForumBanner,
   ConnectionAlert,
   Notification,
   CreateTopic,
+  ManagementTools,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
-import { SCOPES } from '../../../utils/permissions';
 import { DispatchError, Result } from '../../../types/error';
 import { isError, errorSummary } from '../../../utils/error';
 import { isSuccess } from '../../../utils/loading';
 import {
   ForumData,
-  useForumIdentity,
-  ForumIdentity,
 } from '../../../utils/hooks';
 import {
   restrictionListToString,
@@ -144,8 +137,6 @@ export function PopulatedForumContent(
     setForumData(initialForumData);
   }, [initialForumData]);
 
-  const forumIdentity = useForumIdentity(forumData.collectionId);
-
   const onUpdateImage = async (imageUrl: string): Promise<void> => {
     const { images } = forumData;
     setForumData({ ...forumData, images: { ...images, background: imageUrl } });
@@ -177,7 +168,7 @@ export function PopulatedForumContent(
     } else return [];
   });
 
-  const [newForumAccessToken, setNewForumAccessToken] = useState<string>('');
+  const [newForumAccessToken, setNewForumAccessToken] = useState('');
   const [newForumAccessTokenAmount, setNewForumAccessTokenAmount] =
     useState<number>(1);
 
@@ -623,38 +614,12 @@ export function PopulatedForumContent(
               </div>
               <div className="column">
                 {forumHeader}
-                <div className="toolsWrapper">
-                  <PermissionsGate scopes={[SCOPES.canEditForum]}>
-                    <div className="moderatorToolsContainer">
-                      <div>Manage tools: </div>
-                      <div className="tools">
-                        <ManageOwners forumData={forumData} />
-                        <ManageModerators forumData={forumData} />
-                        {
-                          // The manage users UI should be hidden for DAA
-                          forumIdentity !==
-                            ForumIdentity.DegenerateApeAcademy && (
-                            <PermissionsGate
-                              scopes={[SCOPES.canAddForumRestriction]}>
-                              <button
-                                className="moderatorTool"
-                                disabled={!permission.readAndWrite}
-                                onClick={() => setShowManageAccessToken(true)}>
-                                Forum access
-                              </button>
-                            </PermissionsGate>
-                          )
-                        }
-                        <EditForum forumData={forumData} update={update} />
-                        <UploadForumBanner
-                          onSetImageURL={onUpdateImage}
-                          collectionId={forumData.collectionId}
-                          currentBannerURL={forumData.images?.background ?? ''}
-                        />
-                      </div>
-                    </div>
-                  </PermissionsGate>
-                </div>
+                {permission.readAndWrite && <ManagementTools
+                  forumData={forumData}
+                  onUpdateBanner={onUpdateImage}
+                  onShowManageAccess={() => setShowManageAccessToken(true)}
+                  update={update}
+                />}
               </div>
             </div>
           </div>

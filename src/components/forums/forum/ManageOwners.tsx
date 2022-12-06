@@ -24,20 +24,21 @@ import { SCOPES } from '../../../utils/permissions';
 
 interface ManageOwnersProps {
   forumData: ForumData;
+  buttonText?: string;
 }
 
 export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
-  const { forumData } = props;
+  const { forumData, buttonText } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
   const [manageOwners, setManageOwners] = useState<{
     show: boolean;
     newOwner: string;
-    currentOwners: Array<{ id: string; toRemove: boolean }>;
+    currentOwners: { id: string; toRemove: boolean }[];
     saving: boolean;
   }>(() => {
-    let owners: Array<{ id: string; toRemove }> = [];
+    let owners: { id: string; toRemove }[] = [];
     if (isSuccess(forumData.owners)) {
       owners = forumData.owners.map(pkey => ({
         id: pkey.toBase58(),
@@ -56,7 +57,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
   });
 
   const resetInitialValues = (): void => {
-    let owners: Array<{ id: string; toRemove: boolean }> = [];
+    let owners: { id: string; toRemove: boolean }[] = [];
     if (isSuccess(forumData.owners)) {
       owners = forumData.owners.map(pkey => ({
         id: pkey.toBase58(),
@@ -295,8 +296,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
             disabled={!permission.readAndWrite}
             onClick={() => setManageOwners({ ...manageOwners, show: true })}
           >
-            <Lock />
-            Owners
+            {buttonText ?? <><Lock /> Owners</>}
           </button>
         </PermissionsGate>
       </div>

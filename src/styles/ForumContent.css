@@ -153,6 +153,10 @@
 
     width: 100%;
     padding: 0 5%;
+
+    @media only screen and (max-width: 570px) {
+      padding: 0;
+    }
   }
 
   .forumContentColumns {
@@ -160,8 +164,16 @@
     width: 100%;
     justify-content: space-between;
 
+    @media only screen and (max-width: 768px) {
+      flex-direction: column-reverse;
+    }
+
     .column {
       width: 48%;
+
+      @media only screen and (max-width: 768px) {
+        width: 100%;
+      }
     }
   }
 
@@ -169,7 +181,7 @@
     height: auto;
     margin: 0;
     padding: 16px;
-    border-radius: 12px 12px 0 0;
+    border-radius: 8px 8px 0 0;
     box-shadow: 0px 0px 12px #00000029;
     background: white;
 
@@ -179,7 +191,6 @@
       justify-content: flex-start;
       gap: 10px;
       margin: 0 auto;
-      padding: 0 0 16px;
 
       font-size: 40px;
       color: #414149;
@@ -187,9 +198,7 @@
       line-height: 32px;
 
       @media only screen and (max-width: 570px) {
-        flex-direction: column;
-        margin: 0 8px;
-
+        align-items: flex-start;
         font-size: 26px;
       }
     }
@@ -222,10 +231,6 @@
       height: 24px;
       width: 24px;
       min-width: 24px;
-    }
-
-    @media only screen and (max-width: 570px) {
-      padding: 0 24px 24px;
     }
   }
 
@@ -355,66 +360,6 @@
     flex-direction: column;
   }
 
-  .toolsWrapper {
-    min-height: 30px;
-    background: #fff;
-    border-radius: 0 0 12px 12px;
-    box-shadow: 0px 10px 12px 0px #00000029;
-
-    @media only screen and (max-width: 570px) {
-      margin: 0;
-      border-radius: 0;
-      box-shadow: none;
-    }
-  }
-
-  .moderatorToolsContainer {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding: 20px 24px;
-
-    border-top: 1px solid #b8b9dc;
-    border-radius: 0 0 12px 12px;
-
-    color: #414149;
-    font-size: 12px;
-    font-weight: 400;
-
-    .lock {
-      height: 12px;
-      width: 12px;
-      margin: 0 0 0 10px;
-    }
-
-    @media only screen and (max-width: 570px) {
-      gap: 14px;
-      flex-wrap: wrap;
-      justify-content: flex-start;
-
-      .lock {
-        margin: 0;
-      }
-    }
-
-    .tools {
-      display: flex;
-      gap: 24px;
-      flex-direction: row;
-      align-items: center;
-      flex-wrap: wrap;
-
-      @media only screen and (max-width: 570px) {
-        gap: 20px;
-        row-gap: 12px;
-
-        .editForumContainer .editForumButton svg {
-          margin-right: 16px;
-        }
-      }
-    }
-  }
-
   .moderatorTool {
     display: flex;
     align-items: center;
@@ -494,6 +439,6 @@
   }
 
   .topicListWrapper {
-    margin-top: 24px;
+    margin-top: 0;
   }
 }

@@ -233,43 +233,51 @@ export class DispatchForum implements IForum {
     return forum.exists();
   };
 
-  createForum = async (forumInfo: ForumInfo): Promise<Result<string>> => {
-    const owner = this.wallet;
-    const conn = this.connection;
+  createForum = async (forumInfo: ForumInfo): Promise<Result<string[] | undefined>> => {
+    const { connection, wallet, cluster } = this;
 
     try {
-      const collectionPublicKey = new PublicKey(forumInfo.collectionId);
-      if (owner.publicKey != null) {
-        const forumAsOwner = new Forum(
-          new DispatchConnection(conn, owner, { cluster: this.cluster }),
-          collectionPublicKey,
-        );
-
-        let txs = [] as string[];
-        if (!(await forumAsOwner.exists())) {
-          const forumInfoObject = {
-            collectionId: collectionPublicKey,
-            owners: forumInfo.owners,
-            moderators: forumInfo.moderators,
-            title: forumInfo.title,
-            description: forumInfo.description,
-            postRestriction: forumInfo.postRestriction,
-          };
-
-          if (forumInfo.postRestriction?.nftOwnership !== undefined || forumInfo.postRestriction?.tokenOwnership !== null) {
-            forumInfoObject.postRestriction = forumInfo.postRestriction;
-          }
-
-          txs = await forumAsOwner.createForum(forumInfoObject);
-        }
-
-        return { forum: forumAsOwner, txs };
-      } else {
-        return notFoundError('Owner public key not found');
-      }
-    } catch (error) {
-      return parseError(error);
+      const forum = new APIForum(
+        new DispatchConnection(connection, wallet, { cluster }),
+        forumInfo.collectionId,
+      );
+      return await forum.createForum(forumInfo);
+    } catch (e) {
+      console.error(e);
     }
+    // try {
+    //   const collectionPublicKey = new PublicKey(forumInfo.collectionId);
+    //   if (owner.publicKey != null) {
+    //     const forumAsOwner = new Forum(
+    //       new DispatchConnection(conn, owner, { cluster: this.cluster }),
+    //       collectionPublicKey,
+    //     );
+
+    //     let txs = [] as string[];
+    //     if (!(await forumAsOwner.exists())) {
+    //       const forumInfoObject = {
+    //         collectionId: collectionPublicKey,
+    //         owners: forumInfo.owners,
+    //         moderators: forumInfo.moderators,
+    //         title: forumInfo.title,
+    //         description: forumInfo.description,
+    //         postRestriction: forumInfo.postRestriction,
+    //       };
+
+    //       if (forumInfo.postRestriction?.nftOwnership !== undefined || forumInfo.postRestriction?.tokenOwnership !== null) {
+    //         forumInfoObject.postRestriction = forumInfo.postRestriction;
+    //       }
+
+    //       txs = await forumAsOwner.createForum(forumInfoObject);
+    //     }
+
+    //     return { forum: forumAsOwner, txs };
+    //   } else {
+    //     return notFoundError('Owner public key not found');
+    //   }
+    // } catch (error) {
+    //   return parseError(error);
+    // }
   };
 
   followForum = async (collectionId: PublicKey): Promise<Result<ServerTransactionSignature>> => {

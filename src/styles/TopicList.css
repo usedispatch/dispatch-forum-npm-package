@@ -2,12 +2,12 @@
   .topicListContainer {
     font-family: Manrope, sans-serif;
 
-    margin: 48px 0 16px;
+    margin: 0;
     padding: 24px;
     overflow-x: auto;
 
     background: white;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16), inset -8px 0px 12px #00000029;
     border-radius: 8px;
 
     .tableContainer {

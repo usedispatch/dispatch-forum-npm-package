@@ -11,14 +11,14 @@ import { useMediaQuery } from '../../../utils/useMediaQuery';
 
 import { EditForum, ManageModerators, ManageOwners, UploadForumBanner } from '..';
 
-interface ManagementToolsProps {
+interface ToolsProps {
   forumData: ForumData;
   onUpdateBanner: (url: string) => Promise<void>;
   onShowManageAccess: (show: boolean) => void;
   update: () => Promise<void>;
 }
 
-export function ManagementTools(props: ManagementToolsProps): JSX.Element {
+export function Tools(props: ToolsProps): JSX.Element {
   const { forumData, onUpdateBanner, onShowManageAccess, update } = props;
   const isMobile = useMediaQuery('(max-width: 768px)');
 

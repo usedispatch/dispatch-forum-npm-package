@@ -5,7 +5,7 @@ import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
 import Lottie from 'lottie-react';
 
-import { Lock, Plus, Trash } from '../../../assets';
+import { Chevron, Lock, Plus, Trash } from '../../../assets';
 import animationData from '../../../lotties/loader.json';
 import {
   CollapsibleProps,
@@ -19,7 +19,7 @@ import {
   ConnectionAlert,
   Notification,
   CreateTopic,
-  ManagementTools,
+  Tools,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
 
@@ -143,6 +143,7 @@ export function PopulatedForumContent(
     await update();
   };
 
+  const [showDesc, setShowDesc] = useState(true);
   const [newTopicInFlight, setNewTopicInFlight] = useState<{ title: string }>();
   const [addNFTGate, setAddNFTGate] = useState(false);
   const [addSPLGate, setAddSPLGate] = useState(false);
@@ -365,10 +366,15 @@ export function PopulatedForumContent(
           </div>
         )}
         <Markdown>{forumData.description.title}</Markdown>
-        {/* TODO(andrew) what to render here if title isn't loaded */}
+        <div
+          className='descriptionVisibility'
+          onClick={() => setShowDesc(!showDesc)}
+        >
+          <Chevron direction={showDesc ? 'up' : 'down'}/>
+        </div>
       </div>
       <div className="descriptionBox">
-        <div className="description">
+        <div className={`description ${showDesc ? '' : 'descHidden'}`}>
           <Markdown>{forumData.description.desc}</Markdown>
         </div>
         <CreateTopic
@@ -614,7 +620,7 @@ export function PopulatedForumContent(
               </div>
               <div className="column">
                 {forumHeader}
-                {permission.readAndWrite && <ManagementTools
+                {permission.readAndWrite && <Tools
                   forumData={forumData}
                   onUpdateBanner={onUpdateImage}
                   onShowManageAccess={() => setShowManageAccessToken(true)}

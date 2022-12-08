@@ -82,5 +82,12 @@
   }
   .toolItem {
     padding: 8px;
+
+    .manageOwnersButton,
+    .manageModeratorsButton,
+    .moderatorTool,
+    .editForumButton {
+      color: #414149;
+    }
   }
 }

@@ -149,7 +149,7 @@
 
   .forumContent {
     position: relative;
-    top: 90px;
+    top: 150px;
 
     width: 100%;
     padding: 0 5%;
@@ -196,7 +196,7 @@
       font-size: 40px;
       color: #414149;
       word-break: break-word;
-      line-height: 32px;
+      line-height: 40px;
 
       @media only screen and (max-width: 570px) {
         align-items: flex-start;
@@ -230,11 +230,13 @@
       justify-content: space-between;
 
       .description {
+        width: 100%;
         transition: height 0.5s ease-out;
+
+        line-height: 24px;
         font-family: Manrope, sans-serif;
         color: #414149;
         word-wrap: anywhere;
-        margin-right: 40px;
 
         @media only screen and (max-width: 570px) {
           margin-right: 0;

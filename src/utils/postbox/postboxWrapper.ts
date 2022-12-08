@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import {
   APIForum,
   ChainVoteEntry,
@@ -6,7 +8,6 @@ import {
   ForumInfo,
   ForumPost,
   PostRestriction,
-  ServerTransactionSignature,
   VoteType,
   WalletInterface,
   getMetadataForOwner,
@@ -36,11 +37,11 @@ import {
 } from '../parseErrors';
 import { stringToURL } from '../../utils/url';
 
-enum UserCategory {
-  moderator,
-  owner,
-  poster,
-}
+// enum UserCategory {
+//   moderator,
+//   owner,
+//   poster,
+// }
 
 /**
  * A token that can be displayed in the UI
@@ -75,10 +76,10 @@ export interface IForum {
   createForum: (
     forumInfo: ForumInfo
   ) => Promise<
-  Result<{ forum: Forum; txs: string[] }>
+  Result<{ forum: APIForum; txs: string[] }>
   >;
 
-  followForum: (forumId: PublicKey) => Promise<Result<ServerTransactionSignature>>;
+  followForum: (forumId: PublicKey) => Promise<Result<string | undefined>>;
 
   // Get the description of the forum: title and blurb
   getDescription: (collectionId: PublicKey) => Promise<Result<{
@@ -206,7 +207,7 @@ export class DispatchForum implements IForum {
     this.wallet = wallet;
     this.cluster = cluster;
 
-    if ((wallet.publicKey != null) && conn) {
+    if ((wallet.publicKey != null) && (conn != null)) {
       this.permission = { readAndWrite: true };
     } else {
       // TODO(andrew) properly type this to an optional wallet to
@@ -215,8 +216,9 @@ export class DispatchForum implements IForum {
       this.wallet = {
         publicKey: new PublicKey('11111111111111111111111111111111'),
         signAllTransactions: async () => { return Promise.resolve([]); },
-        signTransaction: async () => { return Promise.resolve(new Transaction()); },
+        signTransaction: async () => { return new Transaction() as any; },
         sendTransaction: async () => { return Promise.resolve(''); },
+        signMessage: async () => { return Promise.resolve(new Uint8Array()); },
         wallet: null,
       };
       this.permission = { readAndWrite: false };
@@ -233,17 +235,24 @@ export class DispatchForum implements IForum {
     return forum.exists();
   };
 
-  createForum = async (forumInfo: ForumInfo): Promise<Result<string[] | undefined>> => {
+  createForum = async (forumInfo: ForumInfo): Promise< Result<{ forum: APIForum; txs: string[] }>
+  > => {
     const { connection, wallet, cluster } = this;
-
     try {
+      console.log(forumInfo);
       const forum = new APIForum(
         new DispatchConnection(connection, wallet, { cluster }),
         forumInfo.collectionId,
       );
-      return await forum.createForum(forumInfo);
+      await forum.createForum(forumInfo);
+      const data = {
+        forum,
+        txs: [],
+      };
+      return data;
     } catch (e) {
       console.error(e);
+      return notFoundError('error');
     }
     // try {
     //   const collectionPublicKey = new PublicKey(forumInfo.collectionId);
@@ -280,7 +289,7 @@ export class DispatchForum implements IForum {
     // }
   };
 
-  followForum = async (collectionId: PublicKey): Promise<Result<ServerTransactionSignature>> => {
+  followForum = async (collectionId: PublicKey): Promise<Result<string | undefined>> => {
     try {
       const { connection, wallet, cluster } = this;
       console.log('followForum', collectionId.toBase58());
@@ -289,7 +298,11 @@ export class DispatchForum implements IForum {
         collectionId,
       );
       console.log('followForum1', forum);
-      return await forum.followForum(collectionId, wallet.publicKey);
+      if (wallet.publicKey != null) {
+        return await forum.followForum(collectionId, wallet.publicKey);
+      } else {
+        return notFoundError('Wallet public key not found');
+      }
     } catch (error) {
       console.log(error);
     }
@@ -689,7 +702,7 @@ export class DispatchForum implements IForum {
         collectionId,
       );
       const topic = await this.getTopicData(topicId, collectionId);
-      if ((await forum.exists()) && topic) {
+      if ((await forum.exists())) {
         if (isSuccess(topic)) {
           return await forum.createForumPost(post, topic);
         } else {
@@ -821,7 +834,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getForumPostRestriction = async (collectionId: PublicKey) => {
+  getForumPostRestriction = async (collectionId: PublicKey): Promise<Result<PostRestriction | null>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -835,7 +848,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  setForumPostRestriction = async (collectionId: PublicKey, restriction: PostRestriction) => {
+  setForumPostRestriction = async (collectionId: PublicKey, restriction: PostRestriction): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -851,7 +864,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  deleteForumPostRestriction = async (collectionId: PublicKey) => {
+  deleteForumPostRestriction = async (collectionId: PublicKey): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -867,7 +880,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  canVote = async (collectionId: PublicKey, post: ForumPost) => {
+  canVote = async (collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -881,16 +894,16 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getVote = async (collectionId: PublicKey, post: ForumPost) => {
+  getVote = async (collectionId: PublicKey, post: ForumPost): Promise<Result<boolean>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
       const forum = new Forum(new DispatchConnection(conn, wallet, { cluster: this.cluster }), collectionId);
       const vote = await forum.getVote(post);
-      if (vote == VoteType.down) {
+      if (vote === VoteType.down) {
         return false;
-      } else if (vote == VoteType.up) {
+      } else if (vote === VoteType.up) {
         return true;
       } else {
         // Vote is undefined
@@ -903,7 +916,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getVotes = async (collectionId: PublicKey) => {
+  getVotes = async (collectionId: PublicKey): Promise<Result<ChainVoteEntry[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
@@ -920,13 +933,17 @@ export class DispatchForum implements IForum {
     }
   };
 
-  getNFTsForCurrentUser = async () => {
+  getNFTsForCurrentUser = async (): Promise<Result<PublicKey[]>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 
     try {
-      const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey!);
-      return mintsForOwner;
+      if (wallet.publicKey !== null) {
+        const mintsForOwner = await getMintsForOwner(conn, wallet.publicKey);
+        return mintsForOwner;
+      } else {
+        return notFoundError('Wallet public key is not set');
+      }
     } catch (error) {
       return parseError(error);
     }
@@ -937,7 +954,10 @@ export class DispatchForum implements IForum {
     const conn = this.connection;
 
     try {
-      const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey!);
+      if (wallet.publicKey === null) {
+        return notFoundError('Wallet public key is not set');
+      }
+      const metadataForOwner = await getMetadataForOwner(conn, wallet.publicKey);
       const displayableMetadataPromises: Promise<Result<DisplayableToken>>[] = metadataForOwner.map(async ({ mint, data }) => {
         // Remove NUL bytes from name and URI
         const name = data.name.replaceAll('\x00', '');
@@ -1025,7 +1045,7 @@ export class DispatchForum implements IForum {
     }
   };
 
-  transferNFTs = async (receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection) => Promise<string>) => {
+  transferNFTs = async (receiverId: PublicKey, mint: PublicKey, sendTransaction: (transaction: Transaction, connection: Connection) => Promise<string>): Promise<Result<string>> => {
     const wallet = this.wallet;
     const conn = this.connection;
 

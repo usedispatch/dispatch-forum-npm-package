@@ -62,7 +62,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
     setCreating(true);
     setCreationData({ title: info.title, desc: info.description });
     const res = await forumObject.createForum(info);
-
+    console.log(res);
     if (isSuccess(res)) {
       if (res.forum !== undefined) {
         showModal({

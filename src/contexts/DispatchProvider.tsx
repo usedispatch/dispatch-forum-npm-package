@@ -1,11 +1,8 @@
-import { isNil } from 'lodash';
 import {
-  Connection,
   Cluster,
+  Connection,
 } from '@solana/web3.js';
-import { WalletInterface } from '@usedispatch/client';
-import { SearchContextManager } from '@giphy/react-components';
-import ReactGA from 'react-ga4';
+import { DispatchForum, MainForum, PostboxVersion } from './../utils/postbox/postboxWrapper';
 import {
   FC,
   ReactNode,
@@ -15,9 +12,12 @@ import {
   useState,
 } from 'react';
 
-import { DispatchForum, MainForum } from './../utils/postbox/postboxWrapper';
-import { UserRoleType } from './../utils/permissions';
 import { DebugWarning } from './../components/common/DebugWarning';
+import ReactGA from 'react-ga4';
+import { SearchContextManager } from '@giphy/react-components';
+import { UserRoleType } from './../utils/permissions';
+import { WalletInterface } from '@usedispatch/client';
+import { isNil } from 'lodash';
 
 export interface DispatchAppProps {
   wallet: WalletInterface;
@@ -68,7 +68,7 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
   ReactGA.initialize('G-QD3BDH1D5P');
 
   const forum = useMemo(
-    () => new MainForum(wallet, connection, cluster),
+    () => new MainForum(wallet, connection, cluster, PostboxVersion.v2),
     [wallet, connection, cluster],
   );
   const paths = {

@@ -1,33 +1,36 @@
-import { useMemo, useState, useEffect, ReactNode } from 'react';
-import { PublicKey, AccountInfo, clusterApiUrl } from '@solana/web3.js';
 import {
-  ForumInfo,
+  Account,
+  getAssociatedTokenAddress,
+  unpackAccount,
+} from '@solana/spl-token';
+import { AccountInfo, PublicKey } from '@solana/web3.js';
+import {
+  ChainVoteEntry,
   ForumPost,
   PostRestriction,
   getAccountsInfoPaginated,
-  ChainVoteEntry,
 } from '@usedispatch/client';
-import uniqBy from 'lodash/uniqBy';
-import zip from 'lodash/zip';
-import isNil from 'lodash/isNil';
-import {
-  getAssociatedTokenAddress,
-  unpackAccount,
-  Account,
-} from '@solana/spl-token';
-import { Loading } from '../types/loading';
-import { Result } from '../types/error';
 import {
   CollapsibleProps,
   MessageType,
   PopUpModal,
 } from '../components/common';
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/strict-boolean-expressions */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+import { ReactNode, useEffect, useMemo, useState } from 'react';
 import { initial, isInitial, isSuccess } from '../utils/loading';
-import { parseError } from '../utils/parseErrors';
-import { notFoundError } from '../utils/error';
+
 import { DispatchForum } from './postbox/postboxWrapper';
+import { Loading } from '../types/loading';
+import { Result } from '../types/error';
 import { WebBundlr } from '@bundlr-network/client';
+import isNil from 'lodash/isNil';
+import { notFoundError } from '../utils/error';
+import { parseError } from '../utils/parseErrors';
+import uniqBy from 'lodash/uniqBy';
 import { useForum } from '../contexts/DispatchProvider';
+import zip from 'lodash/zip';
 
 // TODO(andrew) move this to DispatchForum.getDescription()
 // so that function can be properly typed
@@ -108,7 +111,7 @@ export function useForumData(
 
   useEffect(() => {
     if (isSuccess(forumData) && isInitial(forumData.votes)) {
-      fetchVotes().then(votes => {
+      void fetchVotes().then(votes => {
         if (isSuccess(votes)) {
           setForumData({
             ...forumData,
@@ -121,7 +124,7 @@ export function useForumData(
 
   // TODO(andrew) make this more generic
   async function fetchOwners(): Promise<Result<PublicKey[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getOwners(collectionId, true);
         if (fetchData) {
@@ -138,7 +141,7 @@ export function useForumData(
   }
 
   async function fetchModeratorMint(): Promise<Result<PublicKey>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getModeratorMint(collectionId);
         if (fetchData) {
@@ -158,7 +161,7 @@ export function useForumData(
   // the fetchModerators() call to its place here
 
   async function fetchDescription(): Promise<Result<Description>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getDescription(collectionId, true);
         if (fetchData) {
@@ -174,7 +177,7 @@ export function useForumData(
     }
   }
   async function fetchForumImage(): Promise<any> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const imgs = await forum.getImageUrls(collectionId);
         if (imgs) {
@@ -189,7 +192,7 @@ export function useForumData(
   }
 
   async function fetchPosts(): Promise<Result<ForumPost[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getPostsForForum(collectionId, true);
         if (fetchData) {
@@ -206,7 +209,7 @@ export function useForumData(
   }
 
   async function fetchForumPostRestriction(): Promise<Result<PostRestriction>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const restriction = await forum.getForumPostRestriction(collectionId);
         if (restriction != null) {
@@ -253,7 +256,7 @@ export function useForumData(
         // TODO(andrew) better error handling mechanism here than
         // throwing a string? Is there a way to report this more
         // descriptively?
-        throw `Error in edit post: could not find exactly one post to be edited. Found ${matchingPosts.length}`;
+        throw new Error(`Error in edit post: could not find exactly one post to be edited. Found ${matchingPosts.length}`);
       }
 
       const postToEdit = matchingPosts[0];
@@ -276,7 +279,7 @@ export function useForumData(
       const editedPosts = filteredPosts.concat(editedPost);
 
       if (editedPosts.length !== posts.length) {
-        throw 'Error in edit post: the same number of posts were not found before and after the posts were edited';
+        throw new Error('Error in edit post: the same number of posts were not found before and after the posts were edited');
       }
 
       setForumData({
@@ -304,7 +307,7 @@ export function useForumData(
     }
   }
   async function fetchVotes(): Promise<Result<ChainVoteEntry[]>> {
-    if ((collectionId) && forum.permission.readAndWrite && isSuccess(forumData)) {
+    if ((collectionId != null) && forum.permission.readAndWrite && isSuccess(forumData)) {
       try {
         const fetchData = await forum.getVotes(collectionId);
         if (fetchData) {
@@ -324,7 +327,7 @@ export function useForumData(
    * re-fetch all data related to this forum from chain
    */
   async function update() {
-    if (collectionId) {
+    if (collectionId != null) {
       // Wait for the forum to exist first...
       if (await forum.exists(collectionId)) {
         // Now fetch all related data
@@ -393,7 +396,7 @@ export function useModerators(
   const [moderators, setModerators] = useState<Loading<PublicKey[]>>(initial());
 
   async function fetchModerators(): Promise<Result<PublicKey[]>> {
-    if (collectionId) {
+    if (collectionId != null) {
       try {
         const fetchData = await forum.getModerators(collectionId, true);
         if (fetchData) {
@@ -410,7 +413,7 @@ export function useModerators(
   }
 
   async function update() {
-    if (collectionId) {
+    if (collectionId != null) {
       if (await forum.exists(collectionId)) {
         const fetchResult = await fetchModerators();
         setModerators(fetchResult);
@@ -521,10 +524,10 @@ export function useParticipatingModerators(
     // Filter out the nulls
     const nonnullPairs = pairs.filter(([wallet, ata, account]) => {
       return !isNil(wallet) && !isNil(ata) && !isNil(account);
-    }) as Array<[PublicKey, PublicKey, AccountInfo<Buffer>]>;
+    }) as [PublicKey, PublicKey, AccountInfo<Buffer>][];
 
     // Parse the accounts
-    const parsedAccounts: Array<[PublicKey, PublicKey, Account]> = nonnullPairs.map(
+    const parsedAccounts: [PublicKey, PublicKey, Account][] = nonnullPairs.map(
       ([wallet, ata, account]) => {
         const unpacked = unpackAccount(ata, account);
         return [wallet, ata, unpacked];
@@ -545,7 +548,7 @@ export function useParticipatingModerators(
 
   useEffect(() => {
     if (isSuccess(forumData)) {
-      fetchParticipatingModerators(forumData).then(moderators =>
+      void fetchParticipatingModerators(forumData).then(moderators =>
         setModerators(moderators),
       );
     }
@@ -610,7 +613,7 @@ export function useUserIsMod(
     // Fetch whether the user is a mod, then set the state
     // variable to that value
     if (userIsMod === null) {
-      fetchUserIsMod().then(b => setUserIsMod(b));
+      void fetchUserIsMod().then(b => setUserIsMod(b));
     }
   }, [forumId, userPublicKey]);
 
@@ -650,7 +653,6 @@ export function useBundlr(): WebBundlr | null {
   const forum = useForum();
 
   return useMemo(() => {
-
     // Assume that if we're using devnet, it will be the standard
     // public Solana devnet endpoint. If so, use the bundlr
     // devnet endpoint, if so use the bundlr mainnet
@@ -658,12 +660,12 @@ export function useBundlr(): WebBundlr | null {
       ? 'https://devnet.bundlr.network'
       : 'https://node1.bundlr.network';
 
-    if (forum.wallet.wallet) {
+    if (forum.wallet.wallet != null) {
       const bundlr = new WebBundlr(
         bundlrEndpoint,
         'solana',
         forum.wallet.wallet.adapter,
-        { providerUrl: forum.connection.rpcEndpoint }
+        { providerUrl: forum.connection.rpcEndpoint },
       );
 
       return bundlr;

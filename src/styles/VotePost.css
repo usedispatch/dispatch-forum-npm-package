@@ -9,6 +9,7 @@
   .votePostContent {
     display: flex;
     align-items: center;
+    gap: 10px;
   }
 
   .spinnerContainer {
@@ -22,31 +23,25 @@
   .votePostButton {
     display: flex;
     align-items: center;
+    justify-content: center;
 
-    &.upVote:hover,
-    &.upVoted {
-      svg {
-        fill: #84b971;
+    padding: 8px;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #4a279c;
+    border-radius: 8px;
 
-        path:not(:first-child) {
-          stroke: white;
-        }
-      }
-    }
+    &:hover {
+      background: #4a279c;
 
-    &.downVote:hover,
-    &.downVoted {
-      svg {
-        fill: #e86143;
-
-        path:not(:first-child) {
-          stroke: white;
-        }
+      svg path {
+        fill: white;
       }
     }
 
     &:disabled {
       cursor: not-allowed;
+      opacity: 0.8;
     }
   }
 

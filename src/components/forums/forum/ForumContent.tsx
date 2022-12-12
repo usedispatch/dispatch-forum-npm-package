@@ -1,5 +1,6 @@
 import isNil from 'lodash/isNil';
 import { PublicKey } from '@solana/web3.js';
+import { ForumPost } from '@usedispatch/client';
 import Markdown from 'markdown-to-jsx';
 import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
@@ -22,6 +23,7 @@ import {
   Tools,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
+import { TopicList } from './topic-list';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { DispatchError, Result } from '../../../types/error';
@@ -37,9 +39,7 @@ import {
 } from '../../../utils/restrictionListHelper';
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
-import { ForumPost } from '@usedispatch/client';
 import { usePath } from '../../../contexts/DispatchProvider';
-import { TopicList } from './topic-list';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -99,7 +99,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
             </div>
             <div className="toolsWrapper" />
             <div className="topicListWrapper">
-              <TopicList />
+              <TopicList update={update}/>
             </div>
           </div>
         </div>
@@ -613,6 +613,7 @@ export function PopulatedForumContent(
                   <div className="topicListWrapper">
                     <TopicList
                       forumData={forumData}
+                      update={update}
                       topicInFlight={newTopicInFlight}
                     />
                   </div>

@@ -173,10 +173,16 @@ export function Votes(props: VotesProps): JSX.Element {
         />
         <div className="votePostContent">
           <button
-            className={'votePostButton upVote' + (alreadyUpVoted ? 'd' : '')}
+            className={'votePostButton upVote'}
             disabled={alreadyUpVoted || !permission.readAndWrite}
             onClick={upVotePost}>
             <Vote isUpVote />
+          </button>
+          <button
+            className={'votePostButton downVote'}
+            disabled={alreadyDownVoted || !permission.readAndWrite}
+            onClick={downVotePost}>
+            <Vote />
           </button>
           {loading
             ? (
@@ -185,14 +191,8 @@ export function Votes(props: VotesProps): JSX.Element {
             </div>
             )
             : (
-            <div className="currentVotes">{post.upVotes - post.downVotes}</div>
+            <div className="currentVotes">{post.upVotes - post.downVotes} votes</div>
             )}
-          <button
-            className={'votePostButton downVote' + (alreadyDownVoted ? 'd' : '')}
-            disabled={alreadyDownVoted || !permission.readAndWrite}
-            onClick={downVotePost}>
-            <Vote />
-          </button>
         </div>
       </div>
     </>

@@ -350,6 +350,7 @@ export function TopicContent(props: TopicContentProps): JSX.Element {
               }
               post={topic}
               updateVotes={upVoted => updateVotes(upVoted)}
+              direction='vertical'
             />
           </PermissionsGate>
           <div className="commentsContainer">

@@ -25,12 +25,13 @@ interface VotesProps {
   onUpVotePost: () => Promise<Result<string>>;
   onDownVotePost: () => Promise<Result<string>>;
   updateVotes: (upVoted: boolean) => void;
+  direction?: 'vertical' | 'horizontal';
 }
 
 export function Votes(props: VotesProps): JSX.Element {
   const Forum = useForum();
   const permission = Forum.permission;
-  const { post, onDownVotePost, onUpVotePost, updateVotes, forumData } = props;
+  const { post, onDownVotePost, onUpVotePost, updateVotes, forumData, direction = 'horizontal' } = props;
 
   const [isNotificationHidden, setIsNotificationHidden] = useState(true);
   const [notificationContent, setNotificationContent] = useState<{
@@ -171,29 +172,56 @@ export function Votes(props: VotesProps): JSX.Element {
           type={notificationContent?.type}
           onClose={() => setIsNotificationHidden(true)}
         />
-        <div className="votePostContent">
-          <button
-            className={'votePostButton upVote'}
-            disabled={alreadyUpVoted || !permission.readAndWrite}
-            onClick={upVotePost}>
-            <Vote isUpVote />
-          </button>
-          <button
-            className={'votePostButton downVote'}
-            disabled={alreadyDownVoted || !permission.readAndWrite}
-            onClick={downVotePost}>
-            <Vote />
-          </button>
-          {loading
-            ? (
-            <div className="spinnerContainer">
-              <Spinner />
+        { direction === 'horizontal'
+          ? <div className="votePostContent">
+              <button
+                className={'votePostButton upVote'}
+                disabled={alreadyUpVoted || !permission.readAndWrite}
+                onClick={upVotePost}>
+                <Vote isUpVote />
+              </button>
+              <button
+                className={'votePostButton downVote'}
+                disabled={alreadyDownVoted || !permission.readAndWrite}
+                onClick={downVotePost}>
+                <Vote />
+              </button>
+              {loading
+                ? (
+                <div className="spinnerContainer">
+                  <Spinner />
+                </div>
+                )
+                : (
+                <div className="currentVotes">{post.upVotes - post.downVotes} votes</div>
+                )
+              }
             </div>
-            )
-            : (
-            <div className="currentVotes">{post.upVotes - post.downVotes} votes</div>
-            )}
-        </div>
+          : <div className="votePostContent">
+              <button
+                className={'votePostButton upVote'}
+                disabled={alreadyUpVoted || !permission.readAndWrite}
+                onClick={upVotePost}>
+                <Vote isUpVote />
+              </button>
+              {loading
+                ? (
+                <div className="spinnerContainer">
+                  <Spinner />
+                </div>
+                )
+                : (
+                <div className="currentVotes">{post.upVotes - post.downVotes}</div>
+                )
+              }
+              <button
+                className={'votePostButton downVote'}
+                disabled={alreadyDownVoted || !permission.readAndWrite}
+                onClick={downVotePost}>
+                <Vote />
+              </button>
+            </div>
+          }
       </div>
     </>
   );

@@ -9,7 +9,7 @@
 
       padding: 14px;
       position: absolute;
-      top: 24px;
+      top: -60px;
       right: 2%;
 
       background: #ffffff;
@@ -30,7 +30,7 @@
       }
 
       @media only screen and (max-width: 570px) {
-        top: 12px;
+        /* top: -30px; */
         right: 5%;
       }
     }

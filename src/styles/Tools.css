@@ -1,0 +1,93 @@
+@layer components {
+  .tools {
+    display: flex;
+    gap: 24px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+
+    @media only screen and (max-width: 570px) {
+      gap: 20px;
+      row-gap: 12px;
+
+      .editForumContainer .editForumButton svg {
+        margin-right: 16px;
+      }
+    }
+  }
+
+  .toolsWrapper {
+    min-height: 30px;
+    background: #fff;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0px 10px 12px 0px #00000029;
+
+    @media only screen and (max-width: 570px) {
+      margin: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+
+  .moderatorToolsContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding: 20px 24px;
+
+    border-top: 1px solid #b8b9dc;
+    border-radius: 0 0 12px 12px;
+
+    color: #414149;
+    font-size: 12px;
+    font-weight: 400;
+
+    .lock {
+      height: 12px;
+      width: 12px;
+      margin: 0 0 0 10px;
+    }
+
+    @media only screen and (max-width: 570px) {
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+
+      .lock {
+        margin: 0;
+      }
+    }
+  }
+
+  .gearToolButton {
+    background: #f7f7fe;
+    box-shadow: 0px 10px 12px rgb(0 0 0 / 5%);
+    border-radius: 4px;
+    padding: 8px;
+
+    position: absolute;
+    top: -50px;
+    right: 16px;
+  }
+
+  .toolItemsContainer {
+    background: #ffffff;
+    border-radius: 6px;
+    position: absolute;
+    top: -14px;
+    right: 16px;
+    z-index: 999;
+    padding: 8px;
+    box-shadow: 0 10px 12px #00000021;
+  }
+  .toolItem {
+    padding: 8px;
+
+    .manageOwnersButton,
+    .manageModeratorsButton,
+    .moderatorTool,
+    .editForumButton {
+      color: #414149;
+    }
+  }
+}

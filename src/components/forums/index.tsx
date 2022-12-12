@@ -8,6 +8,7 @@ export * from './forum/EditForum';
 export * from './forum/ForumContent';
 export * from './forum/ManageModerators';
 export * from './forum/ManageOwners';
+export * from './forum/Tools';
 export * from './forum/topic-list';
 export * from './forum/UploadForumBanner';
 

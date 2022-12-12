@@ -1,5 +1,5 @@
 import isNil from 'lodash/isNil';
-import { useState, ReactNode, useMemo } from 'react';
+import { useState, ReactNode } from 'react';
 import Jdenticon from 'react-jdenticon';
 
 import {
@@ -22,10 +22,11 @@ import { getIdentity } from '../../../utils/identity';
 
 interface ManageModeratorsProps {
   forumData: ForumData;
+  buttonText?: string;
 }
 
-export function ManageModerators(props: ManageModeratorsProps) {
-  const { forumData } = props;
+export function ManageModerators(props: ManageModeratorsProps): JSX.Element {
+  const { forumData, buttonText } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -48,7 +49,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
     addingNewModerator: false,
   });
 
-  const resetInitialValues = () => {
+  const resetInitialValues = (): void => {
     setManageModerators({
       show: false,
       newModerator: '',
@@ -69,7 +70,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
   } | null>(null);
 
   // Begin mutating operations
-  const addModerator = async () => {
+  const addModerator = async (): Promise<void> => {
     // In order to add moderators, they must have been fetched successfully at least once.
     // This means that moderators must be a success type (indicating it was fetched successfully from server)
     if (!isSuccess(moderators)) {
@@ -111,6 +112,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
         NOTIFICATION_BANNER_TIMEOUT,
       );
 
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       forumObject.connection.confirmTransaction(tx).then(async () => updateMods());
     } else {
       const error = tx;
@@ -204,7 +206,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
                 ? (
                 <button
                   className="okButton"
-                  disabled={!manageModerators.newModerator.length}
+                  disabled={manageModerators.newModerator.length === 0}
                   onClick={async () => addModerator()}>
                   Save
                 </button>
@@ -243,7 +245,7 @@ export function ManageModerators(props: ManageModeratorsProps) {
             onClick={() =>
               setManageModerators({ ...manageModerators, show: true })
             }>
-            Moderators
+            {buttonText ?? 'Moderators'}
           </button>
         </PermissionsGate>
       </div>

@@ -2,8 +2,6 @@ import isNil from 'lodash/isNil';
 import { useState, ReactNode, useEffect } from 'react';
 import { PostRestriction } from '@usedispatch/client';
 
-import { Plus } from '../../../assets';
-
 import { CollapsibleProps, Input, MessageType, PermissionsGate, PopUpModal, Spinner, TransactionLink } from '../../../components/common';
 import {
   Notification,
@@ -430,14 +428,12 @@ export function CreateTopic(props: CreateTopicProps): JSX.Element {
         onClick={() => {
           setShowNewTopicModal(true);
         }}>
-        {awaitingConfirmation
-          ? <div className="loading">
-          <Spinner />
-        </div>
-          : <div className="buttonImageContainer">
-          <Plus />
-        </div>}
-        Create Topic
+        {awaitingConfirmation &&
+          <div className="loading">
+            <Spinner />
+          </div>
+        }
+        Submit topic
       </button>
     </div>
   );

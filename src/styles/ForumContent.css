@@ -1,6 +1,12 @@
 @layer components {
   .confirmingWrapper {
+    .forumContent {
+      top: 50px;
+    }
+
     .forumContentHeader {
+      border-radius: 8px 8px;
+
       .titleBox {
         color: #b3b4bb;
       }
@@ -9,7 +15,8 @@
           color: #b3b4bb;
         }
 
-        .createTopicButton &:disabled {
+        .createTopicButton {
+          z-index: 0;
           color: #b3b4bb;
           border-color: #b3b4bb;
 
@@ -181,7 +188,7 @@
     height: auto;
     margin: 0;
     padding: 16px;
-    border-radius: 8px 8px 0 0;
+    border-radius: 8px 8px;
     box-shadow: 0px 0px 12px #00000029;
     background: white;
 

@@ -148,8 +148,10 @@
 
     .descriptionVisibilityMobile {
       display: flex;
-      gap: 5px;
       align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      width: 45px;
       margin: 14px 0 0 auto;
 
       color: #85838e;

@@ -147,6 +147,10 @@
 
     .descriptionVisibilityMobile {
       margin: 14px 0 0 auto;
+      color: #85838E;
+      font-weight: 600;
+      font-size: 10px;
+      line-height: 12px;
 
       @media only screen and (max-width: 768px) {
         visibility: visible;
@@ -157,7 +161,7 @@
         width: 18px;
 
         path {
-          stroke: #6e59b1;
+          stroke: #85838E;
         }
       }
     }

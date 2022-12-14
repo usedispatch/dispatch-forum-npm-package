@@ -377,7 +377,9 @@ function PopulatedForumContentMobile(
             className='descriptionVisibilityMobile'
             onClick={() => setShowDesc(!showDesc)}
           >
-            <Chevron direction={showDesc ? 'up' : 'down'}/>
+            <>
+              About <Chevron direction={showDesc ? 'up' : 'down'}/>
+            </>
           </div>
         </div>
         <div className="descriptionBoxMobile">

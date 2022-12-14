@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-template-expressions */
 import {
   CreateForum,
   ForumContent,
@@ -16,6 +17,7 @@ import { PublicKey } from '@solana/web3.js';
 import ReactGA from 'react-ga4';
 import { getCustomStyles } from '../../../utils/getCustomStyles';
 import { getUserRole } from './../../../utils/postbox/userRole';
+import { useForumStore } from '../../../store/modules/forum';
 
 interface ForumPageContentProps {
   forumID: string;
@@ -25,6 +27,7 @@ interface ForumPageContentProps {
 export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
   const { forumID, showTitle } = props;
   const forumObject = useForum();
+  const newForum = useForumStore((forum) => forum.state.APIForumObject);
   const Role = useRole();
   const { wallet, permission } = forumObject;
   const { publicKey } = wallet;
@@ -57,6 +60,7 @@ export function ForumPageContent(props: ForumPageContentProps): JSX.Element {
     const res = await forumObject.followForum(new PublicKey(forumID));
     console.log(res);
   };
+  console.log(newForum);
 
   const onCreateForum = async (info: ForumInfo): Promise<void> => {
     setCreating(true);

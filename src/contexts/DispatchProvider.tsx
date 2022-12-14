@@ -18,6 +18,7 @@ import { SearchContextManager } from '@giphy/react-components';
 import { UserRoleType } from './../utils/permissions';
 import { WalletInterface } from '@usedispatch/client';
 import { isNil } from 'lodash';
+import { useForumStore } from '../store/modules/forum';
 
 export interface DispatchAppProps {
   wallet: WalletInterface;
@@ -68,13 +69,22 @@ export const DispatchProvider: FC<DispatchAppProps> = ({
   ReactGA.initialize('G-QD3BDH1D5P');
 
   const forum = useMemo(
-    () => new MainForum(wallet, connection, cluster, PostboxVersion.v2),
+    () => new MainForum(wallet, connection, cluster, PostboxVersion.v1),
+    [wallet, connection, cluster],
+  );
+  const APIForum = useMemo(
+    () => new APIForum(wallet, connection, cluster, PostboxVersion.v2),
     [wallet, connection, cluster],
   );
   const paths = {
     buildForumPath,
     buildTopicPath,
   };
+  useForumStore.setState((state) => {
+    state.APIForumObject = APIForum;
+  });
+  // const state = useForumStore((forum) => forum.state.APIForumObject);
+  // useForumStore.setState((state) => { APIForumObject: APIForum });
   const [roles, setRoles] = useState([UserRoleType.Viewer]);
 
   const userRole = { roles, setRoles };

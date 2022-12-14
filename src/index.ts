@@ -8,4 +8,4 @@ export { TopicView } from './views/TopicView';
 export { ForumView } from './views/ForumView';
 export type { ForumID, SolanartID } from './types/ForumIdentifier';
 export { NewsPageContent } from './components/forums';
-export type { NewsPosts, NewsFeed } from './components/forums';
+export type { NewsPost, NewsFeed } from './components/forums';

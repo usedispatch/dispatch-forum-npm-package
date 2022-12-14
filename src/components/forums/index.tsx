@@ -6,6 +6,7 @@ export * from './forum/CreateForum';
 export * from './forum/CreateTopic';
 export * from './forum/EditForum';
 export * from './forum/ForumContent';
+export * from './forum/ForumContentMobile';
 export * from './forum/ManageModerators';
 export * from './forum/ManageOwners';
 export * from './forum/Tools';

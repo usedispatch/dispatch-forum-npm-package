@@ -4,17 +4,6 @@
     gap: 20px;
     color: black;
 
-    .actionDivider {
-      width: 1px;
-      margin: 0;
-
-      background: #6e59b1;
-
-      @media only screen and (max-width: 570px) {
-        display: none;
-      }
-    }
-
     .successBody {
       display: flex;
       flex-direction: column;
@@ -25,7 +14,7 @@
       align-items: center;
 
       background: transparent;
-      color: #3f1d96;
+      color: #414149;
       text-align: left;
 
       &:hover {

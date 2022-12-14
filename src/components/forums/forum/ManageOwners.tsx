@@ -3,7 +3,7 @@ import { useState, ReactNode } from 'react';
 import Jdenticon from 'react-jdenticon';
 import { PublicKey } from '@solana/web3.js';
 
-import { Trash, Undo, Lock } from '../../../assets';
+import { Trash, Undo } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -24,11 +24,10 @@ import { SCOPES } from '../../../utils/permissions';
 
 interface ManageOwnersProps {
   forumData: ForumData;
-  buttonText?: string;
 }
 
 export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
-  const { forumData, buttonText } = props;
+  const { forumData } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -296,7 +295,7 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
             disabled={!permission.readAndWrite}
             onClick={() => setManageOwners({ ...manageOwners, show: true })}
           >
-            {buttonText ?? <><Lock /> Owners</>}
+            Manage owners
           </button>
         </PermissionsGate>
       </div>

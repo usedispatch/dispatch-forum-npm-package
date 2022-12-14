@@ -28,9 +28,6 @@
     }
 
     .topicListWrapper {
-      .tableHeader {
-        border-color: #b3b4bb;
-      }
       .topicListContainer .tableHeader .tableHeaderTitle,
       .emptyTopicList {
         color: #b3b4bb;
@@ -160,10 +157,12 @@
 
     width: 100%;
     padding: 0 5%;
+  }
 
-    @media only screen and (max-width: 570px) {
-      padding: 0;
-    }
+  .forumActions {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 24px;
   }
 
   .forumContentColumns {
@@ -171,16 +170,8 @@
     width: 100%;
     justify-content: space-between;
 
-    @media only screen and (max-width: 768px) {
-      flex-direction: column-reverse;
-    }
-
     .column {
       width: 48%;
-
-      @media only screen and (max-width: 768px) {
-        width: 100%;
-      }
     }
   }
 
@@ -204,29 +195,6 @@
       color: #414149;
       word-break: break-word;
       line-height: 40px;
-
-      @media only screen and (max-width: 570px) {
-        align-items: flex-start;
-        font-size: 26px;
-      }
-    }
-
-    .descriptionVisibility {
-      visibility: hidden;
-      margin: 14px 0 0 auto;
-
-      @media only screen and (max-width: 768px) {
-        visibility: visible;
-      }
-
-      svg {
-        height: 16px;
-        width: 18px;
-
-        path {
-          stroke: #6e59b1;
-        }
-      }
     }
 
     .descriptionBox {
@@ -244,20 +212,6 @@
         font-family: Manrope, sans-serif;
         color: #414149;
         word-wrap: anywhere;
-
-        @media only screen and (max-width: 570px) {
-          margin-right: 0;
-        }
-
-        &.descHidden {
-          height: 0;
-          overflow: hidden;
-        }
-      }
-
-      @media only screen and (max-width: 570px) {
-        flex-direction: column;
-        gap: 20px;
       }
     }
 

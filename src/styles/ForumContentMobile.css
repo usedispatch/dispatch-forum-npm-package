@@ -1,0 +1,209 @@
+@layer components {
+  .confirmingWrapperMobile {
+    .forumContent {
+      top: 50px;
+    }
+
+    .forumContentHeaderMobile {
+      border-radius: 8px 8px;
+
+      .titleBoxMobile {
+        color: #b3b4bb;
+      }
+      .descriptionBoxMobile {
+        .description {
+          color: #b3b4bb;
+        }
+
+        .createTopicButtonMobile {
+          z-index: 0;
+          color: #b3b4bb;
+          border-color: #b3b4bb;
+
+          svg path {
+            fill: #b3b4bb;
+          }
+        }
+      }
+    }
+
+    .topicListWrapperMobile {
+      .topicListContainer .tableHeader .tableHeaderTitle,
+      .emptyTopicList {
+        color: #b3b4bb;
+      }
+    }
+  }
+
+  .confirmingBannerMobile {
+    padding: 24px;
+    margin-bottom: 36px;
+
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0px 4px 12px rgb(65 65 73 / 16%);
+
+    .animationMobile {
+      max-width: 100px;
+      max-height: 16px;
+      display: flex;
+    }
+
+    .titleMobile {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+
+      .textMobile {
+        color: #2e008b;
+        font-size: 22px;
+        font-weight: 600;
+      }
+    }
+
+    .subtitleMobile {
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 24px;
+      color: #86878e;
+      opacity: 1;
+    }
+  }
+
+  .forumContentWrapperMobile {
+    padding-bottom: 180px;
+    position: relative;
+    top: 0;
+  }
+
+  .forumBanner {
+    background-image: url('https://aiqrzujttjxgjhumjcky.supabase.co/storage/v1/object/public/forum-images/default_background.png');
+    background-position: bottom;
+    background-size: cover;
+
+    position: absolute;
+    z-index: 0;
+    top: 0;
+    width: 100%;
+    min-height: 280px;
+  }
+
+  .forumContentMobile {
+    position: relative;
+    top: 150px;
+
+    width: 100%;
+    padding: 0 5%;
+
+    @media only screen and (max-width: 570px) {
+      padding: 0;
+    }
+  }
+
+  .forumActionsMobile {
+    position: absolute;
+    top: -50px;
+    right: 16px;
+  }
+
+  .forumContentSections {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+    width: 100%;
+
+    .section {
+      width: 100%;
+    }
+  }
+
+  .forumContentHeaderMobile {
+    height: auto;
+    margin: 0;
+    padding: 16px;
+    border-radius: 8px 8px;
+    box-shadow: 0px 0px 12px #00000029;
+    background: white;
+
+    .titleBoxMobile {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding-bottom: 16px;
+      gap: 10px;
+      margin: 0 auto;
+
+      font-size: 40px;
+      color: #414149;
+      word-break: break-word;
+      line-height: 40px;
+
+      @media only screen and (max-width: 570px) {
+        align-items: flex-start;
+        font-size: 26px;
+      }
+    }
+
+    .descriptionVisibilityMobile {
+      margin: 14px 0 0 auto;
+
+      @media only screen and (max-width: 768px) {
+        visibility: visible;
+      }
+
+      svg {
+        height: 16px;
+        width: 18px;
+
+        path {
+          stroke: #6e59b1;
+        }
+      }
+    }
+
+    .descriptionBoxMobile {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+
+      .descriptionMobile {
+        width: 100%;
+        transition: height 0.5s ease-out;
+
+        line-height: 24px;
+        font-family: Manrope, sans-serif;
+        color: #414149;
+        word-wrap: anywhere;
+
+        @media only screen and (max-width: 570px) {
+          margin-right: 0;
+        }
+
+        &.descHidden {
+          height: 0;
+          overflow: hidden;
+        }
+      }
+
+      @media only screen and (max-width: 570px) {
+        flex-direction: column;
+        gap: 20px;
+      }
+    }
+
+    .gatedForumMobile {
+      height: 24px;
+      width: 24px;
+      min-width: 24px;
+      margin-top: 9px;
+    }
+  }
+
+  .topicListWrapperMobile {
+    margin-top: -40px;
+    z-index: 1;
+  }
+}

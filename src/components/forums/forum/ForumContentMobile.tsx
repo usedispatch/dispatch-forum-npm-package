@@ -6,7 +6,7 @@ import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
 import Lottie from 'lottie-react';
 
-import { Lock, Plus, Trash } from '../../../assets';
+import { Chevron, Lock, Plus, Trash } from '../../../assets';
 import animationData from '../../../lotties/loader.json';
 import {
   CollapsibleProps,
@@ -21,12 +21,10 @@ import {
   Notification,
   CreateTopic,
   Tools,
-  ForumContentMobile,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
 import { TopicList } from './topic-list';
 
-import { useMediaQuery } from '../../../utils/useMediaQuery';
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { DispatchError, Result } from '../../../types/error';
 import { isError, errorSummary } from '../../../utils/error';
@@ -43,39 +41,27 @@ import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
 import { usePath } from '../../../contexts/DispatchProvider';
 
-interface ForumContentProps {
+interface ForumContentMobileProps {
   forumObject: DispatchForum;
   basicInfo?: { title: string; desc: string };
   forumData?: ForumData;
   update: () => Promise<void>;
 }
 
-export function ForumContent(props: ForumContentProps): JSX.Element {
+export function ForumContentMobile(props: ForumContentMobileProps): JSX.Element {
   const { forumData, forumObject, basicInfo, update } = props;
   const { permission } = forumObject;
 
-  const isMobile = useMediaQuery('(max-width: 768px)');
-
-  if (isMobile) {
-    return (
-      <ForumContentMobile
-        forumObject={forumObject}
-        forumData={forumData}
-        update={update}
-      />
-    );
-  }
-
   if (isNil(forumData)) {
     const confirmingBox = (
-      <div className="confirmingBanner">
-        <div className="title">
-          <div className="animation">
+      <div className="confirmingBanneMobiler">
+        <div className="titleMobile">
+          <div className="animationMobile">
             <Lottie loop animationData={animationData} />
           </div>
-          <div className="text">The network is confirming your forum.</div>
+          <div className="textMobile">The network is confirming your forum.</div>
         </div>
-        <div className="subtitle">
+        <div className="subtitleMobile">
           When it&apos;s ready, the page will reload itself. This may take a few
           seconds.
         </div>
@@ -84,15 +70,15 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
 
     if (!isNil(basicInfo)) {
       const forumHeader = (
-        <div className="forumContentHeader">
-          <div className={'titleBox'}>
+        <div className="forumContentHeaderMobile">
+          <div className='titleBoxMobile'>
             <Markdown>{basicInfo.title}</Markdown>
           </div>
-          <div className="descriptionBox">
+          <div className="descriptionBoxMobile">
             <div className="description">
               <Markdown>{basicInfo.desc}</Markdown>
             </div>
-            <button className={'createTopicButton'} type="button" disabled>
+            <button className={'createTopicButtonMobile'} type="button" disabled>
               <div className="buttonImageContainer">
                 <Plus />
               </div>
@@ -103,20 +89,20 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
       );
 
       return (
-        <div className="confirmingWrapper">
+        <div className="confirmingWrapperMobile">
           <>{ReactGA.send('pageview')}</>
-          <div className="forumContentWrapper">
+          <div className="forumContentWrapperMobile">
             <div className="forumBanner"/>
-            <div className="forumContent">
+            <div className="forumContentMobile">
               {confirmingBox}
               {!permission.readAndWrite && <ConnectionAlert />}
-              <div className="forumContentColumns">
-                <div className='column'>
-                  <div className="topicListWrapper">
+              <div className="forumContentSections">
+                <div className='section'>
+                  <div className="topicListWrapperMobile">
                     <TopicList update={update}/>
                   </div>
                 </div>
-                <div className='column'>
+                <div className='section'>
                   {forumHeader}
                 </div>
               </div>
@@ -130,7 +116,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
   } else {
     return (
       // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      <PopulatedForumContent
+      <PopulatedForumContentMobile
         forumObject={forumObject}
         initialForumData={forumData}
         update={update}
@@ -139,14 +125,14 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
   }
 }
 
-interface PopulatedForumContentProps {
+interface PopulatedForumContentMobileProps {
   forumObject: DispatchForum;
   initialForumData: ForumData;
   update: () => Promise<void>;
 }
 
-export function PopulatedForumContent(
-  props: PopulatedForumContentProps,
+function PopulatedForumContentMobile(
+  props: PopulatedForumContentMobileProps,
 ): JSX.Element {
   const { initialForumData, forumObject, update } = props;
   const { permission } = forumObject;
@@ -163,6 +149,7 @@ export function PopulatedForumContent(
     await update();
   };
 
+  const [showDesc, setShowDesc] = useState(true);
   const [newTopicInFlight, setNewTopicInFlight] = useState<{ title: string }>();
   const [addNFTGate, setAddNFTGate] = useState(false);
   const [addSPLGate, setAddSPLGate] = useState(false);
@@ -377,18 +364,24 @@ export function PopulatedForumContent(
   }, [initialForumData.posts]);
 
   const forumHeader = (
-    <div className="forumContentHeader">
+    <div className="forumContentHeaderMobile">
       <>
-        <div className={'titleBox'}>
+        <div className={'titleBoxMobile'}>
           {currentForumAccessToken.length > 0 && (
-            <div className="gatedForum">
+            <div className="gatedForumMobile">
               <Lock />
             </div>
           )}
           <Markdown>{forumData.description.title}</Markdown>
+          <div
+            className='descriptionVisibilityMobile'
+            onClick={() => setShowDesc(!showDesc)}
+          >
+            <Chevron direction={showDesc ? 'up' : 'down'}/>
+          </div>
         </div>
-        <div className="descriptionBox">
-          <div className={'description'}>
+        <div className="descriptionBoxMobile">
+          <div className={`descriptionMobile ${showDesc ? '' : 'descHidden'}`}>
             <Markdown>{forumData.description.desc}</Markdown>
           </div>
           <CreateTopic
@@ -420,7 +413,7 @@ export function PopulatedForumContent(
 
   return (
     <div className="dsp- ">
-      <div className="forumContentWrapper">
+      <div className="forumContentWrapperMobile">
         <div
           className="forumBanner"
           style={{
@@ -604,7 +597,7 @@ export function PopulatedForumContent(
                 }
               />
           )}
-          <div className="forumContent">
+          <div className="forumContentMobile">
             <Notification
               hidden={notification.isHidden}
               content={notification?.content}
@@ -614,23 +607,23 @@ export function PopulatedForumContent(
             {!permission.readAndWrite && <ConnectionAlert />}
             {forumData.collectionId.toBase58() ===
               'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && <StarsAlert />}
-            <div className="forumContentColumns">
-              <div className="column">
-                <div className='forumActions'>
-                  <div></div>
-                  <div>
-                    {permission.readAndWrite &&
-                      <Tools
-                        forumData={forumData}
-                        onUpdateBanner={onUpdateImage}
-                        onShowManageAccess={() => setShowManageAccessToken(true)}
-                        update={update}
-                      />
-                    }
-                  </div>
-                </div>
+            <div className='forumActionsMobile'>
+              {permission.readAndWrite &&
+                <Tools
+                  forumData={forumData}
+                  onUpdateBanner={onUpdateImage}
+                  onShowManageAccess={() => setShowManageAccessToken(true)}
+                  update={update}
+                />
+              }
+            </div>
+            <div className="forumContentSections">
+              <div className="section">
+                {forumHeader}
+              </div>
+              <div className="section">
                 {!isNil(forumData.collectionId) && (
-                  <div className="topicListWrapper">
+                  <div className="topicListWrapperMobile">
                     <TopicList
                       forumData={forumData}
                       update={update}
@@ -638,9 +631,6 @@ export function PopulatedForumContent(
                     />
                   </div>
                 )}
-              </div>
-              <div className="column">
-                {forumHeader}
               </div>
             </div>
           </div>

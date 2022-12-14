@@ -1,7 +1,10 @@
 @layer components {
   .createTopic {
     width: 100%;
-    z-index: 999;
+
+    @media only screen and (max-width: 768px) {
+      z-index: 1;
+    }
   }
 
   .createTopicButton {

@@ -1,7 +1,6 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from 'react';
 
-import { Edit } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -18,12 +17,11 @@ import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 
 interface EditForumProps {
   forumData: ForumData;
-  buttonText?: string;
   update: () => Promise<void>;
 }
 
 export function EditForum(props: EditForumProps): JSX.Element | null {
-  const { forumData, update, buttonText } = props;
+  const { forumData, update } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
   const [bodySize, setBodySize] = useState(
@@ -186,12 +184,11 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
             }
           />
         )}
-        <div className="actionDivider" />
         <button
           className="editForumButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditForum({ ...editForum, show: true })}>
-          {buttonText ?? <> <Edit /> Edit </>}
+          Edit community
         </button>
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { Gear } from '../../../assets';
+import { Chevron, Gear } from '../../../assets';
 
 import { PermissionsGate } from '../../common';
 
@@ -52,7 +52,8 @@ export function Tools(props: ToolsProps): JSX.Element {
                     className="moderatorTool"
                     disabled={!permission.readAndWrite}
                     onClick={() => onShowManageAccess(true)}>
-                    Manage access
+                    <>Manage access</>
+                    <Chevron direction='right' />
                   </button>
                 </PermissionsGate>
               )

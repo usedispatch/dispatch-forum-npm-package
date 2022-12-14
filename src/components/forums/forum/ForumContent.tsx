@@ -616,19 +616,19 @@ export function PopulatedForumContent(
               'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && <StarsAlert />}
             <div className="forumContentColumns">
               <div className="column">
-                <div className='forumActions'>
-                  <div></div>
-                  <div>
-                    {permission.readAndWrite &&
+                {permission.readAndWrite &&
+                  <div className='forumActions'>
+                    <div></div>
+                    <div>
                       <Tools
                         forumData={forumData}
                         onUpdateBanner={onUpdateImage}
                         onShowManageAccess={() => setShowManageAccessToken(true)}
                         update={update}
                       />
-                    }
+                    </div>
                   </div>
-                </div>
+                }
                 {!isNil(forumData.collectionId) && (
                   <div className="topicListWrapper">
                     <TopicList

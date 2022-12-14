@@ -1,6 +1,7 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from 'react';
 
+import { Chevron } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -106,11 +107,11 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
           <PopUpModal
             id="edit-forum"
             visible
-            title="Edit forum"
+            title="Edit community"
             body={
               <div className="editForumBody">
                 <div>
-                  <label className="editForumLabel">Forum title</label>
+                  <label className="editForumLabel">Community title</label>
                   <input
                     type="text"
                     placeholder="New forum title"
@@ -122,7 +123,7 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
                   />
                 </div>
                 <div>
-                  <label className="editForumLabel">Forum description</label>
+                  <label className="editForumLabel">Community description</label>
                   <textarea
                     placeholder="New forum description"
                     className="editForumInput description"
@@ -188,7 +189,8 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
           className="editForumButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditForum({ ...editForum, show: true })}>
-          Edit community
+          <>Edit community</>
+          <Chevron direction='right' />
         </button>
       </div>
     </div>

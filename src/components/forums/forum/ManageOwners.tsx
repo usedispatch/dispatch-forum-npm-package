@@ -3,7 +3,7 @@ import { useState, ReactNode } from 'react';
 import Jdenticon from 'react-jdenticon';
 import { PublicKey } from '@solana/web3.js';
 
-import { Trash, Undo } from '../../../assets';
+import { Chevron, Trash, Undo } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -295,7 +295,8 @@ export function ManageOwners(props: ManageOwnersProps): JSX.Element | null {
             disabled={!permission.readAndWrite}
             onClick={() => setManageOwners({ ...manageOwners, show: true })}
           >
-            Manage owners
+            <>Manage owners</>
+            <Chevron direction='right' />
           </button>
         </PermissionsGate>
       </div>

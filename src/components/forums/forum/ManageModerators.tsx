@@ -2,6 +2,8 @@ import isNil from 'lodash/isNil';
 import { useState, ReactNode } from 'react';
 import Jdenticon from 'react-jdenticon';
 
+import { Chevron } from '../../../assets';
+
 import {
   CollapsibleProps,
   MessageType,
@@ -244,7 +246,8 @@ export function ManageModerators(props: ManageModeratorsProps): JSX.Element {
             onClick={() =>
               setManageModerators({ ...manageModerators, show: true })
             }>
-            Manage moderators
+            <>Manage moderators</>
+            <Chevron direction='right' />
           </button>
         </PermissionsGate>
       </div>

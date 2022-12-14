@@ -2,9 +2,18 @@
   .customizeBanner {
     .customizeBannerButton {
       color: #414149;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      justify-content: space-between;
 
-      svg path {
-        stroke: #454196;
+      svg {
+        height: 12px;
+        width: 12px;
+
+        path {
+          stroke: #434249;
+        }
       }
 
       &:hover {

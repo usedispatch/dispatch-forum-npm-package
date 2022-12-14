@@ -12,6 +12,8 @@
     .editForumButton {
       display: flex;
       align-items: center;
+      width: 100%;
+      justify-content: space-between;
 
       background: transparent;
       color: #414149;
@@ -29,10 +31,9 @@
       svg {
         height: 12px;
         width: 12px;
-        margin-right: 6px;
 
         path {
-          stroke: #454196;
+          stroke: #434249;
         }
       }
     }

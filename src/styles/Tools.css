@@ -13,8 +13,8 @@
   .toolItemsContainer {
     background: #ffffff;
     border-radius: 6px;
-    padding: 8px;
-    width: max-content;
+    padding: 0 18px;
+    width: 240px;
     box-shadow: 0 10px 12px #00000021;
 
     position: absolute;
@@ -37,11 +37,24 @@
     .customizeBannerButton,
     .moderatorTool,
     .editForumButton {
-      padding: 8px;
+      padding: 18px 0;
+      border-bottom: 1px solid #eeedf0;
     }
 
     .moderatorTool {
       color: #414149;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      svg {
+        height: 12px;
+        width: 12px;
+
+        path {
+          stroke: #434249;
+        }
+      }
     }
   }
 

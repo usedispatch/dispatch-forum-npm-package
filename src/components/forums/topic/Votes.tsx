@@ -175,13 +175,13 @@ export function Votes(props: VotesProps): JSX.Element {
         { direction === 'horizontal'
           ? <div className="votePostContent">
               <button
-                className={'votePostButton upVote'}
+                className={`votePostButton upVote ${alreadyUpVoted ? 'alreadyVoted' : ''}`}
                 disabled={alreadyUpVoted || !permission.readAndWrite}
                 onClick={upVotePost}>
                 <Vote isUpVote />
               </button>
               <button
-                className={'votePostButton downVote'}
+                className={`votePostButton downVote ${alreadyDownVoted ? 'alreadyVoted' : ''}`}
                 disabled={alreadyDownVoted || !permission.readAndWrite}
                 onClick={downVotePost}>
                 <Vote />
@@ -199,7 +199,7 @@ export function Votes(props: VotesProps): JSX.Element {
             </div>
           : <div className="votePostContent">
               <button
-                className={'votePostButton upVote'}
+                className={`votePostButton upVote ${alreadyUpVoted ? 'alreadyVoted' : ''}`}
                 disabled={alreadyUpVoted || !permission.readAndWrite}
                 onClick={upVotePost}>
                 <Vote isUpVote />
@@ -215,7 +215,7 @@ export function Votes(props: VotesProps): JSX.Element {
                 )
               }
               <button
-                className={'votePostButton downVote'}
+                className={`votePostButton downVote ${alreadyDownVoted ? 'alreadyVoted' : ''}`}
                 disabled={alreadyDownVoted || !permission.readAndWrite}
                 onClick={downVotePost}>
                 <Vote />

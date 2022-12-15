@@ -1,4 +1,4 @@
-import { isNil, update } from 'lodash';
+import { isNil } from 'lodash';
 import { useMemo } from 'react';
 
 import { TopicInFlightRow, TopicListRow } from './TopicListRow';
@@ -10,15 +10,15 @@ import {
 } from '../../../../utils/posts';
 import { ForumData } from '../../../../utils/hooks';
 import { useMediaQuery } from '../../../../utils/useMediaQuery';
-import { TopicListAsMobile } from './TopicListaAsMobile';
 
 interface TopicListProps {
+  update: () => Promise<void>;
   forumData?: ForumData;
   topicInFlight?: { title: string };
 }
 
-export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Element {
-  const isMobile = useMediaQuery(`(max-width: 768px)`);
+export function TopicList({ forumData, topicInFlight, update }: TopicListProps): JSX.Element {
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const topics = useMemo(() => {
     if (!isNil(forumData)) {
@@ -29,47 +29,29 @@ export function TopicList({ forumData, topicInFlight }: TopicListProps): JSX.Ele
     return [];
   }, [forumData]);
 
-  function renderTopics(): JSX.Element {
-    if (isMobile) {
-      return (
-        <TopicListAsMobile topics={topics} topicInFlight={topicInFlight} forumData={forumData} />
-      );
-    }
-
+  if (isMobile) {
     return (
-      <table className="tableContainer">
-          <thead>
-            <tr className="tableHeader">
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderText">Topics</div>
-              </th>
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderText posters">Wallets</div>
-              </th>
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderTextCenter">Replies</div>
-              </th>
-              <th className="tableHeaderTitle">
-                <div className="tableHeaderTextCenter">Activity</div>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {!isNil(topicInFlight) && <TopicInFlightRow title={topicInFlight.title} />}
-            {!isNil(forumData) && topics.map((topic, index) => (
-              <TopicListRow key={index} topic={topic} forumData={forumData} />
-            ))}
-          </tbody>
-        </table>
+      <div className="topicListContainerMobile">
+        <div className="topicListContentMobile">
+          {!isNil(topicInFlight) && <TopicInFlightRow title={topicInFlight.title} />}
+          {!isNil(forumData) && topics.map((topic, index) => (
+            <TopicListRow key={index} topic={topic} forumData={forumData} isClearRow={index % 2 !== 0} update={update} />
+          ))}
+        </div>
+        {(isNil(forumData) || topics.length === 0) && <div className="emptyTopicListMobile">No topics yet</div>}
+      </div>
     );
   }
 
-  return(
+  return (
     <div className="topicListContainer">
-      <div>
-        {renderTopics()}
-        {(isNil(forumData) || topics.length === 0) && <div className="emptyTopicList">No topics yet</div>}
+      <div className="topicListContent">
+        {!isNil(topicInFlight) && <TopicInFlightRow title={topicInFlight.title} />}
+        {!isNil(forumData) && topics.map((topic, index) => (
+          <TopicListRow key={index} topic={topic} forumData={forumData} isClearRow={index % 2 === 0} update={update} />
+        ))}
       </div>
+      {(isNil(forumData) || topics.length === 0) && <div className="emptyTopicList">No topics yet</div>}
     </div>
   );
-};
+}

@@ -1,5 +1,6 @@
 import isNil from 'lodash/isNil';
 import { PublicKey } from '@solana/web3.js';
+import { ForumPost } from '@usedispatch/client';
 import Markdown from 'markdown-to-jsx';
 import { useState, ReactNode, useEffect } from 'react';
 import ReactGA from 'react-ga4';
@@ -22,6 +23,7 @@ import {
   Tools,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
+import { TopicList } from './topic-list';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { DispatchError, Result } from '../../../types/error';
@@ -37,9 +39,7 @@ import {
 } from '../../../utils/restrictionListHelper';
 import { newPublicKey } from '../../../utils/postbox/validateNewPublicKey';
 import { csvStringToPubkeyList } from '../../../utils/csvStringToPubkeyList';
-import { ForumPost } from '@usedispatch/client';
 import { usePath } from '../../../contexts/DispatchProvider';
-import { TopicList } from './topic-list';
 
 interface ForumContentProps {
   forumObject: DispatchForum;
@@ -82,7 +82,7 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
               <div className="buttonImageContainer">
                 <Plus />
               </div>
-              Create Topic
+              Submit topic
             </button>
           </div>
         </div>
@@ -90,16 +90,22 @@ export function ForumContent(props: ForumContentProps): JSX.Element {
 
       return (
         <div className="confirmingWrapper">
-          <div className="forumContent">
-            <>{ReactGA.send('pageview')}</>
-            <div className="forumContentBox">
-              {!permission.readAndWrite && <ConnectionAlert />}
+          <>{ReactGA.send('pageview')}</>
+          <div className="forumContentWrapper">
+            <div className="forumBanner"/>
+            <div className="forumContent">
               {confirmingBox}
-              {forumHeader}
-            </div>
-            <div className="toolsWrapper" />
-            <div className="topicListWrapper">
-              <TopicList />
+              {!permission.readAndWrite && <ConnectionAlert />}
+              <div className="forumContentColumns">
+                <div className='column'>
+                  <div className="topicListWrapper">
+                    <TopicList update={update}/>
+                  </div>
+                </div>
+                <div className='column'>
+                  {forumHeader}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -359,38 +365,48 @@ export function PopulatedForumContent(
 
   const forumHeader = (
     <div className="forumContentHeader">
-      <div className={'titleBox'}>
-        {currentForumAccessToken.length > 0 && (
-          <div className="gatedForum">
-            <Lock />
+      <>
+        <div className={'titleBox'}>
+          {currentForumAccessToken.length > 0 && (
+            <div className="gatedForum">
+              <Lock />
+            </div>
+          )}
+          <Markdown>{forumData.description.title}</Markdown>
+          <div
+            className='descriptionVisibility'
+            onClick={() => setShowDesc(!showDesc)}
+          >
+            <Chevron direction={showDesc ? 'up' : 'down'}/>
           </div>
-        )}
-        <Markdown>{forumData.description.title}</Markdown>
-        <div
-          className='descriptionVisibility'
-          onClick={() => setShowDesc(!showDesc)}
-        >
-          <Chevron direction={showDesc ? 'up' : 'down'}/>
         </div>
-      </div>
-      <div className="descriptionBox">
-        <div className={`description ${showDesc ? '' : 'descHidden'}`}>
-          <Markdown>{forumData.description.desc}</Markdown>
+        <div className="descriptionBox">
+          <div className={`description ${showDesc ? '' : 'descHidden'}`}>
+            <Markdown>{forumData.description.desc}</Markdown>
+          </div>
+          <CreateTopic
+            forumObject={forumObject}
+            forumData={initialForumData}
+            currentForumAccessToken={currentForumAccessToken}
+            topicInFlight={title => {
+              if (title === '') {
+                setNewTopicInFlight(undefined);
+              } else {
+                setNewTopicInFlight({ title });
+              }
+            }}
+            update={update}
+          />
         </div>
-        <CreateTopic
-          forumObject={forumObject}
-          forumData={initialForumData}
-          currentForumAccessToken={currentForumAccessToken}
-          topicInFlight={title => {
-            if (title === '') {
-              setNewTopicInFlight(undefined);
-            } else {
-              setNewTopicInFlight({ title });
-            }
-          }}
+      </>
+      {permission.readAndWrite &&
+        <Tools
+          forumData={forumData}
+          onUpdateBanner={onUpdateImage}
+          onShowManageAccess={() => setShowManageAccessToken(true)}
           update={update}
         />
-      </div>
+      }
     </div>
   );
 
@@ -613,6 +629,7 @@ export function PopulatedForumContent(
                   <div className="topicListWrapper">
                     <TopicList
                       forumData={forumData}
+                      update={update}
                       topicInFlight={newTopicInFlight}
                     />
                   </div>
@@ -620,12 +637,6 @@ export function PopulatedForumContent(
               </div>
               <div className="column">
                 {forumHeader}
-                {permission.readAndWrite && <Tools
-                  forumData={forumData}
-                  onUpdateBanner={onUpdateImage}
-                  onShowManageAccess={() => setShowManageAccessToken(true)}
-                  update={update}
-                />}
               </div>
             </div>
           </div>

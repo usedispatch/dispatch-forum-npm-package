@@ -17,15 +17,13 @@
   }
 
   .toolsWrapper {
+    margin-top: 16px;
     min-height: 30px;
     background: #fff;
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0px 10px 12px 0px #00000029;
 
     @media only screen and (max-width: 570px) {
       margin: 0;
       border-radius: 0;
-      box-shadow: none;
     }
   }
 
@@ -33,9 +31,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
-    padding: 20px 24px;
-
-    border-top: 1px solid #b8b9dc;
+    padding: 0;
     border-radius: 0 0 12px 12px;
 
     color: #414149;
@@ -80,6 +76,7 @@
     padding: 8px;
     box-shadow: 0 10px 12px #00000021;
   }
+
   .toolItem {
     padding: 8px;
 

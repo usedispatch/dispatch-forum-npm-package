@@ -1,14 +1,29 @@
-.topicListAsMobileTitle {
-  color: #b8b9dc;
-  padding-bottom: 4px;
-  padding-left: 16px;
-  padding-top: 8px;
-  background-color: white;
+@layer components {
+  .topicListContainerMobile {
+    font-family: Manrope, sans-serif;
 
-  font-family: Manrope, sans-serif;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 12px;
-  line-height: 16px;
-  text-transform: uppercase;
+    margin: 0;
+    overflow-x: auto;
+    position: relative;
+    bottom: 40px;
+    z-index: 0;
+
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
+    border-radius: 8px;
+
+    .topicListContentMobile {
+      width: 100%;
+      background: #f7f7fe;
+      padding-top: 20px;
+    }
+  }
+
+  .emptyTopicListMobile {
+    background: #f7f7fe;
+    width: 100%;
+    min-width: 100%;
+    padding: 20px 24px 64px;
+    font-size: 20px;
+    font-weight: 400;
+  }
 }

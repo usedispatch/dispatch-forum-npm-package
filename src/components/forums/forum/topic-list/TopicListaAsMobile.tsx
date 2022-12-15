@@ -11,7 +11,7 @@ interface TopicListProps {
   forumData?: ForumData;
 }
 
-export function TopicListAsMobile({ topics, topicInFlight, forumData }: TopicListProps): JSX.Element {
+export function TopicListAsMobile({ topics, forumData }: TopicListProps): JSX.Element {
   if (isNil(forumData)) {
     return <></>;
   }
@@ -20,8 +20,8 @@ export function TopicListAsMobile({ topics, topicInFlight, forumData }: TopicLis
     <>
       <div className="topicListAsMobileTitle">Topics</div>
       {topics.map((topic, index) => (
-        <TopicListRow key={index} topic={topic} forumData={forumData} isMobile  />
+        <TopicListRow key={index} topic={topic} forumData={forumData} isMobile isClearRow />
       ))}
     </>
   );
-};
+}

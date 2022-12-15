@@ -13,43 +13,37 @@
     }
   }
 
-  .iconAsMobile {
-    height: 16px;
-    width: 16px;
-    margin-right: 2px;
-  }
-
-  .rowSpinner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    height: 28px;
-    width: 28px;
-    margin: auto;
+  .rowWrapper {
+    cursor: pointer;
+    text-decoration: none;
   }
 
   .row {
-    border-bottom: 1px solid #b8b9dc;
-    height: 4rem;
+    color: #414149;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 24px;
+    background: #f7f7fe;
 
-    &:hover {
-      background: #dbeafe;
+    &.clear {
+      background: white;
     }
 
     &.topicInFlight {
-      opacity: 0.75;
       background: #bdddf445;
       cursor: not-allowed;
 
       .rowSubjInFlight {
+        opacity: 0.75;
         display: flex;
         align-items: center;
         gap: 20px;
 
-        .textBox {
-          max-width: 500px;
-          width: unset;
+        .titleInFlight {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
         }
       }
 
@@ -76,52 +70,61 @@
       }
     }
 
-    a {
-      cursor: pointer;
-      color: #000;
-      text-decoration: none;
+    &:hover {
+      background: #e0e0f7;
+    }
+
+    .rowHeader {
+      display: flex;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      color: #86878e;
+
+      .rowPosterInfo {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .topicPosterIcon {
+          height: 24px;
+          width: 24px;
+        }
+      }
+
+      .topicDate {
+        text-align: center;
+      }
     }
 
     .rowSubj {
       width: 100%;
+      max-width: 600px;
 
+      color: #414149;
       font-weight: 600;
       text-align: left;
-
-      .textBox {
-        max-width: 600px;
-        width: 600px;
-
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-      }
+      display: -webkit-box;
+      -webkit-line-clamp: 1;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .rowIconReplies {
-      height: inherit;
-      width: 280px;
-      max-width: 280px;
-      min-width: 280px;
-
+    .rowActivity {
       display: flex;
-      align-items: center;
-    }
+      justify-content: space-between;
+      padding-top: 16px;
 
-    .rowAmountReplies {
-      max-width: 120px;
-      width: 120px;
+      font-weight: 400;
 
-      color: #414149;
-      text-align: center;
-    }
+      .rowReplies {
+        display: flex;
+        gap: 5px;
+        align-items: center;
 
-    .rowDate {
-      max-width: 120px;
-      width: 120px;
-
-      color: #414149;
-      text-align: center;
+        svg {
+          width: 14px;
+        }
+      }
     }
   }
 }

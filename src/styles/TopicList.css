@@ -3,81 +3,24 @@
     font-family: Manrope, sans-serif;
 
     margin: 0;
-    padding: 24px;
     overflow-x: auto;
 
-    background: white;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16), inset -8px 0px 12px #00000029;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.16);
     border-radius: 8px;
 
-    .tableContainer {
+    .topicListContent {
       width: 100%;
+      background: #f7f7fe;
 
-      .table {
-        position: relative;
-        text-align: left;
-      }
-
-      .table th:first-child {
-        position: sticky;
-        position: -webkit-sticky;
-        left: 0;
-        z-index: 10;
-      }
-
-      .table :where(th, td) {
-        padding: 16px;
-        vertical-align: middle;
-        white-space: nowrap;
-      }
-    }
-
-    .tableHeader {
-      border-bottom-width: 1px;
-      border-color: #2e008b;
-
-      .tableHeaderTitle {
-        color: #2e008b;
-
-        padding-bottom: 8px;
-      }
-
-      .tableHeaderText {
-        min-width: 600px;
-
-        font-weight: 400;
-        font-size: 22px;
-        text-align: left;
-        text-transform: none;
-
-        &.posters {
-          font-size: 20px;
-
-          width: 280px;
-          margin: 0 0 0 auto;
-          max-width: 280px;
-          min-width: 280px;
-        }
-      }
-
-      .tableHeaderTextCenter {
-        text-align: center;
-        text-transform: none;
-        font-weight: 400;
-        font-size: 20px;
-
-        width: 120px;
-        margin: 0 0 0 auto;
-        max-width: 120px;
-        min-width: 120px;
+      @media only screen and (max-width: 768px) {
+        padding-top: 16px;
       }
     }
 
     @media only screen and (max-width: 768px) {
-      box-shadow: unset;
-      background-color: transparent;
-      padding-right: 0;
-      padding-left: 0;
+      position: relative;
+      bottom: 40px;
+      z-index: 0;
     }
   }
 
@@ -90,27 +33,17 @@
     margin: auto;
   }
 
-  /* .inFlight {
-    opacity: 0.75;
-    background: #bdddf445;
-    width: 100%;
-
-    text-align: left;
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  } */
-
   .emptyTopicList {
+    background: white;
     width: 100%;
     min-width: 100%;
-    padding-top: 64px;
+    padding: 64px 24px;
     font-size: 20px;
-    font-weight: 600;
-    text-align: center;
+    font-weight: 400;
 
     @media only screen and (max-width: 768px) {
-      padding-top: 40px;
+      padding-top: 20px;
+      background: #f7f7fe;
     }
   }
 

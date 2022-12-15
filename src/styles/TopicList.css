@@ -11,16 +11,6 @@
     .topicListContent {
       width: 100%;
       background: #f7f7fe;
-
-      @media only screen and (max-width: 768px) {
-        padding-top: 16px;
-      }
-    }
-
-    @media only screen and (max-width: 768px) {
-      position: relative;
-      bottom: 40px;
-      z-index: 0;
     }
   }
 

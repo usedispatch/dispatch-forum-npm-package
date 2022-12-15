@@ -98,9 +98,7 @@ export function ForumContentMobile(props: ForumContentMobileProps): JSX.Element 
               {!permission.readAndWrite && <ConnectionAlert />}
               <div className="forumContentSections">
                 <div className='section'>
-                  <div className="topicListWrapperMobile">
-                    <TopicList update={update}/>
-                  </div>
+                  <TopicList update={update}/>
                 </div>
                 <div className='section'>
                   {forumHeader}

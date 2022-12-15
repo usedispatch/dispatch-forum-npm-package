@@ -21,6 +21,7 @@
   .row {
     padding: 24px;
     background: #f7f7fe;
+    border-bottom: 1px solid #eeedf0;
 
     &.clear {
       background: white;
@@ -118,7 +119,7 @@
       justify-content: space-between;
       padding-top: 16px;
 
-      color: #85838E;
+      color: #85838e;
       font-weight: 400;
       font-size: 12px;
       line-height: 18px;
@@ -132,13 +133,13 @@
           width: 14px;
 
           path {
-            fill: #85838E;
+            fill: #85838e;
           }
         }
       }
-      
+
       .currentVotes {
-        color: #85838E;
+        color: #85838e;
         font-weight: 400;
         font-size: 12px;
       }

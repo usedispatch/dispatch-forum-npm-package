@@ -11,23 +11,34 @@ import {
 import { ForumData } from '../../../../utils/hooks';
 import { useMediaQuery } from '../../../../utils/useMediaQuery';
 
+export enum SortOptions {
+  'popular' = 'popular',
+  'recent' = 'recent',
+}
+
 interface TopicListProps {
   update: () => Promise<void>;
+  sortBy?: SortOptions;
   forumData?: ForumData;
   topicInFlight?: { title: string };
 }
 
-export function TopicList({ forumData, topicInFlight, update }: TopicListProps): JSX.Element {
+export function TopicList({ forumData, topicInFlight, update, sortBy = SortOptions.popular }: TopicListProps): JSX.Element {
   const isMobile = useMediaQuery('(max-width: 768px)');
 
   const topics = useMemo(() => {
     if (!isNil(forumData)) {
       const topics = selectTopics(forumData.posts);
-      const sorted = sortByVotes(topics);
+      let sorted = topics;
+      if (sortBy === SortOptions.popular) {
+        sorted = sortByVotes(topics);
+      } else {
+        sorted = topics.sort((l, r) => r.data.ts.valueOf() - l.data.ts.valueOf());
+      }
       return selectForumPosts(sorted);
     }
     return [];
-  }, [forumData]);
+  }, [forumData, sortBy]);
 
   if (isMobile) {
     return (

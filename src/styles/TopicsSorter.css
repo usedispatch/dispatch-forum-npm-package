@@ -1,0 +1,74 @@
+@layer components {
+  .sortWrapper {
+    position: relative;
+
+    .sort {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+
+      color: #4a279c;
+      background: #f7f7fe;
+      text-transform: capitalize;
+      border-radius: 4px;
+      padding: 8px;
+      box-shadow: 0px 10px 12px rgb(0 0 0 / 5%);
+
+      svg path {
+        stroke: #4a279c;
+      }
+
+      @media only screen and (max-width: 768px) {
+        background: white;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .sortContent {
+    padding-top: 3px;
+  }
+
+  .sortItemsContainer {
+    background: #ffffff;
+    border-radius: 6px;
+    width: 140px;
+    padding: 0 18px;
+    box-shadow: 0 10px 12px #00000021;
+    border: 1px solid #eeedf0;
+
+    position: absolute;
+    top: 35px;
+    left: 0;
+    z-index: 999;
+    transition: height 0.5s ease-out;
+
+    &.hide {
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      padding: 0;
+      border: none;
+    }
+  }
+
+  .sortItem {
+    padding: 18px 0;
+    border-bottom: 1px solid #eeedf0;
+
+    text-transform: capitalize;
+    color: #414149;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.selected {
+      color: #4a279c;
+    }
+
+    &:hover {
+      font-weight: 500;
+    }
+  }
+}

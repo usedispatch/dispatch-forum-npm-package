@@ -35,14 +35,17 @@ export function Tools(props: ToolsProps): JSX.Element {
         >
           <Gear />
         </button>
-        <div className={`toolItemsContainer ${visible ? '' : 'hide'}`}>
-          <div className= 'toolItem' onClick={() => setIsVisible(false)}>
+        <div
+          className={`toolItemsContainer ${visible ? '' : 'hide'}`}
+          onMouseLeave={() => setIsVisible(false)}
+        >
+          <div className='toolItem' onClick={() => setIsVisible(false)}>
             <ManageOwners forumData={forumData} />
           </div>
-          <div className= 'toolItem' onClick={() => setIsVisible(false)}>
+          <div className='toolItem' onClick={() => setIsVisible(false)}>
             <ManageModerators forumData={forumData} />
           </div>
-          <div className= 'toolItem' onClick={() => setIsVisible(false)}>
+          <div className='toolItem' onClick={() => setIsVisible(false)}>
             { // The manage users UI should be hidden for DAA
               forumIdentity !==
                 ForumIdentity.DegenerateApeAcademy && (
@@ -51,7 +54,10 @@ export function Tools(props: ToolsProps): JSX.Element {
                   <button
                     className="moderatorTool"
                     disabled={!permission.readAndWrite}
-                    onClick={() => onShowManageAccess(true)}>
+                    onClick={() => {
+                      setIsVisible(false);
+                      onShowManageAccess(true);
+                    }}>
                     <>Manage access</>
                     <Chevron direction='right' />
                   </button>
@@ -59,10 +65,10 @@ export function Tools(props: ToolsProps): JSX.Element {
               )
             }
           </div>
-          <div className= 'toolItem' onClick={() => setIsVisible(false)}>
+          <div className='toolItem' onClick={() => setIsVisible(false)}>
             <EditForum forumData={forumData} update={update} />
           </div>
-          <div className= 'toolItem' onClick={() => setIsVisible(false)}>
+          <div className='toolItem' onClick={() => setIsVisible(false)}>
             <UploadForumBanner
               onSetImageURL={onUpdateBanner}
               collectionId={forumData.collectionId}

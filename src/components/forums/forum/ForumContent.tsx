@@ -22,9 +22,11 @@ import {
   CreateTopic,
   Tools,
   ForumContentMobile,
+  TopicsSorter,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
 import { TopicList } from './topic-list';
+import { SortOptions } from './topic-list/TopicList';
 
 import { useMediaQuery } from '../../../utils/useMediaQuery';
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
@@ -163,6 +165,7 @@ export function PopulatedForumContent(
     await update();
   };
 
+  const [sortBy, setSortBy] = useState<SortOptions>(SortOptions.popular);
   const [newTopicInFlight, setNewTopicInFlight] = useState<{ title: string }>();
   const [addNFTGate, setAddNFTGate] = useState(false);
   const [addSPLGate, setAddSPLGate] = useState(false);
@@ -616,9 +619,9 @@ export function PopulatedForumContent(
               'DSwfRF1jhhu6HpSuzaig1G19kzP73PfLZBPLofkw6fLD' && <StarsAlert />}
             <div className="forumContentColumns">
               <div className="column">
-                {permission.readAndWrite &&
-                  <div className='forumActions'>
-                    <div></div>
+                <div className='forumActions'>
+                  <TopicsSorter onSelect={(item) => setSortBy(item)} />
+                  {permission.readAndWrite &&
                     <div>
                       <Tools
                         forumData={forumData}
@@ -627,14 +630,15 @@ export function PopulatedForumContent(
                         update={update}
                       />
                     </div>
-                  </div>
-                }
+                  }
+                </div>
                 {!isNil(forumData.collectionId) && (
                   <div className="topicListWrapper">
                     <TopicList
                       forumData={forumData}
                       update={update}
                       topicInFlight={newTopicInFlight}
+                      sortBy={sortBy}
                     />
                   </div>
                 )}

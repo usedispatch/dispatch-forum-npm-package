@@ -12,7 +12,7 @@
       color: #414149;
 
       &:hover {
-        opacity: 0.85;
+        font-weight: 500;
       }
 
       &:disabled {

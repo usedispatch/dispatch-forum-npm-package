@@ -59,7 +59,8 @@ export function ForumContentMobile(props: ForumContentMobileProps): JSX.Element 
           <div className="animationMobile">
             <Lottie loop animationData={animationData} />
           </div>
-          <div className="textMobile">The network is confirming your forum.</div>
+          <div className="textMobile">
+            The network is confirming your forum.</div>
         </div>
         <div className="subtitleMobile">
           When it&apos;s ready, the page will reload itself. This may take a few

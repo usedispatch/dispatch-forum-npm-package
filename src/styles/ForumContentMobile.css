@@ -153,13 +153,12 @@
       align-items: center;
       justify-content: flex-end;
       gap: 5px;
-      width: 45px;
-      margin: auto 0 0 auto;
+      width: 85px;
 
       color: #85838e;
       font-weight: 600;
       font-size: 10px;
-      line-height: 32px;
+      line-height: 52px;
 
       @media only screen and (max-width: 768px) {
         visibility: visible;

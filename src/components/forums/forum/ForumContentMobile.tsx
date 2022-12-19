@@ -80,9 +80,7 @@ export function ForumContentMobile(props: ForumContentMobileProps): JSX.Element 
               <Markdown>{basicInfo.desc}</Markdown>
             </div>
             <button className={'createTopicButtonMobile'} type="button" disabled>
-              <div className="buttonImageContainer">
-                <Plus />
-              </div>
+              <div className="buttonImageContainer"> <Plus /> </div>
               Submit topic
             </button>
           </div>

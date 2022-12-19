@@ -20,7 +20,7 @@
       text-align: left;
 
       &:hover {
-        opacity: 0.85;
+        font-weight: 500;
       }
 
       &:disabled {

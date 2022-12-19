@@ -21,9 +21,11 @@ import {
   Notification,
   CreateTopic,
   Tools,
+  TopicsSorter,
 } from '..';
 import { StarsAlert } from '../StarsAlert';
 import { TopicList } from './topic-list';
+import { SortOptions } from './topic-list/TopicList';
 
 import { DispatchForum } from '../../../utils/postbox/postboxWrapper';
 import { DispatchError, Result } from '../../../types/error';
@@ -59,8 +61,7 @@ export function ForumContentMobile(props: ForumContentMobileProps): JSX.Element 
           <div className="animationMobile">
             <Lottie loop animationData={animationData} />
           </div>
-          <div className="textMobile">
-            The network is confirming your forum.</div>
+          <div className="textMobile">The network is confirming your forum.</div>
         </div>
         <div className="subtitleMobile">
           When it&apos;s ready, the page will reload itself. This may take a few
@@ -146,6 +147,7 @@ function PopulatedForumContentMobile(
     await update();
   };
 
+  const [sortBy, setSortBy] = useState<SortOptions>(SortOptions.popular);
   const [showDesc, setShowDesc] = useState(true);
   const [newTopicInFlight, setNewTopicInFlight] = useState<{ title: string }>();
   const [addNFTGate, setAddNFTGate] = useState(false);
@@ -383,19 +385,22 @@ function PopulatedForumContentMobile(
           <div className={`descriptionMobile ${showDesc ? '' : 'descHidden'}`}>
             <Markdown>{forumData.description.desc}</Markdown>
           </div>
-          <CreateTopic
-            forumObject={forumObject}
-            forumData={initialForumData}
-            currentForumAccessToken={currentForumAccessToken}
-            topicInFlight={title => {
-              if (title === '') {
-                setNewTopicInFlight(undefined);
-              } else {
-                setNewTopicInFlight({ title });
-              }
-            }}
-            update={update}
-          />
+          <div className='forumHeaderActions'>
+            <TopicsSorter onSelect={(item) => setSortBy(item)} />
+            <CreateTopic
+              forumObject={forumObject}
+              forumData={initialForumData}
+              currentForumAccessToken={currentForumAccessToken}
+              topicInFlight={title => {
+                if (title === '') {
+                  setNewTopicInFlight(undefined);
+                } else {
+                  setNewTopicInFlight({ title });
+                }
+              }}
+              update={update}
+            />
+          </div>
         </div>
       </>
     </div>
@@ -625,6 +630,7 @@ function PopulatedForumContentMobile(
                   <div className="topicListWrapperMobile">
                     <TopicList
                       forumData={forumData}
+                      sortBy={sortBy}
                       update={update}
                       topicInFlight={newTopicInFlight}
                     />

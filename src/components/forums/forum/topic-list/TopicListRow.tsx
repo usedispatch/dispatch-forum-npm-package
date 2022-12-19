@@ -1,5 +1,5 @@
-import { maxBy, isNil } from 'lodash';
-import { useMemo, useCallback } from 'react';
+import { isNil } from 'lodash';
+import { useMemo } from 'react';
 import Markdown from 'markdown-to-jsx';
 import Jdenticon from 'react-jdenticon';
 import { ForumPost } from '@usedispatch/client';
@@ -34,29 +34,24 @@ export function TopicListRow(props: TopicListRowProps): JSX.Element {
     return selectForumPosts(selectRepliesFromPosts(forumData.posts, topic));
   }, [forumData]);
 
-  const activtyDate = useCallback((posts: ForumPost[]) => {
-    const dates = posts.map(({ data }) => data.ts);
-    const mostRecentDate = maxBy(dates, (date) => date.getTime());
-    if (!isNil(mostRecentDate)) {
-      const format = (
-        mostRecentDate.getFullYear() !== new Date().getFullYear()
-          ? {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-          }
-          : {
-            year: undefined,
-            month: 'short',
-            day: 'numeric',
-          }
-      ) as Intl.DateTimeFormatOptions;
+  const activtyDate = useMemo(() => {
+    const date = topic.data.ts;
+    const format = (
+      date.getFullYear() !== new Date().getFullYear()
+        ? {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+        }
+        : {
+          year: undefined,
+          month: 'short',
+          day: 'numeric',
+        }
+    ) as Intl.DateTimeFormatOptions;
 
-      return mostRecentDate.toLocaleDateString(undefined, { ...format });
-    } else {
-      return '-';
-    }
-  }, []);
+    return date.toLocaleDateString(undefined, { ...format });
+  }, [topic]);
 
   const updateVotes = (upVoted: boolean): void => {
     if (isForumPost(topic)) {
@@ -89,7 +84,7 @@ export function TopicListRow(props: TopicListRowProps): JSX.Element {
             </>
           </div>
           <div className="topicDate">
-            {activtyDate(replies)}
+            {activtyDate}
           </div>
         </div>
         <Link href={topicPath} className='rowWrapper'>

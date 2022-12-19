@@ -10,12 +10,17 @@
     padding: 8px;
   }
 
+  .toolsContent {
+    padding-top: 3px;
+  }
+
   .toolItemsContainer {
     background: #ffffff;
     border-radius: 6px;
     padding: 0 18px;
     width: 240px;
     box-shadow: 0 10px 12px #00000021;
+    border: 1px solid #eeedf0;
 
     position: absolute;
     top: 35px;
@@ -28,17 +33,23 @@
       width: 0;
       overflow: hidden;
       padding: 0;
+      border: none;
     }
   }
 
   .toolItem {
+    border-bottom: 1px solid #eeedf0;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
     .manageOwnersButton,
     .manageModeratorsButton,
     .customizeBannerButton,
     .moderatorTool,
     .editForumButton {
       padding: 18px 0;
-      border-bottom: 1px solid #eeedf0;
     }
 
     .moderatorTool {
@@ -54,6 +65,11 @@
         path {
           stroke: #434249;
         }
+      }
+
+      &:hover {
+        opacity: 1;
+        font-weight: 500;
       }
     }
   }

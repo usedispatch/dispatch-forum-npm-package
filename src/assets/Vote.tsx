@@ -3,26 +3,20 @@ interface VoteProps {
   disabled?: boolean;
 }
 
-export function Vote({ isUpVote = false, disabled = false }: VoteProps): JSX.Element {
+export function Vote({ isUpVote = false }: VoteProps): JSX.Element {
   if (isUpVote) {
-    const color = disabled ? '#86878E' : '#4A279C';
     return (
-      <svg
-        width="18"
-        height="18"
-        viewBox="0 0 18 18"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 9L4.0575 10.0575L8.25 5.8725L8.25 15L9.75 15L9.75 5.8725L13.9425 10.0575L15 9L9 3L3 9Z" fill={color}/>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M6 9.5V2.5" stroke="#85838E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M2.5 6L6 2.5L9.5 6" stroke="#85838E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
       </svg>
-
     );
   }
 
-  const color = disabled ? '#86878E' : '#4A279C';
   return (
     <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M12 6L10.9425 4.9425L6.75 9.1275L6.75 -2.29485e-07L5.25 -2.95052e-07L5.25 9.1275L1.0575 4.9425L6.91406e-07 6L6 12L12 6Z" fill={color}/>
+      <path d="M6 2.5V9.5" stroke="#85838E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path d="M9.5 6L6 9.5L2.5 6" stroke="#85838E" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
   );
 }

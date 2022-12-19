@@ -19,11 +19,9 @@
   }
 
   .row {
-    color: #414149;
-    font-size: 14px;
-    font-weight: 600;
     padding: 24px;
     background: #f7f7fe;
+    border-bottom: 1px solid #eeedf0;
 
     &.clear {
       background: white;
@@ -78,7 +76,11 @@
       display: flex;
       justify-content: space-between;
       padding-bottom: 16px;
+
       color: #86878e;
+      font-weight: 300;
+      font-size: 12px;
+      line-height: 18px;
 
       .rowPosterInfo {
         display: flex;
@@ -102,6 +104,9 @@
 
       color: #414149;
       font-weight: 600;
+      font-size: 16px;
+      line-height: 24px;
+
       text-align: left;
       display: -webkit-box;
       -webkit-line-clamp: 1;
@@ -114,7 +119,10 @@
       justify-content: space-between;
       padding-top: 16px;
 
+      color: #85838e;
       font-weight: 400;
+      font-size: 12px;
+      line-height: 18px;
 
       .rowReplies {
         display: flex;
@@ -123,7 +131,17 @@
 
         svg {
           width: 14px;
+
+          path {
+            fill: #85838e;
+          }
         }
+      }
+
+      .currentVotes {
+        color: #85838e;
+        font-weight: 400;
+        font-size: 12px;
       }
     }
   }

@@ -3,8 +3,10 @@
     width: 100%;
     padding: 0 0 24px;
 
-    @media only screen and (max-width: 570px) {
+    @media only screen and (max-width: 768px) {
       padding: 0 0 12px;
+      width: 90%;
+      margin: 0 auto;
     }
   }
 

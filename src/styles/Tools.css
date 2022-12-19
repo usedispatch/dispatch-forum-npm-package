@@ -1,29 +1,60 @@
 @layer components {
-  .tools {
-    display: flex;
-    gap: 24px;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
+  .toolsWrapper {
+    position: relative;
+  }
 
-    @media only screen and (max-width: 570px) {
-      gap: 20px;
-      row-gap: 12px;
+  .gearToolButton {
+    background: #f7f7fe;
+    box-shadow: 0px 10px 12px rgb(0 0 0 / 5%);
+    border-radius: 4px;
+    padding: 8px;
+  }
 
-      .editForumContainer .editForumButton svg {
-        margin-right: 16px;
-      }
+  .toolItemsContainer {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 0 18px;
+    width: 240px;
+    box-shadow: 0 10px 12px #00000021;
+
+    position: absolute;
+    top: 35px;
+    right: 0;
+    z-index: 999;
+    transition: height 0.5s ease-out;
+
+    &.hide {
+      height: 0;
+      width: 0;
+      overflow: hidden;
+      padding: 0;
     }
   }
 
-  .toolsWrapper {
-    margin-top: 16px;
-    min-height: 30px;
-    background: #fff;
+  .toolItem {
+    .manageOwnersButton,
+    .manageModeratorsButton,
+    .customizeBannerButton,
+    .moderatorTool,
+    .editForumButton {
+      padding: 18px 0;
+      border-bottom: 1px solid #eeedf0;
+    }
 
-    @media only screen and (max-width: 570px) {
-      margin: 0;
-      border-radius: 0;
+    .moderatorTool {
+      color: #414149;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+
+      svg {
+        height: 12px;
+        width: 12px;
+
+        path {
+          stroke: #434249;
+        }
+      }
     }
   }
 
@@ -52,39 +83,6 @@
       .lock {
         margin: 0;
       }
-    }
-  }
-
-  .gearToolButton {
-    background: #f7f7fe;
-    box-shadow: 0px 10px 12px rgb(0 0 0 / 5%);
-    border-radius: 4px;
-    padding: 8px;
-
-    position: absolute;
-    top: -50px;
-    right: 16px;
-  }
-
-  .toolItemsContainer {
-    background: #ffffff;
-    border-radius: 6px;
-    position: absolute;
-    top: -14px;
-    right: 16px;
-    z-index: 999;
-    padding: 8px;
-    box-shadow: 0 10px 12px #00000021;
-  }
-
-  .toolItem {
-    padding: 8px;
-
-    .manageOwnersButton,
-    .manageModeratorsButton,
-    .moderatorTool,
-    .editForumButton {
-      color: #414149;
     }
   }
 }

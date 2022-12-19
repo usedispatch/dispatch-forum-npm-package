@@ -10,9 +10,11 @@
     .manageOwnersButton {
       display: flex;
       align-items: center;
+      width: 100%;
+      justify-content: space-between;
 
       background: transparent;
-      color: #4a279c;
+      color: #414149;
 
       &:hover {
         opacity: 0.85;
@@ -26,7 +28,10 @@
       svg {
         height: 12px;
         width: 12px;
-        margin-right: 16px;
+
+        path {
+          stroke: #434249;
+        }
       }
     }
 

@@ -2,7 +2,7 @@ import isNil from 'lodash/isNil';
 import { useState, ReactNode } from 'react';
 import { PublicKey } from '@solana/web3.js';
 
-import { Info, Edit } from '../../../assets';
+import { Chevron, Info } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -171,7 +171,8 @@ export function UploadForumBanner(props: UploadForumBannerProps): JSX.Element {
             setForumImage({ ...forumImage, showUploadImage: true })
           }
         >
-          <Edit />
+         <>Edit banner</>
+          <Chevron direction='right' />
         </button>
       </div>
     </div>

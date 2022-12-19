@@ -1,7 +1,7 @@
 import isNil from 'lodash/isNil';
 import { useState, ReactNode, useMemo } from 'react';
 
-import { Edit } from '../../../assets';
+import { Chevron } from '../../../assets';
 import {
   CollapsibleProps,
   MessageType,
@@ -18,12 +18,11 @@ import { NOTIFICATION_BANNER_TIMEOUT } from '../../../utils/consts';
 
 interface EditForumProps {
   forumData: ForumData;
-  buttonText?: string;
   update: () => Promise<void>;
 }
 
 export function EditForum(props: EditForumProps): JSX.Element | null {
-  const { forumData, update, buttonText } = props;
+  const { forumData, update } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
   const [bodySize, setBodySize] = useState(
@@ -108,11 +107,11 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
           <PopUpModal
             id="edit-forum"
             visible
-            title="Edit forum"
+            title="Edit community"
             body={
               <div className="editForumBody">
                 <div>
-                  <label className="editForumLabel">Forum title</label>
+                  <label className="editForumLabel">Community title</label>
                   <input
                     type="text"
                     placeholder="New forum title"
@@ -124,7 +123,7 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
                   />
                 </div>
                 <div>
-                  <label className="editForumLabel">Forum description</label>
+                  <label className="editForumLabel">Community description</label>
                   <textarea
                     placeholder="New forum description"
                     className="editForumInput description"
@@ -186,12 +185,12 @@ export function EditForum(props: EditForumProps): JSX.Element | null {
             }
           />
         )}
-        <div className="actionDivider" />
         <button
           className="editForumButton"
           disabled={!permission.readAndWrite}
           onClick={() => setEditForum({ ...editForum, show: true })}>
-          {buttonText ?? <> <Edit /> Edit </>}
+          <>Edit community</>
+          <Chevron direction='right' />
         </button>
       </div>
     </div>

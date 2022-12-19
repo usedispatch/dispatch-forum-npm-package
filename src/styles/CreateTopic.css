@@ -1,7 +1,6 @@
 @layer components {
   .createTopic {
     width: 100%;
-    z-index: 999;
   }
 
   .createTopicButton {
@@ -16,13 +15,15 @@
 
     background: #3f1d96;
     color: white;
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
     font-weight: 600;
 
-    @media only screen and (max-width: 570px) {
-      width: auto;
+    @media only screen and (max-width: 768px) {
+      width: 50%;
+      padding: 8px 40px;
       margin: 0 0 0 auto;
+      font-size: 13px;
     }
 
     &:hover {

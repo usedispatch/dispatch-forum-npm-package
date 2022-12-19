@@ -2,6 +2,8 @@ import isNil from 'lodash/isNil';
 import { useState, ReactNode } from 'react';
 import Jdenticon from 'react-jdenticon';
 
+import { Chevron } from '../../../assets';
+
 import {
   CollapsibleProps,
   MessageType,
@@ -22,11 +24,10 @@ import { getIdentity } from '../../../utils/identity';
 
 interface ManageModeratorsProps {
   forumData: ForumData;
-  buttonText?: string;
 }
 
 export function ManageModerators(props: ManageModeratorsProps): JSX.Element {
-  const { forumData, buttonText } = props;
+  const { forumData } = props;
   const forumObject = useForum();
   const { permission } = forumObject;
 
@@ -245,7 +246,8 @@ export function ManageModerators(props: ManageModeratorsProps): JSX.Element {
             onClick={() =>
               setManageModerators({ ...manageModerators, show: true })
             }>
-            {buttonText ?? 'Moderators'}
+            <>Manage moderators</>
+            <Chevron direction='right' />
           </button>
         </PermissionsGate>
       </div>
